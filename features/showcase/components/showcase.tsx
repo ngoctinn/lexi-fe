@@ -6,6 +6,7 @@ import { FormShowcase } from "./form-showcase";
 import { InteractiveShowcase } from "./interactive-showcase";
 import { ModalShowcase } from "./modal-showcase";
 import { FeedbackShowcase } from "./feedback-showcase";
+import { AuthForm } from "@/features/auth/components/auth-form";
 
 export function Showcase() {
   return (
@@ -53,6 +54,11 @@ export function Showcase() {
           {/* 7. Feedback (Alerts & Toasts) */}
           <Section title="7. Feedback (Alerts & Toasts)">
             <FeedbackShowcase />
+          </Section>
+
+          {/* 8. Authentication */}
+          <Section title="8. Authentication (Login & Sign Up)">
+            <AuthForm />
           </Section>
         </div>
       </div>

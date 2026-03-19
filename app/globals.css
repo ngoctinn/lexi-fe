@@ -51,14 +51,24 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   /* Shadow utilities for Tailwind v4 */
-  --shadow-inset-input:
-    inset 0 1px 1px oklch(0 0 0 / 0.1),
-    inset 0 2px 4px oklch(0 0 0 / 0.08),
-    inset 0 -1px 0 oklch(1 0 0 / 0.2);
-  --shadow-inset-input-dark:
-    inset 0 1px 2px oklch(0 0 0 / 0.4),
-    inset 0 2px 8px oklch(0 0 0 / 0.3),
-    inset 0 -1px 0 oklch(1 0 0 / 0.05);
+  --shadow-inset-sidebar:
+    inset 2px 0 4px oklch(0 0 0 / 0.05),
+    inset 4px 0 8px oklch(0 0 0 / 0.03),
+    inset -1px 0 0 oklch(1 0 0 / 0.2);
+  --shadow-inset-sidebar-dark:
+    inset 2px 0 4px oklch(0 0 0 / 0.4),
+    inset 4px 0 12px oklch(0 0 0 / 0.3),
+    inset -1px 0 0 oklch(1 0 0 / 0.05);
+
+  --shadow-inset-sidebar-right:
+    inset -2px 0 4px oklch(0 0 0 / 0.05),
+    inset -4px 0 8px oklch(0 0 0 / 0.03),
+    inset 1px 0 0 oklch(1 0 0 / 0.2);
+  --shadow-inset-sidebar-right-dark:
+    inset -2px 0 4px oklch(0 0 0 / 0.4),
+    inset -4px 0 12px oklch(0 0 0 / 0.3),
+    inset 1px 0 0 oklch(1 0 0 / 0.05);
+
   --shadow-inner-xs: var(--shadow-inset-input);
 }
 
@@ -109,6 +119,8 @@
   /* Light tint, rotated toward orange */
 
   --shadow-inset-input: inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08), inset 0 -1px 0 oklch(1 0 0 / 0.2);
+  --shadow-inset-sidebar: var(--shadow-inset-sidebar);
+  --shadow-inset-sidebar-right: var(--shadow-inset-sidebar-right);
 }
 
 .dark {
@@ -153,6 +165,8 @@
   --destructive-foreground: oklch(0.9 0.05 15);
 
   --shadow-inset-input: var(--shadow-inset-input-dark);
+  --shadow-inset-sidebar: var(--shadow-inset-sidebar-dark);
+  --shadow-inset-sidebar-right: var(--shadow-inset-sidebar-right-dark);
 }
 
 @layer base {
