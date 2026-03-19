@@ -62,7 +62,7 @@ export default function Home() {
             </div>
             <div className="relative">
               <div className="absolute -inset-4 bg-primary/20 rounded-[2rem] blur-2xl -z-10 animate-pulse" />
-              <div className="rounded-3xl border shadow-2xl overflow-hidden bg-white aspect-square relative group">
+              <div className="rounded-3xl ring-4 ring-white/50 shadow-2xl shadow-black/10 border-b-[8px] border-b-black/5 overflow-hidden bg-white aspect-square relative group">
                 <Image
                   src="/lexi_hero_banner_1773895126640.png"
                   alt="Lexi AI English Learning"
@@ -71,7 +71,7 @@ export default function Home() {
                 />
               </div>
               {/* Floating Widgets */}
-              <div className="absolute top-4 -right-8 bg-white p-4 rounded-2xl shadow-xl border animate-bounce duration-[3000ms]">
+              <div className="absolute top-4 -right-8 bg-white p-4 rounded-2xl ring-4 ring-white/80 shadow-2xl shadow-black/10 border-b-[6px] border-b-black/10 animate-bounce duration-[3000ms]">
                 <div className="flex items-center gap-3">
                   <div className="size-10 bg-green-100 rounded-full flex items-center justify-center">
                     <Star className="text-green-600 size-5 fill-green-600" />
@@ -82,7 +82,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-6 -left-8 bg-white p-4 rounded-2xl shadow-xl border animate-bounce duration-[2500ms]">
+              <div className="absolute -bottom-6 -left-8 bg-white p-4 rounded-2xl ring-4 ring-white/80 shadow-2xl shadow-black/10 border-b-[6px] border-b-black/10 animate-bounce duration-[2500ms]">
                 <div className="flex items-center gap-3">
                   <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center">
                     <Mic className="text-primary size-5" />
@@ -104,7 +104,7 @@ export default function Home() {
             <p className="text-lg text-slate-600">Mọi thứ bạn cần để làm chủ tiếng Anh</p>
           </div>
           <div className="container mx-auto px-4 grid md:grid-cols-3 gap-8">
-            <Card className="border-none shadow-sm hover:shadow-md transition-shadow">
+            <Card className="hover:-translate-y-2 hover:shadow-2xl shadow-black/5 transition-all duration-300">
               <CardHeader>
                 <div className="size-12 bg-primary rounded-xl flex items-center justify-center mb-4">
                   <BookOpen className="text-primary-foreground size-6" />
@@ -121,7 +121,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-sm hover:shadow-md transition-shadow">
+            <Card className="hover:-translate-y-2 hover:shadow-2xl shadow-black/5 transition-all duration-300">
               <CardHeader>
                 <div className="size-12 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
                   <Mic className="text-white size-6" />
@@ -140,7 +140,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-sm hover:shadow-md transition-shadow">
+            <Card className="hover:-translate-y-2 hover:shadow-2xl shadow-black/5 transition-all duration-300">
               <CardHeader>
                 <div className="size-12 bg-amber-500 rounded-xl flex items-center justify-center mb-4">
                   <Trophy className="text-white size-6" />
