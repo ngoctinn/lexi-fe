@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/features/navigation/components/app-sidebar";
-import { Logo } from "@/components/logo";
+import { AppSidebar } from "@/features/navigation";
+import { Logo } from "@/components/shared/logo";
 
 export default function AppLayout({
   children,

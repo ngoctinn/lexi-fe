@@ -6,7 +6,10 @@ import { FormShowcase } from "./form-showcase";
 import { InteractiveShowcase } from "./interactive-showcase";
 import { ModalShowcase } from "./modal-showcase";
 import { FeedbackShowcase } from "./feedback-showcase";
-import { AuthForm } from "@/features/auth/components/auth-form";
+import { OverlayShowcase } from "./overlay-showcase";
+import { DataDisplayShowcase } from "./data-display-showcase";
+import { AdvancedShowcase } from "./advanced-showcase";
+import { AuthForm } from "@/features/auth";
 
 export function Showcase() {
   return (
@@ -47,8 +50,9 @@ export function Showcase() {
           </Section>
 
           {/* 6. Overlays / Modals */}
-          <Section title="6. Overlays (Modals)">
+          <Section title="6. Overlays (Modals & Tooltips)">
             <ModalShowcase />
+            <OverlayShowcase />
           </Section>
 
           {/* 7. Feedback (Alerts & Toasts) */}
@@ -56,8 +60,18 @@ export function Showcase() {
             <FeedbackShowcase />
           </Section>
 
-          {/* 8. Authentication */}
-          <Section title="8. Authentication (Login & Sign Up)">
+          {/* 8. Data Display (Tables, Tabs, Carousel) */}
+          <Section title="8. Data Display">
+            <DataDisplayShowcase />
+          </Section>
+
+          {/* 9. Advanced Components (Calendar, Command) */}
+          <Section title="9. Advanced Components">
+            <AdvancedShowcase />
+          </Section>
+
+          {/* 10. Authentication */}
+          <Section title="10. Authentication">
             <AuthForm />
           </Section>
         </div>

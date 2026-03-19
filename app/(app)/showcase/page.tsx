@@ -1,4 +1,4 @@
-import { Showcase } from "@/features/showcase/components/showcase";
+import { Showcase } from "@/features/showcase";
 
 export const metadata = {
   title: "UI Components Showcase - Lexi",
