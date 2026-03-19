@@ -130,3 +130,28 @@
     @apply font-sans;
   }
 }
+
+@layer utilities {
+  /* Text shadow with zero offset + large blur (the "glow" technique from the design guide) */
+  .text-shadow-glow {
+    text-shadow: 0 0 40px rgba(0, 0, 0, 0.6), 0 0 80px rgba(0, 0, 0, 0.3);
+  }
+  .text-shadow-glow-sm {
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+  /* Subtle float animation for hero illustration */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+  .animate-float-delayed {
+    animation: float 6s ease-in-out 1.5s infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
