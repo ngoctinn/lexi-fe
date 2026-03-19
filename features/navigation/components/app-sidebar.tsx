@@ -13,6 +13,7 @@ import {
   GraduationCap
 } from "lucide-react"
 import Link from "next/link"
+import { Logo } from "@/components/logo"
 
 import {
   Sidebar,
@@ -73,12 +74,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
       <SidebarHeader className="p-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <GraduationCap className="size-5" />
-          </div>
-          <span className="group-data-[collapsible=icon]:hidden">LexiLearn</span>
-        </Link>
+        <Logo textClassName="group-data-[collapsible=icon]:hidden" />
       </SidebarHeader>
 
       <SidebarSeparator />

@@ -5,6 +5,7 @@ import { BadgeShowcase } from "./indicator-showcase";
 import { FormShowcase } from "./form-showcase";
 import { InteractiveShowcase } from "./interactive-showcase";
 import { ModalShowcase } from "./modal-showcase";
+import { FeedbackShowcase } from "./feedback-showcase";
 
 export function Showcase() {
   return (
@@ -47,6 +48,11 @@ export function Showcase() {
           {/* 6. Overlays / Modals */}
           <Section title="6. Overlays (Modals)">
             <ModalShowcase />
+          </Section>
+
+          {/* 7. Feedback (Alerts & Toasts) */}
+          <Section title="7. Feedback (Alerts & Toasts)">
+            <FeedbackShowcase />
           </Section>
         </div>
       </div>

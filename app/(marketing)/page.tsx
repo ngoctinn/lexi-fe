@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -121,38 +122,33 @@ const testimonials = [
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* ── Floating Pill Header ───────────────────────────────────────────── */}
-      <header className="fixed top-4 md:top-6 left-0 right-0 z-50 mx-auto px-4 md:px-6 w-full max-w-5xl">
-        <div className="bg-background/80 backdrop-blur-xl border shadow-lg rounded-full h-16 px-4 md:px-6 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 text-primary">
-            <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
-              <GraduationCap className="text-primary-foreground" style={{ width: 18, height: 18 }} />
-            </div>
-            <span className="text-xl font-bold tracking-tight">LexiLearn</span>
-          </Link>
+      {/* ── Floating Pill Header (Flat Depth Design) ───────────────────── */}
+      <header className="fixed top-4 md:top-6 left-0 right-0 z-50 mx-auto px-4 md:px-6 w-full max-w-4xl">
+        <div className="bg-background border-2 border-border shadow-[0_6px_0_0_rgba(0,0,0,0.05)] rounded-full h-16 px-3 flex items-center justify-between transition-all">
+          {/* Logo (Raised Element) */}
+          <Logo className="pl-2" />
 
           {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-bold text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">
               Tính năng
             </a>
             <a href="#how-it-works" className="hover:text-foreground transition-colors">
-              Cách hoạt động
+              Hệ thống
             </a>
             <a href="#testimonials" className="hover:text-foreground transition-colors">
-              Đánh giá
+              Cộng đồng
             </a>
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
+          <div className="flex items-center gap-2 pr-1">
+            <Button variant="ghost" className="rounded-full hidden sm:flex text-muted-foreground hover:text-foreground font-bold hover:bg-muted" asChild>
               <Link href="/login">Đăng nhập</Link>
             </Button>
-            <Button size="sm" asChild>
+            <Button className="rounded-full px-6 text-base" asChild>
               <Link href="/learn">
-                Dùng miễn phí <ArrowRight data-icon="inline-end" />
+                Bắt đầu <ArrowRight data-icon="inline-end" />
               </Link>
             </Button>
           </div>
@@ -503,12 +499,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Brand */}
-            <Link href="/" className="flex items-center gap-2 text-primary">
-              <div className="size-7 bg-primary rounded-md flex items-center justify-center">
-                <GraduationCap className="text-primary-foreground" style={{ width: 15, height: 15 }} />
-              </div>
-              <span className="font-bold text-lg tracking-tight">LexiLearn</span>
-            </Link>
+            <Logo size="sm" />
 
             {/* Footer links */}
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
