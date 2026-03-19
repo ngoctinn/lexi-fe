@@ -34,7 +34,7 @@ export default function Home() {
         <section className="relative overflow-hidden py-24 md:py-32">
           <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col items-start gap-8">
-              <Badge variant="outline" className="text-primary border-primary/20 bg-primary/10 hover:bg-primary/20 hover:text-primary px-3 py-1">
+              <Badge variant="secondary" className="px-3 py-1">
                 AI-Powered English Learning
               </Badge>
               <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight text-slate-900">
@@ -45,16 +45,16 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 w-full">
                 <Button size="lg" className="h-14 px-8 text-lg rounded-full">
-                  Bắt đầu ngay <ArrowRight className="ml-2 size-5" />
+                  Bắt đầu ngay <ArrowRight data-icon="inline-end" />
                 </Button>
                 <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full border-2">
                   Xem lộ trình
                 </Button>
               </div>
               <div className="flex items-center gap-4 text-sm text-slate-500 font-medium">
-                <div className="flex -space-x-2">
+                <div className="flex -gap-2">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="size-8 rounded-full border-2 border-white bg-slate-200" />
+                    <div key={i} className="size-8 rounded-full border-2 border-white bg-slate-200 -ml-2 first:ml-0" />
                   ))}
                 </div>
                 <span>Tham gia cùng 1,000+ học viên tích cực</span>
@@ -74,7 +74,7 @@ export default function Home() {
               <div className="absolute top-4 -right-8 bg-white p-4 rounded-2xl ring-4 ring-white/80 shadow-2xl shadow-black/10 border-b-[6px] border-b-black/10 animate-bounce duration-[3000ms]">
                 <div className="flex items-center gap-3">
                   <div className="size-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <Star className="text-green-600 size-5 fill-green-600" />
+                    <Star className="text-green-600 fill-green-600" />
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Mục tiêu ngày</p>
@@ -85,7 +85,7 @@ export default function Home() {
               <div className="absolute -bottom-6 -left-8 bg-white p-4 rounded-2xl ring-4 ring-white/80 shadow-2xl shadow-black/10 border-b-[6px] border-b-black/10 animate-bounce duration-[2500ms]">
                 <div className="flex items-center gap-3">
                   <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Mic className="text-primary size-5" />
+                    <Mic className="text-primary" />
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Đang luyện nói</p>
@@ -107,7 +107,7 @@ export default function Home() {
             <Card className="hover:-translate-y-2 hover:shadow-2xl shadow-black/5 transition-all duration-300">
               <CardHeader>
                 <div className="size-12 bg-primary rounded-xl flex items-center justify-center mb-4">
-                  <BookOpen className="text-primary-foreground size-6" />
+                  <BookOpen className="text-primary-foreground" />
                 </div>
                 <CardTitle className="text-xl">Flashcards Thông Minh</CardTitle>
                 <CardDescription className="text-base text-slate-600">
@@ -124,7 +124,7 @@ export default function Home() {
             <Card className="hover:-translate-y-2 hover:shadow-2xl shadow-black/5 transition-all duration-300">
               <CardHeader>
                 <div className="size-12 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
-                  <Mic className="text-white size-6" />
+                  <Mic className="text-white" />
                 </div>
                 <CardTitle className="text-xl">Luyện nói cùng AI</CardTitle>
                 <CardDescription className="text-base text-slate-600">
@@ -143,7 +143,7 @@ export default function Home() {
             <Card className="hover:-translate-y-2 hover:shadow-2xl shadow-black/5 transition-all duration-300">
               <CardHeader>
                 <div className="size-12 bg-amber-500 rounded-xl flex items-center justify-center mb-4">
-                  <Trophy className="text-white size-6" />
+                  <Trophy className="text-white" />
                 </div>
                 <CardTitle className="text-xl">Gamification</CardTitle>
                 <CardDescription className="text-base text-slate-600">
@@ -152,7 +152,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 mt-4 text-amber-600 font-bold">
-                  <Star className="size-5 fill-amber-500" />
+                  <Star className="fill-amber-500" />
                   <span>Cấp độ: Vàng III</span>
                 </div>
               </CardContent>

@@ -24,7 +24,7 @@ export function ButtonShowcase() {
           <Button size="sm">Small</Button>
           <Button size="lg">Large</Button>
           <Button size="icon" aria-label="Settings">
-            <Settings />
+            <Settings data-icon="inline-start" />
           </Button>
           <Button>
             <Mic data-icon="inline-start" /> Speak
