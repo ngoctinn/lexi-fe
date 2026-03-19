@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/features/navigation/components/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,9 +29,25 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning // Good practice when using theme providers etc
     >
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider delayDuration={0}>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background px-4 md:hidden">
+                <div className="flex items-center gap-2">
+                  <SidebarTrigger className="-ml-2" />
+                  <span className="font-semibold text-lg">LexiLearn</span>
+                </div>
+              </header>
+              <div className="flex flex-1 flex-col p-4 md:p-8">
+                {children}
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
+        </TooltipProvider>
       </body>
     </html>
   );
