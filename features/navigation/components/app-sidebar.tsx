@@ -131,7 +131,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   asChild 
                   tooltip="Đăng xuất"
                   size="lg"
-                  className="text-destructive hover:bg-destructive/10"
+                  className="text-destructive hover:bg-destructive/15 hover:text-destructive! active:bg-destructive/20 active:text-destructive!"
                   onClick={(e) => {
                     e.preventDefault();
                     // Handle log out

@@ -39,6 +39,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -46,6 +50,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --shadow-inner-xs: inset 0 1px 2px oklch(0 0 0 / 0.05);
 }
 
 :root {
@@ -82,6 +87,17 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Semantic status colors with accessibility-first L values (Light Mode) */
+  --success: oklch(0.48 0.16 160);
+  /* Darker green, rotated toward cyan */
+  --success-foreground: oklch(0.96 0.04 145);
+  --warning: oklch(0.48 0.18 85);
+  /* Darker orange/amber, rotated toward yellow */
+  --warning-foreground: oklch(0.96 0.06 75);
+  --destructive: oklch(0.45 0.22 15);
+  /* Darker red, rotated toward magenta */
+  --destructive-foreground: oklch(0.96 0.06 25);
 }
 
 .dark {
@@ -117,41 +133,63 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Semantic status colors for dark mode - more vibrant text */
+  --success: oklch(0.75 0.16 160);
+  --success-foreground: oklch(0.9 0.05 160);
+  --warning: oklch(0.82 0.18 85);
+  --warning-foreground: oklch(0.95 0.05 85);
+  --destructive: oklch(0.65 0.22 15);
+  --destructive-foreground: oklch(0.9 0.05 15);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
 }
 
 @layer utilities {
+
   /* Text shadow with zero offset + large blur (the "glow" technique from the design guide) */
   .text-shadow-glow {
     text-shadow: 0 0 40px rgba(0, 0, 0, 0.6), 0 0 80px rgba(0, 0, 0, 0.3);
   }
+
   .text-shadow-glow-sm {
     text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
+
   /* Subtle float animation for hero illustration */
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
+
   .animate-float-slow {
     animation: float 8s ease-in-out infinite;
   }
+
   .animate-float-delayed {
     animation: float 6s ease-in-out 1.5s infinite;
   }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }

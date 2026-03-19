@@ -121,15 +121,15 @@ const testimonials = [
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* ── Sticky header ───────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+      {/* ── Floating Pill Header ───────────────────────────────────────────── */}
+      <header className="fixed top-4 md:top-6 left-0 right-0 z-50 mx-auto px-4 md:px-6 w-full max-w-5xl">
+        <div className="bg-background/80 backdrop-blur-xl border shadow-lg rounded-full h-16 px-4 md:px-6 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 text-primary">
             <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
               <GraduationCap className="text-primary-foreground" style={{ width: 18, height: 18 }} />
             </div>
-            <span className="text-lg font-bold tracking-tight">LexiLearn</span>
+            <span className="text-xl font-bold tracking-tight">LexiLearn</span>
           </Link>
 
           {/* Nav links */}
@@ -163,9 +163,9 @@ export default function LandingPage() {
         {/* ── HERO ────────────────────────────────────────────────────────
             Kỹ thuật: Image bên phải (không phóng to full-bleed để tránh
             mất nét), glow blob phía sau, CTA hierarchy: solid primary > outline.
-            Spacing: py-24 md:py-36 (large step system: 96px → 144px).
+            Spacing: bù trừ header với pt-32 pb-24 md:pt-44 md:pb-36.
         ────────────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden py-24 md:py-36" id="hero">
+        <section className="relative overflow-hidden pt-32 pb-24 md:pt-44 md:pb-36" id="hero">
           {/* Subtle background glow — brand color tint */}
           <div
             aria-hidden
@@ -503,11 +503,11 @@ export default function LandingPage() {
         <div className="container mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Brand */}
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 text-primary">
               <div className="size-7 bg-primary rounded-md flex items-center justify-center">
                 <GraduationCap className="text-primary-foreground" style={{ width: 15, height: 15 }} />
               </div>
-              <span className="font-bold">LexiLearn</span>
+              <span className="font-bold text-lg tracking-tight">LexiLearn</span>
             </Link>
 
             {/* Footer links */}
