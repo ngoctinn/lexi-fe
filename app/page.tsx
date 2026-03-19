@@ -64,7 +64,7 @@ export default function Home() {
               <div className="absolute -inset-4 bg-primary/20 rounded-[2rem] blur-2xl -z-10 animate-pulse" />
               <div className="rounded-3xl ring-4 ring-white/50 shadow-2xl shadow-black/10 border-b-[8px] border-b-black/5 overflow-hidden bg-white aspect-square relative group">
                 <Image
-                  src="/lexi_hero_banner_1773895126640.png"
+                  src="/lexi_hero_banner.png"
                   alt="Lexi AI English Learning"
                   fill
                   className="object-cover"
