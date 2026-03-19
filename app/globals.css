@@ -50,7 +50,16 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --shadow-inner-xs: inset 0 1px 2px oklch(0 0 0 / 0.05);
+  /* Shadow utilities for Tailwind v4 */
+  --shadow-inset-input:
+    inset 0 1px 1px oklch(0 0 0 / 0.1),
+    inset 0 2px 4px oklch(0 0 0 / 0.08),
+    inset 0 -1px 0 oklch(1 0 0 / 0.2);
+  --shadow-inset-input-dark:
+    inset 0 1px 2px oklch(0 0 0 / 0.4),
+    inset 0 2px 8px oklch(0 0 0 / 0.3),
+    inset 0 -1px 0 oklch(1 0 0 / 0.05);
+  --shadow-inner-xs: var(--shadow-inset-input);
 }
 
 :root {
@@ -98,6 +107,8 @@
   --warning-foreground: oklch(0.96 0.06 75);
   --destructive-foreground: oklch(0.96 0.06 25);
   /* Light tint, rotated toward orange */
+
+  --shadow-inset-input: inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08), inset 0 -1px 0 oklch(1 0 0 / 0.2);
 }
 
 .dark {
@@ -116,7 +127,6 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.62 0.23 28.5);
@@ -141,6 +151,8 @@
   --warning-foreground: oklch(0.95 0.05 85);
   --destructive: oklch(0.65 0.22 15);
   --destructive-foreground: oklch(0.9 0.05 15);
+
+  --shadow-inset-input: var(--shadow-inset-input-dark);
 }
 
 @layer base {
@@ -168,28 +180,28 @@
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--destructive);
+    border-left: 4px solid var(--destructive) !important;
   }
 
   [data-sonner-toast][data-styled='true'][data-type='success'] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--success);
+    border-left: 4px solid var(--success) !important;
   }
 
   [data-sonner-toast][data-styled='true'][data-type='warning'] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--warning);
+    border-left: 4px solid var(--warning) !important;
   }
 
   [data-sonner-toast][data-styled='true'][data-type='info'] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--primary);
+    border-left: 4px solid var(--primary) !important;
   }
 }
 

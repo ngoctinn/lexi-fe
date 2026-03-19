@@ -19,7 +19,7 @@ export function Showcase() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          
+
           {/* 1. Theme & Colors */}
           <Section title="1. Theme & Colors">
             <TypographyShowcase />
@@ -37,7 +37,7 @@ export function Showcase() {
 
           {/* 4. Form Elements */}
           <Section title="4. Forms & Inputs">
-             <FormShowcase />
+            <FormShowcase />
           </Section>
 
           {/* 5. Interactive Layouts */}

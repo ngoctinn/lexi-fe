@@ -4,15 +4,15 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
-  "group/alert relative grid w-full gap-1.5 rounded-lg border px-4 py-3.5 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-3 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-5 shadow-sm",
+  "group/alert relative flex flex-col w-full gap-1.5 rounded-lg border px-4 py-3.5 text-left text-sm shadow-sm",
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground border-l-4 border-l-foreground",
-        info: "bg-primary/10 text-primary border-l-4 border-l-primary *:data-[slot=alert-description]:text-primary/80",
-        success: "bg-success/10 text-success border-l-4 border-l-success *:data-[slot=alert-description]:text-success/80",
-        warning: "bg-warning/10 text-warning border-l-4 border-l-warning *:data-[slot=alert-description]:text-warning/80",
-        destructive: "bg-destructive/10 text-destructive border-l-4 border-l-destructive *:data-[slot=alert-description]:text-destructive/80",
+        default: "bg-card text-card-foreground",
+        info: "bg-primary/5 text-primary border-primary/20 *:data-[slot=alert-description]:text-primary/80",
+        success: "bg-success/5 text-success border-success/20 *:data-[slot=alert-description]:text-success/80",
+        warning: "bg-warning/5 text-warning border-warning/20 *:data-[slot=alert-description]:text-warning/80",
+        destructive: "bg-destructive/5 text-destructive border-destructive/20 *:data-[slot=alert-description]:text-destructive/80",
       },
     },
     defaultVariants: {
@@ -41,7 +41,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="alert-title"
       className={cn(
-        "font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground",
+        "font-bold [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground",
         className
       )}
       {...props}

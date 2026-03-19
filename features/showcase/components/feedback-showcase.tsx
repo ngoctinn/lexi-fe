@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon } from "lucide-react";
 
 export function FeedbackShowcase() {
   return (
@@ -18,35 +17,30 @@ export function FeedbackShowcase() {
           <p className="text-sm font-semibold opacity-70 uppercase tracking-wider">Inline Alerts</p>
           <div className="flex flex-col gap-4 mt-2">
             <Alert variant="default">
-              <InfoIcon className="size-4" />
               <AlertTitle>Default Alert</AlertTitle>
               <AlertDescription>
                 This is a standard default message with solid shadow depth.
               </AlertDescription>
             </Alert>
             <Alert variant="info">
-              <InfoIcon className="size-4" />
               <AlertTitle>Info</AlertTitle>
               <AlertDescription>
                 System update is available. Please restart your application.
               </AlertDescription>
             </Alert>
             <Alert variant="success">
-              <CircleCheckIcon className="size-4" />
               <AlertTitle>Success</AlertTitle>
               <AlertDescription>
                 Your changes have been saved successfully to the database.
               </AlertDescription>
             </Alert>
             <Alert variant="warning">
-              <TriangleAlertIcon className="size-4" />
               <AlertTitle>Warning</AlertTitle>
               <AlertDescription>
                 Your subscription is expiring in 3 days. Please renew soon.
               </AlertDescription>
             </Alert>
             <Alert variant="destructive">
-              <OctagonXIcon className="size-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
                 We could not process your payment at this time.

@@ -47,7 +47,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:font-bold group-[.toast]:rounded-md group-[.toast]:px-4 group-[.toast]:py-2",
           title: "font-bold",
           default:
-            "!border-l-4 !border-l-foreground",
+            "border-l-4 border-l-foreground",
           success:
             "before:absolute before:inset-0 before:-z-10 before:!bg-success/10 !text-success !border-l-4 !border-l-success [&_[data-description]]:!text-success/80",
           error:

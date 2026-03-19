@@ -65,7 +65,7 @@ export function BadgeShowcase() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Avatar className="size-8 cursor-pointer hover:ring-2 hover:ring-ring transition-all">
-                    <AvatarFallback className="bg-amber-500 text-white font-bold">V</AvatarFallback>
+                    <AvatarFallback className="bg-primary/20 text-primary font-bold">V</AvatarFallback>
                   </Avatar>
                 </TooltipTrigger>
                 <TooltipContent>
