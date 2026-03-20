@@ -13,7 +13,7 @@ export function LandingTestimonials() {
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Học viên nói gì về Lexi?</h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {TESTIMONIALS.map(({ name, role, content, rating }) => (
             <Card key={name} className="border-border/60">
               <CardHeader className="pb-3">

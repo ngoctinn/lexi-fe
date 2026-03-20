@@ -10,12 +10,8 @@ export function LandingHero() {
       <div aria-hidden className="pointer-events-none absolute -top-32 -right-32 size-[600px] rounded-full bg-primary/8 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-32 size-[400px] rounded-full bg-primary/5 blur-3xl" />
 
-      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+      <div className="container mx-auto px-6 max-w-6xl grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div className="flex flex-col items-start gap-8">
-          <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-sm font-medium">
-            <Zap className="text-primary" style={{ width: 14, height: 14 }} />
-            AI-Powered English Learning
-          </Badge>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight">
             Nói tiếng Anh tự tin{" "}
@@ -57,7 +53,7 @@ export function LandingHero() {
         <div className="relative flex items-center justify-center">
           <div aria-hidden className="absolute size-[420px] rounded-full bg-primary/15 blur-3xl" />
           <div className="relative z-10 animate-float">
-            <Image src="/lexi_hero_banner.png" alt="Lexi" width={480} height={480} priority className="w-full max-w-md drop-shadow-2xl" />
+            <Image src="/hero.png" alt="Lexi" width={480} height={480} priority className="w-full max-w-md drop-shadow-2xl rounded-2xl" />
           </div>
 
           <div className="absolute top-6 -left-4 z-20 bg-card border shadow-xl rounded-2xl px-4 py-3 animate-float-delayed">

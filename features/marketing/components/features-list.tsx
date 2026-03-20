@@ -16,7 +16,7 @@ export function LandingFeatures() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {FEATURES.map(({ icon: Icon, bg, color, title, description }) => (
             <Card key={title} className="group hover:-translate-y-1 hover:shadow-lg transition-all duration-300 border-border/60">
               <CardHeader className="pb-3">

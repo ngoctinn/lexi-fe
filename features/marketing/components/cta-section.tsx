@@ -8,8 +8,8 @@ export function LandingCTA() {
       <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-primary-foreground/5 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 size-96 rounded-full bg-primary-foreground/5 blur-3xl" />
 
-      <div className="container mx-auto px-6 relative z-10 flex flex-col items-center gap-8 text-center">
-        <h2 className="text-4xl md:text-5xl font-bold text-primary-foreground tracking-tight max-w-2xl">
+      <div className="container mx-auto px-6 max-w-4xl relative z-10 flex flex-col items-center gap-8 text-center">
+        <h2 className="text-4xl md:text-5xl font-bold text-primary-foreground tracking-tight max-w-xl">
           Bắt đầu hành trình tiếng Anh của bạn ngay hôm nay
         </h2>
         <p className="text-lg text-primary-foreground/80 max-w-md">Miễn phí. Không cần thẻ tín dụng. Sẵn sàng trong 5 phút.</p>
