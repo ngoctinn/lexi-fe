@@ -45,7 +45,7 @@ export function AdvancedShowcase() {
                     !date && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon data-icon="inline-start" />
                   {date ? format(date, "PPP") : <span>Pick a date to reach your goal</span>}
                 </Button>
               </PopoverTrigger>
@@ -74,7 +74,7 @@ export function AdvancedShowcase() {
                   {value
                     ? languages.find((language) => language.value === value)?.label
                     : "Select language..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  <ChevronsUpDown data-icon="inline-end" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[300px] p-0" align="start">
@@ -94,7 +94,7 @@ export function AdvancedShowcase() {
                         >
                           <Check
                             className={cn(
-                              "mr-2 h-4 w-4",
+                              "mr-2",
                               value === language.value ? "opacity-100" : "opacity-0"
                             )}
                           />
