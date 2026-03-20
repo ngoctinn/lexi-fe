@@ -1,5 +1,8 @@
+"use client"
+
 import * as React from "react"
-import { Mail } from "lucide-react"
+import Link from "next/link"
+import { Eye, EyeOff } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -7,163 +10,159 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Logo } from "@/components/shared/logo"
 
-export function AuthForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+interface AuthFormProps extends React.ComponentProps<"div"> {
+  mode?: "login" | "signup"
+}
+
+export function AuthForm({ className, mode = "login", ...props }: AuthFormProps) {
+  const [showPassword, setShowPassword] = React.useState(false)
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome to Lexi</CardTitle>
-          <CardDescription>
-            Join our community and start your learning journey.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form>
-                <div className="grid gap-6">
-                  <div className="flex flex-col gap-4">
-                    <Button variant="outline" className="w-full">
-                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4 mr-2">
-                        <path
-                          d="M12.48 10.92V14.5H18.42C18.18 15.65 17.13 18.06 14.48 19.89L14.45 19.92L17.21 22.06L17.4 22.2C19.16 21.05 23.01 18.12 23.01 12.18C23.01 11.39 22.92 10.66 22.81 9.94H12.48V10.92Z"
-                          fill="#4285F4"
-                        />
-                        <path
-                          d="M12.48 10.92V14.5H18.42C18.18 15.65 17.13 18.06 14.48 19.89L14.45 19.92L17.21 22.06L17.4 22.2C19.16 21.05 23.01 18.12 23.01 12.18C23.01 11.39 22.92 10.66 22.81 9.94H12.48V10.92Z"
-                          fill="#4285F4"
-                        />
-                        <path
-                          d="M11.85 24C14.75 24 17.16 23.01 18.91 21.36L15.35 18.25C14.36 18.99 12.98 19.43 11.48 19.43C8.5 19.43 5.92 17.43 5.02 14.7L4.93 14.7L1.93 17.06L1.89 17.15C3.76 21.23 7.8 24 12.48 24H11.85V24Z"
-                          fill="#34A853"
-                        />
-                        <path
-                          d="M5.02 14.7C4.77 13.9 4.63 13.04 4.63 12.18C4.63 11.32 4.77 10.46 5.02 9.66V9.66L2.1 7.39L2.01 7.47C1.16 9.17 0.67 11.09 0.67 13.12C0.67 15.15 1.16 17.07 2.01 18.77L5.02 14.7V14.7Z"
-                          fill="#FBBC05"
-                        />
-                        <path
-                          d="M11.85 4.75C13.88 4.75 15.53 5.62 16.32 6.38L19.78 3.12C17.65 1.16 14.75 0 11.85 0C7.17 0 3.13 2.77 1.25 6.85L5.02 9.66C5.92 6.93 8.5 4.93 11.48 4.93H11.85V4.75Z"
-                          fill="#EA4335"
-                        />
-                      </svg>
-                      Login with Google
-                    </Button>
-                  </div>
-                  <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                    <span className="relative z-10 bg-card px-2 text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
-                  <FieldGroup>
-                    <Field>
-                      <FieldLabel htmlFor="email-login">Email</FieldLabel>
-                      <Input
-                        id="email-login"
-                        type="email"
-                        placeholder="m@example.com"
-                        required
-                      />
-                    </Field>
-                    <Field>
-                      <div className="flex items-center">
-                        <FieldLabel htmlFor="password-login">Password</FieldLabel>
-                        <a
-                          href="#"
-                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                        >
-                          Forgot your password?
-                        </a>
-                      </div>
-                      <Input id="password-login" type="password" required />
-                    </Field>
-                    <Button type="submit" className="w-full">
-                      Login
-                    </Button>
-                  </FieldGroup>
-                </div>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form>
-                <div className="grid gap-6">
-                  <div className="flex flex-col gap-4">
-                    <Button variant="outline" className="w-full">
-                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4 mr-2">
-                        <path
-                          d="M12.48 10.92V14.5H18.42C18.18 15.65 17.13 18.06 14.48 19.89L14.45 19.92L17.21 22.06L17.4 22.2C19.16 21.05 23.01 18.12 23.01 12.18C23.01 11.39 22.92 10.66 22.81 9.94H12.48V10.92Z"
-                          fill="#4285F4"
-                        />
-                        <path
-                          d="M11.85 24C14.75 24 17.16 23.01 18.91 21.36L15.35 18.25C14.36 18.99 12.98 19.43 11.48 19.43C8.5 19.43 5.92 17.43 5.02 14.7L4.93 14.7L1.93 17.06L1.89 17.15C3.76 21.23 7.8 24 12.48 24H11.85V24Z"
-                          fill="#34A853"
-                        />
-                        <path
-                          d="M5.02 14.7C4.77 13.9 4.63 13.04 4.63 12.18C4.63 11.32 4.77 10.46 5.02 9.66V9.66L2.1 7.39L2.01 7.47C1.16 9.17 0.67 11.09 0.67 13.12C0.67 15.15 1.16 17.07 2.01 18.77L5.02 14.7V14.7Z"
-                          fill="#FBBC05"
-                        />
-                        <path
-                          d="M11.85 4.75C13.88 4.75 15.53 5.62 16.32 6.38L19.78 3.12C17.65 1.16 14.75 0 11.85 0C7.17 0 3.13 2.77 1.25 6.85L5.02 9.66C5.92 6.93 8.5 4.93 11.48 4.93H11.85V4.75Z"
-                          fill="#EA4335"
-                        />
-                      </svg>
-                      Sign up with Google
-                    </Button>
-                  </div>
-                  <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                    <span className="relative z-10 bg-card px-2 text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
-                  <FieldGroup>
-                    <Field>
-                      <FieldLabel htmlFor="email-signup">Email</FieldLabel>
-                      <Input
-                        id="email-signup"
-                        type="email"
-                        placeholder="m@example.com"
-                        required
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor="password-signup">Password</FieldLabel>
-                      <Input id="password-signup" type="password" required />
-                    </Field>
-                    <Button type="submit" className="w-full">
-                      Create Account
-                    </Button>
-                  </FieldGroup>
-                </div>
-              </form>
-            </TabsContent>
-          </Tabs>
-          <div className="mt-4 text-center text-xs text-muted-foreground">
-            By clicking continue, you agree to our{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
-              Privacy Policy
-            </a>.
+      <Card className="overflow-visible">
+        <CardHeader className="text-center pb-2 pt-8">
+          <div className="flex items-center justify-center gap-4">
+            <Logo size="default" />
+            <div className="h-6 w-px bg-border shrink-0" />
+            <CardTitle className="text-xl font-bold tracking-tight">
+              {mode === "login" ? "Đăng nhập" : "Đăng ký"}
+            </CardTitle>
           </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="grid gap-8">
+              {/* Google Auth */}
+              <div className="flex flex-col gap-4">
+                <Button variant="outline" className="w-full h-11 border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover">
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4 mr-2" data-icon="inline-start">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                  {mode === "login" ? "Đăng nhập với Google" : "Đăng ký với Google"}
+                </Button>
+              </div>
+
+              <div className="relative text-center text-xs uppercase tracking-widest text-muted-foreground after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                <span className="relative z-10 bg-card px-3">Hoặc</span>
+              </div>
+
+              <FieldGroup className="gap-6">
+                <Field>
+                  <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    required
+                  />
+                </Field>
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel htmlFor="password" className="text-foreground/80">Mật khẩu</FieldLabel>
+                    {mode === "login" && (
+                      <Link
+                        href="/forgot-password"
+                        className="text-xs font-medium text-primary hover:underline underline-offset-4"
+                      >
+                        Quên mật khẩu?
+                      </Link>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Input 
+                      id="password" 
+                      type={showPassword ? "text" : "password"} 
+                      autoComplete={mode === "login" ? "current-password" : "new-password"}
+                      required 
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                </Field>
+
+                {mode === "login" ? (
+                  <Field orientation="horizontal" className="items-center gap-2">
+                    <Checkbox id="remember" />
+                    <FieldLabel htmlFor="remember" className="text-xs font-normal text-muted-foreground cursor-pointer">
+                      Ghi nhớ đăng nhập
+                    </FieldLabel>
+                  </Field>
+                ) : (
+                  <Field orientation="horizontal" className="items-start gap-2">
+                    <Checkbox id="terms" required />
+                    <div className="grid gap-1 leading-none">
+                      <FieldLabel htmlFor="terms" className="text-xs font-normal text-muted-foreground cursor-pointer">
+                        Tôi đồng ý với{" "}
+                        <Link href="/terms" className="underline hover:text-primary">Điều khoản</Link>
+                        {" "}và{" "}
+                        <Link href="/privacy" className="underline hover:text-primary">Chính sách bảo mật</Link>.
+                      </FieldLabel>
+                    </div>
+                  </Field>
+                )}
+
+                <Button type="submit" className="w-full h-11 text-base">
+                  {mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}
+                </Button>
+              </FieldGroup>
+            </div>
+          </form>
         </CardContent>
+        <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 dark:bg-muted/10 py-6 text-center">
+          <div className="text-sm text-balance text-muted-foreground">
+            {mode === "login" ? (
+              <>
+                Chưa có tài khoản?{" "}
+                <Link href="/signup" className="font-bold text-foreground hover:text-primary transition-colors">
+                  Đăng ký ngay
+                </Link>
+              </>
+            ) : (
+              <>
+                Đã có tài khoản?{" "}
+                <Link href="/login" className="font-bold text-foreground hover:text-primary transition-colors">
+                  Đăng nhập
+                </Link>
+              </>
+            )}
+          </div>
+        </CardFooter>
       </Card>
+      
+      <div className="fixed inset-0 -z-10 h-full w-full bg-background">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      </div>
     </div>
   )
 }

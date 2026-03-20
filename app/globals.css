@@ -189,7 +189,12 @@
   }
 
   /* Professional Typography Rules (Per Audit Guidelines) */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply tracking-tight leading-[1.15] font-bold text-foreground antialiased;
   }
 
@@ -198,7 +203,8 @@
   }
 
   .uppercase {
-    @apply tracking-[0.08em]; /* Technical widening for all-caps */
+    @apply tracking-[0.08em];
+    /* Technical widening for all-caps */
   }
 
   .items-baseline {

@@ -13,49 +13,41 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       icons={{
         success: (
-          <CircleCheckIcon className="size-4" />
+          <CircleCheckIcon className="size-5 text-success fill-success/10" />
         ),
         info: (
-          <InfoIcon className="size-4" />
+          <InfoIcon className="size-5 text-primary fill-primary/10" />
         ),
         warning: (
-          <TriangleAlertIcon className="size-4" />
+          <TriangleAlertIcon className="size-5 text-warning fill-warning/10" />
         ),
         error: (
-          <OctagonXIcon className="size-4" />
+          <OctagonXIcon className="size-5 text-destructive fill-destructive/10" />
         ),
         loading: (
-          <Loader2Icon className="size-4 animate-spin" />
+          <Loader2Icon className="size-5 animate-spin" />
         ),
       }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:relative group-[.toaster]:isolate group-[.toaster]:!bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-2xl sm:rounded-xl overflow-hidden group-[.toaster]:p-4 group-[.toaster]:gap-3 group-[.toaster]:border",
-          description: "group-[.toast]:text-muted-foreground",
+            "group toast group-[.toaster]:relative group-[.toaster]:isolate group-[.toaster]:!bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-2xl sm:rounded-xl overflow-hidden group-[.toaster]:p-4 group-[.toaster]:gap-3 group-[.toaster]:border group-[.toaster]:items-start",
+          description: "group-[.toast]:text-muted-foreground leading-relaxed",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground group-[.toast]:font-bold group-[.toast]:rounded-md group-[.toast]:px-4 group-[.toast]:py-2",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:font-bold group-[.toast]:rounded-md group-[.toast]:px-4 group-[.toast]:py-2",
-          title: "font-bold",
+          title: "font-bold text-base leading-tight",
           default:
             "border-l-4 border-l-foreground",
           success:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-success/10 !text-success !border-l-4 !border-l-success [&_[data-description]]:!text-success/80",
+            "before:absolute before:inset-0 before:-z-10 before:!bg-success/5 !border-l-4 !border-l-success",
           error:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-destructive/10 !text-destructive !border-l-4 !border-l-destructive [&_[data-description]]:!text-destructive/80",
+            "before:absolute before:inset-0 before:-z-10 before:!bg-destructive/5 !border-l-4 !border-l-destructive",
           warning:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-warning/10 !text-warning !border-l-4 !border-l-warning [&_[data-description]]:!text-warning/80",
+            "before:absolute before:inset-0 before:-z-10 before:!bg-warning/5 !border-l-4 !border-l-warning",
           info:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-primary/10 !text-primary !border-l-4 !border-l-primary [&_[data-description]]:!text-primary/80",
+            "before:absolute before:inset-0 before:-z-10 before:!bg-primary/5 !border-l-4 !border-l-primary",
         },
       }}
       {...props}
