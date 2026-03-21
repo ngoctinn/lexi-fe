@@ -309,6 +309,17 @@
 }
 
 @layer utilities {
+  /* Flashcard & Carousel Depth Utilities */
+  .shadow-flashcard {
+    box-shadow: 
+      0 10px 15px -3px oklch(0 0 0 / 0.1), 
+      0 4px 6px -4px oklch(0 0 0 / 0.1),
+      0 1px 0 0 oklch(1 0 0 / 1.1) inset;
+  }
+
+  .shadow-flashcard-solid {
+    box-shadow: 0 4px 0 0 oklch(var(--sidebar-border));
+  }
 
   /* Text shadow with zero offset + large blur (the "glow" technique from the design guide) */
   .text-shadow-glow {

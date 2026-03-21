@@ -24,39 +24,21 @@ export function FormShowcase() {
 
           <Field>
             <FieldLabel>Learning Goal</FieldLabel>
-            <RadioGroup defaultValue="daily" className="flex flex-col gap-3">
-              <Field orientation="horizontal" className="relative">
-                <RadioGroupItem value="casual" id="casual" className="peer sr-only" />
-                <FieldLabel
-                  htmlFor="casual"
-                  className="flex flex-1 cursor-pointer flex-col p-4 rounded-xl border border-input transition-all peer-data-checked:border-primary peer-data-checked:bg-muted/40 hover:bg-muted/50"
-                >
-                  <span className="font-bold">Casual</span>
-                  <span className="text-xs text-muted-foreground">5 minutes a day</span>
-                </FieldLabel>
-              </Field>
+            <RadioGroup defaultValue="daily" className="flex flex-row gap-3">
+              <RadioGroupItem variant="card" value="casual" id="casual" className="flex-1">
+                <span className="font-bold">Casual</span>
+                <span className="text-xs text-muted-foreground">5 mins</span>
+              </RadioGroupItem>
 
-              <Field orientation="horizontal" className="relative">
-                <RadioGroupItem value="daily" id="daily" className="peer sr-only" />
-                <FieldLabel
-                  htmlFor="daily"
-                  className="flex flex-1 cursor-pointer flex-col p-4 rounded-xl border border-input transition-all peer-data-checked:border-primary peer-data-checked:bg-muted/40 hover:bg-muted/50"
-                >
-                  <span className="font-bold">Daily</span>
-                  <span className="text-xs text-muted-foreground">15 minutes a day</span>
-                </FieldLabel>
-              </Field>
+              <RadioGroupItem variant="card" value="daily" id="daily" className="flex-1">
+                <span className="font-bold">Daily</span>
+                <span className="text-xs text-muted-foreground">15 mins</span>
+              </RadioGroupItem>
 
-              <Field orientation="horizontal" className="relative">
-                <RadioGroupItem value="pro" id="pro" className="peer sr-only" />
-                <FieldLabel
-                  htmlFor="pro"
-                  className="flex flex-1 cursor-pointer flex-col p-4 rounded-xl border border-input transition-all peer-data-checked:border-primary peer-data-checked:bg-muted/40 hover:bg-muted/50"
-                >
-                  <span className="font-bold">Pro</span>
-                  <span className="text-xs text-muted-foreground">30+ minutes a day</span>
-                </FieldLabel>
-              </Field>
+              <RadioGroupItem variant="card" value="pro" id="pro" className="flex-1">
+                <span className="font-bold">Pro</span>
+                <span className="text-xs text-muted-foreground">30+ mins</span>
+              </RadioGroupItem>
             </RadioGroup>
             <FieldDescription>Choose how much you want to practice.</FieldDescription>
           </Field>

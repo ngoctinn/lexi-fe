@@ -2,8 +2,26 @@
 
 import * as React from "react"
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui"
+import { cva, type VariantProps } from "class-variance-authority"
+import { CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+
+const radioGroupItemVariants = cva(
+  "peer relative flex shrink-0 outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-3 focus-visible:ring-primary/20",
+  {
+    variants: {
+      variant: {
+        default:
+          "aspect-square size-4 rounded-full border border-control-border bg-control-bg shadow-inner-xs data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:shadow-none",
+        card: "flex-col items-start gap-1 p-4 rounded-xl border border-control-border bg-control-bg text-left hover:bg-control-hover data-[state=checked]:border-primary data-[state=checked]:bg-primary/5 data-[state=checked]:shadow-none",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
 
 function RadioGroup({
   className,
@@ -20,23 +38,36 @@ function RadioGroup({
 
 function RadioGroupItem({
   className,
+  variant = "default",
+  children,
   ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item> &
+  VariantProps<typeof radioGroupItemVariants>) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
-      className={cn(
-        "group/radio-group-item peer relative flex aspect-square size-4 shrink-0 rounded-full border border-input outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary",
-        className
-      )}
+      data-variant={variant}
+      className={cn(radioGroupItemVariants({ variant, className }))}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator
-        data-slot="radio-group-indicator"
-        className="flex size-4 items-center justify-center"
-      >
-        <span className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-foreground" />
-      </RadioGroupPrimitive.Indicator>
+      {variant === "card" ? (
+        <>
+          {children}
+          <RadioGroupPrimitive.Indicator
+            data-slot="radio-group-indicator"
+            className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary/15 text-primary animate-in zoom-in-50 duration-200"
+          >
+            <CheckIcon className="size-3.5 stroke-[3]" />
+          </RadioGroupPrimitive.Indicator>
+        </>
+      ) : (
+        <RadioGroupPrimitive.Indicator
+          data-slot="radio-group-indicator"
+          className="flex h-full w-full items-center justify-center"
+        >
+          <span className="size-2 rounded-full bg-current" />
+        </RadioGroupPrimitive.Indicator>
+      )}
     </RadioGroupPrimitive.Item>
   )
 }

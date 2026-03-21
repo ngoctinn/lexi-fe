@@ -69,26 +69,34 @@ export function DataDisplayShowcase() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 relative">
-          <p className="text-sm font-medium">Carousel (Flashcard effect)</p>
-          <div className="px-12">
-            <Carousel className="w-full max-w-xs mx-auto">
+        <div className="flex flex-col gap-4 relative">
+          <p className="text-sm font-medium">Flashcard Carousel (Advanced Layering)</p>
+          <div className="relative isolate">
+            <Carousel className="w-full max-w-[280px] mx-auto group">
               <CarouselContent>
                 {CARDS.map((card, index) => (
                   <CarouselItem key={index}>
-                    <div className="p-1">
-                      <Card className="aspect-[4/3] flex items-center justify-center border-2 border-primary/20 bg-card shadow-sm">
-                        <CardContent className="flex flex-col items-center justify-center p-6 text-center gap-2">
-                          <span className="text-xl font-bold">{card.term}</span>
-                          <span className="text-sm text-muted-foreground">{card.desc}</span>
-                        </CardContent>
-                      </Card>
-                    </div>
+                    <Card className="aspect-[4/5] flex flex-col p-8 border-none bg-card shadow-flashcard rounded-3xl relative overflow-hidden transition-all group-active:translate-y-0.5">
+                      <div className="flex-1 flex flex-col justify-center items-center text-center gap-4">
+                        <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
+                           <span className="text-primary font-bold"># {index + 1}</span>
+                        </div>
+                        <h3 className="text-2xl font-bold tracking-tight text-primary leading-tight">{card.term}</h3>
+                        <p className="text-sm leading-relaxed text-muted-foreground antialiased">{card.desc}</p>
+                      </div>
+                      
+                      {/* Technique 3: Baseline alignment for mixed content */}
+                      <div className="flex items-baseline justify-between mt-auto pt-4 border-t border-primary/5">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/40">Vocabulary</span>
+                        <span className="text-sm font-bold text-primary italic">Lexi...</span>
+                      </div>
+                    </Card>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
+              {/* Technique 1: Overlapping controls (Done in carousel.tsx) */}
+              <CarouselPrevious className="shadow-flashcard-solid border-none bg-white hover:bg-white" />
+              <CarouselNext className="shadow-flashcard-solid border-none bg-white hover:bg-white" />
             </Carousel>
           </div>
         </div>

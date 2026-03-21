@@ -8,6 +8,7 @@ import { ModalShowcase } from "./modal-showcase";
 import { FeedbackShowcase } from "./feedback-showcase";
 import { OverlayShowcase } from "./overlay-showcase";
 import { DataDisplayShowcase } from "./data-display-showcase";
+import { FlashcardShowcase } from "./flashcard-showcase";
 import { AdvancedShowcase } from "./advanced-showcase";
 import { AuthForm } from "@/features/auth";
 
@@ -74,6 +75,11 @@ export function Showcase() {
           <Section title="10. Authentication">
             <AuthForm />
           </Section>
+
+          {/* 11. Flashcards (Advanced Elevation) */}
+          <div className="col-span-full py-12 border-t">
+            <FlashcardShowcase />
+          </div>
         </div>
       </div>
     </div>
