@@ -51,7 +51,7 @@ export function FormShowcase() {
                 <RadioGroupItem value="pro" id="pro" className="peer sr-only" />
                 <FieldLabel
                   htmlFor="pro"
-                  className="flex flex-1 cursor-pointer flex-col p-4 rounded-xl border border-input transition-all peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:bg-muted/50"
+                  className="flex flex-1 cursor-pointer flex-col p-4 rounded-xl border border-input transition-all peer-data-checked:border-primary peer-data-checked:bg-muted/40 hover:bg-muted/50"
                 >
                   <span className="font-bold">Pro</span>
                   <span className="text-xs text-muted-foreground">30+ minutes a day</span>

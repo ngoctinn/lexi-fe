@@ -63,10 +63,10 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 rounded-lg border border-transparent px-4 py-1.5 text-sm font-medium whitespace-nowrap text-foreground/70 transition-all hover:text-foreground",
-        "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50",
-        "group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=default]/tabs-list:data-active:ring-1 group-data-[variant=default]/tabs-list:data-active:ring-black/5 dark:group-data-[variant=default]/tabs-list:data-active:ring-white/10",
-        "data-active:bg-background data-active:text-foreground data-active:font-semibold dark:data-active:bg-muted",
+        "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 rounded-lg border border-transparent px-4 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground transition-all hover:text-primary-900",
+        "focus-visible:border-primary-400 focus-visible:ring-[3px] focus-visible:ring-primary-200 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50",
+        "group-data-[variant=default]/tabs-list:data-active:shadow-xs group-data-[variant=default]/tabs-list:data-active:ring-1 group-data-[variant=default]/tabs-list:data-active:ring-primary-200",
+        "data-active:bg-primary-50 data-active:text-primary-700 data-active:font-bold",
         "group-data-[variant=line]/tabs-list:data-active:shadow-none group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent group-data-[variant=line]/tabs-list:data-active:ring-0",
         "after:absolute after:bg-primary after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
         "group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-[2px]",
