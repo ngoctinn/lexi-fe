@@ -106,9 +106,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             {mainNavItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={item.isActive} 
+                <SidebarMenuButton
+                  asChild
+                  isActive={item.isActive}
                   tooltip={item.title}
                   size="lg"
                   className="transition-all duration-200"
