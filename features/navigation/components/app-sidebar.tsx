@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  GraduationCap,
   Map,
   BookOpen,
   PenTool,
@@ -10,10 +11,13 @@ import {
   User,
   Settings,
   LogOut,
-  GraduationCap
+  Search,
+  Flame,
+  Star,
 } from "lucide-react"
 import Link from "next/link"
-import { Logo } from "@/components/shared/logo"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 
 import {
   Sidebar,
@@ -21,11 +25,14 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarRail,
 } from "@/components/ui/sidebar"
 
 const mainNavItems = [
@@ -33,22 +40,18 @@ const mainNavItems = [
     title: "Lộ trình học",
     url: "/learn",
     icon: Map,
-    isActive: true, // Mock active state
+    isActive: true,
   },
   {
     title: "Từ vựng",
     url: "/vocabulary",
     icon: BookOpen,
+    badge: "Mới",
   },
   {
     title: "Luyện tập",
     url: "/practice",
     icon: PenTool,
-  },
-  {
-    title: "Bảng xếp hạng",
-    url: "/leaderboard",
-    icon: Trophy,
   },
   {
     title: "Cửa hàng",
@@ -57,92 +60,128 @@ const mainNavItems = [
   },
 ]
 
-const footerNavItems = [
+const communityNavItems = [
   {
-    title: "Hồ sơ",
-    url: "/profile",
-    icon: User,
-  },
-  {
-    title: "Cài đặt",
-    url: "/settings",
-    icon: Settings,
+    title: "Bảng xếp hạng",
+    url: "/leaderboard",
+    icon: Trophy,
   },
 ]
 
+const user = {
+  name: "Ngọc Tín",
+  email: "ngoctin@example.com",
+  avatar: "/avatars/user.jpg",
+  streak: 14,
+  points: 1250,
+}
+
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="sidebar" collapsible="icon" {...props}>
-      <SidebarHeader className="p-4">
-        <Logo textClassName="group-data-[collapsible=icon]:hidden" />
+    <Sidebar variant="inset" collapsible="icon" {...props} className="bg-sidebar border-r-0">
+      <SidebarHeader className="pt-4 pb-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              size="lg"
+              tooltip="LexiLearn"
+              className="hover:bg-transparent! hover:shadow-none! active:translate-y-0! active:shadow-none! data-active:bg-transparent! data-active:shadow-none!"
+            >
+              <Link href="/">
+                <div className="bg-primary flex shrink-0 size-6 items-center justify-center rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)]">
+                  <GraduationCap className="text-primary-foreground" style={{ width: 18, height: 18 }} />
+                </div>
+                <span className="font-extrabold tracking-tight text-xl text-primary group-data-[collapsible=icon]:hidden">LexiLearn</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
-
-      <SidebarSeparator />
 
       <SidebarContent>
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={item.isActive} 
-                    tooltip={item.title}
-                    size="lg" // Slightly larger for easier tapping
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span className="font-medium">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Chính</SidebarGroupLabel>
+          <SidebarMenu>
+            {mainNavItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={item.isActive} 
+                  tooltip={item.title}
+                  size="lg"
+                  className="transition-all duration-200"
+                >
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    {item.badge && (
+                      <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary border-none text-[10px] h-4 px-1.5 uppercase font-bold tracking-wider group-data-[collapsible=icon]:hidden">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Cộng đồng</SidebarGroupLabel>
+          <SidebarMenu>
+            {communityNavItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} size="lg">
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {footerNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    tooltip={item.title}
-                    size="lg"
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip="Đăng xuất"
-                  size="lg"
-                  className="text-destructive hover:bg-destructive/15 hover:text-destructive! active:bg-destructive/20 active:text-destructive!"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // Handle log out
-                  }}
-                >
-                  <button>
-                    <LogOut />
-                    <span>Đăng xuất</span>
-                  </button>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      <SidebarSeparator className="mx-0" />
+
+      <SidebarFooter className="py-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            {/* Streak & XP - Only shown when expanded */}
+            <div className="flex items-center gap-3 px-2 pb-4 group-data-[collapsible=icon]:hidden">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-orange-500 bg-orange-500/5 px-2 py-1 rounded-full border border-orange-500/10">
+                <Flame className="size-3 fill-orange-500" />
+                <span>{user.streak} ngày</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/5 px-2 py-1 rounded-full border border-primary/10">
+                <Star className="size-3 fill-primary" />
+                <span>{user.points} XP</span>
+              </div>
+            </div>
+
+            <SidebarMenuButton
+              size="lg"
+              className="items-center gap-3 h-14 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:justify-center"
+            >
+              <Avatar className="size-9 rounded-lg border-2 border-background shadow-sm group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg">
+                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">
+                  {user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="truncate font-bold">{user.name}</span>
+                <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+              </div>
+              <Settings className="ml-auto size-4 text-muted-foreground/50 group-data-[collapsible=icon]:hidden" />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   )
 }

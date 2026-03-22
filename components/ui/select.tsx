@@ -4,7 +4,27 @@ import * as React from "react"
 import { Select as SelectPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
+
+const selectTriggerVariants = cva(
+  "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-control-border-subtle bg-control-bg-subtle pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none shadow-inset-input focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 hover:bg-control-hover [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      size: {
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] pr-1.5 pl-2 text-xs [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] pr-2 pl-2.5 text-xs [&_svg:not([class*='size-'])]:size-3.5",
+        default: "h-8 py-2",
+        lg: "h-9 pr-2.5 pl-3",
+        xl: "h-10 pr-3 pl-4",
+        "2xl": "h-12 pr-4 pl-6 text-base",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
 
 function Select({
   ...props
@@ -36,22 +56,24 @@ function SelectTrigger({
   size = "default",
   children,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
-  size?: "sm" | "default"
-}) {
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> &
+  VariantProps<typeof selectTriggerVariants>) {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
-      className={cn(
-        "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-control-border-subtle bg-control-bg-subtle py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none shadow-inset-input focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[min(var(--radius-md),10px)] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 hover:bg-control-hover [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
+      className={cn(selectTriggerVariants({ size, className }))}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+        <ChevronDownIcon
+          className={cn(
+            "pointer-events-none text-muted-foreground",
+            size === "xs" || size === "sm" ? "size-3.5" : 
+            size === "2xl" ? "size-5" : "size-4"
+          )}
+        />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )

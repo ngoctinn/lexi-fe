@@ -12,28 +12,28 @@ interface LogoProps {
 export function Logo({ className, textClassName, size = "default", href = "/" }: LogoProps) {
   return (
     <Link href={href} className={cn("flex items-center gap-2 text-primary group", className)}>
-      <div 
+      <div
         className={cn(
-          "bg-primary flex shrink-0 items-center justify-center transition-transform group-active:translate-y-px",
-          size === "sm" ? "size-7 rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-[0_1px_0_0_var(--color-primary-shadow)]" : 
-          size === "lg" ? "size-10 rounded-xl shadow-[0_4px_0_0_var(--color-primary-shadow)] group-active:shadow-[0_2px_0_0_var(--color-primary-shadow)]" : 
-          "size-9 rounded-xl shadow-[0_3px_0_0_var(--color-primary-shadow)] group-active:shadow-[0_1px_0_0_var(--color-primary-shadow)]"
+          "bg-primary flex shrink-0 items-center justify-center transition-transform group-active:translate-y-0.5",
+          size === "sm" ? "size-7 rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-none" :
+            size === "lg" ? "size-10 rounded-xl shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-none" :
+              "size-9 rounded-xl shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-none"
         )}
       >
-        <GraduationCap 
-          className="text-primary-foreground" 
-          style={{ 
-            width: size === "sm" ? 16 : size === "lg" ? 24 : 20, 
-            height: size === "sm" ? 16 : size === "lg" ? 24 : 20 
-          }} 
+        <GraduationCap
+          className="text-primary-foreground"
+          style={{
+            width: size === "sm" ? 16 : size === "lg" ? 24 : 20,
+            height: size === "sm" ? 16 : size === "lg" ? 24 : 20
+          }}
         />
       </div>
-      <span 
+      <span
         className={cn(
           "font-extrabold tracking-tight",
-          size === "sm" ? "text-lg" : 
-          size === "lg" ? "text-2xl" : 
-          "text-xl",
+          size === "sm" ? "text-lg" :
+            size === "lg" ? "text-2xl" :
+              "text-xl",
           textClassName
         )}
       >

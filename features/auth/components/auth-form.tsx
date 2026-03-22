@@ -28,7 +28,7 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-visible">
+      <Card size="lg" className="overflow-visible">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4">
             <Logo size="default" />
@@ -43,8 +43,8 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
             <div className="grid gap-8">
               {/* Google Auth */}
               <div className="flex flex-col gap-4">
-                <Button variant="outline" className="w-full h-11 border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover">
-                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4 mr-2" data-icon="inline-start">
+                <Button variant="outline" size="2xl" className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4 mr-2" data-icon="inline-start">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -76,6 +76,7 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                   <Input
                     id="email"
                     type="email"
+                    size="2xl"
                     placeholder="name@example.com"
                     autoComplete="email"
                     required
@@ -94,11 +95,12 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                     )}
                   </div>
                   <div className="relative">
-                    <Input 
-                      id="password" 
-                      type={showPassword ? "text" : "password"} 
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
                       autoComplete={mode === "login" ? "current-password" : "new-password"}
-                      required 
+                      size="2xl"
+                      required
                       className="pr-10"
                     />
                     <button
@@ -132,7 +134,7 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                   </Field>
                 )}
 
-                <Button type="submit" className="w-full h-11 text-base">
+                <Button type="submit" size="2xl" className="w-full text-base">
                   {mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}
                 </Button>
               </FieldGroup>
@@ -159,9 +161,11 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
           </div>
         </CardFooter>
       </Card>
-      
-      <div className="fixed inset-0 -z-10 h-full w-full bg-background">
+
+      <div className="fixed inset-0 -z-10 h-full w-full overflow-hidden bg-background">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div aria-hidden className="pointer-events-none absolute -top-48 -right-48 size-[1000px] rounded-full bg-[var(--primary-300)] opacity-10 blur-[220px]" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-48 size-[800px] rounded-full bg-[var(--primary-200)] opacity-15 blur-[180px]" />
       </div>
     </div>
   )

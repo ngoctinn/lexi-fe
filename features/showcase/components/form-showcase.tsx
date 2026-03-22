@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -17,9 +18,26 @@ export function FormShowcase() {
       <CardContent className="flex flex-col gap-10">
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="username">Username</FieldLabel>
+            <FieldLabel htmlFor="username">Username (Default - 32px)</FieldLabel>
             <Input id="username" placeholder="@johndoe" />
             <FieldDescription>Your public display name.</FieldDescription>
+          </Field>
+
+          <Field>
+            <FieldLabel>Combined Sizes (sm - 28px)</FieldLabel>
+            <div className="flex gap-2">
+              <Select defaultValue="en">
+                <SelectTrigger size="sm" className="w-[110px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="vi">Vietnamese</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input size="sm" placeholder="Search..." className="flex-1" />
+              <Button size="sm">Search</Button>
+            </div>
           </Field>
 
           <Field>
