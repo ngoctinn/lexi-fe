@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Zap, Star, Trophy, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export function LandingHero() {
   return (
@@ -42,7 +41,7 @@ export function LandingHero() {
             <div className="flex flex-col gap-0.5">
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} className="text-primary fill-primary" style={{ width: 14, height: 14 }} />
+                  <Star key={i} className="text-primary fill-primary" />
                 ))}
               </div>
               <span className="text-sm text-muted-foreground">1,000+ học viên tin tưởng</span>
@@ -59,7 +58,7 @@ export function LandingHero() {
           <div className="absolute top-6 -left-4 z-20 bg-card border shadow-xl rounded-2xl px-4 py-3 animate-float-delayed">
             <div className="flex items-center gap-2.5">
               <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Trophy className="text-primary" style={{ width: 18, height: 18 }} />
+                <Trophy className="text-primary" />
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Chuỗi ngày học</p>
@@ -71,7 +70,7 @@ export function LandingHero() {
           <div className="absolute -bottom-4 right-0 z-20 bg-card border shadow-xl rounded-2xl px-4 py-3 animate-float-slow">
             <div className="flex items-center gap-2.5">
               <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <CheckCircle className="text-primary" style={{ width: 18, height: 18 }} />
+                <CheckCircle className="text-primary" />
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Hôm nay</p>

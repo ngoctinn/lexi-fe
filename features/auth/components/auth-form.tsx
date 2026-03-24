@@ -16,6 +16,12 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Logo } from "@/components/shared/logo"
 
@@ -44,7 +50,7 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
               {/* Google Auth */}
               <div className="flex flex-col gap-4">
                 <Button variant="outline" size="2xl" className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4 mr-2" data-icon="inline-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-icon="inline-start">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -94,23 +100,22 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                       </Link>
                     )}
                   </div>
-                  <div className="relative">
-                    <Input
+                  <InputGroup className="h-12 bg-control-bg-subtle/50">
+                    <InputGroupInput
                       id="password"
                       type={showPassword ? "text" : "password"}
                       autoComplete={mode === "login" ? "current-password" : "new-password"}
-                      size="2xl"
                       required
-                      className="pr-10"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                    </button>
-                  </div>
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        size="icon-sm"
+                      >
+                        {showPassword ? <EyeOff /> : <Eye />}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
                 </Field>
 
                 {mode === "login" ? (

@@ -90,7 +90,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href="/">
                 <div className="bg-primary flex shrink-0 size-6 items-center justify-center rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)]">
-                  <GraduationCap className="text-primary-foreground" style={{ width: 18, height: 18 }} />
+                  <GraduationCap className="text-primary-foreground" />
                 </div>
                 <span className="font-extrabold tracking-tight text-xl text-primary group-data-[collapsible=icon]:hidden">LexiLearn</span>
               </Link>
@@ -153,11 +153,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             {/* Streak & XP - Only shown when expanded */}
             <div className="flex items-center gap-3 px-2 pb-4 group-data-[collapsible=icon]:hidden">
               <div className="flex items-center gap-1.5 text-xs font-bold text-orange-500 bg-orange-500/5 px-2 py-1 rounded-full border border-orange-500/10">
-                <Flame className="size-3 fill-orange-500" />
+                <Flame className="fill-orange-500" />
                 <span>{user.streak} ngày</span>
               </div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/5 px-2 py-1 rounded-full border border-primary/10">
-                <Star className="size-3 fill-primary" />
+                <Star className="fill-primary" />
                 <span>{user.points} XP</span>
               </div>
             </div>
@@ -176,7 +176,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 <span className="truncate font-bold">{user.name}</span>
                 <span className="truncate text-xs text-muted-foreground">{user.email}</span>
               </div>
-              <Settings className="ml-auto size-4 text-muted-foreground/50 group-data-[collapsible=icon]:hidden" />
+              <Settings className="ml-auto text-muted-foreground/50 group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
