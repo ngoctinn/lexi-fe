@@ -11,6 +11,8 @@ import { FlashcardShowcase } from "./flashcard-showcase";
 import { AdvancedShowcase } from "./advanced-showcase";
 import { SizingShowcase } from "./sizing-showcase";
 import { AuthForm } from "@/features/auth";
+import { Dashboard } from "@/features/dashboard";
+import { Badge } from "@/components/ui/badge";
 
 export function Showcase() {
   return (
@@ -45,6 +47,18 @@ export function Showcase() {
         {/* Auth Module Block */}
         <div className="md:col-span-2 lg:col-span-3 lg:row-span-2">
           <AuthForm />
+        </div>
+
+        {/* Dashboard Preview */}
+        <div className="md:col-span-4 lg:col-span-6 bg-background rounded-[2.5rem] p-4 lg:p-8 border border-primary/5 shadow-flashcard-solid">
+           <div className="mb-8 px-4 flex justify-between items-center">
+             <div>
+               <h2 className="text-2xl font-bold tracking-tight text-foreground">Dashboard Preview</h2>
+               <p className="text-muted-foreground text-sm">Cái nhìn tổng quan về trung tâm điều khiển của học viên.</p>
+             </div>
+             <Badge variant="outline" className="border-primary/20 text-primary">Khu vực riêng tư</Badge>
+           </div>
+           <Dashboard />
         </div>
 
         {/* Indicators (Tall Block) */}

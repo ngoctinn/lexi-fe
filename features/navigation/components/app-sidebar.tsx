@@ -14,8 +14,10 @@ import {
   Search,
   Flame,
   Star,
+  LayoutDashboard,
 } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
@@ -37,10 +39,14 @@ import {
 
 const mainNavItems = [
   {
+    title: "Tổng quan",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
     title: "Lộ trình học",
     url: "/learn",
     icon: Map,
-    isActive: true,
   },
   {
     title: "Từ vựng",
@@ -77,6 +83,8 @@ const user = {
 }
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+
   return (
     <Sidebar variant="inset" collapsible="icon" {...props} className="bg-sidebar border-r-0">
       <SidebarHeader className="pt-4 pb-2">
@@ -108,7 +116,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
-                  isActive={item.isActive}
+                  isActive={item.url === pathname}
                   tooltip={item.title}
                   size="lg"
                   className="transition-all duration-200"
@@ -133,7 +141,12 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             {communityNavItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild tooltip={item.title} size="lg">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={item.url === pathname}
+                  tooltip={item.title} 
+                  size="lg"
+                >
                   <Link href={item.url}>
                     <item.icon />
                     <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
@@ -165,19 +178,23 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               size="lg"
               className="items-center gap-3 h-14 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:justify-center"
+              asChild
             >
-              <Avatar className="size-9 rounded-lg border-2 border-background shadow-sm group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">
-                  {user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-bold">{user.name}</span>
-                <span className="truncate text-xs text-muted-foreground">{user.email}</span>
-              </div>
-              <Settings className="ml-auto text-muted-foreground/50 group-data-[collapsible=icon]:hidden" />
+              <Link href="/profile">
+                <Avatar className="size-9 rounded-lg border-2 border-background shadow-sm group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg">
+                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">
+                    {user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-bold">{user.name}</span>
+                  <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                </div>
+                <Settings className="ml-auto text-muted-foreground/50 group-data-[collapsible=icon]:hidden" />
+              </Link>
             </SidebarMenuButton>
+
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
