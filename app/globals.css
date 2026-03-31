@@ -270,6 +270,27 @@
   .items-baseline {
     align-items: baseline;
   }
+
+  /* Autofill Styling with Depth & Focus Preservation */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground) !important;
+
+    /* SET THE BLUE COLOR DIRECTLY */
+    /* Using transition on background-color is a standard trick to 
+       override the instant user-agent paint of the autofill blue. */
+    background-color: #ebf1fe !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    caret-color: var(--foreground) !important;
+  }
+
+  .dark input:-webkit-autofill {
+    background-color: #1e293b !important;
+  }
 }
 
 /* ─── Sonner toast border overrides ───────────────────────────────────────────

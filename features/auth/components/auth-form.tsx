@@ -16,12 +16,6 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Logo } from "@/components/shared/logo"
 
@@ -100,22 +94,25 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                       </Link>
                     )}
                   </div>
-                  <InputGroup className="h-12 bg-control-bg-subtle/50">
-                    <InputGroupInput
+                  <div className="relative">
+                    <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
+                      size="2xl"
+                      className="pr-12"
                       autoComplete={mode === "login" ? "current-password" : "new-password"}
                       required
                     />
-                    <InputGroupAddon align="inline-end">
-                      <InputGroupButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        size="icon-sm"
-                      >
-                        {showPassword ? <EyeOff /> : <Eye />}
-                      </InputGroupButton>
-                    </InputGroupAddon>
-                  </InputGroup>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 size-8 text-muted-foreground hover:bg-muted/50"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </div>
                 </Field>
 
                 {mode === "login" ? (

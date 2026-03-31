@@ -1,56 +1,68 @@
 "use client";
 
-import { Brain, Target, Clock, Zap } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Brain, Target, Clock, Zap, TrendingUp, TrendingDown } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function ProgressOverview() {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {/* Mastered Words */}
       <Card className="shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Từ vựng đã thuộc</CardTitle>
-          <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Brain className="text-primary size-4" />
+        <CardContent className="p-5 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium text-muted-foreground/80">Từ vựng đã thuộc</span>
+            <div className="size-7 rounded-md bg-primary/10 flex items-center justify-center">
+              <Brain className="text-primary size-3.5" />
+            </div>
           </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div>
-            <div className="text-3xl font-black text-foreground">1,248</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              <span className="text-emerald-500 font-medium">+24</span> so với tuần trước
-            </p>
+          
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black text-foreground tracking-tight">1,248</span>
+            <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-700 px-1.5 py-0.5 rounded text-[11px] font-bold">
+              <TrendingUp className="size-3" />
+              <span>24</span>
+            </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-muted-foreground">Mục tiêu 2000 từ</span>
+
+          <div className="flex flex-col gap-1.5 mt-1">
+            <div className="flex items-center justify-between text-[11px] font-bold">
+              <span className="text-muted-foreground/70 uppercase tracking-wider">Mục tiêu 2000</span>
               <span className="text-primary">62%</span>
             </div>
-            <Progress value={62} className="h-2" />
+            {/* Monochromatic progress bar */}
+            <div className="h-1.5 w-full bg-primary/15 rounded-full overflow-hidden">
+               <div className="h-full bg-primary rounded-full transition-all" style={{ width: "62%" }} />
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Accuracy */}
       <Card className="shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Độ chính xác</CardTitle>
-          <div className="size-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-            <Target className="text-emerald-500 size-4" />
+        <CardContent className="p-5 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium text-muted-foreground/80">Độ chính xác</span>
+            <div className="size-7 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <Target className="text-emerald-500 size-3.5" />
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
+          
           <div className="flex items-baseline gap-2">
-             <div className="text-3xl font-black text-foreground">94</div>
-             <div className="text-lg font-bold text-muted-foreground">%</div>
+             <span className="text-3xl font-black text-foreground tracking-tight">94%</span>
+             <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-700 px-1.5 py-0.5 rounded text-[11px] font-bold">
+               <TrendingUp className="size-3" />
+               <span>2%</span>
+             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            <span className="text-emerald-500 font-medium">+2%</span> so với tuần trước
-          </p>
-          <div className="mt-4 flex items-center gap-2">
-             <div className="flex-1 h-2 rounded-full bg-emerald-500/20 overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: "94%" }} />
+
+          <div className="flex flex-col gap-1.5 mt-1">
+             <div className="flex items-center justify-between text-[11px] font-bold">
+                <span className="text-muted-foreground/70 uppercase tracking-wider">Hiệu suất</span>
+                <span className="text-emerald-600">Tuyệt vời</span>
+             </div>
+             {/* Monochromatic progress bar */}
+             <div className="h-1.5 w-full bg-emerald-500/15 rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: "94%" }} />
              </div>
           </div>
         </CardContent>
@@ -58,30 +70,41 @@ export function ProgressOverview() {
 
       {/* Study Time */}
       <Card className="shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Thời gian học tập</CardTitle>
-          <div className="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-            <Clock className="text-blue-500 size-4" />
+        <CardContent className="p-5 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-medium text-muted-foreground/80">Thời gian học tập</span>
+            <div className="size-7 rounded-md bg-blue-500/10 flex items-center justify-center">
+              <Clock className="text-blue-500 size-3.5" />
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
+          
           <div className="flex items-baseline gap-2">
-             <div className="text-3xl font-black text-foreground">12.5</div>
-             <div className="text-sm font-bold text-muted-foreground">giờ</div>
+             <span className="text-3xl font-black text-foreground tracking-tight">12.5 <span className="text-sm font-bold text-muted-foreground/70">giờ</span></span>
+             <div className="flex items-center gap-1 bg-rose-500/10 text-rose-700 px-1.5 py-0.5 rounded text-[11px] font-bold">
+               <TrendingDown className="size-3" />
+               <span>1.2h</span>
+             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Trung bình 45 phút / ngày
-          </p>
+
+          <div className="flex flex-col gap-1.5 mt-1 justify-end h-full">
+             <div className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-wider">
+                Trung bình 45 phút / ngày
+             </div>
+          </div>
         </CardContent>
       </Card>
-      
+
       {/* Quick Action */}
-      <Card className="bg-primary/5 border-primary/20 shadow-none hover:bg-primary/10 transition-colors cursor-pointer flex flex-col items-center justify-center text-center p-6 group">
-         <div className="size-14 rounded-full bg-primary/20 flex items-center justify-center mb-4 group-hover:scale-110 group-active:scale-95 transition-transform">
-            <Zap className="text-primary size-6 fill-primary/20" />
-         </div>
-         <h3 className="font-bold text-lg text-primary">Luyện tập ngay</h3>
-         <p className="text-sm text-muted-foreground mt-1">20 từ vựng cần ôn tập</p>
+      <Card className="bg-primary/5 border-primary/20 shadow-none hover:bg-primary/10 transition-colors cursor-pointer group">
+         <CardContent className="p-5 flex flex-col items-center justify-center text-center h-full gap-2">
+            <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 group-active:scale-95 transition-transform">
+               <Zap className="text-primary size-5 fill-primary/20" />
+            </div>
+            <div>
+               <h3 className="font-bold text-foreground text-sm">Luyện tập ngay</h3>
+               <p className="text-[11px] font-medium text-muted-foreground mt-0.5">20 từ cần ôn tập</p>
+            </div>
+         </CardContent>
       </Card>
     </div>
   );
