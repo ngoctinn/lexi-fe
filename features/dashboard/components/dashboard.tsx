@@ -18,7 +18,7 @@ const user = {
 
 export function Dashboard() {
   return (
-    <div className="flex flex-col gap-8 p-6 md:p-8 animate-in fade-in duration-700">
+    <div className="flex-1 flex flex-col gap-8 p-4 md:p-8 animate-in fade-in duration-700 overflow-y-auto">
       <DashboardHero user={user} />
 
       <div className="flex flex-col gap-2 mt-4">
