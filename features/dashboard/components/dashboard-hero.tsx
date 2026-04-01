@@ -21,7 +21,7 @@ export function DashboardHero({ user }: DashboardHeroProps) {
 
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border/40">
-      <div className="space-y-1.5">
+      <div className="flex flex-col gap-1.5">
         <p className="text-sm font-medium text-muted-foreground capitalize">{currentDate}</p>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Chào mừng trở lại, {user.name}

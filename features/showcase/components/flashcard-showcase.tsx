@@ -40,7 +40,7 @@ export function FlashcardShowcase() {
                     <div className="size-14 rounded-3xl bg-primary/5 flex items-center justify-center mb-2 ring-1 ring-primary/10">
                        <span className="text-primary font-bold text-lg"># {index + 1}</span>
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <h4 className="text-3xl font-bold tracking-tighter text-primary leading-none uppercase">{card.term}</h4>
                       <div className="h-1 w-8 bg-primary/20 mx-auto rounded-full" />
                     </div>
@@ -60,8 +60,8 @@ export function FlashcardShowcase() {
             ))}
           </CarouselContent>
 
-          <CarouselPrevious className="h-10 w-10 left-2 shadow-flashcard bg-white active:translate-y-0 active:scale-95 border-none hover:bg-white" />
-          <CarouselNext className="h-10 w-10 right-2 shadow-flashcard bg-white active:translate-y-0 active:scale-95 border-none hover:bg-white" />
+          <CarouselPrevious className="size-10 left-2 shadow-flashcard bg-white active:translate-y-0 active:scale-95 border-none hover:bg-white" />
+          <CarouselNext className="size-10 right-2 shadow-flashcard bg-white active:translate-y-0 active:scale-95 border-none hover:bg-white" />
         </Carousel>
       </div>
     </div>

@@ -165,7 +165,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             {/* Streak - Only shown when expanded */}
             <div className="flex items-center gap-2 px-2 pb-2 group-data-[collapsible=icon]:hidden">
               <Badge variant="outline" className="border-orange-500/20 bg-orange-500/5 text-orange-600 hover:bg-orange-500/10">
-                <Flame className="fill-orange-500 mr-1 h-3 w-3" />
+                <Flame className="fill-orange-500 mr-1 size-3" />
                 <span className="font-semibold">{user.streak} ngày</span>
               </Badge>
             </div>

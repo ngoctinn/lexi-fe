@@ -30,7 +30,7 @@ export function ProfileForm() {
           <CardTitle className="text-2xl">Thông tin cá nhân</CardTitle>
           <CardDescription>Cập nhật thông tin của bạn để AI có thể hiểu và hỗ trợ bạn tốt nhất.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8">
+        <CardContent className="flex flex-col gap-8">
           {/* Avatar Section */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="relative group">

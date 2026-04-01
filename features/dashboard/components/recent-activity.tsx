@@ -44,17 +44,17 @@ export function RecentActivity() {
                   </TableCell>
                   <TableCell>
                     {word.status === "mastered" ? (
-                      <Badge variant="success" className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 border-none">
+                      <Badge variant="success" className="border-none">
                         <CheckCircle2 data-icon="inline-start" />
                         Đã thuộc
                       </Badge>
                     ) : word.status === "needs_review" ? (
-                      <Badge variant="warning" className="bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/25 border-none">
+                      <Badge variant="warning" className="border-none">
                         <AlertTriangle data-icon="inline-start" />
                         Cần ôn tập
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 border-none">
+                      <Badge variant="secondary" className="border-none">
                         <Clock data-icon="inline-start" />
                         Đang học
                       </Badge>
