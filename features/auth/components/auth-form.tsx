@@ -163,11 +163,7 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
         </CardFooter>
       </Card>
 
-      <div className="fixed inset-0 -z-10 size-full overflow-hidden bg-background">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        <div aria-hidden className="pointer-events-none absolute -top-48 -right-48 size-[1000px] rounded-full bg-[var(--primary-300)] opacity-10 blur-[220px]" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-48 size-[800px] rounded-full bg-[var(--primary-200)] opacity-15 blur-[180px]" />
-      </div>
+
     </div>
   );
 }

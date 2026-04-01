@@ -3,6 +3,7 @@
 import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
 
+import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { MinusIcon } from "lucide-react"
 
@@ -17,7 +18,7 @@ function InputOTP({
     <OTPInput
       data-slot="input-otp"
       containerClassName={cn(
-        "cn-input-otp flex items-center has-disabled:opacity-50",
+        "cn-input-otp flex items-center justify-center has-disabled:opacity-50",
         containerClassName
       )}
       spellCheck={false}
@@ -40,13 +41,32 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+const slotVariants = cva(
+  "relative flex size-9 items-center justify-center border-y border-r border-control-border-subtle bg-control-bg-subtle text-sm transition-all outline-none shadow-inset-input first:rounded-l-lg first:border-l last:rounded-r-lg aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-3 data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20",
+  {
+    variants: {
+      size: {
+        default: "size-9 text-sm",
+        sm: "size-8 text-xs",
+        lg: "size-10 text-base",
+        xl: "size-11 text-base",
+        "2xl": "size-12 text-lg",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
+
 function InputOTPSlot({
   index,
   className,
+  size = "default",
   ...props
 }: React.ComponentProps<"div"> & {
   index: number
-}) {
+} & VariantProps<typeof slotVariants>) {
   const inputOTPContext = React.useContext(OTPInputContext)
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {}
 
@@ -54,10 +74,7 @@ function InputOTPSlot({
     <div
       data-slot="input-otp-slot"
       data-active={isActive}
-      className={cn(
-        "relative flex size-8 items-center justify-center border-y border-r border-input text-sm transition-all outline-none first:rounded-l-lg first:border-l last:rounded-r-lg aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-3 data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20",
-        className
-      )}
+      className={cn(slotVariants({ size, className }))}
       {...props}
     >
       {char}
