@@ -1,3 +1,5 @@
 export * from "./components/showcase"
-// Note: You can also export other showcase components if needed, 
-// but usually one main component is enough as an entry point.
+
+export { BadgeShowcase } from "./components/indicator-showcase";
+export { OverlayShowcase } from "./components/overlay-showcase";
+export { SizingShowcase } from "./components/sizing-showcase";

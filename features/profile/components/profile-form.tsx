@@ -13,7 +13,7 @@ import { toast } from "sonner";
 export function ProfileForm() {
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSaving(true);
     // Mock save delay

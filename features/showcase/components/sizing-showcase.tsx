@@ -1,96 +1,94 @@
-"use client"
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 export function SizingShowcase() {
-  const SIZES = ["xs", "sm", "default", "lg", "xl"] as const
-
   return (
-    <Card className="col-span-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Unified Sizing System (Nova Style)</CardTitle>
-        <CardDescription>
-          Consistent height scale across all interactive components:
-          xs (24px), sm (28px), default (32px), lg (36px), xl (40px).
-        </CardDescription>
+        <CardTitle>Sizing System</CardTitle>
+        <CardDescription>Consistent sizing across all components.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-8">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b text-sm font-bold text-muted-foreground uppercase tracking-wider">
-                <th className="py-4 pr-4">Size</th>
-                <th className="py-4 px-4">Button</th>
-                <th className="py-4 px-4">Input</th>
-                <th className="py-4 px-4">Select</th>
-                <th className="py-4 px-4">Avatar</th>
-                <th className="py-4 pl-4">Badge</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SIZES.map((size) => (
-                <tr key={size} className="border-b last:border-0 hover:bg-muted/5 transition-colors">
-                  <td className="py-6 pr-4 align-middle">
-                    <span className="text-xs font-black uppercase bg-muted px-2 py-1 rounded-md">
-                      {size === "default" ? "default (32px)" : size}
-                    </span>
-                  </td>
-                  <td className="py-6 px-4 align-middle">
-                    <Button size={size}>Action</Button>
-                  </td>
-                  <td className="py-6 px-4 align-middle">
-                    <Input size={size} placeholder="Input field..." className="max-w-[150px]" />
-                  </td>
-                  <td className="py-6 px-4 align-middle">
-                    <Select defaultValue="option-1">
-                      <SelectTrigger size={size} className="w-[120px]">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="option-1">Option 1</SelectItem>
-                        <SelectItem value="option-2">Option 2</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="py-6 px-4 align-middle">
-                    <Avatar size={size}>
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                  </td>
-                  <td className="py-6 pl-4 align-middle">
-                    <Badge size={size === "xl" ? "lg" : (size as any)}>Status</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-bold text-primary flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-primary" />
+            Button Sizes
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button size="xs">XS</Button>
+            <Button size="sm">Small</Button>
+            <Button size="default">Default</Button>
+            <Button size="lg">Large</Button>
+            <Button size="xl">Extra Large</Button>
+            <Button size="2xl">2X Large</Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t">
-          <div className="flex flex-col gap-4">
-            <p className="text-sm font-bold text-primary">Mixed Content Alignment (sm - 28px)</p>
-            <div className="flex items-center gap-2 p-4 bg-muted/20 rounded-2xl border">
-              <Avatar size="sm" />
-              <Input size="sm" placeholder="Search..." className="w-40" />
-              <Button size="sm">Go</Button>
-            </div>
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-bold text-primary flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-primary" />
+            Input Sizes
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Input size="xs" placeholder="XS" className="w-32" />
+            <Input size="sm" placeholder="Small" className="w-40" />
+            <Input size="default" placeholder="Default" className="w-48" />
+            <Input size="lg" placeholder="Large" className="w-56" />
+            <Input size="xl" placeholder="Extra Large" className="w-64" />
+            <Input size="2xl" placeholder="2X Large" className="w-72" />
           </div>
-          <div className="flex flex-col gap-4">
-            <p className="text-sm font-bold text-primary">Large Actions (xl - 40px)</p>
-            <div className="flex items-center gap-3 p-4 bg-muted/20 rounded-2xl border">
-              <Avatar size="default" /> {/* Avatar default is 40px */}
-              <Input size="xl" placeholder="Your email..." className="flex-1" />
-              <Button size="xl">Get Started</Button>
-            </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-bold text-primary flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-primary" />
+            Avatar Sizes
+          </p>
+          <div className="flex items-center gap-4">
+            <Avatar size="xs">
+              <AvatarImage src="/avatars/user.jpg" alt="User" />
+              <AvatarFallback>XS</AvatarFallback>
+            </Avatar>
+            <Avatar size="sm">
+              <AvatarImage src="/avatars/user.jpg" alt="User" />
+              <AvatarFallback>SM</AvatarFallback>
+            </Avatar>
+            <Avatar size="default">
+              <AvatarImage src="/avatars/user.jpg" alt="User" />
+              <AvatarFallback>DF</AvatarFallback>
+            </Avatar>
+            <Avatar size="lg">
+              <AvatarImage src="/avatars/user.jpg" alt="User" />
+              <AvatarFallback>LG</AvatarFallback>
+            </Avatar>
+            <Avatar size="xl">
+              <AvatarImage src="/avatars/user.jpg" alt="User" />
+              <AvatarFallback>XL</AvatarFallback>
+            </Avatar>
+            <Avatar size="2xl">
+              <AvatarImage src="/avatars/user.jpg" alt="User" />
+              <AvatarFallback>2XL</AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-bold text-primary flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-primary" />
+            Badge Sizes
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="text-[10px] h-4 px-1.5">XS</Badge>
+            <Badge variant="secondary" className="text-[11px] h-5 px-2">Small</Badge>
+            <Badge variant="secondary" className="text-[12px] h-6 px-2.5">Default</Badge>
+            <Badge variant="secondary" className="text-[13px] h-7 px-3">Large</Badge>
+            <Badge variant="secondary" className="text-[14px] h-8 px-3.5">Extra Large</Badge>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

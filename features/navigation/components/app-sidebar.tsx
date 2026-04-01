@@ -11,7 +11,6 @@ import {
   User,
   Settings,
   LogOut,
-  Search,
   Flame,
   Star,
   LayoutDashboard,
@@ -94,7 +93,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               asChild
               size="lg"
               tooltip="LexiLearn"
-              className="hover:bg-transparent! hover:shadow-none! active:translate-y-0! active:shadow-none! data-active:bg-transparent! data-active:shadow-none!"
+              className="hover:bg-transparent hover:shadow-none active:translate-y-0 active:shadow-none data-active:bg-transparent data-active:shadow-none"
             >
               <Link href="/">
                 <div className="bg-primary flex shrink-0 size-6 items-center justify-center rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)]">
@@ -163,26 +162,23 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            {/* Streak & XP - Only shown when expanded */}
-            <SidebarMenuButton
-              className="flex items-center gap-3 px-2 pb-4 group-data-[collapsible=icon]:hidden"
-              asChild
-            >
-              <div className="flex items-center gap-1.5 text-xs font-bold text-orange-500 bg-orange-500/5 px-2 py-1 rounded-full border border-orange-500/10">
-                <Flame className="fill-orange-500" />
-                <span>{user.streak} ngày</span>
-              </div>
-            </SidebarMenuButton>
+            {/* Streak - Only shown when expanded */}
+            <div className="flex items-center gap-2 px-2 pb-2 group-data-[collapsible=icon]:hidden">
+              <Badge variant="outline" className="border-orange-500/20 bg-orange-500/5 text-orange-600 hover:bg-orange-500/10">
+                <Flame className="fill-orange-500 mr-1 h-3 w-3" />
+                <span className="font-semibold">{user.streak} ngày</span>
+              </Badge>
+            </div>
 
             <SidebarMenuButton
               size="lg"
-              className="items-center gap-3 h-14 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:justify-center"
+              className="items-center gap-3 h-14 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center"
               asChild
             >
               <Link href="/profile">
-                <Avatar className="size-9 rounded-lg border-2 border-background shadow-sm group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg">
+                <Avatar>
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">
+                  <AvatarFallback>
                     {user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>

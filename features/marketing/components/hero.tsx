@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Zap, Star, Trophy, CheckCircle } from "lucide-react";
+import { ArrowRight, Star, Trophy, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function LandingHero() {
