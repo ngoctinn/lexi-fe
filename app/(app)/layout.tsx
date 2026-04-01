@@ -16,7 +16,7 @@ export default function AppLayout({
           <SidebarTrigger className="-ml-2" />
           <Logo textClassName="text-lg" />
         </header>
-          <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex flex-1 flex-col overflow-y-auto">
             {children}
           </div>
       </SidebarInset>
