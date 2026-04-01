@@ -12,11 +12,11 @@ interface DashboardHeroProps {
 
 export function DashboardHero({ user }: DashboardHeroProps) {
   // Use Vietnamese locale for date format
-  const currentDate = new Intl.DateTimeFormat('vi-VN', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const currentDate = new Intl.DateTimeFormat("vi-VN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   }).format(new Date());
 
   return (

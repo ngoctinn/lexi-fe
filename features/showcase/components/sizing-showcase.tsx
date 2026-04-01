@@ -15,7 +15,7 @@ export function SizingShowcase() {
       <CardHeader>
         <CardTitle>Unified Sizing System (Nova Style)</CardTitle>
         <CardDescription>
-          Consistent height scale across all interactive components: 
+          Consistent height scale across all interactive components:
           xs (24px), sm (28px), default (32px), lg (36px), xl (40px).
         </CardDescription>
       </CardHeader>

@@ -141,10 +141,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             {communityNavItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton 
-                  asChild 
+                <SidebarMenuButton
+                  asChild
                   isActive={item.url === pathname}
-                  tooltip={item.title} 
+                  tooltip={item.title}
                   size="lg"
                 >
                   <Link href={item.url}>
@@ -164,16 +164,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             {/* Streak & XP - Only shown when expanded */}
-            <div className="flex items-center gap-3 px-2 pb-4 group-data-[collapsible=icon]:hidden">
+            <SidebarMenuButton
+              className="flex items-center gap-3 px-2 pb-4 group-data-[collapsible=icon]:hidden"
+              asChild
+            >
               <div className="flex items-center gap-1.5 text-xs font-bold text-orange-500 bg-orange-500/5 px-2 py-1 rounded-full border border-orange-500/10">
                 <Flame className="fill-orange-500" />
                 <span>{user.streak} ngày</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/5 px-2 py-1 rounded-full border border-primary/10">
-                <Star className="fill-primary" />
-                <span>{user.points} XP</span>
-              </div>
-            </div>
+            </SidebarMenuButton>
 
             <SidebarMenuButton
               size="lg"

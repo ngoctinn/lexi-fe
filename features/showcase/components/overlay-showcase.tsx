@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -18,7 +20,7 @@ export function OverlayShowcase() {
         <CardDescription>Comprehensive demo of modal surfaces and sheets.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-10">
-        
+
         {/* 1. Modals Row */}
         <div className="flex flex-wrap gap-4">
           <Dialog>

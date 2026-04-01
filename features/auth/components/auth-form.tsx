@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Eye, EyeOff } from "lucide-react"
+import * as React from "react";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,18 +13,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Logo } from "@/components/shared/logo"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Logo } from "@/components/shared/logo";
 
 interface AuthFormProps extends React.ComponentProps<"div"> {
-  mode?: "login" | "signup"
+  mode?: "login" | "signup";
 }
 
 export function AuthForm({ className, mode = "login", ...props }: AuthFormProps) {
-  const [showPassword, setShowPassword] = React.useState(false)
+  const [showPassword, setShowPassword] = React.useState(false);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -170,5 +170,5 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
         <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-48 size-[800px] rounded-full bg-[var(--primary-200)] opacity-15 blur-[180px]" />
       </div>
     </div>
-  )
+  );
 }

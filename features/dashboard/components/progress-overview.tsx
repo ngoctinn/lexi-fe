@@ -15,7 +15,7 @@ export function ProgressOverview() {
               <Brain className="text-primary size-3.5" />
             </div>
           </div>
-          
+
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-foreground tracking-tight">1,248</span>
             <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-700 px-1.5 py-0.5 rounded text-[11px] font-bold">
@@ -46,7 +46,7 @@ export function ProgressOverview() {
               <Target className="text-emerald-500 size-3.5" />
             </div>
           </div>
-          
+
           <div className="flex items-baseline gap-2">
              <span className="text-3xl font-black text-foreground tracking-tight">94%</span>
              <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-700 px-1.5 py-0.5 rounded text-[11px] font-bold">
@@ -77,7 +77,7 @@ export function ProgressOverview() {
               <Clock className="text-blue-500 size-3.5" />
             </div>
           </div>
-          
+
           <div className="flex items-baseline gap-2">
              <span className="text-3xl font-black text-foreground tracking-tight">12.5 <span className="text-sm font-bold text-muted-foreground/70">giờ</span></span>
              <div className="flex items-center gap-1 bg-rose-500/10 text-rose-700 px-1.5 py-0.5 rounded text-[11px] font-bold">

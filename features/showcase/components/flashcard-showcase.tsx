@@ -20,9 +20,9 @@ export function FlashcardShowcase() {
           Advanced z-axis elevation and baseline alignment techniques.
         </p>
       </div>
-      
+
       <div className="relative isolate py-4 px-6">
-        <Carousel 
+        <Carousel
           opts={{ align: "center", loop: true }}
           className="w-full max-w-4xl mx-auto group"
         >
@@ -30,7 +30,7 @@ export function FlashcardShowcase() {
             {FLASHCARDS.map((card, index) => (
               <CarouselItem key={index} className="pl-6 basis-full">
                 <div className="p-2">
-                <Card 
+                <Card
                   className={cn(
                     "aspect-[3/4] flex flex-col p-8 border-none bg-card shadow-flashcard rounded-[2.5rem] relative overflow-hidden transition-all",
                     "group-active:translate-y-0.5"
@@ -48,7 +48,7 @@ export function FlashcardShowcase() {
                       {card.desc}
                     </p>
                   </div>
-                  
+
                   {/* Technique 3: Baseline alignment */}
                   <div className="flex items-baseline justify-between mt-auto pt-6 border-t border-primary/5">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">{card.type}</span>
@@ -59,7 +59,7 @@ export function FlashcardShowcase() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          
+
           <CarouselPrevious className="h-10 w-10 left-2 shadow-flashcard bg-white active:translate-y-0 active:scale-95 border-none hover:bg-white" />
           <CarouselNext className="h-10 w-10 right-2 shadow-flashcard bg-white active:translate-y-0 active:scale-95 border-none hover:bg-white" />
         </Carousel>

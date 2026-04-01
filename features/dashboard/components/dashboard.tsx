@@ -20,17 +20,17 @@ export function Dashboard() {
   return (
     <div className="flex flex-col gap-8 p-6 md:p-8 animate-in fade-in duration-700">
       <DashboardHero user={user} />
-      
+
       <div className="flex flex-col gap-2 mt-4">
         <h2 className="text-xl font-bold tracking-tight">Tổng quan học tập</h2>
         <p className="text-sm text-muted-foreground">Theo dõi tiến độ và mục tiêu của bạn.</p>
       </div>
-      
+
       <ProgressOverview />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
         <RecentActivity />
-        
+
         {/* Weekly Goal Side Card */}
         <div className="col-span-1">
           <Card className="h-full bg-gradient-to-br from-card to-muted/20 border-border">
@@ -67,7 +67,7 @@ export function Dashboard() {
                    <span className="text-3xl font-black text-primary">75%</span>
                  </div>
                </div>
-               
+
                <div className="flex flex-col gap-1 w-full text-left">
                   <div className="flex justify-between text-sm font-medium">
                      <span>Từ vựng: 40/50</span>

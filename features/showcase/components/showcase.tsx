@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { TypographyShowcase } from "./typography-showcase";
 import { ButtonShowcase } from "./button-showcase";
@@ -23,7 +25,7 @@ export function Showcase() {
             Lexi<span className="text-primary italic">.</span>UI
           </h1>
           <p className="text-xl text-muted-foreground mt-4 leading-relaxed font-medium">
-            Phòng thí nghiệm thiết kế Lexi. Nơi chúng tôi tinh chỉnh các tương tác cảm ứng, 
+            Phòng thí nghiệm thiết kế Lexi. Nơi chúng tôi tinh chỉnh các tương tác cảm ứng,
             độ sâu vật lý và trải nghiệm học tập đỉnh cao.
           </p>
         </div>
@@ -102,7 +104,7 @@ export function Showcase() {
           <TypographyShowcase />
         </div>
       </div>
-      
+
       <div className="mt-20 py-10 border-t border-primary/5 text-center">
         <p className="text-sm font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">
           Designed by Antigravity & Lexi Team • 2026
