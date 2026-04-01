@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Lightbulb, FastForward, Square, History, X } from "lucide-react";
+import { Lightbulb, FastForward, Square, History, X, Copy, Check } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,6 +38,7 @@ interface ConversationSidebarProps {
   onSkip?: () => void;
   onEnd?: () => void;
   onGetHint?: () => void;
+  onSelectHint?: (hint: string) => void;
   isAiStreaming?: boolean;
   disabled?: boolean;
   className?: string;
@@ -46,26 +49,40 @@ export function ConversationSidebar({
   onSkip,
   onEnd,
   onGetHint,
+  onSelectHint,
   isAiStreaming,
   disabled,
   className,
 }: ConversationSidebarProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    if (currentHint) {
+      navigator.clipboard.writeText(currentHint);
+      setCopied(true);
+      toast.success("Đã sao chép gợi ý");
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <aside className={cn("flex flex-col gap-4 w-[320px] max-w-full border-l bg-muted/20 px-6 py-8", className)}>
       
       {/* Hint Section */}
       <div className="flex-1 flex flex-col gap-4 overflow-hidden">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 font-semibold text-sm">
-            <Lightbulb />
-            <span>Gợi ý trả lời</span>
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 font-bold text-sm tracking-tight">
+            <div className="p-1 rounded-md bg-amber-100 dark:bg-amber-900/30">
+              <Lightbulb className="size-4" />
+            </div>
+            <span>Gợi ý phản hồi</span>
           </div>
           <Button 
-            variant="ghost" 
+            variant="soft-warning" 
             size="sm" 
             onClick={onGetHint} 
             disabled={disabled || isAiStreaming || !!currentHint}
-            className="text-[10px] uppercase font-bold tracking-widest h-6"
+            className="text-[10px] uppercase font-heavy tracking-widest h-7 px-4"
           >
             Lấy gợi ý
           </Button>
@@ -73,27 +90,56 @@ export function ConversationSidebar({
 
         <ScrollArea className="flex-1 -mx-2 px-2">
           {currentHint ? (
-            <Alert variant="info" className="animate-in zoom-in-95 fade-in duration-300">
-               <AlertTitle className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-                  <Lightbulb className="size-4" />
-                  Gợi ý
-               </AlertTitle>
-               <AlertDescription className="text-sm/relaxed font-medium italic">
-                 "{currentHint}"
-               </AlertDescription>
-               <div className="mt-4 text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
-                 Bạn có thể gõ hoặc nói theo cấu trúc này.
+            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+               <div className="relative p-5 rounded-2xl bg-background border shadow-sm group overflow-hidden">
+                  <div className="absolute top-0 right-0 p-3 opacity-5 overflow-hidden">
+                    <Lightbulb className="size-24 -rotate-12" />
+                  </div>
+                  
+                  <div className="relative z-10">
+                    <Badge variant="soft" className="mb-3 font-bold text-[10px] uppercase tracking-wider">
+                      Mẫu câu gợi ý
+                    </Badge>
+                    
+                    <p className="text-[15px]/relaxed font-semibold italic text-foreground tracking-tight">
+                      "{currentHint}"
+                    </p>
+                    
+                    <div className="mt-6 flex items-center gap-2">
+                       <Button 
+                         variant="secondary" 
+                         size="sm" 
+                         className="h-8 text-xs font-bold px-3 rounded-lg"
+                         onClick={handleCopy}
+                       >
+                         {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                         {copied ? "Đã chép" : "Sao chép"}
+                       </Button>
+                       <Button 
+                         variant="default" 
+                         size="sm" 
+                         className="h-8 text-xs font-bold px-3 rounded-lg"
+                         onClick={() => onSelectHint?.(currentHint)}
+                       >
+                         Sử dụng
+                       </Button>
+                    </div>
+                  </div>
                </div>
-            </Alert>
+               
+               <p className="text-[11px] text-muted-foreground px-2 font-medium italic">
+                 Mẹo: Bạn có thể thay đổi từ ngữ trong mẫu câu để phù hợp với ý của mình.
+               </p>
+            </div>
           ) : (
-            <Empty className="py-12 border-dashed border-2">
+            <Empty className="py-12 border-dashed border-2 rounded-2xl bg-background/50">
               <EmptyHeader>
-                <EmptyMedia variant="icon">
+                <EmptyMedia variant="icon" className="bg-amber-50 dark:bg-amber-950 text-amber-500">
                   <Lightbulb />
                 </EmptyMedia>
-                <EmptyTitle>Chưa có gợi ý</EmptyTitle>
-                <EmptyDescription>
-                  Bấm "Lấy gợi ý" nếu bạn gặp khó khăn trong việc phản hồi.
+                <EmptyTitle className="text-sm font-bold">Hãy thử tự trả lời</EmptyTitle>
+                <EmptyDescription className="text-xs">
+                  Bấm "Lấy gợi ý" nếu bạn cần ý tưởng để tiếp tục cuộc hội thoại.
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
@@ -110,39 +156,11 @@ export function ConversationSidebar({
           size="lg"
           onClick={onSkip}
           disabled={disabled || isAiStreaming}
-          className="w-full justify-start rounded-xl font-medium"
+          className="w-full font-bold"
         >
-          <FastForward data-icon="inline-start" />
+          <FastForward className="mr-2 size-5" />
           Bỏ qua lượt này
         </Button>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="secondary"
-              size="lg"
-              disabled={disabled || isAiStreaming}
-              className="w-full justify-start rounded-xl font-medium"
-            >
-              <Square data-icon="inline-start" className="fill-current text-destructive/80" />
-              Kết thúc phiên học
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Kết thúc phiên học?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Hệ thống sẽ ngừng hội thoại và bắt đầu chấm điểm dựa trên những gì bạn đã thực hành.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Tiếp tục học</AlertDialogCancel>
-              <AlertDialogAction onClick={onEnd} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Xác nhận & Chấm điểm
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
       
       {/* Help Note */}

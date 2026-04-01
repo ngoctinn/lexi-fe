@@ -71,9 +71,9 @@ export function SessionHeader({
   };
 
   return (
-    <header
+    <div
       className={cn(
-        "sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/95 px-4 backdrop-blur",
+        "flex shrink-0 items-center justify-between px-4 h-16",
         className
       )}
     >
@@ -128,6 +128,6 @@ export function SessionHeader({
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </header>
+    </div>
   );
 }

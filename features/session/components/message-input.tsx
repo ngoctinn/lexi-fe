@@ -19,6 +19,8 @@ interface MessageInputProps {
   recorderState: RecorderState;
   disabled?: boolean;
   className?: string;
+  value: string;
+  onValueChange: (value: string) => void;
 }
 
 export function MessageInput({
@@ -27,13 +29,33 @@ export function MessageInput({
   recorderState,
   disabled,
   className,
+  value,
+  onValueChange,
 }: MessageInputProps) {
-  const [text, setText] = React.useState("");
+  const [timer, setTimer] = React.useState(0);
+  const isRecording = recorderState === "recording";
+
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isRecording) {
+      setTimer(0);
+      interval = setInterval(() => {
+        setTimer((v) => v + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const handleSend = () => {
-    if (text.trim() && !disabled) {
-      onSendMessage(text);
-      setText("");
+    if (value.trim() && !disabled) {
+      onSendMessage(value);
+      onValueChange("");
     }
   };
 
@@ -44,37 +66,48 @@ export function MessageInput({
     }
   };
 
-  const isRecording = recorderState === "recording";
-
   return (
     <div className={cn("flex items-center gap-3 w-full max-w-4xl mx-auto", className)}>
       <InputGroup 
         size="2xl" 
         className={cn(
-          "flex-1 items-center bg-background rounded-2xl transition-all",
-          isRecording && "opacity-50 pointer-events-none"
+          "flex-1 items-center transition-all bg-background",
+          isRecording && "border-primary bg-primary/5"
         )}
       >
-        <InputGroupInput
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={isRecording ? "Đang lắng nghe..." : "Nhập câu trả lời bằng tiếng Anh..."}
-          className="px-4"
-          disabled={disabled || isRecording}
-        />
-        
-        <InputGroupAddon align="inline-end" className="pr-1.5 h-full">
-          <InputGroupButton
-            size="icon-sm"
-            variant="ghost"
-            disabled={disabled || !text.trim() || isRecording}
-            onClick={handleSend}
-            className="rounded-xl hover:bg-primary/10 hover:text-primary shrink-0"
-          >
-            <SendHorizontal />
-          </InputGroupButton>
-        </InputGroupAddon>
+        {isRecording ? (
+          <div className="flex flex-1 items-center justify-between px-6">
+            <div className="flex items-center gap-3 animate-pulse">
+              <div className="size-2.5 rounded-full bg-primary" />
+              <span className="text-sm font-semibold text-primary tabular-nums">
+                {formatTime(timer)}
+              </span>
+            </div>
+            <span className="text-xs text-muted-foreground font-medium">Đang ghi âm... Nhấn nút vuông để gửi</span>
+          </div>
+        ) : (
+          <>
+            <InputGroupInput
+              value={value}
+              onChange={(e) => onValueChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Nhập câu trả lời bằng tiếng Anh..."
+              disabled={disabled}
+            />
+            
+            <InputGroupAddon align="inline-end" className="pr-1.5 h-full">
+              <InputGroupButton
+                size="icon-sm"
+                variant="ghost"
+                disabled={disabled || !value.trim()}
+                onClick={handleSend}
+                className="hover:bg-primary/10 hover:text-primary shrink-0"
+              >
+                <SendHorizontal />
+              </InputGroupButton>
+            </InputGroupAddon>
+          </>
+        )}
       </InputGroup>
 
       <MicButton

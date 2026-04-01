@@ -14,6 +14,7 @@ import {
   Flame,
   Star,
   LayoutDashboard,
+  Mic,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -48,10 +49,14 @@ const mainNavItems = [
     icon: Map,
   },
   {
+    title: "Luyện nói",
+    url: "/session/new",
+    icon: Mic,
+  },
+  {
     title: "Từ vựng",
     url: "/vocabulary",
     icon: BookOpen,
-    badge: "Mới",
   },
   {
     title: "Luyện tập",
@@ -123,11 +128,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   <Link href={item.url}>
                     <item.icon />
                     <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
-                    {item.badge && (
-                      <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary border-none text-[10px] h-4 px-1.5 uppercase font-bold tracking-wider group-data-[collapsible=icon]:hidden">
-                        {item.badge}
-                      </Badge>
-                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

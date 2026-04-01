@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Mic, Loader2, MicOff } from "lucide-react";
+import { Mic, Loader2, MicOff, Square } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,32 +20,24 @@ export function MicButton({ recorderState, onToggle, className, disabled }: MicB
 
   return (
     <div className={cn("relative flex items-center justify-center", className)}>
-      {isListening && (
-        <span className="absolute inset-0 z-0 animate-ping rounded-full bg-destructive/60 opacity-75" />
-      )}
       <Button
         type="button"
-        variant="outline"
-        size={isListening ? "icon-2xl" : "icon-xl"}
+        variant={isListening ? "soft" : "default"}
+        size="icon-2xl"
         disabled={disabled || isProcessing || recorderState === "permission-denied"}
         onClick={onToggle}
-        className={cn(
-          "relative z-10 transition-all duration-300 rounded-full",
-          isListening
-            ? "bg-destructive text-destructive-foreground hover:bg-destructive shadow-[0_0_20px_rgba(239,68,68,0.5)] border-transparent"
-            : "bg-background hover:bg-muted shadow-sm",
-        )}
+        className="shrink-0"
         title={isListening ? "Nhấn để dừng và gửi" : "Nhấn để bắt đầu nói"}
         aria-label={isListening ? "Stop recording" : "Start recording"}
       >
         {isProcessing ? (
-          <Loader2 className="animate-spin" />
+          <Loader2 className="animate-spin size-5" />
         ) : isListening ? (
-          <Mic />
+          <Square className="fill-current size-5" />
         ) : recorderState === "permission-denied" ? (
-          <MicOff className="text-muted-foreground" />
+          <MicOff className="size-5" />
         ) : (
-          <Mic className="text-primary" />
+          <Mic className="size-5" />
         )}
       </Button>
     </div>

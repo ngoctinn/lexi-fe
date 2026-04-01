@@ -24,10 +24,16 @@ interface ConversationScreenProps {
 
 export function ConversationScreen({ sessionId, idToken, initialTurns }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({ sessionId, idToken, initialTurns });
+  const [inputValue, setInputValue] = React.useState("");
   
   const scenarioName = "Luyện nói tự do";
   const aiName = "Alex";
   const status = SessionStatus.ACTIVE; 
+
+  const handleSelectHint = (hint: string) => {
+    setInputValue(hint);
+    toast.success("Đã điền gợi ý vào ô nhập liệu");
+  };
 
   React.useEffect(() => {
     if (ui.wsState === "connected") {
@@ -54,16 +60,14 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
 
   return (
     <div className="flex w-full flex-col h-full bg-background relative overflow-hidden">
-      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/95 px-4 backdrop-blur lg:px-6">
-        <div className="flex items-center gap-3">
-          <SessionHeader
-            sessionId={sessionId}
-            scenarioName={scenarioName}
-            aiName={aiName}
-            status={status}
-            className="border-none bg-transparent h-auto p-0"
-          />
-        </div>
+      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur lg:px-6">
+        <SessionHeader
+          sessionId={sessionId}
+          scenarioName={scenarioName}
+          aiName={aiName}
+          status={status}
+          className="flex-1 border-none bg-transparent h-auto p-0"
+        />
 
         {/* Mobile Sidebar Trigger */}
         <div className="lg:hidden">
@@ -80,6 +84,7 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
                 onSkip={actions.skipTurn}
                 onEnd={actions.endSession}
                 onGetHint={actions.requestHint}
+                onSelectHint={handleSelectHint}
                 isAiStreaming={ui.isAiStreaming}
                 disabled={ui.wsState !== "connected" && ui.wsState !== "reconnecting"}
                 className="border-none w-full h-full"
@@ -105,6 +110,8 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
           {/* Input Area */}
           <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-8">
             <MessageInput
+              value={inputValue}
+              onValueChange={setInputValue}
               onSendMessage={actions.sendMessage}
               onToggleMic={handleMicToggle}
               recorderState={ui.recorderState}

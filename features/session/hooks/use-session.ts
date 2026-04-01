@@ -129,7 +129,20 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
   }, [send, sessionId]);
 
   const requestHint = React.useCallback(() => {
+    // UI TEST: Mocking hint response for development
+    setUi((s) => ({ ...s, currentHint: null })); // reset
+    
+    // Send actual WS event
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
+
+    // Mock local response for testing
+    setTimeout(() => {
+      setUi((s) => ({
+        ...s,
+        currentHint: "I would like to order a double espresso, please.",
+        hintPanelOpen: true,
+      }));
+    }, 1000);
   }, [send, sessionId]);
 
   const skipTurn = React.useCallback(() => {
