@@ -8,7 +8,7 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-full overflow-hidden">
       <AppSidebar />
       <SidebarInset>
         {/* Mobile-only top bar with sidebar trigger */}
@@ -16,9 +16,9 @@ export default function AppLayout({
           <SidebarTrigger className="-ml-2" />
           <Logo textClassName="text-lg" />
         </header>
-        <div className="flex flex-1 flex-col p-4 md:p-8">
-          {children}
-        </div>
+          <div className="flex flex-1 flex-col overflow-hidden">
+            {children}
+          </div>
       </SidebarInset>
     </SidebarProvider>
   );
