@@ -5,7 +5,7 @@ import { FastForward, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSession } from "@/features/session/hooks/use-session";
-import { SessionHeader } from "./session-header";
+import { SessionHeader } from "../shared/session-header";
 import { TranscriptPanel } from "./transcript-panel";
 import { MicButton } from "./mic-button";
 import { SessionStatus, type Turn, WsConnectionState } from "@/features/session/types/session.types";
@@ -43,11 +43,6 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
 
   const handleMicToggle = actions.toggleMic;
 
-  const isControlsDisabled = 
-    ui.wsState !== "connected" ||
-    ui.recorderState !== "idle" ||
-    ui.isAiStreaming;
-
   return (
     <div className="flex w-full flex-col h-full bg-background relative overflow-hidden">
       <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur lg:px-6">
@@ -76,7 +71,7 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
                 onGetHint={actions.requestHint}
                 onSelectHint={handleSelectHint}
                 isAiStreaming={ui.isAiStreaming}
-                disabled={ui.wsState !== "connected" && ui.wsState !== "reconnecting"}
+                disabled={ui.isControlsDisabled}
                 className="border-none w-full h-full"
               />
             </SheetContent>
@@ -105,7 +100,7 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
               onSendMessage={actions.sendMessage}
               onToggleMic={handleMicToggle}
               recorderState={ui.recorderState}
-              disabled={ui.wsState !== "connected" && ui.wsState !== "reconnecting"}
+              disabled={ui.isControlsDisabled}
             />
             
             {/* Connection/Upload status */}
@@ -131,7 +126,7 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
           onEnd={actions.endSession}
           onGetHint={actions.requestHint}
           isAiStreaming={ui.isAiStreaming}
-          disabled={ui.wsState !== "connected" && ui.wsState !== "reconnecting"}
+          disabled={ui.isControlsDisabled}
           className="hidden lg:flex"
         />
       </div>

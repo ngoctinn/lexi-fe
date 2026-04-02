@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
-import { ConversationScreen } from "@/features/session/components/conversation-screen";
+import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
 
 export const metadata = {
   title: "Luyện nói chuyên sâu",

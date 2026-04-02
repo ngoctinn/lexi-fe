@@ -224,6 +224,7 @@ export interface SessionUiState {
   wsState: WsConnectionState;
   currentAudioUrl: string | null;
   uploadUrl: string | null;
+  isControlsDisabled?: boolean;
 }
 
 // =============================================================================

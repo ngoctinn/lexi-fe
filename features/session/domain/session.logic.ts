@@ -25,5 +25,28 @@ export const SessionDomain = {
    */
   getNextStatusAfterTurn: (currentStatus: SessionStatus): SessionStatus => {
     return currentStatus;
+  },
+
+  /**
+   * Checks if UI controls should be disabled.
+   */
+  isControlsDisabled: (
+    wsState: string,
+    recorderState: string,
+    isAiStreaming: boolean
+  ): boolean => {
+    return (
+      wsState !== "connected" ||
+      recorderState === "uploading" ||
+      recorderState === "processing" ||
+      isAiStreaming
+    );
+  },
+
+  /**
+   * Checks if a user is currently allowed to send a manual text message.
+   */
+  canSendText: (status: SessionStatus, isAiStreaming: boolean): boolean => {
+    return status === SessionStatus.ACTIVE && !isAiStreaming;
   }
 };

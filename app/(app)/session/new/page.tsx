@@ -1,5 +1,5 @@
 import { getScenarios } from "@/features/session/actions/get-scenarios";
-import { SessionSetupForm } from "@/features/session/components/session-setup-form";
+import { SessionSetupForm } from "@/features/session/components/setup/session-setup-form";
 
 export const metadata = {
   title: "Bắt đầu luyện nói",

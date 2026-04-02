@@ -10,11 +10,11 @@ import {
   WsServerEvent,
   WsClientEvent,
   TurnSpeaker,
-  SessionStatus,
 } from "@/features/session/types/session.types";
-import { toast } from "sonner";
 import { useWebSocket } from "./use-websocket";
 import { useAudioRecorder } from "./use-audio-recorder";
+import { SessionService } from "../api/session.service";
+import { SessionDomain } from "../domain/session.logic";
 
 interface UseSessionOptions {
   sessionId: string;
@@ -41,7 +41,7 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     turns: initialTurns,
   });
 
-  // --- Handle incoming WS messages ---
+  // --- WebSocket Message Orchestration ---
   const handleWsMessage = React.useCallback((event: WsServerPayload) => {
     switch (event.event) {
       case WsServerEvent.SESSION_READY:
@@ -75,10 +75,6 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
         setUi((s) => ({ ...s, currentAudioUrl: event.url }));
         break;
 
-      case WsServerEvent.TURN_SAVED:
-        // Backend confirms turn was persisted — nothing extra needed in UI
-        break;
-
       case WsServerEvent.HINT_TEXT:
         setUi((s) => ({
           ...s,
@@ -88,18 +84,19 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
         break;
 
       case WsServerEvent.SCORING_COMPLETE:
-        // Redirect handled by parent component via callback
         setUi((s) => ({ ...s, wsState: "disconnected" }));
         break;
 
       case WsServerEvent.ERROR:
-        toast.error(`Máy chủ báo lỗi: ${event.message}`);
-        console.error("[WS server error]", event.message);
+        SessionService.handleError(event.message, "WebSocket");
+        break;
+      
+      default:
         break;
     }
   }, []);
 
-  // --- WebSocket ---
+  // --- WebSocket infrastructure ---
   const { connectionState, send, disconnect } = useWebSocket({
     sessionId,
     idToken,
@@ -107,23 +104,24 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     onConnectionChange: (wsState) => setUi((s) => ({ ...s, wsState })),
   });
 
-  // --- Audio Recorder ---
+  // --- Audio infrastructure ---
   const { state: recorderState, startRecording, stopRecording, uploadProgress } = useAudioRecorder({
     onRecordingComplete: (s3Key) => {
       send({ action: WsClientEvent.AUDIO_UPLOADED, session_id: sessionId, s3_key: s3Key });
     },
     onError: (message) => {
-      toast.error(message);
+      SessionService.handleError(message, "Recorder");
       setUi((s) => ({ ...s, recorderState: "error" }));
     },
   });
 
-  // Sync recorder state into UI state
+  // Keep recorder state in sync
   React.useEffect(() => {
     setUi((s) => ({ ...s, recorderState }));
   }, [recorderState]);
 
-  // --- Derived actions ---
+  // --- Active Actions ---
+
   const startSession = React.useCallback(() => {
     send({ action: WsClientEvent.START_SESSION, session_id: sessionId });
   }, [send, sessionId]);
@@ -132,15 +130,10 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     setUi((s) => ({ ...s, currentHint: null })); // reset
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
 
-    // Mock local response for testing
+    // Parallel fetch mock if in dev
     if (process.env.NODE_ENV === "development") {
-      const { mockSessionService } = await import("../api/session-mock");
-      const hint = await mockSessionService.getHint(sessionId);
-      setUi((s) => ({
-        ...s,
-        currentHint: hint,
-        hintPanelOpen: true,
-      }));
+      const hint = await SessionService.getHint(sessionId);
+      setUi((s) => ({ ...s, currentHint: hint, hintPanelOpen: true }));
     }
   }, [send, sessionId]);
 
@@ -148,9 +141,9 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     if (recorderState === "recording") {
       stopRecording();
     } else {
-      const { mockSessionService } = await import("../api/session-mock");
-      const targetUrl = ui.uploadUrl ?? mockSessionService.getMockUploadUrl();
-      const s3Key = mockSessionService.generateUploadKey(sessionId);
+      // In development, we use mock upload url if backend didn't provide one
+      const targetUrl = ui.uploadUrl || "https://mock-upload.com";
+      const s3Key = `sessions/${sessionId}/${Date.now()}.webm`;
       startRecording(targetUrl, s3Key);
     }
   }, [recorderState, stopRecording, startRecording, ui.uploadUrl, sessionId]);
@@ -167,7 +160,7 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
   const sendMessage = React.useCallback((text: string) => {
     if (!text.trim()) return;
     
-    // Optimistic UI update: add user turn locally
+    // Add User Turn local/optimistic
     const newTurn: Turn = {
       turn_index: ui.turns.length,
       speaker: TurnSpeaker.USER,
@@ -178,19 +171,11 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     };
 
     setUi((s) => ({ ...s, turns: [...s.turns, newTurn] }));
-    
-    send({ 
-      action: WsClientEvent.SEND_MESSAGE, 
-      session_id: sessionId, 
-      text 
-    });
+    send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
   }, [send, sessionId, ui.turns.length]);
 
-  const toggleHintPanel = React.useCallback(() => {
-    setUi((s) => ({ ...s, hintPanelOpen: !s.hintPanelOpen }));
-  }, []);
-
   const translateTurn = React.useCallback(async (turnIndex: number) => {
+    // Initial UI signal
     setUi((s) => ({
       ...s,
       turns: s.turns.map((t) => 
@@ -200,22 +185,29 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       ),
     }));
 
-    if (process.env.NODE_ENV === "development") {
-      const { mockSessionService } = await import("../api/session-mock");
-      const translation = await mockSessionService.translateTurn(sessionId, turnIndex);
+    try {
+      const translation = await SessionService.translateTurn(sessionId, turnIndex);
       setUi((s) => ({
         ...s,
         turns: s.turns.map((t) => 
-          t.turn_index === turnIndex 
-            ? { ...t, translated_content: translation } 
-            : t
+          t.turn_index === turnIndex ? { ...t, translated_content: translation } : t
         ),
       }));
+    } catch (err: any) {
+      SessionService.handleError(err.message, "Translation");
     }
   }, [sessionId]);
 
+  const toggleHintPanel = React.useCallback(() => {
+    setUi((s) => ({ ...s, hintPanelOpen: !s.hintPanelOpen }));
+  }, []);
+
   return {
-    ui: { ...ui, wsState: connectionState },
+    ui: { 
+      ...ui, 
+      wsState: connectionState,
+      isControlsDisabled: SessionDomain.isControlsDisabled(connectionState, recorderState, ui.isAiStreaming)
+    },
     uploadProgress,
     actions: {
       startSession,

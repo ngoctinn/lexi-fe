@@ -6,9 +6,9 @@ export { getSessions } from "./actions/get-sessions";
 export { getScenarios } from "./actions/get-scenarios";
 
 // Components
-export { ConversationScreen } from "./components/conversation-screen";
-export { SessionSetupForm } from "./components/session-setup-form";
-export { ScoringResult } from "./components/scoring-result";
+export { ConversationScreen } from "./components/conversation/conversation-screen";
+export { SessionSetupForm } from "./components/setup/session-setup-form";
+export { ScoringResult } from "./components/scoring/scoring-result";
 
 // Hooks
 export { useSession } from "./hooks/use-session";

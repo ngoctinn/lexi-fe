@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
-import { ScoringResult } from "@/features/session/components/scoring-result";
-import { ScoringSkeleton } from "@/features/session/components/scoring-skeleton";
+import { ScoringResult } from "@/features/session/components/scoring/scoring-result";
+import { ScoringSkeleton } from "@/features/session/components/scoring/scoring-skeleton";
 import { SessionStatus } from "@/features/session/types/session.types";
-import { TurnBubble } from "@/features/session/components/turn-bubble";
+import { TurnBubble } from "@/features/session/components/conversation/turn-bubble";
 
 export const metadata = {
   title: "Kết quả luyện nói",
