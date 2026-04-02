@@ -15,6 +15,7 @@ import { AiAudioPlayer } from "./ai-audio-player";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
+import { InstantLookup } from "@/features/vocabulary/components/lookup/instant-lookup";
 
 interface ConversationScreenProps {
   sessionId: string;
@@ -132,6 +133,7 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
       </div>
       
       <AiAudioPlayer url={ui.currentAudioUrl} />
+      <InstantLookup />
     </div>
   );
 }
