@@ -99,9 +99,12 @@ lexi-fe/
 ├── features/                         # Feature modules (Clean Arch)
 │   ├── auth/                         # Authentication feature
 │   │   ├── components/               # Auth UI components
-│   │   │   └── auth-form.tsx         # Login/signup form
-│   │   ├── hooks/                    # Auth hooks (future)
-│   │   ├── types/                    # Auth types (future)
+│   │   │   ├── login-form.tsx        # Login-specific UI
+│   │   │   ├── signup-form.tsx       # Signup-specific UI
+│   │   │   └── ...
+│   │   ├── hooks/                    # Auth logic (useAuthForm)
+│   │   ├── types/                    # Auth schemas/types
+│   │   ├── api/                      # Server Actions (auth.actions.ts)
 │   │   └── index.ts                  # Feature exports
 │   ├── navigation/                   # Navigation feature
 │   │   ├── components/               # Sidebar, nav items
@@ -202,27 +205,28 @@ export default async function DashboardPage() {
 
 **Example**:
 ```tsx
-// features/auth/components/auth-form.tsx
+// features/auth/components/login-form.tsx
 "use client"
 
-import { useState } from "react"
+import { useAuthForm } from "../hooks/use-auth-form"
+import { loginAction } from "../api/auth.actions"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
-export function AuthForm() {
-  const [loading, setLoading] = useState(false)
+export function LoginForm() {
+  const { action, isPending } = useAuthForm(loginAction)
   
   return (
-    <form onSubmit={() => setLoading(true)} className="flex flex-col gap-4">
+    <form action={action} className="flex flex-col gap-4">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" type="email" placeholder="example@test.com" />
+          <Input id="email" name="email" type="email" />
         </Field>
       </FieldGroup>
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading ? "Signing in..." : "Sign In"}
+      <Button type="submit" disabled={isPending} className="w-full">
+        {isPending ? "Signing in..." : "Sign In"}
       </Button>
     </form>
   )

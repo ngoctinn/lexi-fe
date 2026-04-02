@@ -15,10 +15,14 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
+import { useAuthForm } from "../hooks/use-auth-form";
+import { forgotPasswordAction } from "../api/auth.actions";
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
+  const { state, action, isPending } = useAuthForm(forgotPasswordAction);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card size="lg" className="overflow-visible shadow-lg">
@@ -34,22 +38,24 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form action={action}>
             <div className="grid gap-6">
               <FieldGroup className="gap-6">
                 <Field>
                   <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     size="2xl"
                     placeholder="name@example.com"
                     autoComplete="email"
                     required
                   />
+                  {state.errors?.email && <FieldError>{state.errors.email[0]}</FieldError>}
                 </Field>
-                <Button type="submit" size="2xl" className="w-full text-base mt-2">
-                  Gửi mã xác nhận
+                <Button type="submit" size="2xl" className="w-full text-base mt-2" disabled={isPending}>
+                  {isPending ? "Đang gửi..." : "Gửi mã xác nhận"}
                 </Button>
               </FieldGroup>
             </div>

@@ -1,4 +1,4 @@
-import { AuthForm } from "@/features/auth/components/auth-form"
+import { SignupForm } from "@/features/auth/components/signup-form"
 
 export const metadata = {
   title: "Đăng ký | Lexi",
@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function SignupPage() {
-  return <AuthForm mode="signup" className="mx-auto w-full max-w-md" />
+  return <SignupForm className="mx-auto w-full max-w-md" />
 }

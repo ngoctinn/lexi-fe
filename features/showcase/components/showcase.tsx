@@ -12,7 +12,7 @@ import { DataDisplayShowcase } from "./data-display-showcase";
 import { FlashcardShowcase } from "./flashcard-showcase";
 import { AdvancedShowcase } from "./advanced-showcase";
 import { SizingShowcase } from "./sizing-showcase";
-import { AuthForm } from "@/features/auth";
+import { LoginForm } from "@/features/auth";
 import { Dashboard } from "@/features/dashboard";
 import { Badge } from "@/components/ui/badge";
 
@@ -48,7 +48,7 @@ export function Showcase() {
 
         {/* Auth Module Block */}
         <div className="md:col-span-2 lg:col-span-3 lg:row-span-2">
-          <AuthForm />
+          <LoginForm />
         </div>
 
         {/* Dashboard Preview */}

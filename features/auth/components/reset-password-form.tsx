@@ -15,9 +15,11 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
+import { useAuthForm } from "../hooks/use-auth-form";
+import { resetPasswordAction } from "../api/auth.actions";
 
 interface ResetPasswordFormProps extends React.ComponentProps<"div"> {
   email?: string;
@@ -26,6 +28,8 @@ interface ResetPasswordFormProps extends React.ComponentProps<"div"> {
 export function ResetPasswordForm({ className, email = "your-email@example.com", ...props }: ResetPasswordFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [otpValue, setOtpValue] = React.useState("");
+  
+  const { state, action, isPending } = useAuthForm(resetPasswordAction);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -43,7 +47,7 @@ export function ResetPasswordForm({ className, email = "your-email@example.com",
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form action={action}>
             <div className="grid gap-6">
               <FieldGroup className="gap-6">
 
@@ -51,6 +55,7 @@ export function ResetPasswordForm({ className, email = "your-email@example.com",
                   <FieldLabel htmlFor="otp" className="mb-2 text-foreground/80">Mã xác minh (OTP)</FieldLabel>
                   <InputOTP
                     id="otp"
+                    name="otp"
                     maxLength={6}
                     value={otpValue}
                     onChange={(val) => setOtpValue(val)}
@@ -68,6 +73,7 @@ export function ResetPasswordForm({ className, email = "your-email@example.com",
                       <InputOTPSlot index={5} size="2xl" />
                     </InputOTPGroup>
                   </InputOTP>
+                  {state.errors?.otp && <FieldError className="text-center">{state.errors.otp[0]}</FieldError>}
                 </Field>
 
                 <Field className="!mt-2">
@@ -75,6 +81,7 @@ export function ResetPasswordForm({ className, email = "your-email@example.com",
                   <div className="relative">
                     <Input
                       id="new-password"
+                      name="newPassword"
                       type={showPassword ? "text" : "password"}
                       size="2xl"
                       className="pr-12"
@@ -92,10 +99,11 @@ export function ResetPasswordForm({ className, email = "your-email@example.com",
                     </Button>
                   </div>
                   <FieldDescription>Mật khẩu tối thiểu 8 ký tự, bao gồm chữ cái và chữ số.</FieldDescription>
+                  {state.errors?.newPassword && <FieldError>{state.errors.newPassword[0]}</FieldError>}
                 </Field>
 
-                <Button type="submit" size="2xl" className="w-full text-base mt-2" disabled={otpValue.length < 6}>
-                  Cập nhật mật khẩu
+                <Button type="submit" size="2xl" className="w-full text-base mt-2" disabled={isPending || otpValue.length < 6}>
+                  {isPending ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
                 </Button>
               </FieldGroup>
             </div>

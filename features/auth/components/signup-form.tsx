@@ -14,36 +14,42 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/shared/logo";
+import { useAuthForm } from "../hooks/use-auth-form";
+import { signupAction } from "../api/auth.actions";
 
-interface AuthFormProps extends React.ComponentProps<"div"> {
-  mode?: "login" | "signup";
-}
+interface SignupFormProps extends React.ComponentProps<"div"> {}
 
-export function AuthForm({ className, mode = "login", ...props }: AuthFormProps) {
+export function SignupForm({ className, ...props }: SignupFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
+  const { state, action, isPending } = useAuthForm(signupAction);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card size="lg" className="overflow-visible">
+      <Card size="lg" className="overflow-visible shadow-lg">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4">
             <Logo size="default" />
             <div className="h-6 w-px bg-border shrink-0" />
             <CardTitle className="text-xl font-bold tracking-tight">
-              {mode === "login" ? "Đăng nhập" : "Đăng ký"}
+              Đăng ký
             </CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form action={action}>
             <div className="grid gap-8">
-              {/* Google Auth */}
+              {/* Google Auth Placeholder */}
               <div className="flex flex-col gap-4">
-                <Button variant="outline" size="2xl" className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-5" data-icon="inline-start">
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  size="2xl" 
+                  className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
+                >
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-5" data-icon="inline-start">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -61,7 +67,7 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                       fill="#EA4335"
                     />
                   </svg>
-                  {mode === "login" ? "Đăng nhập với Google" : "Đăng ký với Google"}
+                  Đăng ký với Google
                 </Button>
               </div>
 
@@ -74,32 +80,26 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                   <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     size="2xl"
                     placeholder="name@example.com"
                     autoComplete="email"
                     required
                   />
+                  {state.errors?.email && <FieldError>{state.errors.email[0]}</FieldError>}
                 </Field>
+
                 <Field>
-                  <div className="flex items-center justify-between">
-                    <FieldLabel htmlFor="password" className="text-foreground/80">Mật khẩu</FieldLabel>
-                    {mode === "login" && (
-                      <Link
-                        href="/forgot-password"
-                        className="text-xs font-medium text-primary hover:underline underline-offset-4"
-                      >
-                        Quên mật khẩu?
-                      </Link>
-                    )}
-                  </div>
+                  <FieldLabel htmlFor="password" className="text-foreground/80">Mật khẩu</FieldLabel>
                   <div className="relative">
                     <Input
                       id="password"
+                      name="password"
                       type={showPassword ? "text" : "password"}
                       size="2xl"
                       className="pr-12"
-                      autoComplete={mode === "login" ? "current-password" : "new-password"}
+                      autoComplete="new-password"
                       required
                     />
                     <Button
@@ -112,31 +112,24 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
                       {showPassword ? <EyeOff /> : <Eye />}
                     </Button>
                   </div>
+                  {state.errors?.password && <FieldError>{state.errors.password[0]}</FieldError>}
                 </Field>
 
-                {mode === "login" ? (
-                  <Field orientation="horizontal" className="items-center gap-2">
-                    <Checkbox id="remember" />
-                    <FieldLabel htmlFor="remember" className="text-xs font-normal text-muted-foreground cursor-pointer">
-                      Ghi nhớ đăng nhập
+                <Field orientation="horizontal" className="items-start gap-2">
+                  <Checkbox id="terms" name="terms" />
+                  <div className="grid gap-1 leading-none">
+                    <FieldLabel htmlFor="terms" className="text-xs font-normal text-muted-foreground cursor-pointer">
+                      Tôi đồng ý với{" "}
+                      <Link href="/terms" className="underline hover:text-primary">Điều khoản</Link>
+                      {" "}và{" "}
+                      <Link href="/privacy" className="underline hover:text-primary">Chính sách bảo mật</Link>.
                     </FieldLabel>
-                  </Field>
-                ) : (
-                  <Field orientation="horizontal" className="items-start gap-2">
-                    <Checkbox id="terms" required />
-                    <div className="grid gap-1 leading-none">
-                      <FieldLabel htmlFor="terms" className="text-xs font-normal text-muted-foreground cursor-pointer">
-                        Tôi đồng ý với{" "}
-                        <Link href="/terms" className="underline hover:text-primary">Điều khoản</Link>
-                        {" "}và{" "}
-                        <Link href="/privacy" className="underline hover:text-primary">Chính sách bảo mật</Link>.
-                      </FieldLabel>
-                    </div>
-                  </Field>
-                )}
+                    {state.errors?.terms && <FieldError>{state.errors.terms[0]}</FieldError>}
+                  </div>
+                </Field>
 
-                <Button type="submit" size="2xl" className="w-full text-base">
-                  {mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}
+                <Button type="submit" size="2xl" className="w-full text-base" disabled={isPending}>
+                  {isPending ? "Đang xử lý..." : "Tạo tài khoản"}
                 </Button>
               </FieldGroup>
             </div>
@@ -144,26 +137,13 @@ export function AuthForm({ className, mode = "login", ...props }: AuthFormProps)
         </CardContent>
         <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 py-6 text-center">
           <div className="text-sm text-balance text-muted-foreground">
-            {mode === "login" ? (
-              <>
-                Chưa có tài khoản?{" "}
-                <Link href="/signup" className="font-bold text-foreground hover:text-primary transition-colors">
-                  Đăng ký ngay
-                </Link>
-              </>
-            ) : (
-              <>
-                Đã có tài khoản?{" "}
-                <Link href="/login" className="font-bold text-foreground hover:text-primary transition-colors">
-                  Đăng nhập
-                </Link>
-              </>
-            )}
+            Đã có tài khoản?{" "}
+            <Link href="/login" className="font-bold text-foreground hover:text-primary transition-colors">
+              Đăng nhập
+            </Link>
           </div>
         </CardFooter>
       </Card>
-
-
     </div>
   );
 }
