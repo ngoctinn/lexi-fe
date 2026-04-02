@@ -128,22 +128,32 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     send({ action: WsClientEvent.START_SESSION, session_id: sessionId });
   }, [send, sessionId]);
 
-  const requestHint = React.useCallback(() => {
-    // UI TEST: Mocking hint response for development
+  const requestHint = React.useCallback(async () => {
     setUi((s) => ({ ...s, currentHint: null })); // reset
-    
-    // Send actual WS event
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
 
     // Mock local response for testing
-    setTimeout(() => {
+    if (process.env.NODE_ENV === "development") {
+      const { mockSessionService } = await import("../api/session-mock");
+      const hint = await mockSessionService.getHint(sessionId);
       setUi((s) => ({
         ...s,
-        currentHint: "I would like to order a double espresso, please.",
+        currentHint: hint,
         hintPanelOpen: true,
       }));
-    }, 1000);
+    }
   }, [send, sessionId]);
+
+  const toggleMic = React.useCallback(async () => {
+    if (recorderState === "recording") {
+      stopRecording();
+    } else {
+      const { mockSessionService } = await import("../api/session-mock");
+      const targetUrl = ui.uploadUrl ?? mockSessionService.getMockUploadUrl();
+      const s3Key = mockSessionService.generateUploadKey(sessionId);
+      startRecording(targetUrl, s3Key);
+    }
+  }, [recorderState, stopRecording, startRecording, ui.uploadUrl, sessionId]);
 
   const skipTurn = React.useCallback(() => {
     send({ action: WsClientEvent.SKIP_TURN, session_id: sessionId });
@@ -163,7 +173,7 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       speaker: TurnSpeaker.USER,
       content: text,
       created_at: new Date().toISOString(),
-      is_hint_used: false, // will update if needed, normally text messages don't mark hint here
+      is_hint_used: false,
       is_skipped: false,
     };
 
@@ -180,9 +190,7 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     setUi((s) => ({ ...s, hintPanelOpen: !s.hintPanelOpen }));
   }, []);
 
-  const translateTurn = React.useCallback((turnIndex: number) => {
-    // MOCK: In real app, this sends WS event or calls server action
-    // session_id is accessible via sessionId from props
+  const translateTurn = React.useCallback(async (turnIndex: number) => {
     setUi((s) => ({
       ...s,
       turns: s.turns.map((t) => 
@@ -192,26 +200,26 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       ),
     }));
 
-    // Mock delay for translation
-    setTimeout(() => {
+    if (process.env.NODE_ENV === "development") {
+      const { mockSessionService } = await import("../api/session-mock");
+      const translation = await mockSessionService.translateTurn(sessionId, turnIndex);
       setUi((s) => ({
         ...s,
         turns: s.turns.map((t) => 
           t.turn_index === turnIndex 
-            ? { ...t, translated_content: "Đây là bản dịch mẫu cho câu hội thoại này." } 
+            ? { ...t, translated_content: translation } 
             : t
         ),
       }));
-    }, 1000);
-  }, []);
+    }
+  }, [sessionId]);
 
   return {
     ui: { ...ui, wsState: connectionState },
     uploadProgress,
     actions: {
       startSession,
-      startRecording,
-      stopRecording,
+      toggleMic,
       requestHint,
       skipTurn,
       endSession,

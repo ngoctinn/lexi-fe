@@ -41,17 +41,7 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
     }
   }, [ui.wsState, actions]);
 
-  const handleMicToggle = async () => {
-    if (ui.recorderState === "recording") {
-      actions.stopRecording();
-    } else {
-      const dummyUrl = "http://localhost:3000/mock-upload";
-      const targetUrl = ui.uploadUrl ?? dummyUrl;
-      const dummyKey = `sessions/${sessionId}/turn_${Date.now()}.webm`;
-      
-      actions.startRecording(targetUrl, dummyKey);
-    }
-  };
+  const handleMicToggle = actions.toggleMic;
 
   const isControlsDisabled = 
     ui.wsState !== "connected" ||
