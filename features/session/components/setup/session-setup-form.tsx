@@ -14,8 +14,15 @@ import { ScenarioPicker } from "./scenario-picker";
 import { createSession } from "@/features/session/actions/create-session";
 import type { Scenario, CreateSessionDto } from "@/features/session/types/session.types";
 import { toast } from "sonner";
-
-const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface SessionSetupFormProps extends React.ComponentProps<"form"> {
   scenarios: Scenario[];
@@ -24,6 +31,9 @@ interface SessionSetupFormProps extends React.ComponentProps<"form"> {
 export function SessionSetupForm({ scenarios, className, ...props }: SessionSetupFormProps) {
   const router = useRouter();
   const [isPending, setIsPending] = React.useState(false);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [customScenarioInput, setCustomScenarioInput] = React.useState("");
+  const [activeCustomScenario, setActiveCustomScenario] = React.useState("");
 
   const [formData, setFormData] = React.useState<CreateSessionDto>({
     scenario: "free",
@@ -37,11 +47,34 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleCustomScenarioSave = () => {
+    if (!customScenarioInput.trim()) {
+      toast.error("Vui lòng nhập bối cảnh hội thoại");
+      return;
+    }
+    setActiveCustomScenario(customScenarioInput);
+    set("scenario", "custom");
+    setIsDialogOpen(false);
+    toast.success("Đã thiết lập kịch bản riêng");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (formData.scenario === "custom" && !activeCustomScenario.trim()) {
+      toast.error("Vui lòng thiết lập kịch bản của bạn.");
+      setIsDialogOpen(true);
+      return;
+    }
+
     setIsPending(true);
 
-    const result = await createSession(formData);
+    const finalDto: CreateSessionDto = {
+      ...formData,
+      scenario: formData.scenario === "custom" ? `custom:${activeCustomScenario}` : formData.scenario
+    };
+
+    const result = await createSession(finalDto);
 
     if (result.success && result.session_id) {
       router.push(`/session/${result.session_id}`);
@@ -58,52 +91,71 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
       {...props}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start h-full min-h-0">
-        {/* Left Column: Scenarios (Scrollable) */}
-        <div className="lg:col-span-7 flex flex-col gap-8 h-full overflow-y-auto pr-4 custom-scrollbar">
-          <Field className="gap-4">
-            <div className="flex flex-col gap-1">
-              <FieldLabel className="text-xl font-bold tracking-tight">Kịch bản hội thoại</FieldLabel>
-              <FieldDescription>Chọn một kịch bản để AI chuẩn bị nhân vật và hướng dẫn bạn.</FieldDescription>
+        {/* Left Column: Scenarios */}
+        <div className="lg:col-span-7 flex flex-col gap-10 h-full overflow-y-auto pr-4 custom-scrollbar pb-10">
+          <Field className="gap-6">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-1">
+                <FieldLabel className="text-xl font-bold tracking-tight">Kịch bản hội thoại</FieldLabel>
+                <FieldDescription>Chọn kịch bản có sẵn hoặc tự định nghĩa bối cảnh.</FieldDescription>
+              </div>
+              
+              <Button 
+                type="button" 
+                variant={formData.scenario === "custom" ? "default" : "outline"}
+                size="sm" 
+                className="h-9 rounded-lg text-xs font-bold px-5"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                {formData.scenario === "custom" ? "Đã thiết lập" : "Tự thiết lập"}
+              </Button>
             </div>
+
             <ScenarioPicker
               scenarios={scenarios}
               value={formData.scenario}
               onChange={(v) => set("scenario", v)}
             />
+            
+            {formData.scenario === "custom" && activeCustomScenario && (
+              <div className="p-6 rounded-xl border-2 border-dotted border-border bg-transparent flex flex-col gap-2 animate-in fade-in duration-300">
+                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Bối cảnh tùy chỉnh đã lưu:</span>
+                 <p className="text-sm text-foreground leading-relaxed">
+                   {activeCustomScenario}
+                 </p>
+              </div>
+            )}
           </Field>
         </div>
 
-        {/* Right Column: Other fields vertically stacked (Fixed) */}
+        {/* Right Column */}
         <div className="lg:col-span-5 flex flex-col gap-10">
           <div className="flex flex-col gap-8">
-            <h2 className="text-xl font-bold tracking-tight">Tùy chỉnh nhân vật</h2>
+            <h2 className="text-xl font-bold tracking-tight">Nhân vật & Trình độ</h2>
 
             <FieldGroup className="gap-8">
-              {/* My character */}
               <Field>
                 <FieldLabel htmlFor="my-character">Bạn đóng vai</FieldLabel>
                 <Input
                   id="my-character"
                   size="2xl"
-                  placeholder="VD: Ứng viên xin việc"
+                  placeholder="VD: Hành khách"
                   value={formData.my_character}
                   onChange={(e) => set("my_character", e.target.value)}
                 />
               </Field>
 
-              {/* AI character */}
               <Field>
                 <FieldLabel htmlFor="ai-character">AI đóng vai</FieldLabel>
                 <Input
                   id="ai-character"
                   size="2xl"
-                  placeholder="VD: Nhà tuyển dụng"
+                  placeholder="VD: Nhân viên sân bay"
                   value={formData.ai_character}
                   onChange={(e) => set("ai_character", e.target.value)}
                 />
               </Field>
 
-              {/* AI Gender */}
               <Field>
                 <FieldLabel htmlFor="ai-gender">Giọng AI</FieldLabel>
                 <Select
@@ -120,7 +172,6 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
                 </Select>
               </Field>
 
-              {/* Level picker */}
               <Field className="gap-4">
                 <FieldLabel className="font-semibold">Trình độ luyện tập</FieldLabel>
                 <LevelPicker
@@ -129,7 +180,7 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
                 />
               </Field>
 
-              <Button type="submit" size="2xl" className="w-full text-base h-14 mt-2" disabled={isPending}>
+              <Button type="submit" size="2xl" className="w-full text-base h-16 mt-2" disabled={isPending}>
                 {isPending && <Loader2 className="animate-spin" data-icon="inline-start" />}
                 {isPending ? "Đang khởi tạo..." : "Bắt đầu hội thoại ngay"}
               </Button>
@@ -137,6 +188,30 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
           </div>
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Thiết lập kịch bản riêng</DialogTitle>
+            <DialogDescription>
+              Hãy mô tả chi tiết bối cảnh cuộc hội thoại bạn đang muốn thực hành.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea 
+              placeholder="VD: Tôi muốn hội thoại tại ga tàu London. Tôi đang tìm quầy vé bị mất..."
+              className="min-h-[150px] text-base leading-relaxed font-medium"
+              value={customScenarioInput}
+              onChange={(e) => setCustomScenarioInput(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Hủy</Button>
+            <Button onClick={handleCustomScenarioSave} className="px-6 font-bold">Lưu thiết lập</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
