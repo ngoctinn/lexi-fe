@@ -1,12 +1,20 @@
+import { redirect } from "next/navigation";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/navigation";
 import { Logo } from "@/components/shared/logo";
+import { getProfileStatus } from "@/features/onboarding";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Tạm thời bỏ qua Onboarding Guard theo yêu cầu công việc
+  // const { is_onboarded } = await getProfileStatus();
+  // if (is_onboarded === false) {
+  //   redirect("/onboarding");
+  // }
+
   return (
     <SidebarProvider className="h-full overflow-hidden">
       <AppSidebar />
