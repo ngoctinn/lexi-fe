@@ -116,7 +116,7 @@ export function TurnBubble({
           </Button>
 
           {turn.is_hint_used && (
-            <Badge variant="outline" className="h-5 px-1.5 text-[10px] bg-amber-500/10 text-amber-600 border-amber-200 ml-1">
+            <Badge variant="warning" size="xs" className="ml-1">
               Dùng gợi ý
             </Badge>
           )}
