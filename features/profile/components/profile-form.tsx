@@ -1,106 +1,225 @@
 "use client";
 
 import * as React from "react";
-import { Camera, Save } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export function ProfileForm() {
+import { updateProfile } from "../api/profile.actions";
+import { signOut } from "aws-amplify/auth";
+import { useRouter } from "next/navigation";
+
+interface ProfileFormProps {
+  initialData: {
+    display_name?: string;
+    email?: string;
+    current_level?: string;
+    learning_goal?: string;
+    avatar_url?: string;
+  };
+}
+
+const DEFAULT_AVATAR = `https://api.dicebear.com/9.x/lorelei/svg?seed=Aria`;
+
+const AVATAR_PRESETS = [
+  "Aria", "Sasha", "Jack", "Oliver", "Jasper", "Willow", "Aidan", "Zoe", "Felix", "Ruby"
+].map(seed => `https://api.dicebear.com/9.x/lorelei/svg?seed=${seed}`);
+
+export function ProfileForm({ initialData }: ProfileFormProps) {
+  const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    display_name: initialData.display_name || "",
+    current_level: initialData.current_level || "A1",
+    learning_goal: initialData.learning_goal || "B1",
+    avatar_url: initialData.avatar_url || DEFAULT_AVATAR,
+  });
 
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSaving(true);
-    // Mock save delay
-    setTimeout(() => {
-      setIsSaving(false);
-      toast.success("Đã cập nhật hồ sơ thành công!");
-    }, 1000);
+  const selectAvatar = (url: string) => {
+    setFormData(prev => ({ ...prev, avatar_url: url }));
   };
 
+  const handleRemoveAvatar = () => {
+    setFormData(prev => ({ ...prev, avatar_url: DEFAULT_AVATAR }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.refresh();
+    } catch (error) {
+      toast.error("Đăng xuất thất bại.");
+    }
+  };
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    try {
+      const result = await updateProfile(formData);
+      if (result.success) {
+        toast.success("Đã cập nhật hồ sơ thành công!");
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const levels = [
+    { value: "A1", label: "A1 - Mới bắt đầu" },
+    { value: "A2", label: "A2 - Căn bản" },
+    { value: "B1", label: "B1 - Trung cấp" },
+    { value: "B2", label: "B2 - Trung cấp khá" },
+    { value: "C1", label: "C1 - Cao cấp" },
+    { value: "C2", label: "C2 - Thành thạo" },
+  ];
+
   return (
-    <form onSubmit={handleSave}>
-      <Card className="max-w-2xl shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Thông tin cá nhân</CardTitle>
-          <CardDescription>Cập nhật thông tin của bạn để AI có thể hiểu và hỗ trợ bạn tốt nhất.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-8">
-          {/* Avatar Section */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <div className="relative group">
-              <Avatar size="2xl" className="ring-4 ring-background shadow-md">
-                <AvatarImage src="/avatars/user.jpg" alt="Ngọc Tín" />
-                <AvatarFallback className="text-2xl bg-primary/10 text-primary font-bold">NT</AvatarFallback>
-              </Avatar>
-              <div className="absolute inset-0 bg-black/40 text-white rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                 <Camera className="size-6 mb-1" />
-                 <span className="text-[10px] font-bold uppercase tracking-wider">Đổi ảnh</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <h3 className="font-semibold text-foreground">Ảnh đại diện</h3>
-              <p className="text-sm text-muted-foreground">Khuyến nghị ảnh vuông, tối thiểu 256x256px.</p>
-              <div className="flex gap-2 mt-1">
-                <Button type="button" variant="outline" size="sm">Tải ảnh lên</Button>
-                <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">Xóa ảnh</Button>
-              </div>
-            </div>
+    <form onSubmit={handleSave} className="space-y-10">
+
+      {/* Avatar Section */}
+      <div className="flex items-center gap-x-8">
+        <Avatar className="h-28 w-28 border shadow-sm">
+          <AvatarImage src={formData.avatar_url} alt={formData.display_name} />
+          <AvatarFallback className="text-3xl bg-primary text-primary-foreground font-semibold">
+            {formData.display_name.substring(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {AVATAR_PRESETS.map((url, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => selectAvatar(url)}
+                className={cn(
+                  "size-10 rounded-full border transition-colors overflow-hidden",
+                  formData.avatar_url === url ? "border-primary ring-2 ring-primary/20" : "border-transparent"
+                )}
+              >
+                <img src={url} alt={`Preset ${index}`} className="size-full object-cover" />
+              </button>
+            ))}
           </div>
+          
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={handleRemoveAvatar}>
+              Đặt về mặc định
+            </Button>
+          </div>
+        </div>
+      </div>
 
-          <div className="h-px bg-border w-full" />
+      <Separator />
 
-          {/* Form Fields Section */}
-          <FieldGroup className="gap-6">
+      {/* Basic Info Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-1">
+          <h2 className="text-base font-semibold leading-7 text-foreground">Thông tin cơ bản</h2>
+          <p className="text-sm leading-6 text-muted-foreground mt-1">Các thông tin dùng để nhận diện và hiển thị trong cộng đồng Lexi.</p>
+        </div>
+
+        <div className="md:col-span-2 space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
             <Field>
-              <FieldLabel htmlFor="displayName">Tên hiển thị</FieldLabel>
-              <Input id="displayName" defaultValue="Ngọc Tín" size="xl" required />
-              <FieldDescription>Tên này sẽ được hiển thị trên bảng xếp hạng và giao diện ứng dụng.</FieldDescription>
+              <FieldLabel htmlFor="display_name">Tên hiển thị</FieldLabel>
+              <Input
+                id="display_name"
+                value={formData.display_name}
+                onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                size="xl"
+                required
+              />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="proficiency">Trình độ tiếng Anh (CEFR)</FieldLabel>
-              <Select defaultValue="a2">
-                <SelectTrigger id="proficiency" size="xl" className="font-medium">
-                  <SelectValue placeholder="Chọn trình độ của bạn" />
+              <FieldLabel htmlFor="email">Email tài khoản</FieldLabel>
+              <Input
+                id="email"
+                value={initialData.email}
+                size="xl"
+                disabled
+              />
+              <FieldDescription>Email của bạn không thể thay đổi tại đây.</FieldDescription>
+            </Field>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Learning Path Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-1">
+          <h2 className="text-base font-semibold leading-7 text-foreground">Lộ trình học tập</h2>
+          <p className="text-sm leading-6 text-muted-foreground mt-1">Xác định trình độ và mục tiêu giúp Lexi cá nhân hóa bài học hiệu quả hơn.</p>
+        </div>
+
+        <div className="md:col-span-2 space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+            <Field>
+              <FieldLabel htmlFor="current_level">Trình độ hiện tại</FieldLabel>
+              <Select
+                value={formData.current_level}
+                onValueChange={(val) => setFormData({ ...formData, current_level: val })}
+              >
+                <SelectTrigger id="current_level" size="xl">
+                  <SelectValue placeholder="Chọn trình độ" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Giao tiếp cơ bản</SelectLabel>
-                    <SelectItem value="a1">Mới bắt đầu (A1)</SelectItem>
-                    <SelectItem value="a2">Cơ bản (A2)</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup>
-                    <SelectLabel>Giao tiếp độc lập</SelectLabel>
-                    <SelectItem value="b1">Trung cấp sơ (B1)</SelectItem>
-                    <SelectItem value="b2">Trung cấp cao (B2)</SelectItem>
-                  </SelectGroup>
-                  <SelectGroup>
-                    <SelectLabel>Thành thạo</SelectLabel>
-                    <SelectItem value="c1">Cao cấp (C1)</SelectItem>
-                    <SelectItem value="c2">Bản xứ (C2)</SelectItem>
-                  </SelectGroup>
+                  {levels.map((lvl) => (
+                    <SelectItem key={lvl.value} value={lvl.value}>{lvl.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <FieldDescription>AI sẽ tự động điều chỉnh độ khó của từ vựng và đoạn hội thoại dựa trên mức này.</FieldDescription>
             </Field>
-          </FieldGroup>
-        </CardContent>
-        <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
-          <Button type="submit" size="xl" disabled={isSaving} className="min-w-[140px]">
-            {isSaving ? "Đang lưu..." : (
-              <>
-                <Save data-icon="inline-start" /> Lưu thay đổi
-              </>
-            )}
+
+            <Field>
+              <FieldLabel htmlFor="learning_goal">Mục tiêu mong muốn</FieldLabel>
+              <Select
+                value={formData.learning_goal}
+                onValueChange={(val) => setFormData({ ...formData, learning_goal: val })}
+              >
+                <SelectTrigger id="learning_goal" size="xl">
+                  <SelectValue placeholder="Chọn mục tiêu" />
+                </SelectTrigger>
+                <SelectContent>
+                  {levels.map((lvl) => (
+                    <SelectItem key={`goal-${lvl.value}`} value={lvl.value}>{lvl.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
+        <div className="text-center sm:text-left">
+          <p className="text-sm font-medium text-foreground">Đăng xuất tài khoản</p>
+          <p className="text-xs text-muted-foreground">Kết thúc phiên làm việc hiện tại của bạn.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button type="button" variant="ghost" className="text-muted-foreground" onClick={handleLogout}>
+            Đăng xuất
           </Button>
-        </CardFooter>
-      </Card>
+          <Button type="submit" size="xl" disabled={isSaving}>
+            {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 }

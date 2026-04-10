@@ -38,8 +38,8 @@ export function OnboardingForm() {
   const [isPending, startTransition] = useTransition();
   const [data, setData] = useState({
     display_name: "",
-    current_level: "B1",
-    learning_goal: "",
+    current_level: "A1",
+    learning_goal: "B1",
   });
 
   const nextStep = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
@@ -52,38 +52,50 @@ export function OnboardingForm() {
     formData.append("learning_goal", data.learning_goal);
 
     startTransition(async () => {
-      await saveOnboardingAction({ success: false, message: "" }, formData);
+      const result = await saveOnboardingAction({ success: false, message: "" }, formData);
+      if (!result.success) {
+        // Handle error (optional: toast)
+      }
     });
   };
+
+  const LEVELS = [
+    { id: "A1", label: "A1 - Mới bắt đầu" },
+    { id: "A2", label: "A2 - Căn bản" },
+    { id: "B1", label: "B1 - Trung cấp" },
+    { id: "B2", label: "B2 - Trung cấp khá" },
+    { id: "C1", label: "C1 - Cao cấp" },
+    { id: "C2", label: "C2 - Thành thạo" }
+  ];
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
 
   return (
-    <Card size="lg" className="overflow-visible shadow-xl animate-in fade-in zoom-in-95 duration-500 max-w-md mx-auto w-full">
-      <CardHeader className="text-center pb-0 pt-8">
-        <div className="flex flex-col items-center gap-3">
+    <Card size="lg" className="overflow-visible shadow-lg animate-in fade-in zoom-in-95 duration-500 max-w-md mx-auto w-full">
+      <CardHeader className="text-center pb-2 pt-8">
+        <div className="flex flex-col items-center gap-4">
           <Logo size="default" />
           
           <div className="space-y-1 mt-4">
             <CardTitle className="text-xl font-bold tracking-tight">
               {step === 0 && "Chào bạn, chúng mình nên gọi bạn là gì nhỉ?"}
               {step === 1 && "Trình độ tiếng Anh hiện tại của bạn?"}
-              {step === 2 && "Bạn mong muốn đạt được điều gì cùng Lexi?"}
+              {step === 2 && "Bạn mong muốn đạt đến trình độ nào?"}
             </CardTitle>
             <CardDescription className="text-sm px-4">
               {step === 0 && "Hãy cho Lexi biết tên hiển thị mà bạn yêu thích nhé."}
               {step === 1 && "Lexi sẽ gợi ý nội dung phù hợp nhất với khả năng của bạn."}
-              {step === 2 && "Càng chi tiết, AI sẽ càng hiểu và cá nhân hóa tốt hơn cho bạn."}
+              {step === 2 && "Xác định mục tiêu giúp Lexi xây dựng lộ trình cá nhân hóa."}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pt-6 pb-6 px-10 flex flex-col justify-center overflow-hidden transition-all duration-300">
+      <CardContent className="pt-6 pb-6 px-10 flex flex-col justify-center overflow-hidden">
         <div key={step} className="animate-in fade-in slide-in-from-right-4 duration-400">
           {step === 0 && (
             <Field className="gap-3 w-full">
-              <InputGroup size="xl" className="shadow-inset-input">
+              <InputGroup size="2xl">
                 <InputGroupInput
                   id="display_name"
                   name="display_name"
@@ -103,27 +115,20 @@ export function OnboardingForm() {
             <RadioGroup
               value={data.current_level}
               onValueChange={(val) => setData({ ...data, current_level: val })}
-              className="flex flex-col gap-1.5 w-full"
+              className="flex flex-col gap-2 w-full"
             >
-              {[
-                { id: "A1", label: "A1 - Mới bắt đầu" },
-                { id: "A2", label: "A2 - Căn bản" },
-                { id: "B1", label: "B1 - Trung cấp" },
-                { id: "B2", label: "B2 - Trung cấp khá" },
-                { id: "C1", label: "C1 - Cao cấp" },
-                { id: "C2", label: "C2 - Thành thạo" }
-              ].map((lvl) => (
+              {LEVELS.map((lvl) => (
                 <label
                   key={lvl.id}
                   htmlFor={lvl.id}
                   className={cn(
-                    "flex items-center px-4 py-2.5 rounded-xl border transition-all cursor-pointer ring-offset-background",
+                    "flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ring-offset-background",
                     "hover:bg-accent/50",
                     data.current_level === lvl.id ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm" : "bg-card/50"
                   )}
                 >
                   <RadioGroupItem value={lvl.id} id={lvl.id} className="mr-3" />
-                  <span className={cn("text-xs font-semibold", data.current_level === lvl.id ? "text-primary" : "text-foreground")}>
+                  <span className={cn("text-sm font-semibold", data.current_level === lvl.id ? "text-primary" : "text-foreground")}>
                     {lvl.label}
                   </span>
                 </label>
@@ -132,19 +137,28 @@ export function OnboardingForm() {
           )}
 
           {step === 2 && (
-            <Field className="gap-2">
-              <InputGroup>
-                <InputGroupTextarea
-                  id="learning_goal"
-                  name="learning_goal"
-                  value={data.learning_goal}
-                  onChange={(e) => setData({ ...data, learning_goal: e.target.value })}
-                  placeholder="VD: Tôi muốn tự tin giao tiếp khi đi du lịch hoặc phỏng vấn..."
-                  className="min-h-[100px] text-sm leading-relaxed p-4"
-                  required
-                />
-              </InputGroup>
-            </Field>
+            <RadioGroup
+              value={data.learning_goal}
+              onValueChange={(val) => setData({ ...data, learning_goal: val })}
+              className="flex flex-col gap-2 w-full"
+            >
+              {LEVELS.map((lvl) => (
+                <label
+                  key={`goal-${lvl.id}`}
+                  htmlFor={`goal-${lvl.id}`}
+                  className={cn(
+                    "flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ring-offset-background",
+                    "hover:bg-accent/50",
+                    data.learning_goal === lvl.id ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm" : "bg-card/50"
+                  )}
+                >
+                  <RadioGroupItem value={lvl.id} id={`goal-${lvl.id}`} className="mr-3" />
+                  <span className={cn("text-sm font-semibold", data.learning_goal === lvl.id ? "text-primary" : "text-foreground")}>
+                    {lvl.label}
+                  </span>
+                </label>
+              ))}
+            </RadioGroup>
           )}
         </div>
       </CardContent>
@@ -161,7 +175,7 @@ export function OnboardingForm() {
             Tiếp theo
           </Button>
         ) : (
-          <Button size="2xl" className="flex-1" onClick={handleComplete} disabled={isPending || !data.learning_goal.trim()}>
+          <Button size="2xl" className="flex-1" onClick={handleComplete} disabled={isPending}>
             {isPending ? "Đang lưu..." : "Bắt đầu hành trình"}
           </Button>
         )}

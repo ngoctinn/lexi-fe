@@ -17,9 +17,10 @@ import {
   Mic,
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { signOut } from "aws-amplify/auth"
 
 import {
   Sidebar,
@@ -68,6 +69,11 @@ const mainNavItems = [
     url: "/shop",
     icon: Store,
   },
+  {
+    title: "Hồ sơ",
+    url: "/profile",
+    icon: User,
+  },
 ]
 
 const communityNavItems = [
@@ -88,6 +94,16 @@ const user = {
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.refresh(); 
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <Sidebar variant="inset" collapsible="icon" {...props} className="bg-sidebar border-r-0">
@@ -159,37 +175,18 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarSeparator className="mx-0" />
 
-      <SidebarFooter className="py-4">
+      <SidebarFooter className="py-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            {/* Streak - Only shown when expanded */}
-            <div className="flex items-center gap-2 px-2 pb-2 group-data-[collapsible=icon]:hidden">
-              <Badge variant="outline" className="border-orange-500/20 bg-orange-500/5 text-orange-600 hover:bg-orange-500/10">
-                <Flame className="fill-orange-500 mr-1 size-3" />
-                <span className="font-semibold">{user.streak} ngày</span>
-              </Badge>
-            </div>
-
             <SidebarMenuButton
               size="lg"
-              className="items-center gap-3 h-14 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center"
-              asChild
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors group-data-[collapsible=icon]:justify-center"
+              onClick={handleLogout}
+              tooltip="Đăng xuất"
             >
-              <Link href="/profile">
-                <Avatar>
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback>
-                    {user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate font-bold">{user.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">{user.email}</span>
-                </div>
-                <Settings className="ml-auto text-muted-foreground/50 group-data-[collapsible=icon]:hidden" />
-              </Link>
+              <LogOut className="size-4" />
+              <span className="group-data-[collapsible=icon]:hidden font-medium">Đăng xuất</span>
             </SidebarMenuButton>
-
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

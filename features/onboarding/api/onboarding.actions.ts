@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { apiRequest } from "@/lib/api/client";
+import { updateProfile } from "@/features/profile/api/profile.actions";
 import { onboardingSchema, type OnboardingActionState } from "../types/schema";
 
 /**
@@ -31,21 +30,16 @@ export async function saveOnboardingAction(
   }
 
   try {
-    // 2. Gọi API Backend (Giả lập theo SRS: PUT /profile & POST /onboarding)
-    // Trong thực tế sẽ gửi tới backend serverless
-    console.log("Saving onboarding data:", validated.data);
-    
-    await apiRequest("/profile", {
-      method: "PUT",
-      body: JSON.stringify(validated.data),
+    // 2. Gọi hàm updateProfile (đã được chuẩn hóa dùng PATCH /profile)
+    // Truyền thêm is_new_user: false để đánh dấu hoàn thành onboarding
+    const result = await updateProfile({
+      ...validated.data,
+      is_new_user: false,
     });
 
-    await apiRequest("/onboarding", {
-      method: "POST",
-    });
-
-    // 3. Revalidate cache cho profile (Sử dụng profile 'max' theo Next.js 16)
-    revalidateTag("profile", "max");
+    if (!result.success) {
+      throw new Error(result.message);
+    }
     
   } catch (error) {
     console.error("Onboarding failed:", error);
@@ -55,22 +49,7 @@ export async function saveOnboardingAction(
     };
   }
 
-  // 4. Thành công -> Chuyển hướng về Dashboard
+  // 3. Thành công -> Chuyển hướng về Dashboard
+  // AppLayout sẽ không redirect về /onboarding nữa vì is_new_user đã là false
   redirect("/dashboard");
-}
-
-/**
- * Helper lấy profile server-side để phục vụ Guard
- */
-export async function getProfileStatus() {
-  try {
-    // Giả lập fetch profile. Next.js sẽ tự động cache nếu dùng fetch hoặc "use cache"
-    const profile = await apiRequest("/profile", {});
-    return {
-      is_onboarded: profile.is_onboarded ?? false,
-      user: profile
-    };
-  } catch (error) {
-    return { is_onboarded: null, error };
-  }
 }

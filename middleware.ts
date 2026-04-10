@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchAuthSession } from "aws-amplify/auth/server";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
 
+/**
+ * Middleware xử lý Authentication và Route Guard
+ * Ưu tiên sự tinh gọn, không gọi API heavy ở đây để tránh bottleneck
+ */
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
+  // 1. Kiểm tra trạng thái Authenticated qua Amplify Server Context
   const authenticated = await runWithAmplifyServerContext({
     nextServerContext: { request, response },
     operation: async (contextSpec) => {
@@ -17,20 +22,33 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Protected routes
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard") || 
-                          request.nextUrl.pathname.startsWith("/vocabulary") ||
-                          request.nextUrl.pathname.startsWith("/profile");
+  const { pathname } = request.nextUrl;
+
+  // 2. Nhóm Route cần được bảo vệ (Yêu cầu đăng nhập)
+  const isProtectedRoute = 
+    pathname.startsWith("/dashboard") || 
+    pathname.startsWith("/vocabulary") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/onboarding") || // Cần login mới được onboarding
+    pathname.startsWith("/learn") ||
+    pathname.startsWith("/practice");
 
   if (isProtectedRoute && !authenticated) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+    // Lưu lại URL đang định truy cập để redirect sau khi login thành công
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  // Auth routes (redirect to dashboard if already logged in)
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/login") || 
-                      request.nextUrl.pathname.startsWith("/signup");
+  // 3. Nhóm Auth Route (Redirect về dashboard nếu đã đăng nhập)
+  const isAuthRoute = 
+    pathname.startsWith("/login") || 
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password");
 
   if (isAuthRoute && authenticated) {
+    // Nếu đã login mà cố vào trang login/signup => về dashboard
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
@@ -39,10 +57,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/vocabulary/:path*",
-    "/profile/:path*",
-    "/login",
-    "/signup",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
