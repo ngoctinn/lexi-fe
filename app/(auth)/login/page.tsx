@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function LoginPage() {
-  return <LoginForm className="mx-auto w-full max-w-md" />
+  return <LoginForm />
 }

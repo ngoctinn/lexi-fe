@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function SignupPage() {
-  return <SignupForm className="mx-auto w-full max-w-md" />
+  return <SignupForm />
 }

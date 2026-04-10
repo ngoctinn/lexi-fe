@@ -2,8 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,14 +15,63 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/shared/logo";
-import { useAuthForm } from "../hooks/use-auth-form";
-import { signupAction } from "../api/auth.actions";
+import { signUp } from "aws-amplify/auth";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface SignupFormProps extends React.ComponentProps<"div"> {}
+import { translateCognitoError } from "../utils/auth-errors";
+import { signupSchema, type SignupSchema } from "../schemas";
+import { PasswordInput } from "./password-input";
+
+interface SignupFormProps extends React.ComponentProps<"div"> { }
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const { state, action, isPending } = useAuthForm(signupAction);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+  } = useForm<SignupSchema>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      terms: false,
+    },
+    // Best practice: don't validate until first submit, then validate on change
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
+
+  const onSubmit = async (data: SignupSchema) => {
+    try {
+      const { isSignUpComplete, nextStep } = await signUp({
+        username: data.email,
+        password: data.password,
+        options: {
+          userAttributes: {
+            email: data.email,
+          },
+        },
+      });
+
+      if (isSignUpComplete) {
+        toast.success("Đăng ký thành công! Đang chuyển hướng đến đăng nhập...");
+        router.push("/login");
+      } else if (nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
+        toast.success("Đăng ký thành công! Vui lòng kiểm tra email để nhận mã xác thực.");
+        router.push(`/verify?email=${encodeURIComponent(data.email)}`);
+      }
+    } catch (error: any) {
+      console.error("Signup Error:", error);
+      toast.error(translateCognitoError(error));
+    }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -39,17 +86,17 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <form action={action}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-8">
               {/* Google Auth Placeholder */}
               <div className="flex flex-col gap-4">
-                <Button 
+                <Button
                   type="button"
-                  variant="outline" 
-                  size="2xl" 
+                  variant="outline"
+                  size="2xl"
                   className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
                 >
-                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-5" data-icon="inline-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-5" data-icon="inline-start">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -76,47 +123,39 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
               </div>
 
               <FieldGroup className="gap-6">
-                <Field>
+                <Field data-invalid={!!errors.email}>
                   <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
                   <Input
                     id="email"
-                    name="email"
                     type="email"
                     size="2xl"
                     placeholder="name@example.com"
                     autoComplete="email"
-                    required
+                    aria-invalid={!!errors.email}
+                    {...register("email")}
                   />
-                  {state.errors?.email && <FieldError>{state.errors.email[0]}</FieldError>}
+                  {errors.email && <FieldError>{errors.email.message}</FieldError>}
                 </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="password" className="text-foreground/80">Mật khẩu</FieldLabel>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      size="2xl"
-                      className="pr-12"
-                      autoComplete="new-password"
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 size-8 text-muted-foreground hover:bg-muted/50"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff /> : <Eye />}
-                    </Button>
-                  </div>
-                  {state.errors?.password && <FieldError>{state.errors.password[0]}</FieldError>}
+                <Field data-invalid={!!errors.password}>
+                  <FieldLabel htmlFor="password" title="password">Mật khẩu</FieldLabel>
+                  <PasswordInput
+                    id="password"
+                    size="xl"
+                    autoComplete="new-password"
+                    aria-invalid={!!errors.password}
+                    {...register("password")}
+                  />
+                  {errors.password && <FieldError>{errors.password.message}</FieldError>}
                 </Field>
 
-                <Field orientation="horizontal" className="items-start gap-2">
-                  <Checkbox id="terms" name="terms" />
+                <Field orientation="horizontal" className="items-start gap-2" data-invalid={!!errors.terms}>
+                  <Checkbox
+                    id="terms"
+                    checked={watch("terms")}
+                    onCheckedChange={(checked) => setValue("terms", checked === true)}
+                    aria-invalid={!!errors.terms}
+                  />
                   <div className="grid gap-1 leading-none">
                     <FieldLabel htmlFor="terms" className="text-xs font-normal text-muted-foreground cursor-pointer">
                       Tôi đồng ý với{" "}
@@ -124,12 +163,12 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                       {" "}và{" "}
                       <Link href="/privacy" className="underline hover:text-primary">Chính sách bảo mật</Link>.
                     </FieldLabel>
-                    {state.errors?.terms && <FieldError>{state.errors.terms[0]}</FieldError>}
+                    {errors.terms && <FieldError>{errors.terms.message}</FieldError>}
                   </div>
                 </Field>
 
-                <Button type="submit" size="2xl" className="w-full text-base" disabled={isPending}>
-                  {isPending ? "Đang xử lý..." : "Tạo tài khoản"}
+                <Button type="submit" size="2xl" className="w-full text-base" disabled={isSubmitting}>
+                  {isSubmitting ? "Đang xử lý..." : "Tạo tài khoản"}
                 </Button>
               </FieldGroup>
             </div>

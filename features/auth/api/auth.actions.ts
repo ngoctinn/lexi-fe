@@ -24,9 +24,6 @@ export async function loginAction(
   prevState: AuthActionState, 
   formData: FormData
 ): Promise<AuthActionState> {
-  // Simulate delay
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
   const rawData = Object.fromEntries(formData.entries());
   const validated = loginSchema.safeParse({
     ...rawData,
@@ -41,27 +38,21 @@ export async function loginAction(
     };
   }
 
-  // TODO: Implement actual authentication here (e.g. AWS Cognito, NextAuth, etc.)
-  console.log("Logging in with:", validated.data);
-
-  // For demonstration, let's assume login is successful if not 'error@example.com'
-  if (validated.data.email === "error@example.com") {
-    return {
-      success: false,
-      message: "Email hoặc mật khẩu không chính xác.",
-    };
-  }
-
-  // Redirect on success
-  redirect("/dashboard");
+  // NOTE: Trong Amplify v6, việc đăng nhập (signIn) nên được thực hiện ở phía Client 
+  // để hỗ trợ các giao thức bảo mật như SRP. 
+  // Hãy gọi hàm này từ Client Component sau khi đã thực hiện signIn thành công 
+  // để thực hiện các side effects phía server (như redirect hoặc log).
+  
+  return {
+    success: true,
+    message: "Đăng nhập thành công!",
+  };
 }
 
 export async function signupAction(
   prevState: AuthActionState, 
   formData: FormData
 ): Promise<AuthActionState> {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
   const rawData = Object.fromEntries(formData.entries());
   const validated = signupSchema.safeParse({
     ...rawData,
@@ -76,12 +67,10 @@ export async function signupAction(
     };
   }
 
-  console.log("Signing up with:", validated.data);
-
-  // TODO: Implement actual signup here
+  // Tương tự như Login, việc signUp nên được thực hiện ở phía Client.
   return {
     success: true,
-    message: "Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài khoản.",
+    message: "Đăng ký thành công!",
   };
 }
 
@@ -89,8 +78,6 @@ export async function forgotPasswordAction(
   prevState: AuthActionState, 
   formData: FormData
 ): Promise<AuthActionState> {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
   const rawData = Object.fromEntries(formData.entries());
   const validated = forgotPasswordSchema.safeParse(rawData);
 
@@ -102,9 +89,7 @@ export async function forgotPasswordAction(
     };
   }
 
-  console.log("Forgot password for:", validated.data);
-
-  // TODO: Implement actual forgot password logic
+  // NOTE: forgotPassword nên được thực hiện ở phía Client.
   return {
     success: true,
     message: "Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu vào email của bạn.",
@@ -115,8 +100,6 @@ export async function resetPasswordAction(
   prevState: AuthActionState, 
   formData: FormData
 ): Promise<AuthActionState> {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
   const rawData = Object.fromEntries(formData.entries());
   const validated = resetPasswordSchema.safeParse(rawData);
 
@@ -128,9 +111,7 @@ export async function resetPasswordAction(
     };
   }
 
-  console.log("Resetting password with OTP:", validated.data);
-
-  // TODO: Implement actual password reset logic
+  // NOTE: resetPassword nên được thực hiện ở phía Client.
   return {
     success: true,
     message: "Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.",

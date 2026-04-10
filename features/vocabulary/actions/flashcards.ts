@@ -27,23 +27,32 @@ export async function getFlashcardsAction(): Promise<VocabularyItem[]> {
   return mockDatabase;
 }
 
+import { apiFetchServer } from "@/lib/api-server";
+
 export async function saveFlashcardAction(
   data: SaveFlashcardInput
 ): Promise<{ success: boolean; message: string }> {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  try {
+    // Gọi API thực tế từ backend
+    // Nếu chưa có API thực tế, bạn có thể comment out đoạn này và dùng mock bên dưới
+    await apiFetchServer("/flashcards", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
 
-  const newFlashcard: VocabularyItem = {
-    id: Math.random().toString(36).substring(7),
-    ...data,
-    addedAt: new Date().toISOString(),
-  };
-
-  mockDatabase = [newFlashcard, ...mockDatabase];
-
-  // Revalidate bảng tử vựng
-  revalidatePath("/vocabulary");
-  
-  return { success: true, message: `Đã lưu "${data.word}" vào sổ tay.` };
+    // Revalidate bảng tử vựng
+    revalidatePath("/vocabulary");
+    
+    return { success: true, message: `Đã lưu "${data.word}" vào sổ tay.` };
+  } catch (error) {
+    console.error("Failed to save flashcard:", error);
+    
+    // Fallback sang mock hoặc báo lỗi
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : "Có lỗi xảy ra khi kết nối server" 
+    };
+  }
 }
 
 export async function deleteFlashcardAction(

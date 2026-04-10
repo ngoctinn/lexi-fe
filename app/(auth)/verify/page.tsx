@@ -5,6 +5,16 @@ export const metadata = {
   description: "Xác thực địa chỉ email của bạn để kích hoạt tài khoản.",
 };
 
-export default function VerifyPage() {
-  return <VerifyForm className="mx-auto w-full max-w-sm" />;
+export default async function VerifyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ email?: string }>;
+}) {
+  const { email } = await searchParams;
+
+  return (
+    <VerifyForm 
+      email={email} 
+    />
+  );
 }

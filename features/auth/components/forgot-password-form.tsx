@@ -17,11 +17,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
-import { useAuthForm } from "../hooks/use-auth-form";
-import { forgotPasswordAction } from "../api/auth.actions";
+import { resetPassword } from "aws-amplify/auth";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { translateCognitoError } from "../utils/auth-errors";
+import { forgotPasswordSchema, type ForgotPasswordSchema } from "../schemas";
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
-  const { state, action, isPending } = useAuthForm(forgotPasswordAction);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordSchema>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
+
+  const onSubmit = async (data: ForgotPasswordSchema) => {
+    try {
+      const output = await resetPassword({ username: data.email });
+      const { nextStep } = output;
+
+      if (nextStep.resetPasswordStep === 'CONFIRM_RESET_PASSWORD_WITH_CODE') {
+        toast.success("Mã khôi phục đã được gửi đến email của bạn.");
+        router.push(`/reset-password?email=${encodeURIComponent(data.email)}`);
+      }
+    } catch (error: any) {
+      console.error("Forgot Password Error:", error);
+      toast.error(translateCognitoError(error));
+    }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -38,24 +72,24 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
-          <form action={action}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-6">
               <FieldGroup className="gap-6">
-                <Field>
+                <Field data-invalid={!!errors.email}>
                   <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
                   <Input
                     id="email"
-                    name="email"
                     type="email"
                     size="2xl"
                     placeholder="name@example.com"
                     autoComplete="email"
-                    required
+                    aria-invalid={!!errors.email}
+                    {...register("email")}
                   />
-                  {state.errors?.email && <FieldError>{state.errors.email[0]}</FieldError>}
+                  {errors.email && <FieldError>{errors.email.message}</FieldError>}
                 </Field>
-                <Button type="submit" size="2xl" className="w-full text-base mt-2" disabled={isPending}>
-                  {isPending ? "Đang gửi..." : "Gửi mã xác nhận"}
+                <Button type="submit" size="2xl" className="w-full text-base mt-2" disabled={isSubmitting}>
+                  {isSubmitting ? "Đang gửi..." : "Gửi mã xác nhận"}
                 </Button>
               </FieldGroup>
             </div>

@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   description: "Nền tảng học tiếng Anh cá nhân hóa với Flashcards 3D và Trình đối thoại AI thông minh.",
 };
 
+import { AmplifyProvider } from "@/components/providers/amplify-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,9 +34,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="h-full flex flex-col">
-        <TooltipProvider delayDuration={0}>
-          {children}
-        </TooltipProvider>
+        <AmplifyProvider>
+          <TooltipProvider delayDuration={0}>
+            {children}
+          </TooltipProvider>
+        </AmplifyProvider>
         <Toaster />
       </body>
     </html>

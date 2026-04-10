@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordForm className="mx-auto w-full max-w-md" />;
+  return <ForgotPasswordForm />;
 }
