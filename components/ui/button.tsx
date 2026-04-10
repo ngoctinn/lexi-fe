@@ -21,6 +21,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         soft: "bg-primary/10 text-primary border border-primary/20 shadow-[0_2px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/15 active:translate-y-0.5 active:shadow-none",
         "soft-warning": "bg-warning/10 text-warning border border-warning/20 shadow-[0_2px_0_0_rgba(234,179,8,0.1)] hover:bg-warning/15 active:translate-y-0.5 active:shadow-none",
+        "soft-success": "bg-success/10 text-success border border-success/20 shadow-[0_2px_0_0_rgba(34,197,94,0.1)] hover:bg-success/15 active:translate-y-0.5 active:shadow-none",
+        "soft-info": "bg-info/10 text-info border border-info/20 shadow-[0_2px_0_0_rgba(59,130,246,0.1)] hover:bg-info/15 active:translate-y-0.5 active:shadow-none",
       },
       size: {
         default:

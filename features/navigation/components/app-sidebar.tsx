@@ -15,6 +15,7 @@ import {
   Star,
   LayoutDashboard,
   Mic,
+  BrainCircuit,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -50,19 +51,19 @@ const mainNavItems = [
     icon: Map,
   },
   {
-    title: "Luyện nói",
-    url: "/session/new",
-    icon: Mic,
-  },
-  {
-    title: "Từ vựng",
+    title: "Luyện từ",
     url: "/vocabulary",
     icon: BookOpen,
   },
   {
-    title: "Luyện tập",
-    url: "/practice",
-    icon: PenTool,
+    title: "Flashcard",
+    url: "/flashcards",
+    icon: BrainCircuit,
+  },
+  {
+    title: "Luyện nói",
+    url: "/session/new",
+    icon: Mic,
   },
   {
     title: "Cửa hàng",
