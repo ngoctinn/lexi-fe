@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Lightbulb, FastForward, Square, History, X, Copy, Check } from "lucide-react";
+import { Lightbulb, Square, History, X, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
@@ -35,7 +35,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ConversationSidebarProps {
   currentHint: string | null;
-  onSkip?: () => void;
   onEnd?: () => void;
   onGetHint?: () => void;
   onSelectHint?: (hint: string) => void;
@@ -46,7 +45,6 @@ interface ConversationSidebarProps {
 
 export function ConversationSidebar({
   currentHint,
-  onSkip,
   onEnd,
   onGetHint,
   onSelectHint,
@@ -147,22 +145,7 @@ export function ConversationSidebar({
         </ScrollArea>
       </div>
 
-      <Separator />
 
-      {/* Actions Section */}
-      <div className="flex flex-col gap-3">
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={onSkip}
-          disabled={disabled || isAiStreaming}
-          className="w-full font-bold"
-        >
-          <FastForward className="mr-2 size-5" />
-          Bỏ qua lượt này
-        </Button>
-      </div>
-      
       {/* Help Note */}
       <div className="mt-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
          <div className="flex items-start gap-3">

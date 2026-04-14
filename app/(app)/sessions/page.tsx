@@ -48,8 +48,7 @@ export default async function SessionsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {sessions.map((session) => {
-            const isPaused = session.status === SessionStatus.PAUSED;
-            const isCompleted = session.status === SessionStatus.COMPLETED;
+            const isCompleted = !!session.scoring;
             
             return (
               <Card key={session.session_id} className="flex flex-col">
@@ -57,14 +56,14 @@ export default async function SessionsPage() {
                   <div className="flex items-start justify-between">
                     <Badge
                       variant={
-                        isCompleted ? "secondary" : isPaused ? "outline" : "default"
+                        isCompleted ? "secondary" : "default"
                       }
                       className="mb-2"
                     >
-                      {isCompleted ? "Hoàn thành" : isPaused ? "Tạm dừng" : "Đang học"}
+                      {isCompleted ? "Hoàn thành" : "Đang học"}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg line-clamp-1">{session.scenario === "free" ? "Luyện nói tự do" : session.scenario}</CardTitle>
+                  <CardTitle className="text-lg line-clamp-1">{session.scenario_id === "free" ? "Luyện nói tự do" : session.scenario_id}</CardTitle>
                   <CardDescription>
                     {session.created_at && format(new Date(session.created_at), "dd/MM/yyyy HH:mm", { locale: vi })}
                   </CardDescription>
@@ -72,8 +71,8 @@ export default async function SessionsPage() {
                 <CardContent className="flex-1 pb-4">
                   <div className="text-sm space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">AI đóng vai:</span>
-                      <span className="font-medium text-right line-clamp-1">{session.ai_character || "Trợ lý"}</span>
+                      <span className="text-muted-foreground">Level:</span>
+                      <span className="font-medium text-right line-clamp-1">{session.level}</span>
                     </div>
                     {isCompleted && session.scoring && (
                       <div className="flex justify-between items-center bg-muted/50 p-2 rounded-md mt-4">
@@ -84,7 +83,7 @@ export default async function SessionsPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="border-t pt-4">
-                  {isPaused || session.status === SessionStatus.ACTIVE ? (
+                  {!isCompleted ? (
                     <Button variant="outline" className="w-full" asChild>
                       <Link href={`/session/${session.session_id}`}>
                         <PlayCircle data-icon="inline-start" />

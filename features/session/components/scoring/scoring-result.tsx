@@ -95,7 +95,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
       </div>
 
       {/* Stats row using standard components */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <Card className="flex flex-col items-center p-4 bg-muted/30">
           <span className="text-3xl font-black">{totalTurns}</span>
           <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Lượt nói</span>
@@ -107,22 +107,6 @@ export function ScoringResult({ session }: ScoringResultProps) {
             <Lightbulb />
             Gợi ý
           </span>
-        </Card>
-
-        <Card className="flex flex-col items-center p-4 bg-destructive/5 border-destructive/20">
-          <span className="font-bold text-destructive-dark text-3xl">{session.skip_used_count || 0}</span>
-          <span className="text-xs text-destructive-dark/70 font-medium uppercase tracking-wider flex items-center gap-1">
-            <FastForward />
-            Bỏ qua
-          </span>
-        </Card>
-
-        <Card className="flex flex-col items-center p-4 bg-success/5 border-success/20">
-           <span className="font-bold text-success-dark text-3xl">{session.new_words_count || 0}</span>
-           <span className="text-xs text-success-dark/70 font-medium uppercase tracking-wider flex items-center gap-1">
-             <Brain />
-             Từ vựng
-           </span>
         </Card>
       </div>
 

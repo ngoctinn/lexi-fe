@@ -148,9 +148,6 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     }
   }, [recorderState, stopRecording, startRecording, ui.uploadUrl, sessionId]);
 
-  const skipTurn = React.useCallback(() => {
-    send({ action: WsClientEvent.SKIP_TURN, session_id: sessionId });
-  }, [send, sessionId]);
 
   const endSession = React.useCallback(() => {
     send({ action: WsClientEvent.END_SESSION, session_id: sessionId });
@@ -165,9 +162,7 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       turn_index: ui.turns.length,
       speaker: TurnSpeaker.USER,
       content: text,
-      created_at: new Date().toISOString(),
       is_hint_used: false,
-      is_skipped: false,
     };
 
     setUi((s) => ({ ...s, turns: [...s.turns, newTurn] }));
@@ -213,7 +208,6 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       startSession,
       toggleMic,
       requestHint,
-      skipTurn,
       endSession,
       toggleHintPanel,
       translateTurn,

@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
 import { ScoringResult } from "@/features/session/components/scoring/scoring-result";
 import { ScoringSkeleton } from "@/features/session/components/scoring/scoring-skeleton";
-import { SessionStatus } from "@/features/session/types/session.types";
 import { TurnBubble } from "@/features/session/components/conversation/turn-bubble";
 
 export const metadata = {
@@ -20,15 +19,15 @@ export default async function SessionResultsPage({ params }: SessionResultsPageP
   
   const dummySession = session ?? {
     session_id: id,
-    status: SessionStatus.PROCESSING_SCORING,
-    scenario: "free",
+    scenario_id: "free",
     scoring: null,
     turns: []
   };
 
-  if (dummySession.status === SessionStatus.PROCESSING_SCORING || !dummySession.scoring) {
+  if (!dummySession.scoring) {
     return <ScoringSkeleton />;
   }
+
 
   return (
     <div className="container py-8">
@@ -42,7 +41,7 @@ export default async function SessionResultsPage({ params }: SessionResultsPageP
               <TurnBubble
                 key={`${turn.turn_index}-${idx}`}
                 turn={turn}
-                aiName={dummySession.ai_character || "AI"}
+                aiName={"AI"}
               />
             ))}
           </div>

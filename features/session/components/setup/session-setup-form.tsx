@@ -36,9 +36,7 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
   const [activeCustomScenario, setActiveCustomScenario] = React.useState("");
 
   const [formData, setFormData] = React.useState<CreateSessionDto>({
-    scenario: "free",
-    my_character: "",
-    ai_character: "",
+    scenario_id: "free",
     ai_gender: "female",
     level: "B1",
   });
@@ -53,7 +51,7 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
       return;
     }
     setActiveCustomScenario(customScenarioInput);
-    set("scenario", "custom");
+    set("scenario_id", "custom");
     setIsDialogOpen(false);
     toast.success("Đã thiết lập kịch bản riêng");
   };
@@ -61,7 +59,7 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.scenario === "custom" && !activeCustomScenario.trim()) {
+    if (formData.scenario_id === "custom" && !activeCustomScenario.trim()) {
       toast.error("Vui lòng thiết lập kịch bản của bạn.");
       setIsDialogOpen(true);
       return;
@@ -71,7 +69,7 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
 
     const finalDto: CreateSessionDto = {
       ...formData,
-      scenario: formData.scenario === "custom" ? `custom:${activeCustomScenario}` : formData.scenario
+      scenario_id: formData.scenario_id === "custom" ? `custom:${activeCustomScenario}` : formData.scenario_id
     };
 
     const result = await createSession(finalDto);
@@ -102,22 +100,22 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
               
               <Button 
                 type="button" 
-                variant={formData.scenario === "custom" ? "default" : "outline"}
+                variant={formData.scenario_id === "custom" ? "default" : "outline"}
                 size="sm" 
                 className="h-9 rounded-lg text-xs font-bold px-5"
                 onClick={() => setIsDialogOpen(true)}
               >
-                {formData.scenario === "custom" ? "Đã thiết lập" : "Tự thiết lập"}
+                {formData.scenario_id === "custom" ? "Đã thiết lập" : "Tự thiết lập"}
               </Button>
             </div>
 
             <ScenarioPicker
               scenarios={scenarios}
-              value={formData.scenario}
-              onChange={(v) => set("scenario", v)}
+              value={formData.scenario_id}
+              onChange={(v) => set("scenario_id", v)}
             />
             
-            {formData.scenario === "custom" && activeCustomScenario && (
+            {formData.scenario_id === "custom" && activeCustomScenario && (
               <div className="p-6 rounded-xl border-2 border-dotted border-border bg-transparent flex flex-col gap-2 animate-in fade-in duration-300">
                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Bối cảnh tùy chỉnh đã lưu:</span>
                  <p className="text-sm text-foreground leading-relaxed">
@@ -134,27 +132,7 @@ export function SessionSetupForm({ scenarios, className, ...props }: SessionSetu
             <h2 className="text-xl font-bold tracking-tight">Nhân vật & Trình độ</h2>
 
             <FieldGroup className="gap-8">
-              <Field>
-                <FieldLabel htmlFor="my-character">Bạn đóng vai</FieldLabel>
-                <Input
-                  id="my-character"
-                  size="2xl"
-                  placeholder="VD: Hành khách"
-                  value={formData.my_character}
-                  onChange={(e) => set("my_character", e.target.value)}
-                />
-              </Field>
 
-              <Field>
-                <FieldLabel htmlFor="ai-character">AI đóng vai</FieldLabel>
-                <Input
-                  id="ai-character"
-                  size="2xl"
-                  placeholder="VD: Nhân viên sân bay"
-                  value={formData.ai_character}
-                  onChange={(e) => set("ai_character", e.target.value)}
-                />
-              </Field>
 
               <Field>
                 <FieldLabel htmlFor="ai-gender">Giọng AI</FieldLabel>

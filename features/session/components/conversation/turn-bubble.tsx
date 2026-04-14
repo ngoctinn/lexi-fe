@@ -52,18 +52,7 @@ export function TurnBubble({
 
       {/* Bubble Container */}
       <div className={cn("flex flex-col gap-1 max-w-[85%] sm:max-w-[75%]", isUser && "items-end")}>
-        {/* User Confidence Badge above bubble */}
-        {isUser && typeof turn.confidence === "number" && turn.confidence > 0 && (
-          <div className="flex items-center gap-1.5 px-1 pb-0.5">
-            <span className={cn(
-              "text-[10px] font-medium uppercase tracking-wider",
-              turn.confidence >= 0.85 ? "text-emerald-600 dark:text-emerald-500" :
-              turn.confidence >= 0.6 ? "text-amber-600 dark:text-amber-500" : "text-destructive"
-            )}>
-              {Math.round(turn.confidence * 100)}%
-            </span>
-          </div>
-        )}
+
 
         <div
           className={cn(
@@ -71,17 +60,10 @@ export function TurnBubble({
             "shadow-sm ring-1 ring-inset",
             isUser
               ? "rounded-br-sm bg-primary/10 text-foreground ring-primary/20"
-              : "rounded-bl-sm bg-muted text-foreground ring-border",
-            turn.is_skipped && "opacity-60 grayscale"
+              : "rounded-bl-sm bg-muted text-foreground ring-border"
           )}
         >
-          {turn.is_skipped ? (
-            <span className="line-through decoration-muted-foreground/50 opacity-80">
-              {turn.content}
-            </span>
-          ) : (
-            <span>{turn.content}</span>
-          )}
+          <span>{turn.content}</span>
 
           {/* Translation */}
           {showTranslation && turn.translated_content && (

@@ -63,10 +63,7 @@ export interface Turn {
   content: string;
   translated_content?: string | null;
   audio_url?: string | null;
-  confidence?: number | null;
   is_hint_used: boolean;
-  is_skipped: boolean;
-  created_at: string;
 }
 
 export interface Scoring {
@@ -81,20 +78,17 @@ export interface Scoring {
 export interface Session {
   session_id: string;
   user_id: string;
-  scenario: string;
-  my_character: string;
-  ai_character: string;
+  scenario_id: string;
   ai_gender: "male" | "female";
   level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
-  status: SessionStatus;
+  total_turns: number;
+  user_turns: number;
   hint_used_count: number;
-  skip_used_count: number;
-  new_words_count: number;
   turns?: Turn[];
   scoring?: Scoring | null;
   connection_id?: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 // =============================================================================
@@ -117,10 +111,6 @@ export interface WsUseHintPayload {
   session_id: string;
 }
 
-export interface WsSkipTurnPayload {
-  action: WsClientEvent.SKIP_TURN;
-  session_id: string;
-}
 
 export interface WsEndSessionPayload {
   action: WsClientEvent.END_SESSION;
@@ -137,7 +127,6 @@ export type WsClientPayload =
   | WsStartSessionPayload
   | WsAudioUploadedPayload
   | WsUseHintPayload
-  | WsSkipTurnPayload
   | WsEndSessionPayload
   | WsSendMessagePayload;
 
@@ -232,9 +221,7 @@ export interface SessionUiState {
 // =============================================================================
 
 export interface CreateSessionDto {
-  scenario: string;
-  my_character: string;
-  ai_character: string;
+  scenario_id: string;
   ai_gender: "male" | "female";
   level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 }

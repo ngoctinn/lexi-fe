@@ -67,7 +67,6 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
               <SheetTitle className="sr-only">Menu hội thoại</SheetTitle>
               <ConversationSidebar
                 currentHint={ui.currentHint}
-                onSkip={actions.skipTurn}
                 onEnd={actions.endSession}
                 onGetHint={actions.requestHint}
                 onSelectHint={handleSelectHint}
@@ -123,7 +122,6 @@ export function ConversationScreen({ sessionId, idToken, initialTurns }: Convers
         {/* Desktop Sidebar */}
         <ConversationSidebar
           currentHint={ui.currentHint}
-          onSkip={actions.skipTurn}
           onEnd={actions.endSession}
           onGetHint={actions.requestHint}
           isAiStreaming={ui.isAiStreaming}
