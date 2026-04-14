@@ -1,0 +1,25 @@
+# Cursor & Agent Rules - Lexi Project
+
+# UI/UX Standards
+- Always use ShadcnUI components.
+- Maintain a premium, clean, and professional look.
+- Use Tailwind CSS for all styling. No ad-hoc CSS unless necessary.
+- Ensure all screens are mobile-responsive.
+
+# Coding Standards
+- Use TypeScript strictly. No `any` types.
+- Follow Next.js 15+ App Router patterns (Server Components by default).
+- Keep components small and reusable in `@/components` or `@/features`.
+- Use `lucide-react` for icons.
+
+# Project Specifics
+- Project Name: Lexi
+- Main Focus: AI English Speaking & Flashcards
+- Backend: AWS SAM Serverless
+
+# AI Behavior
+- Be concise.
+- Explain "Why" before "What" when assisting a Level C user. Use Vietnamese for explanations.
+- **Docs First Policy:** Use `nextjs_docs` and `nextjs_index` BEFORE any code refactoring or feature implementation.
+- Always check `AGENTS.md` before starting a new feature phase.
+- Proactively run `pnpm dev` and check browser logs if needed to verify UI stability.
