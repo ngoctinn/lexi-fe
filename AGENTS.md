@@ -18,17 +18,18 @@ Tài liệu này đóng vai trò là "bộ não" trung tâm cho bất kỳ AI Ag
 ## 3. Các Giai đoạn Triển khai (Phases)
 
 ### Giai đoạn 1: Nền tảng (Ngày 1-3)
-- [ ] Cấu hình project, setup Auth (Cognito/NextAuth).
-- [ ] Xây dựng Layout Dashboard theo phong cách chuyên nghiệp/tối giản.
+- [x] Cấu hình project, setup Auth (Cognito/Amplify).
+- [x] Xây dựng Layout Dashboard theo phong cách chuyên nghiệp/tối giản.
 
 ### Giai đoạn 2: Lõi tính năng - Hội thoại AI (Ngày 4-7)
-- [ ] Implement Speech-to-Text và Text-to-Speech (Web Speech API).
-- [ ] Giao diện chat trực quan với Transcript thời gian thực.
+- [x] Cấu hình State Management (Zustand + React Query) & Optimistic UI.
+- [x] Giao diện chat trực quan với Transcript thời gian thực.
+- [ ] Hoàn thiện Speech-to-Text và Text-to-Speech (S3-based pipeline).
 - [ ] Animation sóng âm (Visualizer).
 
 ### Giai đoạn 3: Flashcard & Từ điển (Ngày 8-10)
 - [ ] Tích hợp tính năng tra từ nhanh trong hội thoại.
-- [ ] Logic lưu từ vựng vào DynamoDB.
+- [ ] Logic lưu từ vựng vào DynamoDB (Backend integrated).
 - [ ] Giao diện học Flashcard (Flip card, SRS simple).
 
 ### Giai đoạn 4: Hoàn thiện & UI/UX (Ngày 11-14)

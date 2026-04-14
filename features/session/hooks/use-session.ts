@@ -16,75 +16,71 @@ import { useAudioRecorder } from "./use-audio-recorder";
 import { SessionService } from "../api/session.service";
 import { SessionDomain } from "../domain/session.logic";
 
+import { useSessionStore } from "../stores/use-session-store";
+
 interface UseSessionOptions {
   sessionId: string;
   idToken: string;
   initialTurns?: Turn[];
 }
 
-const INITIAL_STATE: SessionUiState = {
-  turns: [],
-  aiStreamingText: "",
-  isAiStreaming: false,
-  lastSttResult: null,
-  currentHint: null,
-  hintPanelOpen: false,
-  recorderState: "idle",
-  wsState: "disconnected",
-  currentAudioUrl: null,
-  uploadUrl: null,
-};
-
 export function useSession({ sessionId, idToken, initialTurns = [] }: UseSessionOptions) {
-  const [ui, setUi] = React.useState<SessionUiState>({
-    ...INITIAL_STATE,
-    turns: initialTurns,
-  });
+  const store = useSessionStore();
+  
+  // React 19 useOptimistic for immediate UI feedback on turns
+  const [optimisticTurns, addOptimisticTurn] = React.useOptimistic<Turn[], string>(
+    store.turns,
+    (state, text) => [
+      ...state,
+      {
+        turn_index: state.length,
+        speaker: TurnSpeaker.USER,
+        content: text,
+        is_hint_used: false,
+        is_pending: true, // Custom flag for premium UI feedback
+      } as Turn
+    ]
+  );
+
+  // Sync initial turns once
+  React.useEffect(() => {
+    if (initialTurns.length > 0 && store.turns.length === 0) {
+      store.setTurns(initialTurns);
+    }
+  }, [initialTurns, store]);
 
   // --- WebSocket Message Orchestration ---
   const handleWsMessage = React.useCallback((event: WsServerPayload) => {
     switch (event.event) {
       case WsServerEvent.SESSION_READY:
-        setUi((s) => ({ ...s, uploadUrl: event.upload_url }));
+        store.setUploadUrls(event.upload_url);
         break;
 
       case WsServerEvent.STT_RESULT:
-        setUi((s) => ({
-          ...s,
-          lastSttResult: { text: event.text, confidence: event.confidence },
-        }));
+        store.setLastSttResult({ text: event.text, confidence: event.confidence });
         break;
 
       case WsServerEvent.STT_LOW_CONFIDENCE:
-        setUi((s) => ({
-          ...s,
-          lastSttResult: { text: "", confidence: event.confidence },
-          recorderState: "idle",
-        }));
+        store.setLastSttResult({ text: "", confidence: event.confidence });
+        store.setRecorderState("idle");
         break;
 
       case WsServerEvent.AI_TEXT_CHUNK:
-        setUi((s) => ({
-          ...s,
-          isAiStreaming: !event.done,
-          aiStreamingText: event.done ? "" : s.aiStreamingText + event.chunk,
-        }));
+        store.setAiStreaming(!event.done, event.done ? "" : store.aiStreamingText + event.chunk);
+        
+        // If done, we might want to refresh turns from API or add the AI turn
+        if (event.done) {
+          // You might fetch updated turns here using React Query invalidate
+        }
         break;
 
       case WsServerEvent.AI_AUDIO_URL:
-        setUi((s) => ({ ...s, currentAudioUrl: event.url }));
+        // Handle audio...
         break;
 
       case WsServerEvent.HINT_TEXT:
-        setUi((s) => ({
-          ...s,
-          currentHint: event.hint,
-          hintPanelOpen: true,
-        }));
-        break;
-
-      case WsServerEvent.SCORING_COMPLETE:
-        setUi((s) => ({ ...s, wsState: "disconnected" }));
+        store.setHint(event.hint);
+        store.setHintPanelOpen(true);
         break;
 
       case WsServerEvent.ERROR:
@@ -94,14 +90,14 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       default:
         break;
     }
-  }, []);
+  }, [store]);
 
   // --- WebSocket infrastructure ---
   const { connectionState, send, disconnect } = useWebSocket({
     sessionId,
     idToken,
     onMessage: handleWsMessage,
-    onConnectionChange: (wsState) => setUi((s) => ({ ...s, wsState })),
+    onConnectionChange: (wsState) => store.setWsState(wsState),
   });
 
   // --- Audio infrastructure ---
@@ -111,97 +107,95 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
     },
     onError: (message) => {
       SessionService.handleError(message, "Recorder");
-      setUi((s) => ({ ...s, recorderState: "error" }));
+      store.setRecorderState("error");
     },
   });
 
-  // Keep recorder state in sync
+  // Keep store recorder state in sync
   React.useEffect(() => {
-    setUi((s) => ({ ...s, recorderState }));
-  }, [recorderState]);
+    store.setRecorderState(recorderState);
+  }, [recorderState, store]);
 
-  // --- Active Actions ---
+  // --- Actions ---
+
+  const sendMessage = React.useCallback((text: string) => {
+    if (!text.trim()) return;
+    
+    // React 19 Optimistic Update
+    React.startTransition(() => {
+      addOptimisticTurn(text);
+    });
+
+    // Real turn added to store (actually usually we wait for server ack or add it next)
+    const newTurn: Turn = {
+      turn_index: store.turns.length,
+      speaker: TurnSpeaker.USER,
+      content: text,
+      is_hint_used: false,
+    };
+    store.setTurns((prev) => [...prev, newTurn]);
+
+    send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
+  }, [send, sessionId, store, addOptimisticTurn]);
 
   const startSession = React.useCallback(() => {
     send({ action: WsClientEvent.START_SESSION, session_id: sessionId });
   }, [send, sessionId]);
 
   const requestHint = React.useCallback(async () => {
-    setUi((s) => ({ ...s, currentHint: null })); // reset
+    store.setHint(null);
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
 
     // Parallel fetch mock if in dev
     if (process.env.NODE_ENV === "development") {
       const hint = await SessionService.getHint(sessionId);
-      setUi((s) => ({ ...s, currentHint: hint, hintPanelOpen: true }));
+      store.setHint(hint);
+      store.setHintPanelOpen(true);
     }
-  }, [send, sessionId]);
+  }, [send, sessionId, store]);
 
   const toggleMic = React.useCallback(async () => {
     if (recorderState === "recording") {
       stopRecording();
     } else {
-      // In development, we use mock upload url if backend didn't provide one
-      const targetUrl = ui.uploadUrl || "https://mock-upload.com";
+      const targetUrl = store.uploadUrl || "https://mock-upload.com";
       const s3Key = `sessions/${sessionId}/${Date.now()}.webm`;
       startRecording(targetUrl, s3Key);
     }
-  }, [recorderState, stopRecording, startRecording, ui.uploadUrl, sessionId]);
-
+  }, [recorderState, stopRecording, startRecording, store.uploadUrl, sessionId]);
 
   const endSession = React.useCallback(() => {
     send({ action: WsClientEvent.END_SESSION, session_id: sessionId });
     disconnect();
   }, [send, disconnect, sessionId]);
 
-  const sendMessage = React.useCallback((text: string) => {
-    if (!text.trim()) return;
-    
-    // Add User Turn local/optimistic
-    const newTurn: Turn = {
-      turn_index: ui.turns.length,
-      speaker: TurnSpeaker.USER,
-      content: text,
-      is_hint_used: false,
-    };
-
-    setUi((s) => ({ ...s, turns: [...s.turns, newTurn] }));
-    send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
-  }, [send, sessionId, ui.turns.length]);
-
   const translateTurn = React.useCallback(async (turnIndex: number) => {
-    // Initial UI signal
-    setUi((s) => ({
-      ...s,
-      turns: s.turns.map((t) => 
-        t.turn_index === turnIndex 
-          ? { ...t, translated_content: "Đang yêu cầu bản dịch..." } 
-          : t
-      ),
-    }));
+    store.setTurns((prev) => prev.map((t) => 
+      t.turn_index === turnIndex 
+        ? { ...t, translated_content: "Đang yêu cầu bản dịch..." } 
+        : t
+    ));
 
     try {
       const translation = await SessionService.translateTurn(sessionId, turnIndex);
-      setUi((s) => ({
-        ...s,
-        turns: s.turns.map((t) => 
-          t.turn_index === turnIndex ? { ...t, translated_content: translation } : t
-        ),
-      }));
+      store.setTurns((prev) => prev.map((t) => 
+        t.turn_index === turnIndex ? { ...t, translated_content: translation } : t
+      ));
     } catch (err: any) {
       SessionService.handleError(err.message, "Translation");
     }
-  }, [sessionId]);
+  }, [sessionId, store]);
 
   const toggleHintPanel = React.useCallback(() => {
-    setUi((s) => ({ ...s, hintPanelOpen: !s.hintPanelOpen }));
-  }, []);
+    store.setHintPanelOpen(!store.hintPanelOpen);
+  }, [store]);
 
   return {
     ui: { 
-      ...ui, 
+      ...store, 
+      turns: optimisticTurns, // Sử dụng optimistic turns cho UI mượt mà
       wsState: connectionState,
-      isControlsDisabled: SessionDomain.isControlsDisabled(connectionState, recorderState, ui.isAiStreaming)
+      isControlsDisabled: SessionDomain.isControlsDisabled(connectionState, recorderState, store.isAiStreaming)
     },
     uploadProgress,
     actions: {

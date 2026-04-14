@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 };
 
 import { AmplifyProvider } from "@/components/providers/amplify-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 
 export default function RootLayout({
   children,
@@ -35,9 +36,11 @@ export default function RootLayout({
     >
       <body className="h-full flex flex-col">
         <AmplifyProvider>
-          <TooltipProvider delayDuration={0}>
-            {children}
-          </TooltipProvider>
+          <QueryProvider>
+            <TooltipProvider delayDuration={0}>
+              {children}
+            </TooltipProvider>
+          </QueryProvider>
         </AmplifyProvider>
         <Toaster />
       </body>

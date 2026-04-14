@@ -56,14 +56,22 @@ export function TurnBubble({
 
         <div
           className={cn(
-            "relative rounded-2xl px-4 py-2.5 text-sm md:text-base",
+            "relative rounded-2xl px-4 py-2.5 text-sm md:text-base transition-opacity duration-300",
             "shadow-sm ring-1 ring-inset",
             isUser
               ? "rounded-br-sm bg-primary/10 text-foreground ring-primary/20"
-              : "rounded-bl-sm bg-muted text-foreground ring-border"
+              : "rounded-bl-sm bg-muted text-foreground ring-border",
+            turn.is_pending && "opacity-60 grayscale-[30%]"
           )}
         >
           <span>{turn.content}</span>
+          
+          {turn.is_pending && (
+            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium animate-pulse">
+              <div className="size-1 rounded-full bg-muted-foreground" />
+              Đang gửi...
+            </div>
+          )}
 
           {/* Translation */}
           {showTranslation && turn.translated_content && (

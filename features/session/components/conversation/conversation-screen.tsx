@@ -21,14 +21,20 @@ interface ConversationScreenProps {
   sessionId: string;
   idToken: string;
   initialTurns?: Turn[];
+  scenarioName?: string;
+  aiName?: string;
 }
 
-export function ConversationScreen({ sessionId, idToken, initialTurns }: ConversationScreenProps) {
+export function ConversationScreen({ 
+  sessionId, 
+  idToken, 
+  initialTurns,
+  scenarioName = "Luyện nói tự do",
+  aiName = "Alex"
+}: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({ sessionId, idToken, initialTurns });
   const [inputValue, setInputValue] = React.useState("");
   
-  const scenarioName = "Luyện nói tự do";
-  const aiName = "Alex";
   const status = SessionStatus.ACTIVE; 
 
   const handleSelectHint = (hint: string) => {

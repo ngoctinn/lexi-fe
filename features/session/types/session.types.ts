@@ -64,6 +64,7 @@ export interface Turn {
   translated_content?: string | null;
   audio_url?: string | null;
   is_hint_used: boolean;
+  is_pending?: boolean; // For local optimistic updates
 }
 
 export interface Scoring {
@@ -89,6 +90,9 @@ export interface Session {
   connection_id?: string | null;
   created_at?: string;
   updated_at?: string;
+  /** UI Helpers */
+  scenario_name?: string;
+  ai_name?: string;
 }
 
 // =============================================================================
