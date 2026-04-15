@@ -39,21 +39,27 @@ export function TurnBubble({
     <div
       className={cn(
         "flex w-full items-end gap-2 px-4 py-2",
-        isUser ? "justify-end" : "justify-start"
+        isUser ? "justify-end" : "justify-start",
       )}
     >
       {/* AI Avatar */}
       {!isUser && (
         <Avatar className="size-8 shrink-0 mb-1 border shadow-sm">
-          <AvatarImage src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`} alt={aiName} />
+          <AvatarImage
+            src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
+            alt={aiName}
+          />
           <AvatarFallback className="text-[10px]">AI</AvatarFallback>
         </Avatar>
       )}
 
       {/* Bubble Container */}
-      <div className={cn("flex flex-col gap-1 max-w-[85%] sm:max-w-[75%]", isUser && "items-end")}>
-
-
+      <div
+        className={cn(
+          "flex flex-col gap-1 max-w-[85%] sm:max-w-[75%]",
+          isUser && "items-end",
+        )}
+      >
         <div
           className={cn(
             "relative rounded-2xl px-4 py-2.5 text-sm md:text-base transition-opacity duration-300",
@@ -61,11 +67,11 @@ export function TurnBubble({
             isUser
               ? "rounded-br-sm bg-primary/10 text-foreground ring-primary/20"
               : "rounded-bl-sm bg-muted text-foreground ring-border",
-            turn.is_pending && "opacity-60 grayscale-[30%]"
+            turn.is_pending && "opacity-60 grayscale-30",
           )}
         >
           <span>{turn.content}</span>
-          
+
           {turn.is_pending && (
             <div className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium animate-pulse">
               <div className="size-1 rounded-full bg-muted-foreground" />
@@ -82,7 +88,12 @@ export function TurnBubble({
         </div>
 
         {/* Action Row */}
-        <div className={cn("flex items-center gap-1 mt-0.5", isUser ? "justify-end" : "justify-start")}>
+        <div
+          className={cn(
+            "flex items-center gap-1 mt-0.5",
+            isUser ? "justify-end" : "justify-start",
+          )}
+        >
           {!isUser && turn.audio_url && (
             <Button
               variant="ghost"
@@ -91,14 +102,19 @@ export function TurnBubble({
               onClick={() => onPlayAudio?.(turn.audio_url!)}
               title="Phát ghi âm"
             >
-              <Volume2 className={cn("size-3.5", isPlaying && "text-primary")} />
+              <Volume2
+                className={cn("size-3.5", isPlaying && "text-primary")}
+              />
             </Button>
           )}
 
           <Button
             variant="ghost"
             size="icon"
-            className={cn("size-6 rounded-full hover:bg-muted", showTranslation && "bg-muted")}
+            className={cn(
+              "size-6 rounded-full hover:bg-muted",
+              showTranslation && "bg-muted",
+            )}
             onClick={toggleTranslate}
             title="Dịch câu này"
           >
@@ -112,7 +128,6 @@ export function TurnBubble({
           )}
         </div>
       </div>
-
     </div>
   );
 }

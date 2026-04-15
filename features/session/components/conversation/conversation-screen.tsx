@@ -6,12 +6,20 @@ import { toast } from "sonner";
 import { useSession } from "@/features/session/hooks/use-session";
 import { SessionHeader } from "../shared/session-header";
 import { TranscriptPanel } from "./transcript-panel";
-import { SessionStatus, type Turn } from "@/features/session/types/session.types";
+import {
+  SessionStatus,
+  type Turn,
+} from "@/features/session/types/session.types";
 import { MessageInput } from "./message-input";
 import { ConversationSidebar } from "./conversation-sidebar";
 import { AiAudioPlayer } from "./ai-audio-player";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { InstantLookup } from "@/features/vocabulary/components/lookup/instant-lookup";
 
@@ -24,18 +32,23 @@ interface ConversationScreenProps {
   status: SessionStatus;
 }
 
-export function ConversationScreen({ 
-  sessionId, 
-  idToken, 
+export function ConversationScreen({
+  sessionId,
+  idToken,
   initialTurns,
   scenarioName = "Luyện nói tự do",
   aiName = "Alex",
   status,
 }: ConversationScreenProps) {
-  const { ui, uploadProgress, actions } = useSession({ sessionId, idToken, initialTurns });
+  const { ui, uploadProgress, actions } = useSession({
+    sessionId,
+    idToken,
+    initialTurns,
+  });
   const [inputValue, setInputValue] = React.useState("");
   const hasStartedRef = React.useRef(false);
-  const { startSession, toggleMic, requestHint, translateTurn, sendMessage } = actions;
+  const { startSession, toggleMic, requestHint, translateTurn, sendMessage } =
+    actions;
 
   const handleSelectHint = (hint: string) => {
     setInputValue(hint);
@@ -86,39 +99,44 @@ export function ConversationScreen({
       <div className="flex flex-1 overflow-hidden">
         {/* Main Chat Area */}
         <main className="flex flex-1 flex-col overflow-hidden relative">
-            <TranscriptPanel
-              turns={ui.turns}
-              isAiStreaming={ui.isAiStreaming}
-              aiStreamingText={ui.aiStreamingText}
-              aiName={aiName}
-              className="flex-1"
-              aria-live="polite"
-              onTranslate={translateTurn}
-            />
-          
+          <TranscriptPanel
+            turns={ui.turns}
+            isAiStreaming={ui.isAiStreaming}
+            aiStreamingText={ui.aiStreamingText}
+            aiName={aiName}
+            className="flex-1"
+            aria-live="polite"
+            onTranslate={translateTurn}
+          />
+
           {/* Input Area */}
           <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-8">
-              <MessageInput
-                value={inputValue}
-                onValueChange={setInputValue}
-                onSendMessage={sendMessage}
-                onToggleMic={toggleMic}
-                recorderState={ui.recorderState}
-                disabled={ui.isControlsDisabled}
-              />
-            
+            <MessageInput
+              value={inputValue}
+              onValueChange={setInputValue}
+              onSendMessage={sendMessage}
+              onToggleMic={toggleMic}
+              recorderState={ui.recorderState}
+              disabled={ui.isControlsDisabled}
+            />
+
             {/* Connection/Upload status */}
             <div className="mt-2 h-4 flex items-center justify-center">
-               {ui.wsState !== "connected" && (
+              {ui.wsState !== "connected" && (
                 <span className="text-[10px] text-muted-foreground animate-pulse">
-                  {ui.wsState === "connecting" ? "Đang kết nối..." : "Mất kết nối máy chủ"}
+                  {ui.wsState === "connecting"
+                    ? "Đang kết nối..."
+                    : "Mất kết nối máy chủ"}
                 </span>
-               )}
-               {ui.recorderState === "uploading" && (
-                <div className="w-full max-w-[200px] h-1 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary transition-all" style={{ width: `${uploadProgress}%` }} />
+              )}
+              {ui.recorderState === "uploading" && (
+                <div className="w-full max-w-50 h-1 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary transition-all"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
                 </div>
-               )}
+              )}
             </div>
           </div>
         </main>
@@ -132,7 +150,7 @@ export function ConversationScreen({
           className="hidden lg:flex"
         />
       </div>
-      
+
       <AiAudioPlayer url={ui.currentAudioUrl} />
       <InstantLookup />
     </div>
