@@ -11,10 +11,10 @@ export const SessionService = {
   async translateTurn(sessionId: string, turnIndex: number): Promise<string> {
     // In dev, use mock
     if (process.env.NODE_ENV === "development") {
-      const { mockSessionService } = await import("./session-mock");
-      return mockSessionService.translateTurn(sessionId, turnIndex);
+      const { mockSessionApi } = await import("./session-mock");
+      return mockSessionApi.translateTurn(sessionId, turnIndex);
     }
-    
+
     // In prod, call real API
     // const res = await fetch(`/api/session/${sessionId}/translate?turn=${turnIndex}`);
     // return (await res.json()).translation;
@@ -26,8 +26,8 @@ export const SessionService = {
    */
   async getHint(sessionId: string): Promise<string> {
     if (process.env.NODE_ENV === "development") {
-      const { mockSessionService } = await import("./session-mock");
-      return mockSessionService.getHint(sessionId);
+      const { mockSessionApi } = await import("./session-mock");
+      return mockSessionApi.getHint(sessionId);
     }
     return "Tính năng gợi ý đang được bảo trì.";
   },
@@ -38,5 +38,5 @@ export const SessionService = {
   handleError(message: string, context?: string) {
     console.error(`[SessionService${context ? `:${context}` : ""}]`, message);
     toast.error(message);
-  }
+  },
 };

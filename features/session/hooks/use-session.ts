@@ -73,8 +73,8 @@ export function useSession({
           break;
 
         case WsServerEvent.TURN_SAVED:
-          setTurns((prev) =>
-            prev.map((turn) =>
+          setTurns((prev: Turn[]) =>
+            prev.map((turn: Turn) =>
               turn.turn_index === event.turn_index
                 ? { ...turn, is_pending: false }
                 : turn,
@@ -158,7 +158,7 @@ export function useSession({
         is_hint_used: false,
         is_pending: true,
       };
-      setTurns((prev) => [...prev, newTurn]);
+      setTurns((prev: Turn[]) => [...prev, newTurn]);
 
       send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
     },
@@ -198,8 +198,8 @@ export function useSession({
 
   const translateTurn = React.useCallback(
     async (turnIndex: number) => {
-      store.setTurns((prev) =>
-        prev.map((t) =>
+      setTurns((prev: Turn[]) =>
+        prev.map((t: Turn) =>
           t.turn_index === turnIndex
             ? { ...t, translated_content: "Đang yêu cầu bản dịch..." }
             : t,
@@ -211,8 +211,8 @@ export function useSession({
           sessionId,
           turnIndex,
         );
-        store.setTurns((prev) =>
-          prev.map((t) =>
+        setTurns((prev: Turn[]) =>
+          prev.map((t: Turn) =>
             t.turn_index === turnIndex
               ? { ...t, translated_content: translation }
               : t,

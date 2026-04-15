@@ -3,15 +3,24 @@
 import { apiRequest } from "@/lib/api/client";
 import { updateTag } from "next/cache";
 
+export interface ProfileData {
+  display_name?: string;
+  email?: string;
+  current_level?: string;
+  learning_goal?: string;
+  avatar_url?: string;
+  is_new_user?: boolean;
+}
+
 /**
  * Fetch thông tin profile từ Backend
  * Layer: Interface Adapter (Server Action)
  */
-export async function getProfile() {
+export async function getProfile(): Promise<ProfileData | null> {
   try {
     // Gọi API Backend: GET /profile
     // Tận dụng cơ chế cache của Next.js với tag 'profile'
-    const profile = await apiRequest("/profile", {
+    const profile = await apiRequest<ProfileData>("/profile", {
       next: { tags: ["profile"], revalidate: 0 },
     });
     return profile;
@@ -38,16 +47,19 @@ export async function updateProfile(data: {
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    
+
     // Invalidate cache để các Server Components cập nhật lại dữ liệu
     updateTag("profile");
-    
+
     return { success: true, data: result };
   } catch (error) {
     console.error("Update profile failed:", error);
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : "Đã có lỗi xảy ra khi cập nhật hồ sơ." 
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Đã có lỗi xảy ra khi cập nhật hồ sơ.",
     };
   }
 }
