@@ -32,6 +32,9 @@ export function VocabularyDataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = React.useState("");
 
+  // TanStack Table trả về hàm không tương thích với React Compiler ở đây.
+  // Bỏ qua đúng một cảnh báo này để giữ code hiện tại đơn giản.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
