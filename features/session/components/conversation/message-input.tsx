@@ -4,13 +4,15 @@ import * as React from "react";
 import { SendHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { 
-  InputGroup, 
-  InputGroupInput, 
-  InputGroupAddon, 
-  InputGroupButton 
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  InputGroupButton,
 } from "@/components/ui/input-group";
+
 import { MicButton } from "./mic-button";
+import { Waveform } from "@/components/ui/waveform";
 import type { RecorderState } from "@/features/session/types/session.types";
 
 interface MessageInputProps {
@@ -67,55 +69,64 @@ export function MessageInput({
   };
 
   return (
-    <div className={cn("flex items-center gap-3 w-full max-w-4xl mx-auto", className)}>
-      <InputGroup 
-        size="2xl" 
-        className={cn(
-          "flex-1 items-center transition-all bg-background",
-          isRecording && "border-primary bg-primary/5"
-        )}
-      >
-        {isRecording ? (
-          <div className="flex flex-1 items-center justify-between px-6">
-            <div className="flex items-center gap-3 animate-pulse">
-              <div className="size-2.5 rounded-full bg-primary" />
-              <span className="text-sm font-semibold text-primary tabular-nums">
-                {formatTime(timer)}
-              </span>
-            </div>
-            <span className="text-xs text-muted-foreground font-medium">Đang ghi âm... Nhấn nút vuông để gửi</span>
-          </div>
-        ) : (
-          <>
-            <InputGroupInput
-              value={value}
-              onChange={(e) => onValueChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Nhập câu trả lời bằng tiếng Anh..."
-              disabled={disabled}
-            />
-            
-            <InputGroupAddon align="inline-end" className="pr-1.5 h-full">
-              <InputGroupButton
-                size="icon-sm"
-                variant="ghost"
-                disabled={disabled || !value.trim()}
-                onClick={handleSend}
-                className="hover:bg-primary/10 hover:text-primary shrink-0"
-              >
-                <SendHorizontal />
-              </InputGroupButton>
-            </InputGroupAddon>
-          </>
-        )}
-      </InputGroup>
-
-      <MicButton
-        recorderState={recorderState}
-        onToggle={onToggleMic}
-        disabled={disabled}
-        className="shrink-0"
-      />
+    <div
+      className={cn("flex flex-col gap-1 w-full max-w-4xl mx-auto", className)}
+    >
+      {/* Hiệu ứng sóng âm phía trên input khi đang ghi âm */}
+      {isRecording && (
+        <div className="flex items-center gap-3 mb-1">
+          <Waveform className="h-6" />
+          <span className="text-xs text-primary font-semibold tabular-nums ml-2">
+            {formatTime(timer)}
+          </span>
+          <span className="text-xs text-muted-foreground font-medium ml-4">
+            Đang ghi âm...
+          </span>
+        </div>
+      )}
+      <div className="flex items-center gap-3 w-full">
+        <InputGroup
+          size="2xl"
+          className={cn(
+            "flex-1 items-center transition-all bg-background",
+            isRecording && "border-primary bg-primary/5",
+          )}
+        >
+          <InputGroupInput
+            value={value}
+            onChange={(e) => onValueChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              isRecording
+                ? "Đang ghi âm..."
+                : "Nhập câu trả lời bằng tiếng Anh..."
+            }
+            disabled={disabled || isRecording}
+            aria-label={
+              isRecording
+                ? "Đang ghi âm, nhập liệu tạm khóa"
+                : "Nhập câu trả lời"
+            }
+          />
+          <InputGroupAddon align="inline-end" className="pr-1.5 h-full">
+            <InputGroupButton
+              size="icon-sm"
+              variant="ghost"
+              disabled={disabled || !value.trim() || isRecording}
+              onClick={handleSend}
+              className="hover:bg-primary/10 hover:text-primary shrink-0"
+            >
+              <SendHorizontal />
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+        <MicButton
+          recorderState={recorderState}
+          onToggle={onToggleMic}
+          disabled={disabled}
+          className="shrink-0"
+        />
+      </div>
     </div>
   );
 }

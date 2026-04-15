@@ -34,6 +34,13 @@ export function useSession({
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
 
+  // Select additional pieces that should trigger re-renders when changed
+  const aiStreamingText = useSessionStore((s) => s.aiStreamingText);
+  const lastSttResult = useSessionStore((s) => s.lastSttResult);
+  const currentHint = useSessionStore((s) => s.currentHint);
+  const recorderStateFromStore = useSessionStore((s) => s.recorderState);
+  const currentAudioUrl = useSessionStore((s) => s.currentAudioUrl);
+
   const setTurns = useSessionStore((s) => s.setTurns);
   const setUploadUrls = useSessionStore((s) => s.setUploadUrls);
   const setLastSttResult = useSessionStore((s) => s.setLastSttResult);
@@ -235,14 +242,14 @@ export function useSession({
   return {
     ui: {
       turns,
-      aiStreamingText: useSessionStore.getState().aiStreamingText,
+      aiStreamingText,
       isAiStreaming,
-      lastSttResult: useSessionStore.getState().lastSttResult,
-      currentHint: useSessionStore.getState().currentHint,
+      lastSttResult,
+      currentHint,
       hintPanelOpen,
-      recorderState: useSessionStore.getState().recorderState,
+      recorderState: recorderStateFromStore,
       wsState: connectionState,
-      currentAudioUrl: useSessionStore.getState().currentAudioUrl,
+      currentAudioUrl,
       uploadUrl: uploadUrl,
       isControlsDisabled: SessionDomain.isControlsDisabled(
         connectionState,
