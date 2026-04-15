@@ -6,10 +6,7 @@ import { toast } from "sonner";
 import { useSession } from "@/features/session/hooks/use-session";
 import { SessionHeader } from "../shared/session-header";
 import { TranscriptPanel } from "./transcript-panel";
-import {
-  SessionStatus,
-  type Turn,
-} from "@/features/session/types/session.types";
+import { type Turn } from "@/features/session/types/session.types";
 import { MessageInput } from "./message-input";
 import { ConversationSidebar } from "./conversation-sidebar";
 import { AiAudioPlayer } from "./ai-audio-player";
@@ -27,18 +24,16 @@ interface ConversationScreenProps {
   sessionId: string;
   idToken: string;
   initialTurns?: Turn[];
-  scenarioName?: string;
-  aiName?: string;
-  status: SessionStatus;
+  scenarioTitle?: string;
+  aiCharacter?: string;
 }
 
 export function ConversationScreen({
   sessionId,
   idToken,
   initialTurns,
-  scenarioName = "Luyện nói tự do",
-  aiName = "Alex",
-  status,
+  scenarioTitle = "Phiên luyện nói",
+  aiCharacter = "AI Assistant",
 }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({
     sessionId,
@@ -67,9 +62,8 @@ export function ConversationScreen({
       <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur lg:px-6">
         <SessionHeader
           sessionId={sessionId}
-          scenarioName={scenarioName}
-          aiName={aiName}
-          status={status}
+          scenarioTitle={scenarioTitle}
+          aiCharacter={aiCharacter}
           className="flex-1 border-none bg-transparent h-auto p-0"
         />
 
@@ -103,7 +97,7 @@ export function ConversationScreen({
             turns={ui.turns}
             isAiStreaming={ui.isAiStreaming}
             aiStreamingText={ui.aiStreamingText}
-            aiName={aiName}
+            aiName={aiCharacter}
             className="flex-1"
             aria-live="polite"
             onTranslate={translateTurn}

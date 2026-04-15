@@ -2,14 +2,6 @@
 // ENUMS
 // =============================================================================
 
-export enum SessionStatus {
-  SETUP = "SETUP",
-  ACTIVE = "ACTIVE",
-  PAUSED = "PAUSED",
-  PROCESSING_SCORING = "PROCESSING_SCORING",
-  COMPLETED = "COMPLETED",
-}
-
 export enum TurnSpeaker {
   USER = "USER",
   AI = "AI",
@@ -49,12 +41,15 @@ export enum WsServerEvent {
 
 export interface Scenario {
   scenario_id: string;
-  name: string;
-  description: string;
+  scenario_title: string;
+  context: string;
+  my_character: string;
+  ai_character: string;
+  goals: string[];
+  user_roles: string[];
+  ai_roles: string[];
   is_active: boolean;
   usage_count: number;
-  /** Optional icon name from lucide-react */
-  icon?: string;
 }
 
 export interface Turn {
@@ -82,7 +77,7 @@ export interface Session {
   scenario_id: string;
   ai_gender: "male" | "female";
   level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
-  status?: SessionStatus;
+  prompt_snapshot: string;
   total_turns: number;
   user_turns: number;
   hint_used_count: number;
@@ -91,9 +86,6 @@ export interface Session {
   connection_id?: string | null;
   created_at?: string;
   updated_at?: string;
-  /** UI Helpers */
-  scenario_name?: string;
-  ai_name?: string;
 }
 
 // =============================================================================
@@ -115,7 +107,6 @@ export interface WsUseHintPayload {
   action: WsClientEvent.USE_HINT;
   session_id: string;
 }
-
 
 export interface WsEndSessionPayload {
   action: WsClientEvent.END_SESSION;
@@ -203,9 +194,20 @@ export type WsServerPayload =
 // UI STATE TYPES
 // =============================================================================
 
-export type RecorderState = "idle" | "permission-denied" | "recording" | "uploading" | "processing" | "error";
+export type RecorderState =
+  | "idle"
+  | "permission-denied"
+  | "recording"
+  | "uploading"
+  | "processing"
+  | "error";
 
-export type WsConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+export type WsConnectionState =
+  | "disconnected"
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+  | "error";
 
 export interface SessionUiState {
   turns: Turn[];
@@ -229,6 +231,7 @@ export interface CreateSessionDto {
   scenario_id: string;
   ai_gender: "male" | "female";
   level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+  prompt_snapshot: string;
 }
 
 export interface CreateSessionResult {

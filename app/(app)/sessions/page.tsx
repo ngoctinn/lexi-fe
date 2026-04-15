@@ -4,6 +4,7 @@ import { vi } from "date-fns/locale/vi";
 import { Activity, Clock, PlayCircle, Plus } from "lucide-react";
 
 import { getSessions } from "@/features/session/actions/get-sessions";
+import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,7 +29,13 @@ export const metadata = {
 };
 
 export default async function SessionsPage() {
-  const sessions = await getSessions();
+  const [sessions, scenarios] = await Promise.all([
+    getSessions(),
+    getScenarios(),
+  ]);
+  const scenarioMap = new Map(
+    scenarios.map((scenario) => [scenario.scenario_id, scenario]),
+  );
 
   return (
     <div className="flex-1 overflow-y-auto px-4 md:px-8 py-8 flex flex-col gap-6">
@@ -69,6 +76,9 @@ export default async function SessionsPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {sessions.map((session) => {
             const isCompleted = !!session.scoring;
+            const scenario = scenarioMap.get(session.scenario_id);
+            const scenarioTitle =
+              scenario?.scenario_title ?? session.scenario_id;
 
             return (
               <Card key={session.session_id} className="flex flex-col">
@@ -82,9 +92,7 @@ export default async function SessionsPage() {
                     </Badge>
                   </div>
                   <CardTitle className="text-lg line-clamp-1">
-                    {session.scenario_id === "free"
-                      ? "Luyện nói tự do"
-                      : session.scenario_id}
+                    {scenarioTitle}
                   </CardTitle>
                   <CardDescription>
                     {session.created_at &&

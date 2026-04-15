@@ -1,26 +1,24 @@
 "use client";
 
 import * as React from "react";
-import { BookOpen, Briefcase, ShoppingCart, Plane, HeartPulse, GraduationCap, MessageCircle } from "lucide-react";
+import {
+  BookOpen,
+  Briefcase,
+  Globe2,
+  MessageCircle,
+  Plane,
+  ShoppingCart,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { Scenario } from "@/features/session/types/session.types";
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  "Job Interview": Briefcase,
-  "Shopping": ShoppingCart,
-  "Travel": Plane,
-  "Health": HeartPulse,
-  "Education": GraduationCap,
-  "Small Talk": MessageCircle,
-};
-
-const FREE_SCENARIO: Scenario = {
-  scenario_id: "free",
-  name: "Hội thoại tự do",
-  description: "Bắt đầu nói chuyện mà không cần thiết lập kịch bản",
-  is_active: true,
-  usage_count: 0,
+  work: Briefcase,
+  daily_life: ShoppingCart,
+  travel: Plane,
+  social: MessageCircle,
+  world: Globe2,
 };
 
 interface ScenarioPickerProps {
@@ -29,15 +27,16 @@ interface ScenarioPickerProps {
   onChange: (scenarioId: string) => void;
 }
 
-export function ScenarioPicker({ scenarios, value, onChange }: ScenarioPickerProps) {
-  const all = [FREE_SCENARIO, ...scenarios];
-
+export function ScenarioPicker({
+  scenarios,
+  value,
+  onChange,
+}: ScenarioPickerProps) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {all.map((scenario) => {
+      {scenarios.map((scenario) => {
         const isSelected = scenario.scenario_id === value;
-        let Icon = ICON_MAP[scenario.name] ?? BookOpen;
-        if (scenario.scenario_id === "free") Icon = MessageCircle;
+        const Icon = ICON_MAP[scenario.context] ?? BookOpen;
 
         return (
           <button
@@ -50,21 +49,33 @@ export function ScenarioPicker({ scenarios, value, onChange }: ScenarioPickerPro
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
                 ? "border-primary bg-primary/5 shadow-sm"
-                : "border-border/60 bg-muted/20 hover:border-primary/40 hover:bg-primary/5"
+                : "border-border/60 bg-muted/20 hover:border-primary/40 hover:bg-primary/5",
             )}
           >
-            <div className={cn(
-              "flex size-8 items-center justify-center rounded-lg transition-colors",
-              isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-            )}>
+            <div
+              className={cn(
+                "flex size-8 items-center justify-center rounded-lg transition-colors",
+                isSelected
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+              )}
+            >
               <Icon className="size-4" aria-hidden />
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className={cn("text-xs font-bold", isSelected && "text-primary")}>
-                {scenario.name}
+              <span
+                className={cn(
+                  "text-xs font-bold",
+                  isSelected && "text-primary",
+                )}
+              >
+                {scenario.scenario_title}
               </span>
               <span className="text-[10px] text-muted-foreground line-clamp-2 md:line-clamp-3 leading-relaxed">
-                {scenario.description}
+                {scenario.my_character} · {scenario.ai_character}
+              </span>
+              <span className="text-[10px] text-muted-foreground/80 uppercase tracking-wider">
+                {scenario.goals.length} mục tiêu
               </span>
             </div>
           </button>

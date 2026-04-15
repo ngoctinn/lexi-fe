@@ -4,28 +4,85 @@ import type {
   Scenario,
   Session,
 } from "../types/session.types";
-import { SessionStatus, TurnSpeaker } from "../types/session.types";
+import { TurnSpeaker } from "../types/session.types";
+
+function buildPromptSnapshot(
+  scenario: Scenario,
+  dto: Pick<CreateSessionDto, "ai_gender" | "level">,
+): string {
+  return [
+    `Scenario: ${scenario.scenario_title}`,
+    `Context: ${scenario.context}`,
+    `My character: ${scenario.my_character}`,
+    `AI character: ${scenario.ai_character}`,
+    `Goals: ${scenario.goals.join(" | ")}`,
+    `AI gender: ${dto.ai_gender}`,
+    `Level: ${dto.level}`,
+  ].join("\n");
+}
+
+function buildMockScoring(session: Session): NonNullable<Session["scoring"]> {
+  const turnCount = Math.max(
+    session.total_turns,
+    session.turns?.length ?? 0,
+    1,
+  );
+  const hintPenalty = Math.min(session.hint_used_count * 2, 12);
+  const baseScore = Math.max(68, 88 - hintPenalty - Math.max(0, 4 - turnCount));
+
+  return {
+    fluency: Math.min(100, baseScore + 3),
+    pronunciation: Math.min(100, baseScore),
+    grammar: Math.min(100, baseScore - 4),
+    vocabulary: Math.min(100, baseScore + 5),
+    overall: Math.min(100, baseScore + 1),
+    feedback:
+      "Bài luyện của bạn đã hoàn tất. Hãy xem lại các câu trả lời và tiếp tục luyện để tăng độ tự nhiên khi giao tiếp.",
+  };
+}
 
 const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1",
-    name: "Phỏng vấn xin việc",
-    description:
-      "Luyện tập trả lời các câu hỏi phỏng vấn vị trí kỹ sư phần mềm.",
+    scenario_title: "Phỏng vấn xin việc",
+    context: "work",
+    my_character: "Ứng viên",
+    ai_character: "Nhà tuyển dụng",
+    goals: [
+      "Giới thiệu bản thân",
+      "Nêu kinh nghiệm làm việc",
+      "Trả lời câu hỏi tình huống",
+    ],
+    user_roles: ["Ứng viên", "Kỹ sư phần mềm"],
+    ai_roles: ["Nhà tuyển dụng"],
     is_active: true,
     usage_count: 124,
   },
   {
     scenario_id: "s2",
-    name: "Shopping",
-    description: "Hội thoại khi đi mua sắm, trả giá tại cửa hàng quần áo.",
+    scenario_title: "Mua sắm ở cửa hàng",
+    context: "daily_life",
+    my_character: "Khách hàng",
+    ai_character: "Nhân viên bán hàng",
+    goals: ["Hỏi giá sản phẩm", "Nhờ tư vấn kích cỡ", "Thanh toán lịch sự"],
+    user_roles: ["Khách hàng", "Người mua sắm"],
+    ai_roles: ["Nhân viên bán hàng"],
     is_active: true,
     usage_count: 45,
   },
   {
     scenario_id: "s3",
-    name: "Sân bay",
-    description: "Làm thủ tục hải quan và check-in tại sân bay quốc tế.",
+    scenario_title: "Làm thủ tục sân bay",
+    context: "travel",
+    my_character: "Hành khách",
+    ai_character: "Nhân viên check-in",
+    goals: [
+      "Check-in chuyến bay",
+      "Hỏi hành lý",
+      "Trao đổi về cổng lên máy bay",
+    ],
+    user_roles: ["Hành khách", "Du khách"],
+    ai_roles: ["Nhân viên check-in"],
     is_active: true,
     usage_count: 89,
   },
@@ -36,11 +93,12 @@ const mockSessions: Session[] = [
     session_id: "mock-1",
     user_id: "u1",
     scenario_id: "s1",
-    scenario_name: "Phỏng vấn xin việc",
-    ai_name: "Alex (Tuyển dụng)",
     ai_gender: "male",
     level: "B2",
-    status: SessionStatus.COMPLETED,
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[0], {
+      ai_gender: "male",
+      level: "B2",
+    }),
     total_turns: 8,
     user_turns: 4,
     hint_used_count: 2,
@@ -70,11 +128,12 @@ const mockSessions: Session[] = [
     session_id: "mock-2",
     user_id: "u1",
     scenario_id: "s2",
-    scenario_name: "Shopping",
-    ai_name: "Maria (Bán hàng)",
     ai_gender: "female",
     level: "B1",
-    status: SessionStatus.PAUSED,
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[1], {
+      ai_gender: "female",
+      level: "B1",
+    }),
     total_turns: 3,
     user_turns: 1,
     hint_used_count: 0,
@@ -100,17 +159,20 @@ export const mockSessionApi = {
       return { success: true, session: existing };
     }
 
+    const fallbackScenario = mockScenarios[0];
+
     return {
       success: true,
       session: {
         session_id: sessionId,
         user_id: "u1",
-        scenario_id: "s1",
-        scenario_name: "Luyện nói tự do",
-        ai_name: "Alex",
+        scenario_id: fallbackScenario.scenario_id,
         ai_gender: "female",
         level: "B1",
-        status: SessionStatus.ACTIVE,
+        prompt_snapshot: buildPromptSnapshot(fallbackScenario, {
+          ai_gender: "female",
+          level: "B1",
+        }),
         total_turns: 1,
         user_turns: 0,
         hint_used_count: 0,
@@ -133,19 +195,19 @@ export const mockSessionApi = {
     dto: CreateSessionDto,
   ): Promise<{ success: boolean; session_id?: string; error?: string }> {
     const sessionId = `mock-${Date.now()}`;
+    const matchedScenario =
+      mockScenarios.find(
+        (scenario) => scenario.scenario_id === dto.scenario_id,
+      ) ?? mockScenarios[0];
+
     mockSessions.unshift({
       session_id: sessionId,
       user_id: "u1",
       scenario_id: dto.scenario_id,
-      scenario_name: dto.scenario_id.startsWith("custom:")
-        ? "Kịch bản tùy chỉnh"
-        : (mockScenarios.find(
-            (scenario) => scenario.scenario_id === dto.scenario_id,
-          )?.name ?? "Luyện nói tự do"),
-      ai_name: dto.ai_gender === "male" ? "Alex" : "Maria",
       ai_gender: dto.ai_gender,
       level: dto.level,
-      status: SessionStatus.SETUP,
+      prompt_snapshot:
+        dto.prompt_snapshot || buildPromptSnapshot(matchedScenario, dto),
       total_turns: 0,
       user_turns: 0,
       hint_used_count: 0,
@@ -159,14 +221,11 @@ export const mockSessionApi = {
   async endSession(
     sessionId: string,
   ): Promise<{ success: boolean; error?: string }> {
-    const index = mockSessions.findIndex(
-      (session) => session.session_id === sessionId,
-    );
-    if (index >= 0) {
-      mockSessions[index] = {
-        ...mockSessions[index],
-        status: SessionStatus.COMPLETED,
-      };
+    const session = mockSessions.find((item) => item.session_id === sessionId);
+
+    if (session && !session.scoring) {
+      session.scoring = buildMockScoring(session);
+      session.updated_at = new Date().toISOString();
     }
 
     return { success: true };
