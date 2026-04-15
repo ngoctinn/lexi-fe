@@ -1,54 +1,137 @@
-# AGENTS.md - Hướng dẫn Trợ lý AI cho Dự án Lexi
+# AGENTS.md - Lexi
 
-Tài liệu này đóng vai trò là "bộ não" trung tâm cho bất kỳ AI Agent nào (Antigravity, Claude, Cursor) đang hỗ trợ phát triển dự án Lexi.
+## Goal
+Build MVP web app luyện nói tiếng Anh với AI + flashcard.
+Code đơn giản, đúng chuẩn, dễ hiểu cho beginner.
 
-## 1. Tổng quan Dự án
-- **Tên:** Lexi
-- **Mục tiêu:** MVP Web App luyện nói tiếng Anh với AI + Flashcard.
-- **Thời hạn:** 2 tuần (Hoàn thành trước 28/04/2026).
-- **Trình độ User:** Nhóm C (Cần giải thích rõ mã nguồn và lý do chọn giải pháp).
+---
 
-## 2. Tech Stack & Tiêu chuẩn Code
-- **Framework:** Next.js 15+ (App Router).
-- **Styling:** Tailwind CSS + ShadcnUI (Ưu tiên dùng component mẫu có sẵn của dự án).
-- **Backend:** AWS SAM (Serverless).
-- **State:** Zustand / React Query.
-- **AI:** OpenAI GPT/Gemini API (Voice via Web Speech API).
+## 1. Suy nghĩ trước khi code
 
-## 3. Các Giai đoạn Triển khai (Phases)
+Đừng giả định. Đừng che giấu sự mơ hồ. Làm rõ các đánh đổi.
 
-### Giai đoạn 1: Nền tảng (Ngày 1-3)
-- [x] Cấu hình project, setup Auth (Cognito/Amplify).
-- [x] Xây dựng Layout Dashboard theo phong cách chuyên nghiệp/tối giản.
+Trước khi implement:
+- Nêu rõ các giả định. Nếu không chắc, hãy hỏi.
+- Nếu có nhiều cách hiểu, trình bày tất cả. Không tự ý chọn.
+- Nếu có cách đơn giản hơn, nói ra. Sẵn sàng phản biện khi cần.
+- Nếu có điều gì chưa rõ, dừng lại. Nêu rõ và hỏi.
 
-### Giai đoạn 2: Lõi tính năng - Hội thoại AI (Ngày 4-7)
-- [x] Cấu hình State Management (Zustand + React Query) & Optimistic UI.
-- [x] Giao diện chat trực quan với Transcript thời gian thực.
-- [ ] Hoàn thiện Speech-to-Text và Text-to-Speech (S3-based pipeline).
-- [ ] Animation sóng âm (Visualizer).
+---
 
-### Giai đoạn 3: Flashcard & Từ điển (Ngày 8-10)
-- [ ] Tích hợp tính năng tra từ nhanh trong hội thoại.
-- [ ] Logic lưu từ vựng vào DynamoDB (Backend integrated).
-- [ ] Giao diện học Flashcard (Flip card, SRS simple).
+## 2. Ưu tiên sự đơn giản
 
-### Giai đoạn 4: Hoàn thiện & UI/UX (Ngày 11-14)
-- [ ] Rà soát toàn bộ lỗi (Bug hunting).
-- [ ] Tối ưu hóa trải nghiệm di động.
-- [ ] Deploy bản Production.
+Viết lượng code tối thiểu để giải quyết vấn đề.
 
-## 4. Nguyên tắc cho AI Agent
-- **Giao diện là trên hết:** Luôn tạo ra UI đẹp, hiện đại, mượt mà (premium feel). Không dùng placeholder.
-- **Clean Code Frontend:** Tuân thủ các nguyên tắc Clean Code (SOLID, DRY), chia nhỏ component, sử dụng TypeScript đúng cách và tối ưu Server/Client Components.
-- **Quy tắc "Docs First":** TRƯỚC KHI refactor hoặc viết mã mới cho Next.js, AI Agent **BẮT BUỘC** phải:
-    1. Sử dụng công cụ `nextjs_docs` để đọc tài liệu chính thức từ `nextjs-docs://llms-index`.
-    2. Sử dụng `nextjs_index` để kiểm tra runtime hiện tại của ứng dụng.
-    3. Luôn nghiên cứu giải pháp đúng chuẩn (Optimal) thay vì giải pháp tạm thời.
-- **ShadcnUI:** Luôn ưu tiên dùng `npx shadcn@latest add` cho các component mới.
-- **Ghi chú:** Viết comment code và giải thích rõ ràng bằng tiếng Việt để người dùng dễ theo dõi và học hỏi.
-- **Quy trình:** Kiểm tra trạng thái hiện tại của file qua `view_file` trước khi sửa đổi. Luôn chạy `pnpm dev` và kiểm tra lỗi qua trình duyệt nếu cần.
+- Không thêm tính năng ngoài yêu cầu.
+- Không abstraction cho code dùng một lần.
+- Không thêm tính linh hoạt hoặc config không được yêu cầu.
+- Không xử lý lỗi cho trường hợp không thể xảy ra.
+- Nếu viết 200 dòng mà có thể làm trong 50 dòng, viết lại.
 
-## 5. Định nghĩa Hoàn thành (Definition of Done)
-- Tính năng hoạt động đúng logic đã mô tả trong PRD.
-- Không có lỗi linter/compiler.
-- UI đáp ứng tốt trên mobile và desktop.
+Tự hỏi: một senior có thấy code này quá phức tạp không. Nếu có, đơn giản hóa.
+
+---
+
+## 3. Thay đổi có kiểm soát
+
+Chỉ sửa những gì cần thiết. Chỉ dọn dẹp những gì bạn tạo ra.
+
+Khi sửa code:
+- Không cải thiện code, comment, format xung quanh.
+- Không refactor những thứ không bị lỗi.
+- Giữ nguyên style hiện tại.
+- Nếu thấy dead code không liên quan, chỉ mention, không xóa.
+
+Khi thay đổi tạo ra code thừa:
+- Xóa import, biến, function do bạn làm không còn dùng.
+- Không xóa dead code có sẵn nếu không được yêu cầu.
+
+Mỗi dòng thay đổi phải phục vụ trực tiếp yêu cầu.
+
+---
+
+## 4. Thực thi theo mục tiêu
+
+Xác định tiêu chí thành công và verify được.
+
+Chuyển task thành mục tiêu:
+- Fix bug: tái hiện bug rồi sửa để pass.
+- Add feature: UI và logic hoạt động.
+- Refactor: đảm bảo không thay đổi behavior.
+
+Plan:
+1. Step → verify
+2. Step → verify
+3. Step → verify
+
+Tiêu chí rõ giúp tự kiểm chứng. Tiêu chí mơ hồ sẽ phải hỏi lại.
+
+---
+
+## Next.js Rules
+
+- Docs first (nextjs_docs + nextjs_index)
+- Server Components mặc định
+- Chỉ dùng "use client" khi cần
+- Fetch ở server
+- Ưu tiên cache
+
+Không:
+- Fetch ở client khi không cần
+- Lạm dụng "use client"
+- Dùng API route khi có Server Actions
+
+---
+
+## Code Rules
+
+- Component nhỏ, rõ ràng
+- TypeScript rõ type
+- Không nested sâu
+
+State:
+- Global → Zustand
+- Server → React Query
+
+---
+
+## UI Rules
+
+- UI rõ ràng, dễ dùng
+- Ưu tiên ShadcnUI
+- Không dùng placeholder kém chất lượng
+
+---
+
+## Comment
+
+- Viết bằng tiếng Việt
+- Giải thích lý do, không chỉ mô tả
+
+---
+
+## Workflow
+
+1. view_file trước khi sửa
+2. Hiểu code hiện tại
+3. Xác định scope thay đổi
+4. Code đúng scope
+5. Kiểm tra build và UI
+
+---
+
+## Definition of Done
+
+- Logic đúng
+- Không lỗi build hoặc lint
+- UI hoạt động tốt trên mobile và desktop
+- Code đơn giản, dễ hiểu
+
+---
+
+## Avoid
+
+- Over-engineering
+- Tự suy đoán
+- Refactor không cần thiết
+- Thêm tính năng ngoài yêu cầu
