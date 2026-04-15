@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Turn } from "@/features/session/types/session.types";
 import { TurnBubble } from "./turn-bubble";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,7 +34,7 @@ export function TranscriptPanel({
   }, [turns.length, aiStreamingText, isAiStreaming]);
 
   return (
-    <ScrollArea ref={scrollRef} className={cn("relative flex-1 min-h-0 px-4 py-4", className)}>
+    <div ref={scrollRef} className={cn("relative flex-1 min-h-0 overflow-y-auto px-4 py-4", className)}>
       <div className="flex flex-col gap-6 w-full pb-8 lg:px-4">
         
         {turns.length === 0 && !isAiStreaming && (
@@ -79,6 +78,6 @@ export function TranscriptPanel({
           </div>
         )}
       </div>
-    </ScrollArea>
+    </div>
   );
 }

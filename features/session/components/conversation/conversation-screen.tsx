@@ -34,6 +34,8 @@ export function ConversationScreen({
 }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({ sessionId, idToken, initialTurns });
   const [inputValue, setInputValue] = React.useState("");
+  const hasStartedRef = React.useRef(false);
+  const { startSession, toggleMic, requestHint, translateTurn, sendMessage } = actions;
 
   const handleSelectHint = (hint: string) => {
     setInputValue(hint);
@@ -41,12 +43,11 @@ export function ConversationScreen({
   };
 
   React.useEffect(() => {
-    if (ui.wsState === "connected") {
-      actions.startSession();
+    if (ui.wsState === "connected" && !hasStartedRef.current) {
+      hasStartedRef.current = true;
+      startSession();
     }
-  }, [ui.wsState, actions]);
-
-  const handleMicToggle = actions.toggleMic;
+  }, [ui.wsState, startSession]);
 
   return (
     <div className="flex w-full flex-col h-full bg-background relative overflow-hidden">
@@ -71,11 +72,10 @@ export function ConversationScreen({
               <SheetTitle className="sr-only">Menu hội thoại</SheetTitle>
               <ConversationSidebar
                 currentHint={ui.currentHint}
-                onEnd={actions.endSession}
-              onGetHint={actions.requestHint}
-              onSelectHint={handleSelectHint}
-              isAiStreaming={ui.isAiStreaming}
-              disabled={ui.isControlsDisabled}
+                onGetHint={requestHint}
+                onSelectHint={handleSelectHint}
+                isAiStreaming={ui.isAiStreaming}
+                disabled={ui.isControlsDisabled}
                 className="border-none w-full h-full"
               />
             </SheetContent>
@@ -86,26 +86,26 @@ export function ConversationScreen({
       <div className="flex flex-1 overflow-hidden">
         {/* Main Chat Area */}
         <main className="flex flex-1 flex-col overflow-hidden relative">
-          <TranscriptPanel
-            turns={ui.turns}
-            isAiStreaming={ui.isAiStreaming}
-            aiStreamingText={ui.aiStreamingText}
-            aiName={aiName}
-            className="flex-1"
-            aria-live="polite"
-            onTranslate={actions.translateTurn}
-          />
+            <TranscriptPanel
+              turns={ui.turns}
+              isAiStreaming={ui.isAiStreaming}
+              aiStreamingText={ui.aiStreamingText}
+              aiName={aiName}
+              className="flex-1"
+              aria-live="polite"
+              onTranslate={translateTurn}
+            />
           
           {/* Input Area */}
           <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-8">
-            <MessageInput
-              value={inputValue}
-              onValueChange={setInputValue}
-              onSendMessage={actions.sendMessage}
-              onToggleMic={handleMicToggle}
-              recorderState={ui.recorderState}
-              disabled={ui.isControlsDisabled}
-            />
+              <MessageInput
+                value={inputValue}
+                onValueChange={setInputValue}
+                onSendMessage={sendMessage}
+                onToggleMic={toggleMic}
+                recorderState={ui.recorderState}
+                disabled={ui.isControlsDisabled}
+              />
             
             {/* Connection/Upload status */}
             <div className="mt-2 h-4 flex items-center justify-center">
@@ -126,8 +126,7 @@ export function ConversationScreen({
         {/* Desktop Sidebar */}
         <ConversationSidebar
           currentHint={ui.currentHint}
-          onEnd={actions.endSession}
-          onGetHint={actions.requestHint}
+          onGetHint={requestHint}
           isAiStreaming={ui.isAiStreaming}
           disabled={ui.isControlsDisabled}
           className="hidden lg:flex"

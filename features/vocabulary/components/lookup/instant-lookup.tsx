@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search, Volume2, Bookmark, Check } from "lucide-react";
+import { Volume2, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverAnchor } from "@/components/ui/popover";
@@ -39,17 +39,15 @@ export function InstantLookup() {
     return () => document.removeEventListener("mouseup", handleSelection);
   }, [open]);
 
-  // Handle lưu từ
-  const handleSave = async () => {
-    if (isSaving) return;
-    setIsSaving(true);
-    
-    // Tạo data mock dựa trên từ
-    const data: SaveFlashcardInput = {
-      word,
-      meaning: "(Bản dịch giả lập cho từ này)", // Cần gọi API từ điển thực tế sau
-      type: "noun", 
-    };
+    const handleSave = async () => {
+      if (isSaving) return;
+      setIsSaving(true);
+
+      const data: SaveFlashcardInput = {
+        word,
+        meaning: "(Bản dịch giả lập cho từ này)",
+        type: "noun", 
+      };
 
     try {
       const result = await saveFlashcardAction(data);
@@ -57,7 +55,7 @@ export function InstantLookup() {
         toast.success(result.message);
         setOpen(false); // Đóng popover sau khi lưu
       }
-    } catch (error) {
+    } catch {
        toast.error("Có lỗi xảy ra khi lưu từ vựng");
     } finally {
       setIsSaving(false);
@@ -81,7 +79,7 @@ export function InstantLookup() {
         className="w-80 p-0 shadow-2xl border-primary/10 overflow-hidden" 
         side="top" 
         align="center"
-        onOpenAutoFocus={(e) => e.preventDefault()} // Ngăn việc mất highlight khi mở popover
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <Card className="border-0 shadow-none bg-background/95 backdrop-blur-sm">
           <CardHeader className="pb-3 px-4 pt-4 border-b bg-muted/30">
@@ -102,8 +100,8 @@ export function InstantLookup() {
           <CardContent className="space-y-4 p-4">
              <div className="text-sm">
                <span className="font-semibold text-foreground/80 block mb-1">Nghĩa tiếng Việt</span>
-               <p className="text-muted-foreground leading-relaxed">
-                 (Bản dịch cho "{word}" sẽ hiển thị ở đây sau khi kết nối module Dictionary).
+                    <p className="text-muted-foreground leading-relaxed">
+                 (Bản dịch cho {`"${word}"`} sẽ hiển thị ở đây sau khi kết nối module Dictionary).
                </p>
              </div>
 

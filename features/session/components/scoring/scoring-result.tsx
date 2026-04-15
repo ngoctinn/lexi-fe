@@ -1,13 +1,13 @@
 "use client";
 
-import { CheckCircle2, MessageCircle, FastForward, Lightbulb, BookOpen, Brain, ListChecks } from "lucide-react";
+import { CheckCircle2, MessageCircle, Lightbulb, BookOpen, ListChecks } from "lucide-react";
 import Link from "next/link";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import type { Session, Scoring, Turn } from "@/features/session/types/session.types";
+import type { Session } from "@/features/session/types/session.types";
 import { ScoringSkill, TurnSpeaker } from "@/features/session/types/session.types";
 import { cn } from "@/lib/utils";
 

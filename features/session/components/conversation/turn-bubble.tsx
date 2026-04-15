@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Play, Pause, Volume2, Languages, CheckCircle2 } from "lucide-react";
+import { Volume2, Languages } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

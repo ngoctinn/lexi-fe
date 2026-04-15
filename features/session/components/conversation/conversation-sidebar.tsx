@@ -1,17 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Lightbulb, Square, History, X, Copy, Check } from "lucide-react";
+import { Lightbulb, History, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { 
-  Alert, 
-  AlertTitle, 
-  AlertDescription 
-} from "@/components/ui/alert";
 import { 
   Empty, 
   EmptyHeader, 
@@ -19,23 +14,9 @@ import {
   EmptyDescription, 
   EmptyMedia 
 } from "@/components/ui/empty";
-import { Separator } from "@/components/ui/separator";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ConversationSidebarProps {
   currentHint: string | null;
-  onEnd?: () => void;
   onGetHint?: () => void;
   onSelectHint?: (hint: string) => void;
   isAiStreaming?: boolean;
@@ -45,7 +26,6 @@ interface ConversationSidebarProps {
 
 export function ConversationSidebar({
   currentHint,
-  onEnd,
   onGetHint,
   onSelectHint,
   isAiStreaming,
@@ -86,7 +66,7 @@ export function ConversationSidebar({
           </Button>
         </div>
 
-        <ScrollArea className="flex-1 -mx-2 px-2">
+        <div className="flex-1 -mx-2 px-2 overflow-y-auto">
           {currentHint ? (
             <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                <div className="relative p-5 rounded-2xl bg-background border shadow-sm group overflow-hidden">
@@ -100,7 +80,7 @@ export function ConversationSidebar({
                     </Badge>
                     
                     <p className="text-[15px]/relaxed font-semibold italic text-foreground tracking-tight">
-                      "{currentHint}"
+                      {`"${currentHint}"`}
                     </p>
                     
                     <div className="mt-6 flex items-center gap-2">
@@ -136,13 +116,13 @@ export function ConversationSidebar({
                   <Lightbulb />
                 </EmptyMedia>
                 <EmptyTitle className="text-sm font-bold">Hãy thử tự trả lời</EmptyTitle>
-                <EmptyDescription className="text-xs">
-                  Bấm "Lấy gợi ý" nếu bạn cần ý tưởng để tiếp tục cuộc hội thoại.
-                </EmptyDescription>
-              </EmptyHeader>
+                  <EmptyDescription className="text-xs">
+                    Bấm {`"Lấy gợi ý"`} nếu bạn cần ý tưởng để tiếp tục cuộc hội thoại.
+                  </EmptyDescription>
+                </EmptyHeader>
             </Empty>
           )}
-        </ScrollArea>
+        </div>
       </div>
 
 

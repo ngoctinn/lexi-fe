@@ -1,4 +1,4 @@
-import { type Metadata, type ResolvingMetadata } from "next";
+import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
 import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
@@ -9,10 +9,8 @@ interface SessionPageProps {
 }
 
 export async function generateMetadata(
-  { params }: SessionPageProps,
-  parent: ResolvingMetadata
+  { params }: SessionPageProps
 ): Promise<Metadata> {
-  void parent;
   const { id } = await params;
   const { session } = await getSession(id);
   

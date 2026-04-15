@@ -14,13 +14,6 @@ interface MicButtonProps {
   disabled?: boolean;
 }
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-
 export function MicButton({ recorderState, onToggle, className, disabled }: MicButtonProps) {
   const isListening = recorderState === "recording";
   const isProcessing = recorderState === "uploading" || recorderState === "processing";
@@ -43,34 +36,26 @@ export function MicButton({ recorderState, onToggle, className, disabled }: MicB
 
   return (
     <div className={cn("relative flex items-center justify-center", className)}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant={isListening ? "soft" : "default"}
-              size="icon-2xl"
-              disabled={disabled || isProcessing || recorderState === "permission-denied"}
-              onClick={onToggle}
-              className="shrink-0"
-              aria-label={isListening ? "Stop recording" : "Start recording"}
-            >
-              {isProcessing ? (
-                <Loader2 className="animate-spin size-5" />
-              ) : isListening ? (
-                <Square className="fill-current size-5" />
-              ) : recorderState === "permission-denied" ? (
-                <MicOff className="size-5" />
-              ) : (
-                <Mic className="size-5" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-[200px] text-center">
-            {getTooltipContent()}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        type="button"
+        variant={isListening ? "soft" : "default"}
+        size="icon-2xl"
+        disabled={disabled || isProcessing || recorderState === "permission-denied"}
+        onClick={onToggle}
+        className="shrink-0"
+        aria-label={isListening ? "Stop recording" : "Start recording"}
+        title={getTooltipContent()}
+      >
+        {isProcessing ? (
+          <Loader2 className="animate-spin size-5" />
+        ) : isListening ? (
+          <Square className="fill-current size-5" />
+        ) : recorderState === "permission-denied" ? (
+          <MicOff className="size-5" />
+        ) : (
+          <Mic className="size-5" />
+        )}
+      </Button>
     </div>
   );
 }
