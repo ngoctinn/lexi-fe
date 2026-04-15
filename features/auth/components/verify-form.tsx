@@ -14,7 +14,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import { Field, FieldError } from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
@@ -22,14 +22,15 @@ import { confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { translateCognitoError } from "../utils/auth-errors";
 import { verifySchema, type VerifySchema } from "../schemas";
 
-interface VerifyFormProps extends React.ComponentProps<"div"> {
+type VerifyFormProps = React.ComponentProps<"div"> & {
   email?: string;
-}
+};
 
 export function VerifyForm({ className, email = "", ...props }: VerifyFormProps) {
   const router = useRouter();
@@ -38,7 +39,7 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
     handleSubmit,
     formState: { errors, isSubmitting, isSubmitted },
     setValue,
-    watch,
+    control,
   } = useForm<VerifySchema>({
     resolver: zodResolver(verifySchema),
     defaultValues: {
@@ -47,6 +48,7 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+  const otp = useWatch({ control, name: "otp" });
 
   const onVerify = async (data: VerifySchema) => {
     try {
@@ -59,7 +61,7 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
         toast.success("Xác thực thành công! Bạn có thể đăng nhập ngay.");
         router.push("/login?verified=true");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Verification Error:", error);
       toast.error(translateCognitoError(error));
     }
@@ -69,7 +71,7 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
     try {
       await resendSignUpCode({ username: email });
       toast.success("Đã gửi lại mã xác nhận mới vào email của bạn.");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Resend Error:", error);
       toast.error("Không thể gửi lại mã. Vui lòng thử lại sau.");
     }
@@ -98,7 +100,7 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
                   <InputOTP
                     id="otp"
                     maxLength={6}
-                    value={watch("otp")}
+                    value={otp}
                     onChange={(val) => setValue("otp", val, { shouldValidate: isSubmitted })}
                     containerClassName="w-full"
                     aria-invalid={!!errors.otp}

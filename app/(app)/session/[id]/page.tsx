@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
 import { type Metadata, type ResolvingMetadata } from "next";
+import { notFound } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
 import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
+import { SessionStatus } from "@/features/session/types/session.types";
 
 interface SessionPageProps {
   params: Promise<{ id: string }>;
@@ -11,6 +12,7 @@ export async function generateMetadata(
   { params }: SessionPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  void parent;
   const { id } = await params;
   const { session } = await getSession(id);
   
@@ -31,25 +33,18 @@ export default async function SessionPage({ params }: SessionPageProps) {
   const { id } = await params;
   
   const { success, session } = await getSession(id);
-
-  // Fallback for UI until backend is fully integrated
-  const sessionData = session ?? { 
-    session_id: id, 
-    turns: [],
-    scenario_name: "Luyện nói tự do",
-    ai_name: "Alex"
-  } as any;
-
-  // ID token is mocked. In production, this should come from server-side cookies/auth session.
-  const idToken = "mock-token";
+  if (!success || !session) {
+    notFound();
+  }
 
   return (
     <ConversationScreen 
-      sessionId={sessionData.session_id} 
-      idToken={idToken} 
-      initialTurns={sessionData.turns ?? []}
-      scenarioName={sessionData.scenario_name}
-      aiName={sessionData.ai_name}
+      sessionId={session.session_id} 
+      idToken="mock-token" 
+      initialTurns={session.turns ?? []}
+      scenarioName={session.scenario_name ?? "Luyện nói tự do"}
+      aiName={session.ai_name ?? "Alex"}
+      status={session.status ?? SessionStatus.ACTIVE}
     />
   );
 }

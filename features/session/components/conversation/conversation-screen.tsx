@@ -1,14 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { FastForward, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSession } from "@/features/session/hooks/use-session";
 import { SessionHeader } from "../shared/session-header";
 import { TranscriptPanel } from "./transcript-panel";
-import { MicButton } from "./mic-button";
-import { SessionStatus, type Turn, WsConnectionState } from "@/features/session/types/session.types";
+import { SessionStatus, type Turn } from "@/features/session/types/session.types";
 import { MessageInput } from "./message-input";
 import { ConversationSidebar } from "./conversation-sidebar";
 import { AiAudioPlayer } from "./ai-audio-player";
@@ -23,6 +21,7 @@ interface ConversationScreenProps {
   initialTurns?: Turn[];
   scenarioName?: string;
   aiName?: string;
+  status: SessionStatus;
 }
 
 export function ConversationScreen({ 
@@ -30,12 +29,11 @@ export function ConversationScreen({
   idToken, 
   initialTurns,
   scenarioName = "Luyện nói tự do",
-  aiName = "Alex"
+  aiName = "Alex",
+  status,
 }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({ sessionId, idToken, initialTurns });
   const [inputValue, setInputValue] = React.useState("");
-  
-  const status = SessionStatus.ACTIVE; 
 
   const handleSelectHint = (hint: string) => {
     setInputValue(hint);
@@ -74,10 +72,10 @@ export function ConversationScreen({
               <ConversationSidebar
                 currentHint={ui.currentHint}
                 onEnd={actions.endSession}
-                onGetHint={actions.requestHint}
-                onSelectHint={handleSelectHint}
-                isAiStreaming={ui.isAiStreaming}
-                disabled={ui.isControlsDisabled}
+              onGetHint={actions.requestHint}
+              onSelectHint={handleSelectHint}
+              isAiStreaming={ui.isAiStreaming}
+              disabled={ui.isControlsDisabled}
                 className="border-none w-full h-full"
               />
             </SheetContent>

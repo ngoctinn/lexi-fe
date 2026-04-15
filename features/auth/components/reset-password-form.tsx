@@ -14,23 +14,23 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { confirmResetPassword } from "aws-amplify/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { translateCognitoError } from "../utils/auth-errors";
 import { resetPasswordSchema, type ResetPasswordSchema } from "../schemas";
 import { PasswordInput } from "./password-input";
 
-interface ResetPasswordFormProps extends React.ComponentProps<"div"> {
+type ResetPasswordFormProps = React.ComponentProps<"div"> & {
   email?: string;
-}
+};
 
 export function ResetPasswordForm({ className, email = "", ...props }: ResetPasswordFormProps) {
   const router = useRouter();
@@ -40,7 +40,7 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
     handleSubmit,
     formState: { errors, isSubmitting, isSubmitted },
     setValue,
-    watch,
+    control,
   } = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -51,6 +51,7 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+  const otp = useWatch({ control, name: "otp" });
 
   const onSubmit = async (data: ResetPasswordSchema) => {
     try {
@@ -62,7 +63,7 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
 
       toast.success("Đặt lại mật khẩu thành công! Hãy đăng nhập lại.");
       router.push("/login");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Reset Password Error:", error);
       toast.error(translateCognitoError(error));
     }
@@ -91,7 +92,7 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
                 <InputOTP
                   id="otp"
                   maxLength={6}
-                  value={watch("otp")}
+                  value={otp}
                   onChange={(val) => setValue("otp", val, { shouldValidate: isSubmitted })}
                   containerClassName="w-full"
                   aria-invalid={!!errors.otp}

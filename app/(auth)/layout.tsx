@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Logo } from "@/components/shared/logo"
 
 export default function AuthLayout({
   children,

@@ -19,13 +19,14 @@ import { signIn } from "aws-amplify/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { translateCognitoError } from "../utils/auth-errors";
 import { loginSchema, type LoginSchema } from "../schemas";
 import { PasswordInput } from "./password-input";
 
-interface LoginFormProps extends React.ComponentProps<"div"> { }
+type LoginFormProps = React.ComponentProps<"div">;
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
   const router = useRouter();
@@ -35,7 +36,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
-    watch,
+    control,
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -46,6 +47,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+  const remember = useWatch({ control, name: "remember" });
 
   const onSubmit = async (data: LoginSchema) => {
     try {
@@ -64,7 +66,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
       } else {
         toast.info(`Cần thực hiện bước: ${nextStep.signInStep}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login Error:", error);
       toast.error(translateCognitoError(error));
     }
@@ -157,7 +159,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 <Field orientation="horizontal" className="items-center gap-2">
                   <Checkbox
                     id="remember"
-                    checked={watch("remember")}
+                    checked={remember}
                     onCheckedChange={(checked) => setValue("remember", checked === true)}
                   />
                   <FieldLabel htmlFor="remember" className="text-xs font-normal text-muted-foreground cursor-pointer">

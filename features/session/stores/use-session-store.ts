@@ -4,6 +4,7 @@ import type { SessionUiState, Turn, WsConnectionState, RecorderState } from "../
 interface SessionStoreState extends SessionUiState {
   // Actions
   setTurns: (turns: Turn[] | ((prev: Turn[]) => Turn[])) => void;
+  setAiStreamingText: (text: string | ((prev: string) => string)) => void;
   setAiStreaming: (isStreaming: boolean, text?: string) => void;
   setWsState: (state: WsConnectionState) => void;
   setRecorderState: (state: RecorderState) => void;
@@ -33,6 +34,11 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
   setTurns: (turns) => 
     set((state) => ({ 
       turns: typeof turns === "function" ? turns(state.turns) : turns 
+    })),
+
+  setAiStreamingText: (text) =>
+    set((state) => ({
+      aiStreamingText: typeof text === "function" ? text(state.aiStreamingText) : text,
     })),
 
   setAiStreaming: (isStreaming, text) => 

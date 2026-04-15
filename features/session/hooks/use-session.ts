@@ -4,7 +4,6 @@ import * as React from "react";
 import type {
   Turn,
   WsServerPayload,
-  SessionUiState,
 } from "@/features/session/types/session.types";
 import {
   WsServerEvent,
@@ -26,21 +25,6 @@ interface UseSessionOptions {
 
 export function useSession({ sessionId, idToken, initialTurns = [] }: UseSessionOptions) {
   const store = useSessionStore();
-  
-  // React 19 useOptimistic for immediate UI feedback on turns
-  const [optimisticTurns, addOptimisticTurn] = React.useOptimistic<Turn[], string>(
-    store.turns,
-    (state, text) => [
-      ...state,
-      {
-        turn_index: state.length,
-        speaker: TurnSpeaker.USER,
-        content: text,
-        is_hint_used: false,
-        is_pending: true, // Custom flag for premium UI feedback
-      } as Turn
-    ]
-  );
 
   // Sync initial turns once
   React.useEffect(() => {
@@ -66,12 +50,16 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
         break;
 
       case WsServerEvent.AI_TEXT_CHUNK:
-        store.setAiStreaming(!event.done, event.done ? "" : store.aiStreamingText + event.chunk);
-        
-        // If done, we might want to refresh turns from API or add the AI turn
-        if (event.done) {
-          // You might fetch updated turns here using React Query invalidate
-        }
+        store.setAiStreamingText((prev) => (event.done ? "" : prev + event.chunk));
+        store.setAiStreaming(!event.done, event.done ? "" : undefined);
+        break;
+
+      case WsServerEvent.TURN_SAVED:
+        store.setTurns((prev) =>
+          prev.map((turn) =>
+            turn.turn_index === event.turn_index ? { ...turn, is_pending: false } : turn
+          )
+        );
         break;
 
       case WsServerEvent.AI_AUDIO_URL:
@@ -120,23 +108,18 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
 
   const sendMessage = React.useCallback((text: string) => {
     if (!text.trim()) return;
-    
-    // React 19 Optimistic Update
-    React.startTransition(() => {
-      addOptimisticTurn(text);
-    });
 
-    // Real turn added to store (actually usually we wait for server ack or add it next)
     const newTurn: Turn = {
       turn_index: store.turns.length,
       speaker: TurnSpeaker.USER,
       content: text,
       is_hint_used: false,
+      is_pending: true,
     };
     store.setTurns((prev) => [...prev, newTurn]);
 
     send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
-  }, [send, sessionId, store, addOptimisticTurn]);
+  }, [send, sessionId, store]);
 
   const startSession = React.useCallback(() => {
     send({ action: WsClientEvent.START_SESSION, session_id: sessionId });
@@ -181,8 +164,8 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
       store.setTurns((prev) => prev.map((t) => 
         t.turn_index === turnIndex ? { ...t, translated_content: translation } : t
       ));
-    } catch (err: any) {
-      SessionService.handleError(err.message, "Translation");
+    } catch (err) {
+      SessionService.handleError(err instanceof Error ? err.message : "Đã xảy ra lỗi dịch.", "Translation");
     }
   }, [sessionId, store]);
 
@@ -193,7 +176,6 @@ export function useSession({ sessionId, idToken, initialTurns = [] }: UseSession
   return {
     ui: { 
       ...store, 
-      turns: optimisticTurns, // Sử dụng optimistic turns cho UI mượt mà
       wsState: connectionState,
       isControlsDisabled: SessionDomain.isControlsDisabled(connectionState, recorderState, store.isAiStreaming)
     },

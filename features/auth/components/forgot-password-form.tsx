@@ -51,7 +51,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
         toast.success("Mã khôi phục đã được gửi đến email của bạn.");
         router.push(`/reset-password?email=${encodeURIComponent(data.email)}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Forgot Password Error:", error);
       toast.error(translateCognitoError(error));
     }

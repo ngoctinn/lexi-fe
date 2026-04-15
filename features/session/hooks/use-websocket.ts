@@ -6,7 +6,6 @@ import type {
   WsServerPayload,
   WsConnectionState,
 } from "@/features/session/types/session.types";
-import { WsServerEvent } from "@/features/session/types/session.types";
 
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? "";
 const RECONNECT_BASE_MS = 1000;
@@ -36,6 +35,9 @@ export function useWebSocket({
   const reconnectAttemptRef = React.useRef(0);
   const reconnectTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMountedRef = React.useRef(true);
+  const shouldReconnectRef = React.useRef(true);
+  const connectRef = React.useRef<(() => void) | null>(null);
+  const scheduleReconnectRef = React.useRef<(() => void) | null>(null);
   const onMessageRef = React.useRef(onMessage);
   const onConnectionChangeRef = React.useRef(onConnectionChange);
 
@@ -80,7 +82,9 @@ export function useWebSocket({
     ws.onclose = () => {
       if (!isMountedRef.current) return;
       setConnState("disconnected");
-      scheduleReconnect();
+      if (shouldReconnectRef.current) {
+        scheduleReconnectRef.current?.();
+      }
     };
 
     ws.onerror = () => {
@@ -99,31 +103,39 @@ export function useWebSocket({
     setConnState("reconnecting");
 
     reconnectTimerRef.current = setTimeout(() => {
-      if (isMountedRef.current) connect();
+      if (isMountedRef.current) connectRef.current?.();
     }, delay);
-  }, [connect, setConnState]);
+  }, [setConnState]);
 
-  const disconnect = React.useCallback(() => {
+  React.useEffect(() => {
+    connectRef.current = connect;
+    scheduleReconnectRef.current = scheduleReconnect;
+  });
+
+  function disconnect() {
+    shouldReconnectRef.current = false;
     isMountedRef.current = false;
     if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
     wsRef.current?.close();
-  }, []);
+  }
 
-  const send = React.useCallback((payload: WsClientPayload) => {
+  function send(payload: WsClientPayload) {
     const ws = wsRef.current;
     if (ws?.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(payload));
     } else {
       console.warn("[WS] Cannot send — not connected", payload);
     }
-  }, []);
+  }
 
   React.useEffect(() => {
+    shouldReconnectRef.current = true;
     isMountedRef.current = true;
     connect();
 
     return () => {
       isMountedRef.current = false;
+      shouldReconnectRef.current = false;
       if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
       wsRef.current?.close();
     };

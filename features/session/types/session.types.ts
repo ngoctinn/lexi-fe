@@ -82,6 +82,7 @@ export interface Session {
   scenario_id: string;
   ai_gender: "male" | "female";
   level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+  status?: SessionStatus;
   total_turns: number;
   user_turns: number;
   hint_used_count: number;

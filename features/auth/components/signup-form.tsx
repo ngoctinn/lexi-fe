@@ -19,13 +19,14 @@ import { signUp } from "aws-amplify/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { translateCognitoError } from "../utils/auth-errors";
 import { signupSchema, type SignupSchema } from "../schemas";
 import { PasswordInput } from "./password-input";
 
-interface SignupFormProps extends React.ComponentProps<"div"> { }
+type SignupFormProps = React.ComponentProps<"div">;
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
   const router = useRouter();
@@ -35,7 +36,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
-    watch,
+    control,
   } = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -47,6 +48,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+  const terms = useWatch({ control, name: "terms" });
 
   const onSubmit = async (data: SignupSchema) => {
     try {
@@ -67,7 +69,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         toast.success("Đăng ký thành công! Vui lòng kiểm tra email để nhận mã xác thực.");
         router.push(`/verify?email=${encodeURIComponent(data.email)}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Signup Error:", error);
       toast.error(translateCognitoError(error));
     }
@@ -152,7 +154,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 <Field orientation="horizontal" className="items-start gap-2" data-invalid={!!errors.terms}>
                   <Checkbox
                     id="terms"
-                    checked={watch("terms")}
+                    checked={terms}
                     onCheckedChange={(checked) => setValue("terms", checked === true)}
                     aria-invalid={!!errors.terms}
                   />

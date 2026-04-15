@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-interface PasswordInputProps extends React.ComponentProps<typeof Input> {
-  // Add any additional props if needed
-}
+type PasswordInputProps = React.ComponentProps<typeof Input>;
 
 /**
  * A specialized Input component for passwords with a built-in visibility toggle.
@@ -31,7 +29,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           variant="ghost"
           size="icon-sm"
           className="absolute right-2.5 top-1/2 -translate-y-1/2 size-8 text-muted-foreground hover:bg-muted/50"
-          onClick={() => setShowPassword(!showPassword)}
+          onClick={() => setShowPassword((prev) => !prev)}
         >
           {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           <span className="sr-only">
