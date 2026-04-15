@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
       try {
         const session = await fetchAuthSession(contextSpec);
         return session.tokens !== undefined;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -25,8 +25,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 2. Nhóm Route cần được bảo vệ (Yêu cầu đăng nhập)
-  const isProtectedRoute = 
-    pathname.startsWith("/dashboard") || 
+  const isProtectedRoute =
+    pathname.startsWith("/dashboard") ||
     pathname.startsWith("/vocabulary") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/onboarding") || // Cần login mới được onboarding
@@ -41,8 +41,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // 3. Nhóm Auth Route (Redirect về dashboard nếu đã đăng nhập)
-  const isAuthRoute = 
-    pathname.startsWith("/login") || 
+  const isAuthRoute =
+    pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password");

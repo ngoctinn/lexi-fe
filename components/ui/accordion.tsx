@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Accordion as AccordionPrimitive } from "radix-ui"
+import * as React from "react";
+import { Accordion as AccordionPrimitive } from "radix-ui";
 
-import { cn } from "@/lib/utils"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import { cn } from "@/lib/utils";
+import { ChevronDownIcon } from "lucide-react";
 
 function Accordion({
   className,
@@ -16,7 +16,7 @@ function Accordion({
       className={cn("flex w-full flex-col", className)}
       {...props}
     />
-  )
+  );
 }
 
 function AccordionItem({
@@ -30,11 +30,11 @@ function AccordionItem({
         "group/accordion-item px-4 rounded-xl transition-all duration-300",
         "data-[state=open]:bg-card data-[state=open]:shadow-flashcard data-[state=open]:my-4",
         "data-[state=closed]:text-muted-foreground/60 data-[state=closed]:border-transparent",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function AccordionTrigger({
@@ -48,15 +48,18 @@ function AccordionTrigger({
         data-slot="accordion-trigger"
         className={cn(
           "group/accordion-trigger relative flex flex-1 items-center justify-between py-4 text-left text-sm font-bold transition-all outline-none disabled:pointer-events-none disabled:opacity-50 group-data-[state=open]/accordion-item:text-primary **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground group-data-[state=open]/accordion-item:**:data-[slot=accordion-trigger-icon]:text-primary",
-          className
+          className,
         )}
         {...props}
       >
         {children}
-        <ChevronDownIcon data-slot="accordion-trigger-icon" className="pointer-events-none shrink-0 transition-transform duration-300 group-aria-expanded/accordion-trigger:rotate-180" />
+        <ChevronDownIcon
+          data-slot="accordion-trigger-icon"
+          className="pointer-events-none shrink-0 transition-transform duration-300 group-aria-expanded/accordion-trigger:rotate-180"
+        />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
-  )
+  );
 }
 
 function AccordionContent({
@@ -73,13 +76,13 @@ function AccordionContent({
       <div
         className={cn(
           "h-(--radix-accordion-content-height) pt-0 pb-2.5 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
-          className
+          className,
         )}
       >
         {children}
       </div>
     </AccordionPrimitive.Content>
-  )
+  );
 }
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };

@@ -12,7 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/shared/logo";
 import { signUp } from "aws-amplify/auth";
@@ -44,7 +49,6 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       password: "",
       terms: false,
     },
-    // Best practice: don't validate until first submit, then validate on change
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
@@ -65,12 +69,13 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       if (isSignUpComplete) {
         toast.success("Đăng ký thành công! Đang chuyển hướng đến đăng nhập...");
         router.push("/login");
-      } else if (nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
-        toast.success("Đăng ký thành công! Vui lòng kiểm tra email để nhận mã xác thực.");
+      } else if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+        toast.success(
+          "Đăng ký thành công! Vui lòng kiểm tra email để nhận mã xác thực.",
+        );
         router.push(`/verify?email=${encodeURIComponent(data.email)}`);
       }
     } catch (error) {
-      console.error("Signup Error:", error);
       toast.error(translateCognitoError(error));
     }
   };
@@ -90,7 +95,6 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-8">
-              {/* Google Auth Placeholder */}
               <div className="flex flex-col gap-4">
                 <Button
                   type="button"
@@ -98,7 +102,12 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   size="2xl"
                   className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-5" data-icon="inline-start">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    className="mr-2 size-5"
+                    data-icon="inline-start"
+                  >
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -126,7 +135,9 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
               <FieldGroup className="gap-6">
                 <Field data-invalid={!!errors.email}>
-                  <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
+                  <FieldLabel htmlFor="email" className="text-foreground/80">
+                    Email
+                  </FieldLabel>
                   <Input
                     id="email"
                     type="email"
@@ -136,11 +147,15 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                     aria-invalid={!!errors.email}
                     {...register("email")}
                   />
-                  {errors.email && <FieldError>{errors.email.message}</FieldError>}
+                  {errors.email && (
+                    <FieldError>{errors.email.message}</FieldError>
+                  )}
                 </Field>
 
                 <Field data-invalid={!!errors.password}>
-                  <FieldLabel htmlFor="password" title="password">Mật khẩu</FieldLabel>
+                  <FieldLabel htmlFor="password" title="password">
+                    Mật khẩu
+                  </FieldLabel>
                   <PasswordInput
                     id="password"
                     size="xl"
@@ -148,28 +163,57 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                     aria-invalid={!!errors.password}
                     {...register("password")}
                   />
-                  {errors.password && <FieldError>{errors.password.message}</FieldError>}
+                  {errors.password && (
+                    <FieldError>{errors.password.message}</FieldError>
+                  )}
                 </Field>
 
-                <Field orientation="horizontal" className="items-start gap-2" data-invalid={!!errors.terms}>
+                <Field
+                  orientation="horizontal"
+                  className="items-start gap-2"
+                  data-invalid={!!errors.terms}
+                >
                   <Checkbox
                     id="terms"
                     checked={terms}
-                    onCheckedChange={(checked) => setValue("terms", checked === true)}
+                    onCheckedChange={(checked) =>
+                      setValue("terms", checked === true)
+                    }
                     aria-invalid={!!errors.terms}
                   />
                   <div className="grid gap-1 leading-none">
-                    <FieldLabel htmlFor="terms" className="text-xs font-normal text-muted-foreground cursor-pointer">
+                    <FieldLabel
+                      htmlFor="terms"
+                      className="text-xs font-normal text-muted-foreground cursor-pointer"
+                    >
                       Tôi đồng ý với{" "}
-                      <Link href="/terms" className="underline hover:text-primary">Điều khoản</Link>
-                      {" "}và{" "}
-                      <Link href="/privacy" className="underline hover:text-primary">Chính sách bảo mật</Link>.
+                      <Link
+                        href="/terms"
+                        className="underline hover:text-primary"
+                      >
+                        Điều khoản
+                      </Link>{" "}
+                      và{" "}
+                      <Link
+                        href="/privacy"
+                        className="underline hover:text-primary"
+                      >
+                        Chính sách bảo mật
+                      </Link>
+                      .
                     </FieldLabel>
-                    {errors.terms && <FieldError>{errors.terms.message}</FieldError>}
+                    {errors.terms && (
+                      <FieldError>{errors.terms.message}</FieldError>
+                    )}
                   </div>
                 </Field>
 
-                <Button type="submit" size="2xl" className="w-full text-base" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  size="2xl"
+                  className="w-full text-base"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? "Đang xử lý..." : "Tạo tài khoản"}
                 </Button>
               </FieldGroup>
@@ -179,7 +223,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 py-6 text-center">
           <div className="text-sm text-balance text-muted-foreground">
             Đã có tài khoản?{" "}
-            <Link href="/login" className="font-bold text-foreground hover:text-primary transition-colors">
+            <Link
+              href="/login"
+              className="font-bold text-foreground hover:text-primary transition-colors"
+            >
               Đăng nhập
             </Link>
           </div>

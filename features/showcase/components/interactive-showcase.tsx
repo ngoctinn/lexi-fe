@@ -1,8 +1,19 @@
 "use client";
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -33,7 +44,9 @@ export function InteractiveShowcase() {
             <span>{progress}%</span>
           </div>
           <Progress value={progress} />
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Updated 2 minutes ago</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+            Updated 2 minutes ago
+          </p>
         </div>
 
         <div className="flex flex-col gap-2 w-full mt-2">
@@ -53,13 +66,15 @@ export function InteractiveShowcase() {
             <AccordionItem value="item-1">
               <AccordionTrigger>What is Spaced Repetition?</AccordionTrigger>
               <AccordionContent>
-                It's a study technique where you review material at increasing intervals to improve long-term retention.
+                It&apos;s a study technique where you review material at
+                increasing intervals to improve long-term retention.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
               <AccordionTrigger>How many words per day?</AccordionTrigger>
               <AccordionContent>
-                We recommend starting with 20 new words along with your daily reviews.
+                We recommend starting with 20 new words along with your daily
+                reviews.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

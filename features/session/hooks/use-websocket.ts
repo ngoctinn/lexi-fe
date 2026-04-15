@@ -62,6 +62,10 @@ export function useWebSocket({
     onConnectionChangeRef.current?.(state);
   }, []);
 
+  const emitServerMessage = React.useCallback((message: WsServerPayload) => {
+    onMessageRef.current?.(message);
+  }, []);
+
   const connect = React.useCallback(() => {
     if (!isMountedRef.current) return;
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -151,10 +155,10 @@ export function useWebSocket({
       try {
         switch (payload.action) {
           case WsClientEvent.START_SESSION:
-            onMessageRef.current?.({
+            emitServerMessage({
               event: WsServerEvent.SESSION_READY,
               upload_url: "https://mock-upload.com",
-            } as any);
+            });
             break;
           case WsClientEvent.SEND_MESSAGE: {
             // Determine the optimistic turn index from the session store
@@ -162,19 +166,19 @@ export function useWebSocket({
             const turnIndex = Math.max(0, turns.length - 1);
             // Mark turn saved
             setTimeout(() => {
-              onMessageRef.current?.({
+              emitServerMessage({
                 event: WsServerEvent.TURN_SAVED,
                 turn_index: turnIndex,
-              } as any);
+              });
             }, 200);
 
             // Simulate AI reply
             setTimeout(() => {
-              onMessageRef.current?.({
+              emitServerMessage({
                 event: WsServerEvent.AI_TEXT_CHUNK,
-                chunk: `Mock AI: trả lời "${(payload as any).text}"`,
+                chunk: `Mock AI: trả lời "${payload.text}"`,
                 done: true,
-              } as any);
+              });
             }, 600);
             break;
           }
@@ -182,27 +186,27 @@ export function useWebSocket({
             const turns = useSessionStore.getState().turns;
             const turnIndex = Math.max(0, turns.length - 1);
             setTimeout(() => {
-              onMessageRef.current?.({
+              emitServerMessage({
                 event: WsServerEvent.TURN_SAVED,
                 turn_index: turnIndex,
-              } as any);
+              });
             }, 300);
             break;
           }
           case WsClientEvent.USE_HINT:
             setTimeout(() => {
-              onMessageRef.current?.({
+              emitServerMessage({
                 event: WsServerEvent.HINT_TEXT,
                 hint: "Gợi ý mẫu: Hãy diễn đạt ngắn gọn.",
-              } as any);
+              });
             }, 150);
             break;
           case WsClientEvent.END_SESSION:
             setTimeout(() => {
-              onMessageRef.current?.({
+              emitServerMessage({
                 event: WsServerEvent.SCORING_COMPLETE,
                 session_id: sessionId,
-              } as any);
+              });
             }, 200);
             break;
           default:

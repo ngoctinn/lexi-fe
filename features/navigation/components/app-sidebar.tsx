@@ -1,43 +1,35 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   GraduationCap,
   Map,
   BookOpen,
-  PenTool,
   Trophy,
   Store,
   User,
-  Settings,
   LogOut,
-  Flame,
-  Star,
   LayoutDashboard,
   Mic,
   BrainCircuit,
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { signOut } from "aws-amplify/auth"
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "aws-amplify/auth";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const mainNavItems = [
   {
@@ -75,7 +67,7 @@ const mainNavItems = [
     url: "/profile",
     icon: User,
   },
-]
+];
 
 const communityNavItems = [
   {
@@ -83,31 +75,28 @@ const communityNavItems = [
     url: "/leaderboard",
     icon: Trophy,
   },
-]
-
-const user = {
-  name: "Ngọc Tín",
-  email: "ngoctin@example.com",
-  avatar: "/avatars/user.jpg",
-  streak: 14,
-  points: 1250,
-}
+];
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await signOut();
-      router.refresh(); 
+      router.refresh();
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props} className="bg-sidebar border-r-0">
+    <Sidebar
+      variant="inset"
+      collapsible="icon"
+      {...props}
+      className="bg-sidebar border-r-0"
+    >
       <SidebarHeader className="pt-4 pb-2">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -121,7 +110,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 <div className="bg-primary flex shrink-0 size-6 items-center justify-center rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)]">
                   <GraduationCap className="text-primary-foreground" />
                 </div>
-                <span className="font-extrabold tracking-tight text-xl text-primary group-data-[collapsible=icon]:hidden">LexiLearn</span>
+                <span className="font-extrabold tracking-tight text-xl text-primary group-data-[collapsible=icon]:hidden">
+                  LexiLearn
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -129,9 +120,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Chính</SidebarGroupLabel>
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+            Chính
+          </SidebarGroupLabel>
           <SidebarMenu>
             {mainNavItems.map((item) => (
               <SidebarMenuItem key={item.title}>
@@ -144,7 +136,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 >
                   <Link href={item.url}>
                     <item.icon />
-                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -153,7 +147,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Cộng đồng</SidebarGroupLabel>
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+            Cộng đồng
+          </SidebarGroupLabel>
           <SidebarMenu>
             {communityNavItems.map((item) => (
               <SidebarMenuItem key={item.title}>
@@ -165,7 +161,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 >
                   <Link href={item.url}>
                     <item.icon />
-                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -186,12 +184,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               tooltip="Đăng xuất"
             >
               <LogOut className="size-4" />
-              <span className="group-data-[collapsible=icon]:hidden font-medium">Đăng xuất</span>
+              <span className="group-data-[collapsible=icon]:hidden font-medium">
+                Đăng xuất
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -72,7 +72,7 @@ export function VocabularyDataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -90,7 +90,10 @@ export function VocabularyDataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-4">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -112,7 +115,8 @@ export function VocabularyDataTable<TData, TValue>({
       {/* Pagination */}
       <div className="flex items-center justify-between pt-4">
         <div className="text-sm text-muted-foreground">
-          Hiển thị trang {table.getState().pagination.pageIndex + 1} / {table.getPageCount() || 1}
+          Hiển thị trang {table.getState().pagination.pageIndex + 1} /{" "}
+          {table.getPageCount() || 1}
         </div>
         <div className="flex items-center space-x-2">
           <Button

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { cva, type VariantProps } from "class-variance-authority"
-import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { type VariantProps } from "class-variance-authority";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
 
 import {
   Command,
@@ -12,22 +12,22 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { selectTriggerVariants } from "@/components/ui/select"
+} from "@/components/ui/popover";
+import { selectTriggerVariants } from "@/components/ui/select";
 
 const ComboboxContext = React.createContext<{
-  size?: VariantProps<typeof selectTriggerVariants>["size"]
-  open: boolean
-  setOpen: (open: boolean) => void
+  size?: VariantProps<typeof selectTriggerVariants>["size"];
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }>({
   open: false,
   setOpen: () => {},
-})
+});
 
 function Combobox({
   children,
@@ -35,14 +35,14 @@ function Combobox({
   open: openProp,
   onOpenChange,
 }: {
-  children: React.ReactNode
-  size?: VariantProps<typeof selectTriggerVariants>["size"]
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  children: React.ReactNode;
+  size?: VariantProps<typeof selectTriggerVariants>["size"];
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [internalOpen, setInternalOpen] = React.useState(false)
-  const open = openProp ?? internalOpen
-  const setOpen = onOpenChange ?? setInternalOpen
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const open = openProp ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
 
   return (
     <ComboboxContext.Provider value={{ size, open, setOpen }}>
@@ -50,35 +50,42 @@ function Combobox({
         {children}
       </Popover>
     </ComboboxContext.Provider>
-  )
+  );
 }
 
 const ComboboxTrigger = React.forwardRef<
   React.ElementRef<typeof PopoverTrigger>,
   React.ComponentPropsWithoutRef<typeof PopoverTrigger> & {
-    placeholder?: string
-    value?: string
+    placeholder?: string;
+    value?: string;
   }
->(({ className, children, placeholder = "Select...", value, ...props }, ref) => {
-  const { size } = React.useContext(ComboboxContext)
+>(
+  (
+    { className, children, placeholder = "Select...", value, ...props },
+    ref,
+  ) => {
+    const { size } = React.useContext(ComboboxContext);
 
-  return (
-    <PopoverTrigger asChild ref={ref} {...props}>
-      <button
-        type="button"
-        data-slot="combobox-trigger"
-        data-size={size}
-        className={cn(selectTriggerVariants({ size, className }), "w-full")}
-      >
-        <span className="flex-1 text-left truncate">
-          {value || children || <span className="text-muted-foreground">{placeholder}</span>}
-        </span>
-        <ChevronDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
-      </button>
-    </PopoverTrigger>
-  )
-})
-ComboboxTrigger.displayName = "ComboboxTrigger"
+    return (
+      <PopoverTrigger asChild ref={ref} {...props}>
+        <button
+          type="button"
+          data-slot="combobox-trigger"
+          data-size={size}
+          className={cn(selectTriggerVariants({ size, className }), "w-full")}
+        >
+          <span className="flex-1 text-left truncate">
+            {value || children || (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
+          </span>
+          <ChevronDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+    );
+  },
+);
+ComboboxTrigger.displayName = "ComboboxTrigger";
 
 const ComboboxContent = React.forwardRef<
   React.ElementRef<typeof PopoverContent>,
@@ -98,51 +105,52 @@ const ComboboxContent = React.forwardRef<
         {children}
       </Command>
     </PopoverContent>
-  )
-})
-ComboboxContent.displayName = "ComboboxContent"
+  );
+});
+ComboboxContent.displayName = "ComboboxContent";
 
-// Helper component for Search Input inside Combobox
 const ComboboxInput = React.forwardRef<
   React.ElementRef<typeof CommandInput>,
   React.ComponentPropsWithoutRef<typeof CommandInput>
 >(({ className, ...props }, ref) => {
-  const { size } = React.useContext(ComboboxContext)
-  
+  const { size } = React.useContext(ComboboxContext);
+
   return (
     <CommandInput
       ref={ref}
-      // Pass a dynamic height based on size if needed, but standard input styling is usually h-8 or h-9
       className={cn(
         size === "lg" || size === "xl" || size === "2xl" ? "h-10!" : "h-8!",
-        className
+        className,
       )}
       {...props}
     />
-  )
-})
-ComboboxInput.displayName = "ComboboxInput"
+  );
+});
+ComboboxInput.displayName = "ComboboxInput";
 
 const ComboboxItem = React.forwardRef<
   React.ElementRef<typeof CommandItem>,
   React.ComponentPropsWithoutRef<typeof CommandItem> & {
-    selected?: boolean
+    selected?: boolean;
   }
 >(({ className, children, selected, onSelect, ...props }, ref) => {
-  const { setOpen, size } = React.useContext(ComboboxContext)
+  const { setOpen, size } = React.useContext(ComboboxContext);
 
   return (
     <CommandItem
       ref={ref}
       onSelect={(value) => {
-        onSelect?.(value)
-        setOpen(false)
+        onSelect?.(value);
+        setOpen(false);
       }}
       className={cn(
         "flex items-center gap-2 px-2 py-1.5",
-        size === "lg" || size === "xl" ? "px-3 py-2 text-[15px]" : 
-        size === "2xl" ? "px-4 py-3 text-base" : "text-sm",
-        className
+        size === "lg" || size === "xl"
+          ? "px-3 py-2 text-[15px]"
+          : size === "2xl"
+            ? "px-4 py-3 text-base"
+            : "text-sm",
+        className,
       )}
       {...props}
     >
@@ -150,13 +158,13 @@ const ComboboxItem = React.forwardRef<
       <CheckIcon
         className={cn(
           "ml-auto size-4 shrink-0",
-          selected ? "opacity-100" : "opacity-0"
+          selected ? "opacity-100" : "opacity-0",
         )}
       />
     </CommandItem>
-  )
-})
-ComboboxItem.displayName = "ComboboxItem"
+  );
+});
+ComboboxItem.displayName = "ComboboxItem";
 
 export {
   Combobox,
@@ -167,4 +175,4 @@ export {
   CommandList as ComboboxList,
   CommandEmpty as ComboboxEmpty,
   CommandGroup as ComboboxGroup,
-}
+};

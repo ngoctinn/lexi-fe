@@ -14,9 +14,18 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { confirmResetPassword } from "aws-amplify/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -32,7 +41,11 @@ type ResetPasswordFormProps = React.ComponentProps<"div"> & {
   email?: string;
 };
 
-export function ResetPasswordForm({ className, email = "", ...props }: ResetPasswordFormProps) {
+export function ResetPasswordForm({
+  className,
+  email = "",
+  ...props
+}: ResetPasswordFormProps) {
   const router = useRouter();
 
   const {
@@ -64,7 +77,6 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
       toast.success("Đặt lại mật khẩu thành công! Hãy đăng nhập lại.");
       router.push("/login");
     } catch (error) {
-      console.error("Reset Password Error:", error);
       toast.error(translateCognitoError(error));
     }
   };
@@ -88,12 +100,16 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-8">
               <Field className="w-full" data-invalid={!!errors.otp}>
-                <FieldLabel htmlFor="otp" className="mb-2 text-foreground/80">Mã xác minh (OTP)</FieldLabel>
+                <FieldLabel htmlFor="otp" className="mb-2 text-foreground/80">
+                  Mã xác minh (OTP)
+                </FieldLabel>
                 <InputOTP
                   id="otp"
                   maxLength={6}
                   value={otp}
-                  onChange={(val) => setValue("otp", val, { shouldValidate: isSubmitted })}
+                  onChange={(val) =>
+                    setValue("otp", val, { shouldValidate: isSubmitted })
+                  }
                   containerClassName="w-full"
                   aria-invalid={!!errors.otp}
                 >
@@ -113,7 +129,9 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
 
               <Field data-invalid={!!errors.password}>
                 <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="password" className="text-foreground/80">Mật khẩu mới</FieldLabel>
+                  <FieldLabel htmlFor="password" className="text-foreground/80">
+                    Mật khẩu mới
+                  </FieldLabel>
                 </div>
                 <PasswordInput
                   id="password"
@@ -122,13 +140,24 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
                   aria-invalid={!!errors.password}
                   {...register("password")}
                 />
-                {errors.password && <FieldError>{errors.password.message}</FieldError>}
-                {!errors.password && <FieldDescription className="mt-2 text-xs">Mật khẩu tối thiểu 8 ký tự.</FieldDescription>}
+                {errors.password && (
+                  <FieldError>{errors.password.message}</FieldError>
+                )}
+                {!errors.password && (
+                  <FieldDescription className="mt-2 text-xs">
+                    Mật khẩu tối thiểu 8 ký tự.
+                  </FieldDescription>
+                )}
               </Field>
 
               <Field data-invalid={!!errors.confirmPassword}>
                 <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="confirmPassword" className="text-foreground/80">Xác nhận mật khẩu mới</FieldLabel>
+                  <FieldLabel
+                    htmlFor="confirmPassword"
+                    className="text-foreground/80"
+                  >
+                    Xác nhận mật khẩu mới
+                  </FieldLabel>
                 </div>
                 <PasswordInput
                   id="confirmPassword"
@@ -137,17 +166,27 @@ export function ResetPasswordForm({ className, email = "", ...props }: ResetPass
                   aria-invalid={!!errors.confirmPassword}
                   {...register("confirmPassword")}
                 />
-                {errors.confirmPassword && <FieldError>{errors.confirmPassword.message}</FieldError>}
+                {errors.confirmPassword && (
+                  <FieldError>{errors.confirmPassword.message}</FieldError>
+                )}
               </Field>
 
-              <Button type="submit" size="2xl" className="w-full text-base" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                size="2xl"
+                className="w-full text-base"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
               </Button>
             </div>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center border-t bg-muted/30 py-6">
-          <Link href="/login" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all">
+          <Link
+            href="/login"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all"
+          >
             <ArrowLeft className="size-4" />
             Quay lại đăng nhập
           </Link>

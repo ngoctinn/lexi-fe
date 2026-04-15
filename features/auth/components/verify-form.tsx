@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldError } from "@/components/ui/field";
 import { Logo } from "@/components/shared/logo";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 import { confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
 import { toast } from "sonner";
@@ -32,7 +36,11 @@ type VerifyFormProps = React.ComponentProps<"div"> & {
   email?: string;
 };
 
-export function VerifyForm({ className, email = "", ...props }: VerifyFormProps) {
+export function VerifyForm({
+  className,
+  email = "",
+  ...props
+}: VerifyFormProps) {
   const router = useRouter();
 
   const {
@@ -62,7 +70,6 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
         router.push("/login?verified=true");
       }
     } catch (error) {
-      console.error("Verification Error:", error);
       toast.error(translateCognitoError(error));
     }
   };
@@ -71,8 +78,7 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
     try {
       await resendSignUpCode({ username: email });
       toast.success("Đã gửi lại mã xác nhận mới vào email của bạn.");
-    } catch (error) {
-      console.error("Resend Error:", error);
+    } catch {
       toast.error("Không thể gửi lại mã. Vui lòng thử lại sau.");
     }
   };
@@ -88,7 +94,8 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
             Xác thực tài khoản
           </CardTitle>
           <CardDescription>
-            Chúng tôi đã gửi mã xác thực 6 số đến <br className="hidden sm:inline" />
+            Chúng tôi đã gửi mã xác thực 6 số đến{" "}
+            <br className="hidden sm:inline" />
             <span className="font-semibold text-foreground">{email}</span>
           </CardDescription>
         </CardHeader>
@@ -101,7 +108,9 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
                     id="otp"
                     maxLength={6}
                     value={otp}
-                    onChange={(val) => setValue("otp", val, { shouldValidate: isSubmitted })}
+                    onChange={(val) =>
+                      setValue("otp", val, { shouldValidate: isSubmitted })
+                    }
                     containerClassName="w-full"
                     aria-invalid={!!errors.otp}
                   >
@@ -116,7 +125,11 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
                       ))}
                     </InputOTPGroup>
                   </InputOTP>
-                  {errors.otp && <FieldError className="text-center mt-2">{errors.otp.message}</FieldError>}
+                  {errors.otp && (
+                    <FieldError className="text-center mt-2">
+                      {errors.otp.message}
+                    </FieldError>
+                  )}
                 </Field>
 
                 <div className="text-sm text-muted-foreground">
@@ -131,14 +144,22 @@ export function VerifyForm({ className, email = "", ...props }: VerifyFormProps)
                 </div>
               </div>
 
-              <Button type="submit" size="2xl" className="w-full text-base" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                size="2xl"
+                className="w-full text-base"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Đang xác nhận..." : "Xác minh tài khoản"}
               </Button>
             </div>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center border-t bg-muted/30 py-6">
-          <Link href="/login" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all">
+          <Link
+            href="/login"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all"
+          >
             <ArrowLeft className="size-4" />
             Quay lại đăng nhập
           </Link>

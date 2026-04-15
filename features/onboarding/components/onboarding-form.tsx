@@ -2,11 +2,10 @@
 
 import * as React from "react";
 import { useState, useTransition } from "react";
-import { ChevronRight, ChevronLeft, Check, Sparkles } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Card,
   CardContent,
@@ -15,18 +14,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldError,
-  FieldDescription,
-} from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupInput,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
+import { Field, FieldDescription } from "@/components/ui/field";
+import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Logo } from "@/components/shared/logo";
 import { saveOnboardingAction } from "../api/onboarding.actions";
@@ -52,9 +41,12 @@ export function OnboardingForm() {
     formData.append("learning_goal", data.learning_goal);
 
     startTransition(async () => {
-      const result = await saveOnboardingAction({ success: false, message: "" }, formData);
+      const result = await saveOnboardingAction(
+        { success: false, message: "" },
+        formData,
+      );
       if (!result.success) {
-        // Handle error (optional: toast)
+        return;
       }
     });
   };
@@ -65,17 +57,18 @@ export function OnboardingForm() {
     { id: "B1", label: "B1 - Trung cấp" },
     { id: "B2", label: "B2 - Trung cấp khá" },
     { id: "C1", label: "C1 - Cao cấp" },
-    { id: "C2", label: "C2 - Thành thạo" }
+    { id: "C2", label: "C2 - Thành thạo" },
   ];
 
-  const progress = ((step + 1) / TOTAL_STEPS) * 100;
-
   return (
-    <Card size="lg" className="overflow-visible shadow-lg animate-in fade-in zoom-in-95 duration-500 max-w-md mx-auto w-full">
+    <Card
+      size="lg"
+      className="overflow-visible shadow-lg animate-in fade-in zoom-in-95 duration-500 max-w-md mx-auto w-full"
+    >
       <CardHeader className="text-center pb-2 pt-8">
         <div className="flex flex-col items-center gap-4">
           <Logo size="default" />
-          
+
           <div className="space-y-1 mt-4">
             <CardTitle className="text-xl font-bold tracking-tight">
               {step === 0 && "Chào bạn, chúng mình nên gọi bạn là gì nhỉ?"}
@@ -83,16 +76,22 @@ export function OnboardingForm() {
               {step === 2 && "Bạn mong muốn đạt đến trình độ nào?"}
             </CardTitle>
             <CardDescription className="text-sm px-4">
-              {step === 0 && "Hãy cho Lexi biết tên hiển thị mà bạn yêu thích nhé."}
-              {step === 1 && "Lexi sẽ gợi ý nội dung phù hợp nhất với khả năng của bạn."}
-              {step === 2 && "Xác định mục tiêu giúp Lexi xây dựng lộ trình cá nhân hóa."}
+              {step === 0 &&
+                "Hãy cho Lexi biết tên hiển thị mà bạn yêu thích nhé."}
+              {step === 1 &&
+                "Lexi sẽ gợi ý nội dung phù hợp nhất với khả năng của bạn."}
+              {step === 2 &&
+                "Xác định mục tiêu giúp Lexi xây dựng lộ trình cá nhân hóa."}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-6 pb-6 px-10 flex flex-col justify-center overflow-hidden">
-        <div key={step} className="animate-in fade-in slide-in-from-right-4 duration-400">
+        <div
+          key={step}
+          className="animate-in fade-in slide-in-from-right-4 duration-400"
+        >
           {step === 0 && (
             <Field className="gap-3 w-full">
               <InputGroup size="2xl">
@@ -100,14 +99,18 @@ export function OnboardingForm() {
                   id="display_name"
                   name="display_name"
                   value={data.display_name}
-                  onChange={(e) => setData({ ...data, display_name: e.target.value })}
+                  onChange={(e) =>
+                    setData({ ...data, display_name: e.target.value })
+                  }
                   placeholder="Họ và tên..."
                   className="text-center"
                   autoFocus
                   required
                 />
               </InputGroup>
-              <FieldDescription className="text-center text-[11px]">Tên này sẽ xuất hiện trên trang cá nhân của bạn.</FieldDescription>
+              <FieldDescription className="text-center text-[11px]">
+                Tên này sẽ xuất hiện trên trang cá nhân của bạn.
+              </FieldDescription>
             </Field>
           )}
 
@@ -124,11 +127,20 @@ export function OnboardingForm() {
                   className={cn(
                     "flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ring-offset-background",
                     "hover:bg-accent/50",
-                    data.current_level === lvl.id ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm" : "bg-card/50"
+                    data.current_level === lvl.id
+                      ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
+                      : "bg-card/50",
                   )}
                 >
                   <RadioGroupItem value={lvl.id} id={lvl.id} className="mr-3" />
-                  <span className={cn("text-sm font-semibold", data.current_level === lvl.id ? "text-primary" : "text-foreground")}>
+                  <span
+                    className={cn(
+                      "text-sm font-semibold",
+                      data.current_level === lvl.id
+                        ? "text-primary"
+                        : "text-foreground",
+                    )}
+                  >
                     {lvl.label}
                   </span>
                 </label>
@@ -149,11 +161,24 @@ export function OnboardingForm() {
                   className={cn(
                     "flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ring-offset-background",
                     "hover:bg-accent/50",
-                    data.learning_goal === lvl.id ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm" : "bg-card/50"
+                    data.learning_goal === lvl.id
+                      ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
+                      : "bg-card/50",
                   )}
                 >
-                  <RadioGroupItem value={lvl.id} id={`goal-${lvl.id}`} className="mr-3" />
-                  <span className={cn("text-sm font-semibold", data.learning_goal === lvl.id ? "text-primary" : "text-foreground")}>
+                  <RadioGroupItem
+                    value={lvl.id}
+                    id={`goal-${lvl.id}`}
+                    className="mr-3"
+                  />
+                  <span
+                    className={cn(
+                      "text-sm font-semibold",
+                      data.learning_goal === lvl.id
+                        ? "text-primary"
+                        : "text-foreground",
+                    )}
+                  >
                     {lvl.label}
                   </span>
                 </label>
@@ -165,17 +190,33 @@ export function OnboardingForm() {
 
       <CardFooter className="flex gap-2 border-t bg-muted/5 py-6 px-10">
         {step > 0 && (
-          <Button variant="outline" size="2xl" onClick={prevStep} disabled={isPending} className="px-5">
+          <Button
+            variant="outline"
+            size="2xl"
+            onClick={prevStep}
+            disabled={isPending}
+            className="px-5"
+          >
             <ChevronLeft size={20} />
           </Button>
         )}
-        
+
         {step < TOTAL_STEPS - 1 ? (
-          <Button size="2xl" className="flex-1" onClick={nextStep} disabled={!data.display_name.trim() && step === 0}>
+          <Button
+            size="2xl"
+            className="flex-1"
+            onClick={nextStep}
+            disabled={!data.display_name.trim() && step === 0}
+          >
             Tiếp theo
           </Button>
         ) : (
-          <Button size="2xl" className="flex-1" onClick={handleComplete} disabled={isPending}>
+          <Button
+            size="2xl"
+            className="flex-1"
+            onClick={handleComplete}
+            disabled={isPending}
+          >
             {isPending ? "Đang lưu..." : "Bắt đầu hành trình"}
           </Button>
         )}

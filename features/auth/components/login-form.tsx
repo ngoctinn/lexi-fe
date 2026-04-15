@@ -12,7 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/shared/logo";
 import { signIn } from "aws-amplify/auth";
@@ -60,14 +65,13 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         toast.success("Đăng nhập thành công!");
         router.push("/dashboard");
         router.refresh();
-      } else if (nextStep.signInStep === 'CONFIRM_SIGN_UP') {
+      } else if (nextStep.signInStep === "CONFIRM_SIGN_UP") {
         toast.info("Tài khoản chưa được xác minh. Vui lòng kiểm tra email.");
         router.push(`/verify?email=${encodeURIComponent(data.email)}`);
       } else {
         toast.info(`Cần thực hiện bước: ${nextStep.signInStep}`);
       }
     } catch (error) {
-      console.error("Login Error:", error);
       toast.error(translateCognitoError(error));
     }
   };
@@ -87,7 +91,6 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-8">
-              {/* Google Auth Placeholder */}
               <div className="flex flex-col gap-4">
                 <Button
                   type="button"
@@ -95,7 +98,12 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                   size="2xl"
                   className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-5" data-icon="inline-start">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    className="mr-2 size-5"
+                    data-icon="inline-start"
+                  >
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       fill="#4285F4"
@@ -123,7 +131,9 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 
               <FieldGroup className="gap-6">
                 <Field data-invalid={!!errors.email}>
-                  <FieldLabel htmlFor="email" className="text-foreground/80">Email</FieldLabel>
+                  <FieldLabel htmlFor="email" className="text-foreground/80">
+                    Email
+                  </FieldLabel>
                   <Input
                     id="email"
                     type="email"
@@ -133,12 +143,19 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                     aria-invalid={!!errors.email}
                     {...register("email")}
                   />
-                  {errors.email && <FieldError>{errors.email.message}</FieldError>}
+                  {errors.email && (
+                    <FieldError>{errors.email.message}</FieldError>
+                  )}
                 </Field>
 
                 <Field data-invalid={!!errors.password}>
                   <div className="flex items-center justify-between">
-                    <FieldLabel htmlFor="password" className="text-foreground/80">Mật khẩu</FieldLabel>
+                    <FieldLabel
+                      htmlFor="password"
+                      className="text-foreground/80"
+                    >
+                      Mật khẩu
+                    </FieldLabel>
                     <Link
                       href="/forgot-password"
                       className="text-xs font-medium text-primary hover:underline underline-offset-4"
@@ -153,21 +170,33 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                     aria-invalid={!!errors.password}
                     {...register("password")}
                   />
-                  {errors.password && <FieldError>{errors.password.message}</FieldError>}
+                  {errors.password && (
+                    <FieldError>{errors.password.message}</FieldError>
+                  )}
                 </Field>
 
                 <Field orientation="horizontal" className="items-center gap-2">
                   <Checkbox
                     id="remember"
                     checked={remember}
-                    onCheckedChange={(checked) => setValue("remember", checked === true)}
+                    onCheckedChange={(checked) =>
+                      setValue("remember", checked === true)
+                    }
                   />
-                  <FieldLabel htmlFor="remember" className="text-xs font-normal text-muted-foreground cursor-pointer">
+                  <FieldLabel
+                    htmlFor="remember"
+                    className="text-xs font-normal text-muted-foreground cursor-pointer"
+                  >
                     Ghi nhớ đăng nhập
                   </FieldLabel>
                 </Field>
 
-                <Button type="submit" size="2xl" className="w-full text-base" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  size="2xl"
+                  className="w-full text-base"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
                 </Button>
               </FieldGroup>
@@ -177,7 +206,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 py-6 text-center">
           <div className="text-sm text-balance text-muted-foreground">
             Chưa có tài khoản?{" "}
-            <Link href="/signup" className="font-bold text-foreground hover:text-primary transition-colors">
+            <Link
+              href="/signup"
+              className="font-bold text-foreground hover:text-primary transition-colors"
+            >
               Đăng ký ngay
             </Link>
           </div>
