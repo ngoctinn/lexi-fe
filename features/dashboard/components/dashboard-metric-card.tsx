@@ -1,14 +1,10 @@
-import { type LucideIcon } from "lucide-react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
 interface DashboardMetricCardProps {
   title: string;
   value: string;
   suffix?: string;
   description: string;
-  icon: LucideIcon;
   progress: number;
   progressLabel: string;
   footerLabel: string;
@@ -20,23 +16,27 @@ export function DashboardMetricCard({
   value,
   suffix,
   description,
-  icon: Icon,
   progress,
   progressLabel,
   footerLabel,
   footerValue,
 }: DashboardMetricCardProps) {
   return (
-    <Card className="border-b-0 bg-primary/8 shadow-none ring-1 ring-primary/20">
-      <CardContent className="p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-[13px] font-semibold text-muted-foreground/80">
-            {title}
-          </span>
-
-          <div className="flex size-9 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-primary/20">
-            <Icon className="size-4" strokeWidth={2.15} />
+    <Card className="border-b-0 shadow-sm ring-1 ring-border/60 hover:shadow-md">
+      <CardContent className="flex flex-col gap-4 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <span className="text-[13px] font-semibold text-foreground/80">
+              {title}
+            </span>
+            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              {progressLabel}
+            </div>
           </div>
+
+          <span className="rounded-full bg-muted/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+            {progress}%
+          </span>
         </div>
 
         <div className="flex items-end gap-2">
@@ -52,15 +52,9 @@ export function DashboardMetricCard({
 
         <p className="text-sm leading-5 text-muted-foreground">{description}</p>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
-            <span>{progressLabel}</span>
-            <span className="text-primary">{progress}%</span>
-          </div>
-          <Progress value={progress} className="h-1.5 bg-primary/15" />
-        </div>
+        <Progress value={progress} className="h-1.5 bg-muted/60" />
 
-        <div className="flex items-center justify-between rounded-2xl bg-background/70 px-3 py-2 text-sm">
+        <div className="flex items-center justify-between rounded-2xl bg-muted/40 px-3 py-2 text-sm">
           <span className="text-muted-foreground">{footerLabel}</span>
           <span className="font-semibold text-foreground">{footerValue}</span>
         </div>

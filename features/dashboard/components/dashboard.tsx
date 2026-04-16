@@ -1,5 +1,3 @@
-import { BrainCircuit, Mic, Sparkles } from "lucide-react";
-
 import { DashboardMetricCard } from "./dashboard-metric-card";
 import { DashboardTile } from "./dashboard-tile";
 import { StreakCard } from "./streak-card";
@@ -11,7 +9,6 @@ export function Dashboard() {
       value: "1,248",
       suffix: "từ",
       description: "Số từ đã học và đang được ghi nhớ trong hệ thống.",
-      icon: BrainCircuit,
       progress: 62,
       progressLabel: "Mục tiêu 2,000 từ",
       footerLabel: "Từ cần ôn hôm nay",
@@ -22,7 +19,6 @@ export function Dashboard() {
       value: "64",
       suffix: "phiên",
       description: "Tổng số phiên hội thoại đã hoàn thành cùng AI.",
-      icon: Mic,
       progress: 78,
       progressLabel: "Mục tiêu tuần",
       footerLabel: "Tổng thời gian",
@@ -35,14 +31,12 @@ export function Dashboard() {
       title: "Ôn từ ngay",
       description: "Vào lại bộ từ đang cần ôn để giữ nhịp nhớ.",
       href: "/vocabulary",
-      icon: BrainCircuit,
       label: "38 từ",
     },
     {
       title: "Bắt đầu luyện nói",
       description: "Mở nhanh một phiên nói mới theo ngữ cảnh phù hợp.",
       href: "/session/new",
-      icon: Sparkles,
       label: "Live",
     },
   ];
@@ -63,12 +57,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      <StreakCard
-        currentStreak={14}
-        bestStreak={21}
-        weeklyProgress={71}
-        activeDaysThisWeek={5}
-      />
+      <StreakCard currentStreak={14} bestStreak={21} activeDaysThisWeek={5} />
     </div>
   );
 }
