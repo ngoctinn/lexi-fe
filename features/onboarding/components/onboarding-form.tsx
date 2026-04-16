@@ -78,6 +78,7 @@ export function OnboardingForm() {
             <CardDescription className="text-sm px-4">
               {step === 0 &&
                 "Hãy cho Lexi biết tên hiển thị mà bạn yêu thích nhé."}
+              {step === 1 &&
                 "Lexi sẽ gợi ý nội dung phù hợp nhất với khả năng của bạn."}
               {step === 2 &&
                 "Xác định mục tiêu giúp Lexi xây dựng lộ trình cá nhân hóa."}

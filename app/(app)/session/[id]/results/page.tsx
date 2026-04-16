@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getSession } from "@/features/session/actions/get-session";
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { ScoringResult } from "@/features/session/components/scoring/scoring-result";
 import { ScoringSkeleton } from "@/features/session/components/scoring/scoring-skeleton";
 import { TurnBubble } from "@/features/session/components/conversation/turn-bubble";
 import type { Session, Turn } from "@/features/session/types/session.types";
+import { PageHeader } from "@/components/shared/page-header";
+import { BadgeCheck, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Kết quả luyện nói",
@@ -36,7 +40,20 @@ export default async function SessionResultsPage({
   }
 
   return (
-    <div className="container py-8">
+    <div className="container flex flex-col gap-6 py-8">
+      <PageHeader
+        icon={BadgeCheck}
+        title="Kết quả luyện nói"
+        actions={
+          <Button asChild>
+            <Link href="/session/new">
+              <Plus data-icon="inline-start" />
+              Luyện bài khác
+            </Link>
+          </Button>
+        }
+      />
+
       <ScoringResult session={session as Session} />
 
       {session.turns && session.turns.length > 0 && (

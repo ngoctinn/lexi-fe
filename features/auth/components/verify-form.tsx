@@ -139,13 +139,13 @@ export function VerifyForm({
 
                 <div className="text-sm text-muted-foreground">
                   Bạn chưa nhận được mã?{" "}
-                  <button
+                  <Button
                     type="button"
-                    className="font-bold text-primary hover:text-primary-700 transition-colors"
+                    variant="link"
                     onClick={handleResendCode}
                   >
                     Gửi lại ngay
-                  </button>
+                  </Button>
                 </div>
               </div>
 

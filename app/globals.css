@@ -162,7 +162,7 @@
   /* Standardized Control Tokens */
   --control-bg: oklch(1 0 0);
   --control-bg-subtle: oklch(0.97 0 0 / 40%);
-  --control-hover: oklch(0.97 0 0);
+  --control-hover: oklch(0.95 0 0);
   --control-border: oklch(0.922 0 0);
   --control-border-subtle: oklch(0.922 0 0 / 50%);
 }
@@ -233,7 +233,7 @@
   /* Standardized Dark Control Tokens */
   --control-bg: oklch(0.205 0 0);
   --control-bg-subtle: oklch(1 0 0 / 5%);
-  --control-hover: oklch(1 0 0 / 10%);
+  --control-hover: oklch(1 0 0 / 8%);
   --control-border: oklch(1 0 0 / 10%);
   --control-border-subtle: oklch(1 0 0 / 15%);
 }

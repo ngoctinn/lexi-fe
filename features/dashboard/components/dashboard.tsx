@@ -1,104 +1,74 @@
-"use client";
+import { BrainCircuit, Mic, Sparkles } from "lucide-react";
 
-import { DashboardHero } from "./dashboard-hero";
-import { ProgressOverview } from "./progress-overview";
-import { RecentActivity } from "./recent-activity";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-
-// Mock user data for now
-const user = {
-  name: "Ngọc Tín",
-  email: "ngoctin@example.com",
-  avatar: "/avatars/user.jpg",
-  streak: 14,
-  points: 1250,
-};
+import { DashboardMetricCard } from "./dashboard-metric-card";
+import { DashboardTile } from "./dashboard-tile";
+import { StreakCard } from "./streak-card";
 
 export function Dashboard() {
+  const overviewCards = [
+    {
+      title: "Từ vựng",
+      value: "1,248",
+      suffix: "từ",
+      description: "Số từ đã học và đang được ghi nhớ trong hệ thống.",
+      icon: BrainCircuit,
+      progress: 62,
+      progressLabel: "Mục tiêu 2,000 từ",
+      footerLabel: "Từ cần ôn hôm nay",
+      footerValue: "38 từ",
+    },
+    {
+      title: "Luyện nói",
+      value: "64",
+      suffix: "phiên",
+      description: "Tổng số phiên hội thoại đã hoàn thành cùng AI.",
+      icon: Mic,
+      progress: 78,
+      progressLabel: "Mục tiêu tuần",
+      footerLabel: "Tổng thời gian",
+      footerValue: "12h 25m",
+    },
+  ];
+
+  const tiles = [
+    {
+      title: "Ôn từ ngay",
+      description: "Vào lại bộ từ đang cần ôn để giữ nhịp nhớ.",
+      href: "/vocabulary",
+      icon: BrainCircuit,
+      label: "38 từ",
+    },
+    {
+      title: "Bắt đầu luyện nói",
+      description: "Mở nhanh một phiên nói mới theo ngữ cảnh phù hợp.",
+      href: "/session/new",
+      icon: Sparkles,
+      label: "Live",
+    },
+  ];
+
   return (
-    <div className="flex-1 flex flex-col gap-8 p-4 md:p-8 animate-in fade-in duration-700 overflow-y-auto">
-      <DashboardHero user={user} />
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)] animate-in fade-in duration-700">
+      <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          {overviewCards.map((card) => (
+            <DashboardMetricCard key={card.title} {...card} />
+          ))}
+        </div>
 
-      <div className="flex flex-col gap-2 mt-4">
-        <h2 className="text-xl font-bold tracking-tight">Tổng quan học tập</h2>
-        <p className="text-sm text-muted-foreground">
-          Theo dõi tiến độ và mục tiêu của bạn.
-        </p>
-      </div>
-
-      <ProgressOverview />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
-        <RecentActivity />
-
-        {/* Weekly Goal Side Card */}
-        <div className="col-span-1">
-          <Card className="h-full bg-gradient-to-br from-card to-muted/20 border-border">
-            <CardHeader>
-              <CardTitle>Mục tiêu tuần</CardTitle>
-              <CardDescription>
-                Hoàn thành 50 từ vựng và 3 bài học ngữ pháp.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center text-center gap-6 pt-4 pb-8">
-              <div className="relative size-32">
-                {/* Decorative background circle */}
-                <svg
-                  className="size-full -rotate-90 transform"
-                  viewBox="0 0 100 100"
-                >
-                  <circle
-                    className="text-muted/30 stroke-current"
-                    strokeWidth="8"
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    fill="transparent"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    className="text-primary stroke-current"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    fill="transparent"
-                    strokeDasharray="251.2"
-                    strokeDashoffset={251.2 - (251.2 * 75) / 100} // 75% complete
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-black text-primary">75%</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1 w-full text-left">
-                <div className="flex justify-between text-sm font-medium">
-                  <span>Từ vựng: 40/50</span>
-                  <span className="text-primary">80%</span>
-                </div>
-                <div className="flex justify-between text-sm font-medium">
-                  <span>Ngữ pháp: 2/3</span>
-                  <span className="text-primary">66%</span>
-                </div>
-              </div>
-
-              <Button className="w-full mt-2" variant="default">
-                Tiếp tục học <ArrowRight data-icon="inline-end" />
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 md:grid-cols-2">
+          {tiles.map((tile) => (
+            <DashboardTile key={tile.title} {...tile} />
+          ))}
         </div>
       </div>
+
+      <StreakCard
+        currentStreak={14}
+        bestStreak={21}
+        weeklyProgress={71}
+        activeDaysThisWeek={5}
+      />
     </div>
   );
 }

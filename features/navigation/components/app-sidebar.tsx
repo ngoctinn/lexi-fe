@@ -7,15 +7,12 @@ import {
   BookOpen,
   Trophy,
   Store,
-  User,
-  LogOut,
   LayoutDashboard,
   Mic,
   BrainCircuit,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "aws-amplify/auth";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -30,6 +27,10 @@ import {
   SidebarSeparator,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+
+import type { ProfileData } from "@/features/profile/api/profile.actions";
+import { SidebarAccountMenu } from "./sidebar-account-menu";
 
 const mainNavItems = [
   {
@@ -62,11 +63,6 @@ const mainNavItems = [
     url: "/shop",
     icon: Store,
   },
-  {
-    title: "Hồ sơ",
-    url: "/profile",
-    icon: User,
-  },
 ];
 
 const communityNavItems = [
@@ -81,25 +77,23 @@ const sidebarIconClassName =
   "text-sidebar-icon group-data-[active=true]/menu-button:text-primary";
 const sidebarIconStrokeWidth = 2.15;
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
-  const router = useRouter();
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  profile?: ProfileData | null;
+}
 
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      router.refresh();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+export function AppSidebar({
+  profile,
+  className,
+  ...sidebarProps
+}: AppSidebarProps) {
+  const pathname = usePathname();
 
   return (
     <Sidebar
       variant="inset"
       collapsible="icon"
-      {...props}
-      className="bg-sidebar border-r-0"
+      {...sidebarProps}
+      className={cn("border-r-0 bg-sidebar", className)}
     >
       <SidebarHeader className="pt-4 pb-2">
         <SidebarMenu>
@@ -192,20 +186,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="py-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              className="text-sidebar-foreground hover:text-destructive hover:bg-destructive/10 transition-colors group-data-[collapsible=icon]:justify-center"
-              onClick={handleLogout}
-              tooltip="Đăng xuất"
-            >
-              <LogOut
-                className={sidebarIconClassName}
-                strokeWidth={sidebarIconStrokeWidth}
-              />
-              <span className="group-data-[collapsible=icon]:hidden font-medium">
-                Đăng xuất
-              </span>
-            </SidebarMenuButton>
+            <SidebarAccountMenu profile={profile ?? null} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

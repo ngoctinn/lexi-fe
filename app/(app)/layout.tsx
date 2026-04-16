@@ -25,7 +25,7 @@ export default async function AppLayout({
 
   return (
     <SidebarProvider className="h-full overflow-hidden">
-      <AppSidebar />
+      <AppSidebar profile={profile} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 md:hidden">
           <SidebarTrigger className="-ml-2" />

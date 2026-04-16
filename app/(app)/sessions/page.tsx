@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale/vi";
-import { Activity, Clock, PlayCircle, Plus } from "lucide-react";
+import { Activity, Clock, Mic, PlayCircle, Plus } from "lucide-react";
 
 import { getSessions } from "@/features/session/actions/get-sessions";
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/shared/page-header";
 import {
   Card,
   CardContent,
@@ -38,21 +39,19 @@ export default async function SessionsPage() {
   );
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 md:px-8 py-8 flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight">Phiên Luyện nói</h1>
-          <p className="text-muted-foreground">
-            Lịch sử và kết quả hội thoại với AI của bạn.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/session/new">
-            <Plus data-icon="inline-start" />
-            Tạo phiên mới
-          </Link>
-        </Button>
-      </div>
+    <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 md:p-8">
+      <PageHeader
+        icon={Mic}
+        title="Phiên Luyện nói"
+        actions={
+          <Button asChild>
+            <Link href="/session/new">
+              <Plus data-icon="inline-start" />
+              Tạo phiên mới
+            </Link>
+          </Button>
+        }
+      />
 
       {sessions.length === 0 ? (
         <Empty>
