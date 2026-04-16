@@ -1,7 +1,7 @@
-import { cva, type VariantProps } from "class-variance-authority"
-import { Avatar as AvatarPrimitive } from "radix-ui"
+import { cva, type VariantProps } from "class-variance-authority";
+import { Avatar as AvatarPrimitive } from "radix-ui";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const avatarVariants = cva(
   "group/avatar relative flex shrink-0 rounded-full select-none outline-none ring-2 ring-background ring-offset-0 bg-background transition-transform hover:scale-105 active:scale-95",
@@ -10,17 +10,17 @@ const avatarVariants = cva(
       size: {
         xs: "size-6", // 24px
         sm: "size-8", // 32px
+        md: "size-10", // 40px
         default: "size-10", // 40px
         lg: "size-12", // 48px
         xl: "size-16", // 64px
-        "2xl": "size-20", // 80px
       },
     },
     defaultVariants: {
-      size: "default",
+      size: "md",
     },
-  }
-)
+  },
+);
 
 function Avatar({
   className,
@@ -34,7 +34,7 @@ function Avatar({
       className={cn(avatarVariants({ size }), className)}
       {...props}
     />
-  )
+  );
 }
 
 function AvatarImage({
@@ -44,10 +44,13 @@ function AvatarImage({
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      className={cn("aspect-square size-full rounded-full object-cover", className)}
+      className={cn(
+        "aspect-square size-full rounded-full object-cover",
+        className,
+      )}
       {...props}
     />
-  )
+  );
 }
 
 function AvatarFallback({
@@ -59,17 +62,17 @@ function AvatarFallback({
       data-slot="avatar-fallback"
       className={cn(
         "flex size-full items-center justify-center rounded-full bg-primary/5 text-[0.8em] font-bold text-primary uppercase antialiased",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-function AvatarBadge({ 
-  className, 
+function AvatarBadge({
+  className,
   variant = "online",
-  ...props 
+  ...props
 }: React.ComponentProps<"span"> & { variant?: "online" | "offline" | "away" }) {
   return (
     <span
@@ -81,22 +84,24 @@ function AvatarBadge({
         variant === "away" && "bg-warning",
         "group-data-[size=xs]/avatar:size-2",
         "group-data-[size=sm]/avatar:size-2.5",
+        "group-data-[size=md]/avatar:size-3",
         "group-data-[size=default]/avatar:size-3",
         "group-data-[size=lg]/avatar:size-3.5",
         "group-data-[size=xl]/avatar:size-4",
-        "group-data-[size=2xl]/avatar:size-5",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-function AvatarGroup({ 
-  className, 
-  size = "default",
-  ...props 
-}: React.ComponentProps<"div"> & { size?: VariantProps<typeof avatarVariants>["size"] }) {
+function AvatarGroup({
+  className,
+  size = "md",
+  ...props
+}: React.ComponentProps<"div"> & {
+  size?: VariantProps<typeof avatarVariants>["size"];
+}) {
   return (
     <div
       data-slot="avatar-group"
@@ -104,15 +109,15 @@ function AvatarGroup({
       className={cn(
         "group/avatar-group flex items-center",
         // Negative margins scaled by size
-        "[&>[data-slot=avatar]]:not-first:-ml-2.5",
-        size === "xs" && "[&>[data-slot=avatar]]:not-first:-ml-2",
-        size === "lg" && "[&>[data-slot=avatar]]:not-first:-ml-3",
-        size === "xl" && "[&>[data-slot=avatar]]:not-first:-ml-4",
-        className
+        "*:data-[slot=avatar]:not-first:-ml-2.5",
+        size === "xs" && "*:data-[slot=avatar]:not-first:-ml-2",
+        size === "lg" && "*:data-[slot=avatar]:not-first:-ml-3",
+        size === "xl" && "*:data-[slot=avatar]:not-first:-ml-4",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function AvatarGroupCount({
@@ -126,15 +131,15 @@ function AvatarGroupCount({
         "relative flex shrink-0 items-center justify-center rounded-full bg-muted text-[0.8em] font-bold text-muted-foreground ring-2 ring-background -ml-3 z-10",
         "group-data-[size=xs]/avatar-group:size-6",
         "group-data-[size=sm]/avatar-group:size-8",
+        "group-data-[size=md]/avatar-group:size-10",
         "group-data-[size=default]/avatar-group:size-10",
         "group-data-[size=lg]/avatar-group:size-12",
         "group-data-[size=xl]/avatar-group:size-16",
-        "group-data-[size=2xl]/avatar-group:size-20",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -144,4 +149,4 @@ export {
   AvatarGroup,
   AvatarGroupCount,
   AvatarBadge,
-}
+};

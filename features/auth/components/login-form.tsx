@@ -81,7 +81,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
       <Card size="lg" className="overflow-visible shadow-lg">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4">
-            <Logo size="default" />
+            <Logo size="md" />
             <div className="h-6 w-px bg-border shrink-0" />
             <CardTitle className="text-xl font-bold tracking-tight">
               Đăng nhập
@@ -95,7 +95,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  size="2xl"
+                  size="xl"
                   className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
                 >
                   <svg
@@ -137,7 +137,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                   <Input
                     id="email"
                     type="email"
-                    size="2xl"
+                    size="xl"
                     placeholder="name@example.com"
                     autoComplete="email"
                     aria-invalid={!!errors.email}
@@ -165,7 +165,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                   </div>
                   <PasswordInput
                     id="password"
-                    size="2xl"
+                    size="xl"
                     autoComplete="current-password"
                     aria-invalid={!!errors.password}
                     {...register("password")}
@@ -193,7 +193,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 
                 <Button
                   type="submit"
-                  size="2xl"
+                  size="xl"
                   className="w-full text-base"
                   disabled={isSubmitting}
                 >

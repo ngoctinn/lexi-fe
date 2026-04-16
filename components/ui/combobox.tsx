@@ -119,7 +119,7 @@ const ComboboxInput = React.forwardRef<
     <CommandInput
       ref={ref}
       className={cn(
-        size === "lg" || size === "xl" || size === "2xl" ? "h-10!" : "h-8!",
+        size === "lg" || size === "xl" ? "h-10!" : "h-8!",
         className,
       )}
       {...props}
@@ -145,11 +145,7 @@ const ComboboxItem = React.forwardRef<
       }}
       className={cn(
         "flex items-center gap-2 px-2 py-1.5",
-        size === "lg" || size === "xl"
-          ? "px-3 py-2 text-[15px]"
-          : size === "2xl"
-            ? "px-4 py-3 text-base"
-            : "text-sm",
+        size === "lg" || size === "xl" ? "px-3 py-2 text-[15px]" : "text-sm",
         className,
       )}
       {...props}

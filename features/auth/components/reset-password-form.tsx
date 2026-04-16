@@ -86,7 +86,7 @@ export function ResetPasswordForm({
       <Card size="lg" className="mx-auto w-full overflow-visible">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <Logo size="default" />
+            <Logo size="md" />
           </div>
           <CardTitle className="text-xl font-bold tracking-tight">
             Đặt lại mật khẩu
@@ -118,7 +118,7 @@ export function ResetPasswordForm({
                       <InputOTPSlot
                         key={index}
                         index={index}
-                        size="2xl"
+                        size="xl"
                         className="rounded-xl border shadow-inset-input aspect-square"
                       />
                     ))}
@@ -135,7 +135,7 @@ export function ResetPasswordForm({
                 </div>
                 <PasswordInput
                   id="password"
-                  size="2xl"
+                  size="xl"
                   autoComplete="new-password"
                   aria-invalid={!!errors.password}
                   {...register("password")}
@@ -161,7 +161,7 @@ export function ResetPasswordForm({
                 </div>
                 <PasswordInput
                   id="confirmPassword"
-                  size="2xl"
+                  size="xl"
                   autoComplete="new-password"
                   aria-invalid={!!errors.confirmPassword}
                   {...register("confirmPassword")}
@@ -173,7 +173,7 @@ export function ResetPasswordForm({
 
               <Button
                 type="submit"
-                size="2xl"
+                size="xl"
                 className="w-full text-base"
                 disabled={isSubmitting}
               >

@@ -20,9 +20,11 @@ export function LandingHero() {
 
       <div className="container mx-auto px-6 max-w-6xl grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div className="flex flex-col items-start gap-8">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight">
-            Nói tiếng Anh tự tin{" "}
-            <span className="text-primary">chỉ trong 30 ngày.</span>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.08] tracking-tight">
+            <span className="text-primary">Nắm Vững Từng Từ Vựng</span>{" "}
+            <span className="text-primary-800">
+              Tự Tin Trong Mọi Cuộc Hội Thoại.
+            </span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-[480px] leading-relaxed">
@@ -31,12 +33,12 @@ export function LandingHero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="2xl" asChild>
+            <Button size="xl" asChild>
               <Link href="/learn">
                 Bắt đầu miễn phí <ArrowRight data-icon="inline-end" />
               </Link>
             </Button>
-            <Button size="2xl" variant="outline" asChild>
+            <Button size="xl" variant="outline" asChild>
               <a href="#how-it-works">Xem cách hoạt động</a>
             </Button>
           </div>

@@ -88,7 +88,7 @@ export function VerifyForm({
       <Card size="lg" className="mx-auto w-full overflow-visible shadow-lg">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <Logo size="default" />
+            <Logo size="md" />
           </div>
           <CardTitle className="text-xl font-bold tracking-tight">
             Xác thực tài khoản
@@ -119,7 +119,7 @@ export function VerifyForm({
                         <InputOTPSlot
                           key={index}
                           index={index}
-                          size="2xl"
+                          size="xl"
                           className="rounded-xl border shadow-inset-input aspect-square"
                         />
                       ))}
@@ -146,7 +146,7 @@ export function VerifyForm({
 
               <Button
                 type="submit"
-                size="2xl"
+                size="xl"
                 className="w-full text-base"
                 disabled={isSubmitting}
               >

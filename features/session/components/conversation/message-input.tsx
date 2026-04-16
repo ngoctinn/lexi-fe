@@ -86,7 +86,7 @@ export function MessageInput({
       )}
       <div className="flex items-center gap-3 w-full">
         <InputGroup
-          size="2xl"
+          size="xl"
           className={cn(
             "flex-1 items-center transition-all bg-background",
             isRecording && "border-primary bg-primary/5",

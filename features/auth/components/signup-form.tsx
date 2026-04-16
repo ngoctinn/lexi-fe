@@ -85,7 +85,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
       <Card size="lg" className="overflow-visible shadow-lg">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4">
-            <Logo size="default" />
+            <Logo size="md" />
             <div className="h-6 w-px bg-border shrink-0" />
             <CardTitle className="text-xl font-bold tracking-tight">
               Đăng ký
@@ -99,7 +99,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  size="2xl"
+                  size="xl"
                   className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
                 >
                   <svg
@@ -141,7 +141,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
                   <Input
                     id="email"
                     type="email"
-                    size="2xl"
+                    size="xl"
                     placeholder="name@example.com"
                     autoComplete="email"
                     aria-invalid={!!errors.email}
@@ -210,7 +210,7 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
                 <Button
                   type="submit"
-                  size="2xl"
+                  size="xl"
                   className="w-full text-base"
                   disabled={isSubmitting}
                 >

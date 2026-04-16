@@ -69,7 +69,7 @@ export function ForgotPasswordForm({
       <Card size="lg" className="overflow-visible shadow-lg">
         <CardHeader className="text-center pb-2 pt-8">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <Logo size="default" />
+            <Logo size="md" />
           </div>
           <CardTitle className="text-xl font-bold tracking-tight">
             Quên mật khẩu?
@@ -90,7 +90,7 @@ export function ForgotPasswordForm({
                   <Input
                     id="email"
                     type="email"
-                    size="2xl"
+                    size="xl"
                     placeholder="name@example.com"
                     autoComplete="email"
                     aria-invalid={!!errors.email}
@@ -102,7 +102,7 @@ export function ForgotPasswordForm({
                 </Field>
                 <Button
                   type="submit"
-                  size="2xl"
+                  size="xl"
                   className="w-full text-base mt-2"
                   disabled={isSubmitting}
                 >

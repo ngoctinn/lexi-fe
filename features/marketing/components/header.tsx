@@ -34,7 +34,7 @@ export function LandingHeader() {
           <Button variant="ghost" className="hidden sm:flex" asChild>
             <Link href="/login">Đăng nhập</Link>
           </Button>
-          <Button size="2xl" asChild>
+          <Button size="xl" asChild>
             <Link href="/learn">
               Bắt đầu <ArrowRight data-icon="inline-end" />
             </Link>

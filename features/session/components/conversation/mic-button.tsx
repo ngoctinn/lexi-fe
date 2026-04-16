@@ -14,9 +14,15 @@ interface MicButtonProps {
   disabled?: boolean;
 }
 
-export function MicButton({ recorderState, onToggle, className, disabled }: MicButtonProps) {
+export function MicButton({
+  recorderState,
+  onToggle,
+  className,
+  disabled,
+}: MicButtonProps) {
   const isListening = recorderState === "recording";
-  const isProcessing = recorderState === "uploading" || recorderState === "processing";
+  const isProcessing =
+    recorderState === "uploading" || recorderState === "processing";
 
   const getTooltipContent = () => {
     switch (recorderState) {
@@ -39,8 +45,10 @@ export function MicButton({ recorderState, onToggle, className, disabled }: MicB
       <Button
         type="button"
         variant={isListening ? "soft" : "default"}
-        size="icon-2xl"
-        disabled={disabled || isProcessing || recorderState === "permission-denied"}
+        size="icon-xl"
+        disabled={
+          disabled || isProcessing || recorderState === "permission-denied"
+        }
         onClick={onToggle}
         className="shrink-0"
         aria-label={isListening ? "Stop recording" : "Start recording"}

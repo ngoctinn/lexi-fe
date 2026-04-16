@@ -24,19 +24,18 @@ const badgeVariants = cva(
         ghost: "hover:bg-muted hover:text-foreground border-transparent",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
         soft: "bg-primary/10 text-primary border-primary/20 [a]:hover:bg-primary/20",
-        "soft-primary":
-          "bg-primary/10 text-primary border-primary/20 [a]:hover:bg-primary/20",
       },
       size: {
         xs: "px-1.5 py-0.5 text-[9px] gap-1 [&>svg]:size-2.5!",
         sm: "px-2 py-1 text-[10px] gap-1 [&>svg]:size-3!",
+        md: "px-3 py-1.5 text-[10px] gap-1.5 [&>svg]:size-3!",
         default: "px-3 py-1.5 text-[10px] gap-1.5 [&>svg]:size-3!",
         lg: "px-4 py-2 text-[11px] gap-2 [&>svg]:size-3.5!",
       },
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
+      size: "md",
     },
   },
 );
@@ -44,7 +43,7 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant = "default",
-  size = "default",
+  size = "md",
   asChild = false,
   ...props
 }: React.ComponentProps<"span"> &

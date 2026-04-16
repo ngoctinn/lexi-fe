@@ -486,8 +486,8 @@ export function SessionSetupForm({
               <div className="mt-auto pt-6">
                 <Button
                   type="submit"
-                  size="2xl"
-                  className="w-full text-base h-16"
+                  size="xl"
+                  className="w-full text-base h-14"
                   disabled={isPending || !filteredScenarios.length}
                 >
                   {isPending && (

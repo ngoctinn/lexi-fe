@@ -67,7 +67,7 @@ export function OnboardingForm() {
     >
       <CardHeader className="text-center pb-2 pt-8">
         <div className="flex flex-col items-center gap-4">
-          <Logo size="default" />
+          <Logo size="md" />
 
           <div className="space-y-1 mt-4">
             <CardTitle className="text-xl font-bold tracking-tight">
@@ -78,7 +78,6 @@ export function OnboardingForm() {
             <CardDescription className="text-sm px-4">
               {step === 0 &&
                 "Hãy cho Lexi biết tên hiển thị mà bạn yêu thích nhé."}
-              {step === 1 &&
                 "Lexi sẽ gợi ý nội dung phù hợp nhất với khả năng của bạn."}
               {step === 2 &&
                 "Xác định mục tiêu giúp Lexi xây dựng lộ trình cá nhân hóa."}
@@ -94,7 +93,7 @@ export function OnboardingForm() {
         >
           {step === 0 && (
             <Field className="gap-3 w-full">
-              <InputGroup size="2xl">
+              <InputGroup size="xl">
                 <InputGroupInput
                   id="display_name"
                   name="display_name"
@@ -192,7 +191,7 @@ export function OnboardingForm() {
         {step > 0 && (
           <Button
             variant="outline"
-            size="2xl"
+            size="xl"
             onClick={prevStep}
             disabled={isPending}
             className="px-5"
@@ -203,7 +202,7 @@ export function OnboardingForm() {
 
         {step < TOTAL_STEPS - 1 ? (
           <Button
-            size="2xl"
+            size="xl"
             className="flex-1"
             onClick={nextStep}
             disabled={!data.display_name.trim() && step === 0}
@@ -212,7 +211,7 @@ export function OnboardingForm() {
           </Button>
         ) : (
           <Button
-            size="2xl"
+            size="xl"
             className="flex-1"
             onClick={handleComplete}
             disabled={isPending}

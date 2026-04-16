@@ -83,7 +83,7 @@ export function FlashcardCard({
               {card.word}
             </h2>
             {card.word_type && (
-              <Badge variant="soft-primary" size="lg" className="uppercase">
+              <Badge variant="soft" size="lg" className="uppercase">
                 {card.word_type}
               </Badge>
             )}
@@ -96,8 +96,8 @@ export function FlashcardCard({
               </p>
             )}
             <Button
-              variant="soft-primary"
-              size="icon-sm"
+              variant="soft"
+              size="icon"
               type="button"
               onClick={handlePlayAudio}
               aria-label={`Nghe phát âm ${card.word}`}
@@ -125,7 +125,7 @@ export function FlashcardCard({
                 {card.word}
               </h2>
               {card.word_type && (
-                <Badge variant="soft-primary" size="lg" className="uppercase">
+                <Badge variant="soft" size="lg" className="uppercase">
                   {card.word_type}
                 </Badge>
               )}
@@ -138,8 +138,8 @@ export function FlashcardCard({
                 </p>
               )}
               <Button
-                variant="soft-primary"
-                size="icon-sm"
+                variant="soft"
+                size="icon"
                 type="button"
                 onClick={handlePlayAudio}
                 aria-label={`Nghe phát âm ${card.word}`}

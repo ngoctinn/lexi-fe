@@ -22,12 +22,12 @@ export function LandingCTA() {
           Miễn phí. Không cần thẻ tín dụng. Sẵn sàng trong 5 phút.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button size="2xl" variant="secondary" asChild>
+          <Button size="xl" variant="secondary" asChild>
             <Link href="/learn">
               Dùng miễn phí ngay <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
-          <Button size="2xl" variant="outline" asChild>
+          <Button size="xl" variant="outline" asChild>
             <a href="#features">Tìm hiểu thêm</a>
           </Button>
         </div>

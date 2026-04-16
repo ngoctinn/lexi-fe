@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Mic, Settings } from "lucide-react";
 
 export function ButtonShowcase() {
@@ -23,18 +29,29 @@ export function ButtonShowcase() {
         <div className="flex flex-wrap items-center gap-4">
           <Button size="xs">XS</Button>
           <Button size="sm">Small</Button>
-          <Button size="default">Default</Button>
+          <Button size="md">MD</Button>
           <Button size="lg">Large</Button>
           <Button size="xl">Extra Large</Button>
-          <Button size="2xl">2X Large</Button>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <Button size="icon-xs" aria-label="Settings"><Settings /></Button>
-          <Button size="icon-sm" aria-label="Settings"><Settings /></Button>
-          <Button size="icon" aria-label="Settings"><Settings /></Button>
-          <Button size="icon-lg" aria-label="Settings"><Settings /></Button>
-          <Button size="icon-xl" aria-label="Settings"><Settings /></Button>
-          <Button size="icon-2xl" aria-label="Settings"><Settings /></Button>
+          <Button size="icon-xs" aria-label="Settings">
+            <Settings />
+          </Button>
+          <Button size="icon-sm" aria-label="Settings">
+            <Settings />
+          </Button>
+          <Button size="icon" aria-label="Settings">
+            <Settings />
+          </Button>
+          <Button size="icon-lg" aria-label="Settings">
+            <Settings />
+          </Button>
+          <Button size="icon-xl" aria-label="Settings">
+            <Settings />
+          </Button>
+          <Button size="icon-xl" aria-label="Settings">
+            <Settings />
+          </Button>
           <Button>
             <Mic data-icon="inline-start" /> Speak
           </Button>

@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 interface LogoProps {
   className?: string;
   textClassName?: string;
-  size?: "sm" | "default" | "lg";
+  size?: "sm" | "default" | "md" | "lg";
   href?: string;
 }
 
 export function Logo({
   className,
   textClassName,
-  size = "default",
+  size = "md",
   href = "/",
 }: LogoProps) {
   return (
@@ -41,7 +41,7 @@ export function Logo({
       <span
         className={cn(
           "font-extrabold tracking-tight text-primary-700",
-          size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl",
+          size === "sm" ? "text-xl" : size === "lg" ? "text-3xl" : "text-2xl",
           textClassName,
         )}
       >
