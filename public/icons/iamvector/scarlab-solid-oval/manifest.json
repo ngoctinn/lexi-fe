@@ -1,0 +1,2828 @@
+{
+  "source": {
+    "provider": "iamvector",
+    "category": "scarlab-solid-oval",
+    "style": "All Assets",
+    "pageUrl": "https://iamvector.com/all-icons/scarlab-solid-oval"
+  },
+  "downloadedAt": "2026-04-16T14:51:23.166Z",
+  "icons": [
+    {
+      "id": "507458",
+      "title": "Alert circle",
+      "slug": "alert-circle",
+      "fileName": "alert-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507457",
+      "title": "Alarm",
+      "slug": "alarm",
+      "fileName": "alarm.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507456",
+      "title": "Aerial",
+      "slug": "aerial",
+      "fileName": "aerial.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507455",
+      "title": "Airplay",
+      "slug": "airplay",
+      "fileName": "airplay.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507454",
+      "title": "Adjustments",
+      "slug": "adjustments",
+      "fileName": "adjustments.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507453",
+      "title": "Ad",
+      "slug": "ad",
+      "fileName": "ad.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507452",
+      "title": "Yen circle",
+      "slug": "yen-circle",
+      "fileName": "yen-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507451",
+      "title": "Academic cap",
+      "slug": "academic-cap",
+      "fileName": "academic-cap.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507450",
+      "title": "Yen square",
+      "slug": "yen-square",
+      "fileName": "yen-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507449",
+      "title": "Zap",
+      "slug": "zap",
+      "fileName": "zap.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507448",
+      "title": "X square",
+      "slug": "x-square",
+      "fileName": "x-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507447",
+      "title": "X circle",
+      "slug": "x-circle",
+      "fileName": "x-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507446",
+      "title": "User x",
+      "slug": "user-x",
+      "fileName": "user-x.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507445",
+      "title": "User square",
+      "slug": "user-square",
+      "fileName": "user-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507444",
+      "title": "Watches",
+      "slug": "watches",
+      "fileName": "watches.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507443",
+      "title": "Users",
+      "slug": "users",
+      "fileName": "users.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507442",
+      "title": "User circle",
+      "slug": "user-circle",
+      "fileName": "user-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507441",
+      "title": "User minus",
+      "slug": "user-minus",
+      "fileName": "user-minus.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507440",
+      "title": "User",
+      "slug": "user",
+      "fileName": "user.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507439",
+      "title": "User check",
+      "slug": "user-check",
+      "fileName": "user-check.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507438",
+      "title": "User add",
+      "slug": "user-add",
+      "fileName": "user-add.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507437",
+      "title": "Timer",
+      "slug": "timer",
+      "fileName": "timer.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507436",
+      "title": "Ticket",
+      "slug": "ticket",
+      "fileName": "ticket.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507435",
+      "title": "Terminal",
+      "slug": "terminal",
+      "fileName": "terminal.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507434",
+      "title": "Sun",
+      "slug": "sun",
+      "fileName": "sun.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507433",
+      "title": "Support",
+      "slug": "support",
+      "fileName": "support.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507432",
+      "title": "Tablet",
+      "slug": "tablet",
+      "fileName": "tablet.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507431",
+      "title": "Star square",
+      "slug": "star-square",
+      "fileName": "star-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507430",
+      "title": "Star off",
+      "slug": "star-off",
+      "fileName": "star-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507429",
+      "title": "Star circle",
+      "slug": "star-circle",
+      "fileName": "star-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507428",
+      "title": "Star",
+      "slug": "star",
+      "fileName": "star.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507427",
+      "title": "Speaker",
+      "slug": "speaker",
+      "fileName": "speaker.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507426",
+      "title": "Square",
+      "slug": "square",
+      "fileName": "square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507425",
+      "title": "Sparkles",
+      "slug": "sparkles",
+      "fileName": "sparkles.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507424",
+      "title": "Slash",
+      "slug": "slash",
+      "fileName": "slash.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507423",
+      "title": "Shopping cart",
+      "slug": "shopping-cart",
+      "fileName": "shopping-cart.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507422",
+      "title": "Search square",
+      "slug": "search-square",
+      "fileName": "search-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507421",
+      "title": "Shopping bag",
+      "slug": "shopping-bag",
+      "fileName": "shopping-bag.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507420",
+      "title": "Share",
+      "slug": "share",
+      "fileName": "share.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507419",
+      "title": "Search",
+      "slug": "search",
+      "fileName": "search.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507418",
+      "title": "Search alt",
+      "slug": "search-alt",
+      "fileName": "search-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507417",
+      "title": "Search circle",
+      "slug": "search-circle",
+      "fileName": "search-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507416",
+      "title": "Scarlab",
+      "slug": "scarlab",
+      "fileName": "scarlab.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507415",
+      "title": "Rupee square",
+      "slug": "rupee-square",
+      "fileName": "rupee-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507414",
+      "title": "Scissors",
+      "slug": "scissors",
+      "fileName": "scissors.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507413",
+      "title": "Rupee circle",
+      "slug": "rupee-circle",
+      "fileName": "rupee-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507412",
+      "title": "Ruble square",
+      "slug": "ruble-square",
+      "fileName": "ruble-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507411",
+      "title": "Ruble circle",
+      "slug": "ruble-circle",
+      "fileName": "ruble-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507410",
+      "title": "Rows",
+      "slug": "rows",
+      "fileName": "rows.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507409",
+      "title": "Row cols",
+      "slug": "row-cols",
+      "fileName": "row-cols.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507408",
+      "title": "Rewind",
+      "slug": "rewind",
+      "fileName": "rewind.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507407",
+      "title": "Quote",
+      "slug": "quote",
+      "fileName": "quote.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507406",
+      "title": "Qrcode",
+      "slug": "qrcode",
+      "fileName": "qrcode.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507405",
+      "title": "Printer",
+      "slug": "printer",
+      "fileName": "printer.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507404",
+      "title": "Presentation chart line",
+      "slug": "presentation-chart-line",
+      "fileName": "presentation-chart-line.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507403",
+      "title": "Presentation chart bar alt",
+      "slug": "presentation-chart-bar-alt",
+      "fileName": "presentation-chart-bar-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507402",
+      "title": "Presentation chart bar",
+      "slug": "presentation-chart-bar",
+      "fileName": "presentation-chart-bar.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507401",
+      "title": "Plus square",
+      "slug": "plus-square",
+      "fileName": "plus-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507400",
+      "title": "Pound square",
+      "slug": "pound-square",
+      "fileName": "pound-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507399",
+      "title": "Pound circle",
+      "slug": "pound-circle",
+      "fileName": "pound-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507398",
+      "title": "Plus circle",
+      "slug": "plus-circle",
+      "fileName": "plus-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507397",
+      "title": "Play square",
+      "slug": "play-square",
+      "fileName": "play-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507396",
+      "title": "Play circle",
+      "slug": "play-circle",
+      "fileName": "play-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507395",
+      "title": "Play alt",
+      "slug": "play-alt",
+      "fileName": "play-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507394",
+      "title": "Play",
+      "slug": "play",
+      "fileName": "play.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507393",
+      "title": "Pin",
+      "slug": "pin",
+      "fileName": "pin.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507392",
+      "title": "Photo",
+      "slug": "photo",
+      "fileName": "photo.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507391",
+      "title": "Phone outgoing",
+      "slug": "phone-outgoing",
+      "fileName": "phone-outgoing.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507390",
+      "title": "Phone missed call",
+      "slug": "phone-missed-call",
+      "fileName": "phone-missed-call.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507389",
+      "title": "Phone",
+      "slug": "phone",
+      "fileName": "phone.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507388",
+      "title": "Phone incoming",
+      "slug": "phone-incoming",
+      "fileName": "phone-incoming.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507387",
+      "title": "Percent square",
+      "slug": "percent-square",
+      "fileName": "percent-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507386",
+      "title": "Pencil alt",
+      "slug": "pencil-alt",
+      "fileName": "pencil-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507385",
+      "title": "Percent circle",
+      "slug": "percent-circle",
+      "fileName": "percent-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507384",
+      "title": "Paypal",
+      "slug": "paypal",
+      "fileName": "paypal.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507383",
+      "title": "Pencil",
+      "slug": "pencil",
+      "fileName": "pencil.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507382",
+      "title": "Pause square",
+      "slug": "pause-square",
+      "fileName": "pause-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507381",
+      "title": "Pause circle",
+      "slug": "pause-circle",
+      "fileName": "pause-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507380",
+      "title": "Pause alt",
+      "slug": "pause-alt",
+      "fileName": "pause-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507379",
+      "title": "Mug",
+      "slug": "mug",
+      "fileName": "mug.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507378",
+      "title": "More vertical circle",
+      "slug": "more-vertical-circle",
+      "fileName": "more-vertical-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507377",
+      "title": "More vertical square",
+      "slug": "more-vertical-square",
+      "fileName": "more-vertical-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507376",
+      "title": "Mosaic",
+      "slug": "mosaic",
+      "fileName": "mosaic.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507375",
+      "title": "More horizontal square",
+      "slug": "more-horizontal-square",
+      "fileName": "more-horizontal-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507374",
+      "title": "More horizontal circle",
+      "slug": "more-horizontal-circle",
+      "fileName": "more-horizontal-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507373",
+      "title": "Moon",
+      "slug": "moon",
+      "fileName": "moon.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507372",
+      "title": "Minus square",
+      "slug": "minus-square",
+      "fileName": "minus-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507371",
+      "title": "Monitor",
+      "slug": "monitor",
+      "fileName": "monitor.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507370",
+      "title": "Mobile",
+      "slug": "mobile",
+      "fileName": "mobile.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507369",
+      "title": "Minus circle",
+      "slug": "minus-circle",
+      "fileName": "minus-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507368",
+      "title": "Minimaize square",
+      "slug": "minimaize-square",
+      "fileName": "minimaize-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507367",
+      "title": "Maximaize square",
+      "slug": "maximaize-square",
+      "fileName": "maximaize-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507366",
+      "title": "Minimaize circle",
+      "slug": "minimaize-circle",
+      "fileName": "minimaize-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507365",
+      "title": "Microphone",
+      "slug": "microphone",
+      "fileName": "microphone.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507364",
+      "title": "Maximaize circle",
+      "slug": "maximaize-circle",
+      "fileName": "maximaize-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507363",
+      "title": "Mastercard",
+      "slug": "mastercard",
+      "fileName": "mastercard.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507362",
+      "title": "Mask",
+      "slug": "mask",
+      "fileName": "mask.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507361",
+      "title": "Mail",
+      "slug": "mail",
+      "fileName": "mail.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507360",
+      "title": "Luggage",
+      "slug": "luggage",
+      "fileName": "luggage.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507359",
+      "title": "Map",
+      "slug": "map",
+      "fileName": "map.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507358",
+      "title": "Logout",
+      "slug": "logout",
+      "fileName": "logout.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507357",
+      "title": "Litecoin square",
+      "slug": "litecoin-square",
+      "fileName": "litecoin-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507356",
+      "title": "Location",
+      "slug": "location",
+      "fileName": "location.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507355",
+      "title": "Login",
+      "slug": "login",
+      "fileName": "login.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507354",
+      "title": "Lock",
+      "slug": "lock",
+      "fileName": "lock.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507353",
+      "title": "Lock open",
+      "slug": "lock-open",
+      "fileName": "lock-open.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507352",
+      "title": "Litecoin circle",
+      "slug": "litecoin-circle",
+      "fileName": "litecoin-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507351",
+      "title": "Laptop",
+      "slug": "laptop",
+      "fileName": "laptop.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507350",
+      "title": "Liras square",
+      "slug": "liras-square",
+      "fileName": "liras-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507349",
+      "title": "Leaf",
+      "slug": "leaf",
+      "fileName": "leaf.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507348",
+      "title": "Liras circle",
+      "slug": "liras-circle",
+      "fileName": "liras-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507347",
+      "title": "License",
+      "slug": "license",
+      "fileName": "license.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507346",
+      "title": "Lamp",
+      "slug": "lamp",
+      "fileName": "lamp.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507345",
+      "title": "Inbox out",
+      "slug": "inbox-out",
+      "fileName": "inbox-out.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507344",
+      "title": "Inbox in",
+      "slug": "inbox-in",
+      "fileName": "inbox-in.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507343",
+      "title": "Key",
+      "slug": "key",
+      "fileName": "key.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507342",
+      "title": "Keyboard",
+      "slug": "keyboard",
+      "fileName": "keyboard.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507341",
+      "title": "Inbox full",
+      "slug": "inbox-full",
+      "fileName": "inbox-full.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507340",
+      "title": "Inbox",
+      "slug": "inbox",
+      "fileName": "inbox.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507339",
+      "title": "Home alt",
+      "slug": "home-alt",
+      "fileName": "home-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507338",
+      "title": "Hrivnia square",
+      "slug": "hrivnia-square",
+      "fileName": "hrivnia-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507337",
+      "title": "Hrivnia circle",
+      "slug": "hrivnia-circle",
+      "fileName": "hrivnia-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507336",
+      "title": "Id",
+      "slug": "id",
+      "fileName": "id.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507335",
+      "title": "Identification",
+      "slug": "identification",
+      "fileName": "identification.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507334",
+      "title": "Home",
+      "slug": "home",
+      "fileName": "home.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507333",
+      "title": "Grid",
+      "slug": "grid",
+      "fileName": "grid.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507332",
+      "title": "Heart",
+      "slug": "heart",
+      "fileName": "heart.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507331",
+      "title": "Heart off",
+      "slug": "heart-off",
+      "fileName": "heart-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507330",
+      "title": "Help circle",
+      "slug": "help-circle",
+      "fileName": "help-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507329",
+      "title": "Heart broken",
+      "slug": "heart-broken",
+      "fileName": "heart-broken.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507328",
+      "title": "Gps",
+      "slug": "gps",
+      "fileName": "gps.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507327",
+      "title": "Goblet",
+      "slug": "goblet",
+      "fileName": "goblet.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507326",
+      "title": "Globe",
+      "slug": "globe",
+      "fileName": "globe.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507325",
+      "title": "Globe alt",
+      "slug": "globe-alt",
+      "fileName": "globe-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507324",
+      "title": "Git pull request",
+      "slug": "git-pull-request",
+      "fileName": "git-pull-request.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507323",
+      "title": "Git merge",
+      "slug": "git-merge",
+      "fileName": "git-merge.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507322",
+      "title": "Gitlab",
+      "slug": "gitlab",
+      "fileName": "gitlab.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507321",
+      "title": "Github",
+      "slug": "github",
+      "fileName": "github.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507320",
+      "title": "Github square",
+      "slug": "github-square",
+      "fileName": "github-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507319",
+      "title": "Github circle",
+      "slug": "github-circle",
+      "fileName": "github-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507318",
+      "title": "Git fork",
+      "slug": "git-fork",
+      "fileName": "git-fork.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507317",
+      "title": "Git diff",
+      "slug": "git-diff",
+      "fileName": "git-diff.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507316",
+      "title": "Git commit",
+      "slug": "git-commit",
+      "fileName": "git-commit.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507315",
+      "title": "Ghost",
+      "slug": "ghost",
+      "fileName": "ghost.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507314",
+      "title": "Git branch",
+      "slug": "git-branch",
+      "fileName": "git-branch.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507313",
+      "title": "Gift",
+      "slug": "gift",
+      "fileName": "gift.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507312",
+      "title": "Gauge",
+      "slug": "gauge",
+      "fileName": "gauge.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507311",
+      "title": "Gamepad",
+      "slug": "gamepad",
+      "fileName": "gamepad.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507310",
+      "title": "Folder x",
+      "slug": "folder-x",
+      "fileName": "folder-x.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507309",
+      "title": "Folder remove",
+      "slug": "folder-remove",
+      "fileName": "folder-remove.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507308",
+      "title": "Folder open",
+      "slug": "folder-open",
+      "fileName": "folder-open.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507307",
+      "title": "Folder check",
+      "slug": "folder-check",
+      "fileName": "folder-check.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507306",
+      "title": "Folder off",
+      "slug": "folder-off",
+      "fileName": "folder-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507305",
+      "title": "Folder download",
+      "slug": "folder-download",
+      "fileName": "folder-download.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507304",
+      "title": "Folder add",
+      "slug": "folder-add",
+      "fileName": "folder-add.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507303",
+      "title": "Film",
+      "slug": "film",
+      "fileName": "film.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507302",
+      "title": "Filter",
+      "slug": "filter",
+      "fileName": "filter.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507301",
+      "title": "Floppy",
+      "slug": "floppy",
+      "fileName": "floppy.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507300",
+      "title": "Folder",
+      "slug": "folder",
+      "fileName": "folder.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507299",
+      "title": "Feather",
+      "slug": "feather",
+      "fileName": "feather.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507298",
+      "title": "Eye",
+      "slug": "eye",
+      "fileName": "eye.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507297",
+      "title": "Euro circle",
+      "slug": "euro-circle",
+      "fileName": "euro-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507296",
+      "title": "Fast forward",
+      "slug": "fast-forward",
+      "fileName": "fast-forward.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507295",
+      "title": "Eye off",
+      "slug": "eye-off",
+      "fileName": "eye-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507294",
+      "title": "Euro square",
+      "slug": "euro-square",
+      "fileName": "euro-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507293",
+      "title": "Exposure",
+      "slug": "exposure",
+      "fileName": "exposure.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507292",
+      "title": "Emoji sad",
+      "slug": "emoji-sad",
+      "fileName": "emoji-sad.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507291",
+      "title": "Emoji sad square",
+      "slug": "emoji-sad-square",
+      "fileName": "emoji-sad-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507290",
+      "title": "Equal square",
+      "slug": "equal-square",
+      "fileName": "equal-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507289",
+      "title": "Equal not square",
+      "slug": "equal-not-square",
+      "fileName": "equal-not-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507288",
+      "title": "Equal circle",
+      "slug": "equal-circle",
+      "fileName": "equal-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507287",
+      "title": "Equal not circle",
+      "slug": "equal-not-circle",
+      "fileName": "equal-not-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507286",
+      "title": "Emoji happy square",
+      "slug": "emoji-happy-square",
+      "fileName": "emoji-happy-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507285",
+      "title": "Emoji happy",
+      "slug": "emoji-happy",
+      "fileName": "emoji-happy.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507284",
+      "title": "Dollar square",
+      "slug": "dollar-square",
+      "fileName": "dollar-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507283",
+      "title": "Droplet",
+      "slug": "droplet",
+      "fileName": "droplet.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507282",
+      "title": "Duplicate",
+      "slug": "duplicate",
+      "fileName": "duplicate.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507281",
+      "title": "Edit",
+      "slug": "edit",
+      "fileName": "edit.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507280",
+      "title": "Document x",
+      "slug": "document-x",
+      "fileName": "document-x.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507279",
+      "title": "Document text",
+      "slug": "document-text",
+      "fileName": "document-text.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507278",
+      "title": "Doge square",
+      "slug": "doge-square",
+      "fileName": "doge-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507277",
+      "title": "Dollar circle",
+      "slug": "dollar-circle",
+      "fileName": "dollar-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507276",
+      "title": "Doge circle",
+      "slug": "doge-circle",
+      "fileName": "doge-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507275",
+      "title": "Document zip",
+      "slug": "document-zip",
+      "fileName": "document-zip.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507274",
+      "title": "Document report",
+      "slug": "document-report",
+      "fileName": "document-report.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507273",
+      "title": "Document check",
+      "slug": "document-check",
+      "fileName": "document-check.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507272",
+      "title": "Document remove",
+      "slug": "document-remove",
+      "fileName": "document-remove.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507271",
+      "title": "Document download",
+      "slug": "document-download",
+      "fileName": "document-download.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507270",
+      "title": "Document off",
+      "slug": "document-off",
+      "fileName": "document-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507269",
+      "title": "Document duplicate",
+      "slug": "document-duplicate",
+      "fileName": "document-duplicate.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507268",
+      "title": "Divide square",
+      "slug": "divide-square",
+      "fileName": "divide-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507267",
+      "title": "Document add",
+      "slug": "document-add",
+      "fileName": "document-add.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507266",
+      "title": "Diamond",
+      "slug": "diamond",
+      "fileName": "diamond.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507265",
+      "title": "Document",
+      "slug": "document",
+      "fileName": "document.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507264",
+      "title": "Disk",
+      "slug": "disk",
+      "fileName": "disk.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507263",
+      "title": "Divide circle",
+      "slug": "divide-circle",
+      "fileName": "divide-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507262",
+      "title": "Database",
+      "slug": "database",
+      "fileName": "database.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507261",
+      "title": "Cursor alt",
+      "slug": "cursor-alt",
+      "fileName": "cursor-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507260",
+      "title": "Dashboard",
+      "slug": "dashboard",
+      "fileName": "dashboard.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507259",
+      "title": "Cursor click",
+      "slug": "cursor-click",
+      "fileName": "cursor-click.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507258",
+      "title": "Cursor",
+      "slug": "cursor",
+      "fileName": "cursor.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507257",
+      "title": "Desktop",
+      "slug": "desktop",
+      "fileName": "desktop.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507256",
+      "title": "Contrast",
+      "slug": "contrast",
+      "fileName": "contrast.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507255",
+      "title": "Credit card",
+      "slug": "credit-card",
+      "fileName": "credit-card.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507254",
+      "title": "Crown",
+      "slug": "crown",
+      "fileName": "crown.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507253",
+      "title": "Contacts",
+      "slug": "contacts",
+      "fileName": "contacts.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507252",
+      "title": "Cone",
+      "slug": "cone",
+      "fileName": "cone.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507251",
+      "title": "Contacts alt",
+      "slug": "contacts-alt",
+      "fileName": "contacts-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507250",
+      "title": "Cols",
+      "slug": "cols",
+      "fileName": "cols.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507249",
+      "title": "Cols row",
+      "slug": "cols-row",
+      "fileName": "cols-row.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507248",
+      "title": "Col right",
+      "slug": "col-right",
+      "fileName": "col-right.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507247",
+      "title": "Col left",
+      "slug": "col-left",
+      "fileName": "col-left.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507246",
+      "title": "Collection",
+      "slug": "collection",
+      "fileName": "collection.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507245",
+      "title": "Color swatch",
+      "slug": "color-swatch",
+      "fileName": "color-swatch.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507244",
+      "title": "Cloud upload",
+      "slug": "cloud-upload",
+      "fileName": "cloud-upload.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507243",
+      "title": "Cloud lightning",
+      "slug": "cloud-lightning",
+      "fileName": "cloud-lightning.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507242",
+      "title": "Cog",
+      "slug": "cog",
+      "fileName": "cog.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507241",
+      "title": "Cloud off",
+      "slug": "cloud-off",
+      "fileName": "cloud-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507240",
+      "title": "Cloud rain",
+      "slug": "cloud-rain",
+      "fileName": "cloud-rain.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507239",
+      "title": "Cloud snow",
+      "slug": "cloud-snow",
+      "fileName": "cloud-snow.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507238",
+      "title": "Clock",
+      "slug": "clock",
+      "fileName": "clock.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507237",
+      "title": "Cloud drizzle",
+      "slug": "cloud-drizzle",
+      "fileName": "cloud-drizzle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507236",
+      "title": "Cloud fog",
+      "slug": "cloud-fog",
+      "fileName": "cloud-fog.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507235",
+      "title": "Clipboard check",
+      "slug": "clipboard-check",
+      "fileName": "clipboard-check.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507234",
+      "title": "Cloud",
+      "slug": "cloud",
+      "fileName": "cloud.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507233",
+      "title": "Cloud download",
+      "slug": "cloud-download",
+      "fileName": "cloud-download.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507232",
+      "title": "Chip",
+      "slug": "chip",
+      "fileName": "chip.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507231",
+      "title": "Clipboard",
+      "slug": "clipboard",
+      "fileName": "clipboard.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507230",
+      "title": "Chevron up circle",
+      "slug": "chevron-up-circle",
+      "fileName": "chevron-up-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507229",
+      "title": "Circle",
+      "slug": "circle",
+      "fileName": "circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507228",
+      "title": "Chevron up square",
+      "slug": "chevron-up-square",
+      "fileName": "chevron-up-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507227",
+      "title": "Chevron right circle",
+      "slug": "chevron-right-circle",
+      "fileName": "chevron-right-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507226",
+      "title": "Chevron right square",
+      "slug": "chevron-right-square",
+      "fileName": "chevron-right-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507225",
+      "title": "Chevron down square",
+      "slug": "chevron-down-square",
+      "fileName": "chevron-down-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507224",
+      "title": "Chevron left square",
+      "slug": "chevron-left-square",
+      "fileName": "chevron-left-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507223",
+      "title": "Chevron left circle",
+      "slug": "chevron-left-circle",
+      "fileName": "chevron-left-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507222",
+      "title": "Check square",
+      "slug": "check-square",
+      "fileName": "check-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507221",
+      "title": "Chevron down circle",
+      "slug": "chevron-down-circle",
+      "fileName": "chevron-down-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507220",
+      "title": "Chart bubble",
+      "slug": "chart-bubble",
+      "fileName": "chart-bubble.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507219",
+      "title": "Chat",
+      "slug": "chat",
+      "fileName": "chat.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507218",
+      "title": "Check circle",
+      "slug": "check-circle",
+      "fileName": "check-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507217",
+      "title": "Check badge",
+      "slug": "check-badge",
+      "fileName": "check-badge.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507216",
+      "title": "Chart bar square",
+      "slug": "chart-bar-square",
+      "fileName": "chart-bar-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507215",
+      "title": "Chart pie",
+      "slug": "chart-pie",
+      "fileName": "chart-pie.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507214",
+      "title": "Camera web",
+      "slug": "camera-web",
+      "fileName": "camera-web.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507213",
+      "title": "Cash",
+      "slug": "cash",
+      "fileName": "cash.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507212",
+      "title": "Chart bar alt square",
+      "slug": "chart-bar-alt-square",
+      "fileName": "chart-bar-alt-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507211",
+      "title": "Camera",
+      "slug": "camera",
+      "fileName": "camera.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507210",
+      "title": "Camera off",
+      "slug": "camera-off",
+      "fileName": "camera-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507209",
+      "title": "Calendar alt",
+      "slug": "calendar-alt",
+      "fileName": "calendar-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507208",
+      "title": "Cake",
+      "slug": "cake",
+      "fileName": "cake.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507207",
+      "title": "Calendar",
+      "slug": "calendar",
+      "fileName": "calendar.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507206",
+      "title": "Calculator",
+      "slug": "calculator",
+      "fileName": "calculator.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507205",
+      "title": "Bulb on",
+      "slug": "bulb-on",
+      "fileName": "bulb-on.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507204",
+      "title": "Building",
+      "slug": "building",
+      "fileName": "building.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507203",
+      "title": "Bulb",
+      "slug": "bulb",
+      "fileName": "bulb.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507202",
+      "title": "Briefcase alt",
+      "slug": "briefcase-alt",
+      "fileName": "briefcase-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507201",
+      "title": "Brightness",
+      "slug": "brightness",
+      "fileName": "brightness.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507200",
+      "title": "Browser",
+      "slug": "browser",
+      "fileName": "browser.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507199",
+      "title": "Box",
+      "slug": "box",
+      "fileName": "box.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507198",
+      "title": "Briefcase",
+      "slug": "briefcase",
+      "fileName": "briefcase.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507197",
+      "title": "Book open",
+      "slug": "book-open",
+      "fileName": "book-open.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507196",
+      "title": "Bookmark alt",
+      "slug": "bookmark-alt",
+      "fileName": "bookmark-alt.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507195",
+      "title": "Blur",
+      "slug": "blur",
+      "fileName": "blur.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507194",
+      "title": "Bookmark",
+      "slug": "bookmark",
+      "fileName": "bookmark.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507193",
+      "title": "Blockquote",
+      "slug": "blockquote",
+      "fileName": "blockquote.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507192",
+      "title": "Bitcoin square",
+      "slug": "bitcoin-square",
+      "fileName": "bitcoin-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507191",
+      "title": "Beneficiaries",
+      "slug": "beneficiaries",
+      "fileName": "beneficiaries.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507190",
+      "title": "Bell ringing",
+      "slug": "bell-ringing",
+      "fileName": "bell-ringing.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507189",
+      "title": "Bell",
+      "slug": "bell",
+      "fileName": "bell.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507188",
+      "title": "Bitcoin circle",
+      "slug": "bitcoin-circle",
+      "fileName": "bitcoin-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507187",
+      "title": "Beaker",
+      "slug": "beaker",
+      "fileName": "beaker.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507186",
+      "title": "Bell off",
+      "slug": "bell-off",
+      "fileName": "bell-off.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507185",
+      "title": "Battery medium",
+      "slug": "battery-medium",
+      "fileName": "battery-medium.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507184",
+      "title": "Battery charging",
+      "slug": "battery-charging",
+      "fileName": "battery-charging.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507183",
+      "title": "Battery full",
+      "slug": "battery-full",
+      "fileName": "battery-full.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507182",
+      "title": "Battery low",
+      "slug": "battery-low",
+      "fileName": "battery-low.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507181",
+      "title": "Bangladeshi circle",
+      "slug": "bangladeshi-circle",
+      "fileName": "bangladeshi-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507180",
+      "title": "Battery",
+      "slug": "battery",
+      "fileName": "battery.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507179",
+      "title": "Bangladeshi square",
+      "slug": "bangladeshi-square",
+      "fileName": "bangladeshi-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507178",
+      "title": "Atom",
+      "slug": "atom",
+      "fileName": "atom.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507177",
+      "title": "Backspace",
+      "slug": "backspace",
+      "fileName": "backspace.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507176",
+      "title": "Award",
+      "slug": "award",
+      "fileName": "award.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507175",
+      "title": "Arrow up square",
+      "slug": "arrow-up-square",
+      "fileName": "arrow-up-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507174",
+      "title": "Arrow up right square",
+      "slug": "arrow-up-right-square",
+      "fileName": "arrow-up-right-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507173",
+      "title": "Arrow up right circle",
+      "slug": "arrow-up-right-circle",
+      "fileName": "arrow-up-right-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507172",
+      "title": "Arrow up circle",
+      "slug": "arrow-up-circle",
+      "fileName": "arrow-up-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507171",
+      "title": "Arrow up left circle",
+      "slug": "arrow-up-left-circle",
+      "fileName": "arrow-up-left-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507170",
+      "title": "Arrow up left square",
+      "slug": "arrow-up-left-square",
+      "fileName": "arrow-up-left-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507169",
+      "title": "Arrow right square",
+      "slug": "arrow-right-square",
+      "fileName": "arrow-right-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507168",
+      "title": "Arrow right circle",
+      "slug": "arrow-right-circle",
+      "fileName": "arrow-right-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507167",
+      "title": "Arrow left circle",
+      "slug": "arrow-left-circle",
+      "fileName": "arrow-left-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507166",
+      "title": "Arrow down square",
+      "slug": "arrow-down-square",
+      "fileName": "arrow-down-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507165",
+      "title": "Arrow down right square",
+      "slug": "arrow-down-right-square",
+      "fileName": "arrow-down-right-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507164",
+      "title": "Arrow left square",
+      "slug": "arrow-left-square",
+      "fileName": "arrow-left-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507163",
+      "title": "Arrow down right circle",
+      "slug": "arrow-down-right-circle",
+      "fileName": "arrow-down-right-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507162",
+      "title": "Apps",
+      "slug": "apps",
+      "fileName": "apps.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507161",
+      "title": "Arrow down left circle",
+      "slug": "arrow-down-left-circle",
+      "fileName": "arrow-down-left-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507160",
+      "title": "Arrow down circle",
+      "slug": "arrow-down-circle",
+      "fileName": "arrow-down-circle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507159",
+      "title": "Archive",
+      "slug": "archive",
+      "fileName": "archive.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507158",
+      "title": "Arrow down left square",
+      "slug": "arrow-down-left-square",
+      "fileName": "arrow-down-left-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507157",
+      "title": "Aperture",
+      "slug": "aperture",
+      "fileName": "aperture.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507156",
+      "title": "Align vertical center",
+      "slug": "align-vertical-center",
+      "fileName": "align-vertical-center.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507155",
+      "title": "Align top",
+      "slug": "align-top",
+      "fileName": "align-top.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507154",
+      "title": "Align right",
+      "slug": "align-right",
+      "fileName": "align-right.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507153",
+      "title": "Anchor",
+      "slug": "anchor",
+      "fileName": "anchor.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507152",
+      "title": "Annotation",
+      "slug": "annotation",
+      "fileName": "annotation.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507151",
+      "title": "Alert square",
+      "slug": "alert-square",
+      "fileName": "alert-square.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507150",
+      "title": "Alert hexagon",
+      "slug": "alert-hexagon",
+      "fileName": "alert-hexagon.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507149",
+      "title": "Align horizontal center",
+      "slug": "align-horizontal-center",
+      "fileName": "align-horizontal-center.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507148",
+      "title": "Align bottom",
+      "slug": "align-bottom",
+      "fileName": "align-bottom.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507147",
+      "title": "Align left",
+      "slug": "align-left",
+      "fileName": "align-left.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    },
+    {
+      "id": "507146",
+      "title": "Alert triangle",
+      "slug": "alert-triangle",
+      "fileName": "alert-triangle.svg",
+      "license": "MIT",
+      "licenseOwner": "scarlab ",
+      "licenseLink": "https://github.com/la-moore/scarlab-icons"
+    }
+  ]
+}

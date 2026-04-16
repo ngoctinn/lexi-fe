@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "icons:scarlab-solid-oval": "node scripts/download-iamvector-icons.mjs --clean"
   },
   "dependencies": {
     "@aws-amplify/adapter-nextjs": "^1.7.2",
