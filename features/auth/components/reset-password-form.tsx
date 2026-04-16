@@ -82,23 +82,29 @@ export function ResetPasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card size="lg" className="mx-auto w-full overflow-visible">
-        <CardHeader className="text-center pb-2 pt-8">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <Logo size="md" />
+    <div className={cn("flex flex-col gap-4", className)} {...props}>
+      <Card
+        size="lg"
+        className="mx-auto w-full overflow-visible gap-4 shadow-lg"
+      >
+        <CardHeader className="px-5 pt-5 pb-0 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <Logo size="lg" showText={false} />
+            <div className="grid gap-1.5">
+              <CardTitle className="text-3xl font-bold tracking-tight text-primary-700 sm:text-4xl">
+                Đặt lại mật khẩu
+              </CardTitle>
+              <CardDescription className="text-sm text-muted-foreground sm:text-base">
+                Tạo mật khẩu mới cho tài khoản
+                <br className="hidden sm:inline" />
+                <span className="font-semibold text-foreground">{email}</span>
+              </CardDescription>
+            </div>
           </div>
-          <CardTitle className="text-xl font-bold tracking-tight">
-            Đặt lại mật khẩu
-          </CardTitle>
-          <CardDescription>
-            Tạo mật khẩu mới cho tài khoản <br className="hidden sm:inline" />
-            <span className="font-semibold text-foreground">{email}</span>
-          </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6 px-6 sm:px-8">
+        <CardContent className="px-5 pt-0 sm:px-6">
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="grid gap-8">
+            <div className="grid gap-6">
               <Field className="w-full" data-invalid={!!errors.otp}>
                 <FieldLabel htmlFor="otp" className="mb-2 text-foreground/80">
                   Mã xác minh (OTP)
@@ -182,13 +188,13 @@ export function ResetPasswordForm({
             </div>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-center border-t bg-muted/30 py-6">
+        <CardFooter className="flex justify-center border-t bg-muted/30 py-4">
           <Link
             href="/login"
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all"
+            className="flex items-center gap-2 text-sm text-primary hover:text-primary-700 transition-all"
           >
             <ArrowLeft className="size-4" />
-            Quay lại đăng nhập
+            Quay về Đăng nhập
           </Link>
         </CardFooter>
       </Card>

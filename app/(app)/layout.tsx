@@ -29,7 +29,7 @@ export default async function AppLayout({
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 md:hidden">
           <SidebarTrigger className="-ml-2" />
-          <Logo textClassName="text-lg" />
+          <Logo textClassName="text-lg text-sidebar-foreground" />
         </header>
 
         <div className="flex flex-1 flex-col overflow-y-auto">{children}</div>

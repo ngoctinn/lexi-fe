@@ -17,6 +17,7 @@
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-icon: var(--sidebar-icon);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --color-chart-5: var(--chart-5);
@@ -132,14 +133,15 @@
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar: hsl(212 20% 98%);
+  --sidebar-foreground: hsl(212 20% 13%);
   --sidebar-primary: var(--primary-500);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-icon: hsl(212 20% 68%);
+  --sidebar-accent: hsl(212 20% 95%);
+  --sidebar-accent-foreground: hsl(212 20% 13%);
+  --sidebar-border: hsl(212 20% 90%);
+  --sidebar-ring: hsl(212 20% 68%);
 
   /* Semantic status colors with accessibility-first L values (Light Mode) */
   --success: oklch(0.62 0.17 155);
@@ -207,14 +209,15 @@
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: hsl(212 20% 13%);
+  --sidebar-foreground: hsl(212 20% 96%);
   --sidebar-primary: var(--primary-500);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-icon: hsl(212 16% 72%);
+  --sidebar-accent: hsl(212 18% 18%);
+  --sidebar-accent-foreground: hsl(212 20% 96%);
+  --sidebar-border: hsl(212 18% 22%);
+  --sidebar-ring: hsl(212 20% 68%);
 
   /* Semantic status colors for dark mode - more vibrant text */
   --success: oklch(0.78 0.18 160);

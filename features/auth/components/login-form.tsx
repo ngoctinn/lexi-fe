@@ -9,6 +9,7 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
+  CardDescription,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,13 +19,11 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/shared/logo";
 import { signIn } from "aws-amplify/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { translateCognitoError } from "../utils/auth-errors";
@@ -40,19 +39,15 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setValue,
-    control,
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      remember: false,
     },
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
-  const remember = useWatch({ control, name: "remember" });
 
   const onSubmit = async (data: LoginSchema) => {
     try {
@@ -77,140 +72,85 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card size="lg" className="overflow-visible shadow-lg">
-        <CardHeader className="text-center pb-2 pt-8">
-          <div className="flex items-center justify-center gap-4">
-            <Logo size="md" />
-            <div className="h-6 w-px bg-border shrink-0" />
-            <CardTitle className="text-xl font-bold tracking-tight">
-              Đăng nhập
-            </CardTitle>
+    <div className={cn("flex flex-col gap-4", className)} {...props}>
+      <Card size="lg" className="overflow-visible gap-4 shadow-lg">
+        <CardHeader className="px-5 pt-5 pb-0 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <Logo size="lg" showText={false} />
+            <div className="grid gap-1.5">
+              <CardTitle className="text-3xl font-bold tracking-tight text-primary-700 sm:text-4xl">
+                Đăng nhập tài khoản
+              </CardTitle>
+              <CardDescription className="text-sm text-muted-foreground sm:text-base">
+                Đăng nhập để tiếp tục học tập.
+              </CardDescription>
+            </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="px-5 pt-0 sm:px-6">
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="grid gap-8">
-              <div className="flex flex-col gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
+            <FieldGroup className="gap-5">
+              <Field data-invalid={!!errors.email}>
+                <FieldLabel htmlFor="email" className="text-foreground/80">
+                  Địa chỉ email
+                </FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
                   size="xl"
-                  className="w-full border-control-border-subtle bg-control-bg-subtle/50 hover:bg-control-hover"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    className="mr-2 size-5"
-                    data-icon="inline-start"
-                  >
-                    <path
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      fill="#4285F4"
-                    />
-                    <path
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      fill="#34A853"
-                    />
-                    <path
-                      d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z"
-                      fill="#FBBC05"
-                    />
-                    <path
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      fill="#EA4335"
-                    />
-                  </svg>
-                  Đăng nhập với Google
-                </Button>
-              </div>
+                  placeholder="user@mail.com"
+                  autoComplete="email"
+                  aria-invalid={!!errors.email}
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <FieldError>{errors.email.message}</FieldError>
+                )}
+              </Field>
 
-              <div className="relative text-center text-xs uppercase tracking-widest text-muted-foreground after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-card px-3">Hoặc</span>
-              </div>
-
-              <FieldGroup className="gap-6">
-                <Field data-invalid={!!errors.email}>
-                  <FieldLabel htmlFor="email" className="text-foreground/80">
-                    Email
+              <Field data-invalid={!!errors.password}>
+                <div className="flex items-center justify-between">
+                  <FieldLabel htmlFor="password" className="text-foreground/80">
+                    Mật khẩu
                   </FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    size="xl"
-                    placeholder="name@example.com"
-                    autoComplete="email"
-                    aria-invalid={!!errors.email}
-                    {...register("email")}
-                  />
-                  {errors.email && (
-                    <FieldError>{errors.email.message}</FieldError>
-                  )}
-                </Field>
-
-                <Field data-invalid={!!errors.password}>
-                  <div className="flex items-center justify-between">
-                    <FieldLabel
-                      htmlFor="password"
-                      className="text-foreground/80"
-                    >
-                      Mật khẩu
-                    </FieldLabel>
-                    <Link
-                      href="/forgot-password"
-                      className="text-xs font-medium text-primary hover:underline underline-offset-4"
-                    >
-                      Quên mật khẩu?
-                    </Link>
-                  </div>
-                  <PasswordInput
-                    id="password"
-                    size="xl"
-                    autoComplete="current-password"
-                    aria-invalid={!!errors.password}
-                    {...register("password")}
-                  />
-                  {errors.password && (
-                    <FieldError>{errors.password.message}</FieldError>
-                  )}
-                </Field>
-
-                <Field orientation="horizontal" className="items-center gap-2">
-                  <Checkbox
-                    id="remember"
-                    checked={remember}
-                    onCheckedChange={(checked) =>
-                      setValue("remember", checked === true)
-                    }
-                  />
-                  <FieldLabel
-                    htmlFor="remember"
-                    className="text-xs font-normal text-muted-foreground cursor-pointer"
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-medium text-primary hover:text-primary-700 hover:underline underline-offset-4"
                   >
-                    Ghi nhớ đăng nhập
-                  </FieldLabel>
-                </Field>
-
-                <Button
-                  type="submit"
+                    Quên mật khẩu?
+                  </Link>
+                </div>
+                <PasswordInput
+                  id="password"
                   size="xl"
-                  className="w-full text-base"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
-                </Button>
-              </FieldGroup>
-            </div>
+                  autoComplete="current-password"
+                  aria-invalid={!!errors.password}
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <FieldError>{errors.password.message}</FieldError>
+                )}
+              </Field>
+
+              <Button
+                type="submit"
+                size="xl"
+                className="w-full text-base"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Đang tiếp tục..." : "Tiếp tục"}
+              </Button>
+            </FieldGroup>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 py-6 text-center">
+        <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 py-4 text-center">
           <div className="text-sm text-balance text-muted-foreground">
             Chưa có tài khoản?{" "}
             <Link
               href="/signup"
-              className="font-bold text-foreground hover:text-primary transition-colors"
+              className="font-bold text-primary hover:text-primary-700 transition-colors"
             >
-              Đăng ký ngay
+              Đăng ký
             </Link>
           </div>
         </CardFooter>

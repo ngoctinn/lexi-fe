@@ -1,4 +1,4 @@
-import { GraduationCap } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +7,7 @@ interface LogoProps {
   textClassName?: string;
   size?: "sm" | "default" | "md" | "lg";
   href?: string;
+  showText?: boolean;
 }
 
 export function Logo({
@@ -14,39 +15,49 @@ export function Logo({
   textClassName,
   size = "md",
   href = "/",
+  showText = true,
 }: LogoProps) {
+  const iconSize = showText
+    ? size === "sm"
+      ? 28
+      : size === "lg"
+        ? 44
+        : 36
+    : size === "sm"
+      ? 36
+      : size === "lg"
+        ? 56
+        : 48;
+
   return (
     <Link
       href={href}
-      className={cn("flex items-center gap-2 text-primary group", className)}
+      aria-label={showText ? undefined : "Lexi"}
+      className={cn(
+        "flex items-center text-primary group",
+        showText ? "gap-2" : "justify-center",
+        className,
+      )}
     >
-      <div
-        className={cn(
-          "bg-primary flex shrink-0 items-center justify-center transition-transform group-active:translate-y-0.5",
-          size === "sm"
-            ? "size-7 rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-none"
-            : size === "lg"
-              ? "size-10 rounded-xl shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-none"
-              : "size-9 rounded-xl shadow-[0_2px_0_0_var(--color-primary-shadow)] group-active:shadow-none",
-        )}
-      >
-        <GraduationCap
-          className="text-primary-foreground"
-          style={{
-            width: size === "sm" ? 16 : size === "lg" ? 24 : 20,
-            height: size === "sm" ? 16 : size === "lg" ? 24 : 20,
-          }}
-        />
-      </div>
-      <span
-        className={cn(
-          "font-extrabold tracking-tight text-primary-700",
-          size === "sm" ? "text-xl" : size === "lg" ? "text-3xl" : "text-2xl",
-          textClassName,
-        )}
-      >
-        Lexi learn
-      </span>
+      <Image
+        src="/logo.svg"
+        alt="Lexi"
+        width={iconSize}
+        height={iconSize}
+        priority={showText === false}
+        className="shrink-0 object-contain transition-transform group-active:translate-y-0.5"
+      />
+      {showText && (
+        <span
+          className={cn(
+            "font-extrabold tracking-tight text-primary-700",
+            size === "sm" ? "text-xl" : size === "lg" ? "text-3xl" : "text-2xl",
+            textClassName,
+          )}
+        >
+          Lexi learn
+        </span>
+      )}
     </Link>
   );
 }

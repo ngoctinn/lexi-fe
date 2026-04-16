@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import {
-  GraduationCap,
   Map,
   BookOpen,
   Trophy,
@@ -77,6 +77,10 @@ const communityNavItems = [
   },
 ];
 
+const sidebarIconClassName =
+  "text-sidebar-icon group-data-[active=true]/menu-button:text-primary";
+const sidebarIconStrokeWidth = 2.15;
+
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -107,10 +111,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               className="hover:bg-transparent hover:shadow-none active:translate-y-0 active:shadow-none data-active:bg-transparent data-active:shadow-none"
             >
               <Link href="/">
-                <div className="bg-primary flex shrink-0 size-6 items-center justify-center rounded-md shadow-[0_2px_0_0_var(--color-primary-shadow)]">
-                  <GraduationCap className="text-primary-foreground" />
-                </div>
-                <span className="font-extrabold tracking-tight text-xl text-primary group-data-[collapsible=icon]:hidden">
+                <Image
+                  src="/logo.svg"
+                  alt="Lexi"
+                  width={32}
+                  height={32}
+                  priority
+                  className="size-8 shrink-0 object-contain"
+                />
+                <span className="font-extrabold tracking-tight text-xl text-sidebar-foreground group-data-[collapsible=icon]:hidden">
                   LexiLearn
                 </span>
               </Link>
@@ -135,7 +144,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   className="transition-all duration-200"
                 >
                   <Link href={item.url}>
-                    <item.icon />
+                    <item.icon
+                      className={sidebarIconClassName}
+                      strokeWidth={sidebarIconStrokeWidth}
+                    />
                     <span className="group-data-[collapsible=icon]:hidden">
                       {item.title}
                     </span>
@@ -160,7 +172,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   size="lg"
                 >
                   <Link href={item.url}>
-                    <item.icon />
+                    <item.icon
+                      className={sidebarIconClassName}
+                      strokeWidth={sidebarIconStrokeWidth}
+                    />
                     <span className="group-data-[collapsible=icon]:hidden">
                       {item.title}
                     </span>
@@ -179,11 +194,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors group-data-[collapsible=icon]:justify-center"
+              className="text-sidebar-foreground hover:text-destructive hover:bg-destructive/10 transition-colors group-data-[collapsible=icon]:justify-center"
               onClick={handleLogout}
               tooltip="Đăng xuất"
             >
-              <LogOut className="size-4" />
+              <LogOut
+                className={sidebarIconClassName}
+                strokeWidth={sidebarIconStrokeWidth}
+              />
               <span className="group-data-[collapsible=icon]:hidden font-medium">
                 Đăng xuất
               </span>

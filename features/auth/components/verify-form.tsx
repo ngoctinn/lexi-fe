@@ -84,25 +84,30 @@ export function VerifyForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card size="lg" className="mx-auto w-full overflow-visible shadow-lg">
-        <CardHeader className="text-center pb-2 pt-8">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <Logo size="md" />
+    <div className={cn("flex flex-col gap-4", className)} {...props}>
+      <Card
+        size="lg"
+        className="mx-auto w-full overflow-visible gap-4 shadow-lg"
+      >
+        <CardHeader className="px-5 pt-5 pb-0 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <Logo size="lg" showText={false} />
+            <div className="grid gap-1.5">
+              <CardTitle className="text-3xl font-bold tracking-tight text-primary-700 sm:text-4xl">
+                Xác thực tài khoản
+              </CardTitle>
+              <CardDescription className="text-sm text-muted-foreground sm:text-base">
+                Chúng tôi đã gửi mã xác thực 6 số đến
+                <br className="hidden sm:inline" />
+                <span className="font-semibold text-foreground">{email}</span>
+              </CardDescription>
+            </div>
           </div>
-          <CardTitle className="text-xl font-bold tracking-tight">
-            Xác thực tài khoản
-          </CardTitle>
-          <CardDescription>
-            Chúng tôi đã gửi mã xác thực 6 số đến{" "}
-            <br className="hidden sm:inline" />
-            <span className="font-semibold text-foreground">{email}</span>
-          </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6 px-6 sm:px-8">
+        <CardContent className="px-5 pt-0 sm:px-6">
           <form onSubmit={handleSubmit(onVerify)} noValidate>
-            <div className="grid gap-8">
-              <div className="flex flex-col gap-6 items-center">
+            <div className="grid gap-6">
+              <div className="flex flex-col items-center gap-5">
                 <Field className="w-full h-auto" data-invalid={!!errors.otp}>
                   <InputOTP
                     id="otp"
@@ -120,13 +125,13 @@ export function VerifyForm({
                           key={index}
                           index={index}
                           size="xl"
-                          className="rounded-xl border shadow-inset-input aspect-square"
+                          className="aspect-square rounded-xl border shadow-inset-input"
                         />
                       ))}
                     </InputOTPGroup>
                   </InputOTP>
                   {errors.otp && (
-                    <FieldError className="text-center mt-2">
+                    <FieldError className="mt-2 text-center">
                       {errors.otp.message}
                     </FieldError>
                   )}
@@ -136,7 +141,7 @@ export function VerifyForm({
                   Bạn chưa nhận được mã?{" "}
                   <button
                     type="button"
-                    className="font-bold text-foreground hover:text-primary transition-colors"
+                    className="font-bold text-primary hover:text-primary-700 transition-colors"
                     onClick={handleResendCode}
                   >
                     Gửi lại ngay
@@ -155,13 +160,13 @@ export function VerifyForm({
             </div>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-center border-t bg-muted/30 py-6">
+        <CardFooter className="flex justify-center border-t bg-muted/30 py-4">
           <Link
             href="/login"
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all"
+            className="flex items-center gap-2 text-sm text-primary hover:text-primary-700 transition-all"
           >
             <ArrowLeft className="size-4" />
-            Quay lại đăng nhập
+            Quay về Đăng nhập
           </Link>
         </CardFooter>
       </Card>

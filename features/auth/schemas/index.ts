@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 // --- Base Rules ---
-const emailRule = z.string().email("Email không hợp lệ").min(1, "Vui lòng nhập email");
+const emailRule = z
+  .string()
+  .email("Email không hợp lệ")
+  .min(1, "Vui lòng nhập email");
 const passwordBaseRule = z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự");
 const passwordStrongRule = passwordBaseRule
   .regex(/[A-Z]/, "Mật khẩu phải chứa ít nhất một chữ hoa")
@@ -21,23 +24,22 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   email: emailRule,
   password: passwordStrongRule,
-  terms: z.boolean().refine((val) => val === true, {
-    message: "Bạn cần đồng ý với Điều khoản và Chính sách",
-  }),
 });
 
 export const forgotPasswordSchema = z.object({
   email: emailRule,
 });
 
-export const resetPasswordSchema = z.object({
-  otp: otpRule,
-  password: passwordStrongRule,
-  confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Mật khẩu xác nhận không khớp",
-  path: ["confirmPassword"],
-});
+export const resetPasswordSchema = z
+  .object({
+    otp: otpRule,
+    password: passwordStrongRule,
+    confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Mật khẩu xác nhận không khớp",
+    path: ["confirmPassword"],
+  });
 
 export const verifySchema = z.object({
   otp: otpRule,

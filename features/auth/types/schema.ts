@@ -9,7 +9,6 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
   password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
-  terms: z.boolean().refine((val) => val === true, "Bạn cần đồng ý với Điều khoản và Chính sách"),
 });
 
 export const forgotPasswordSchema = z.object({
