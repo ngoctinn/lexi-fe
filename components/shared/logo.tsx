@@ -30,7 +30,7 @@ export function Logo({ className, textClassName, size = "default", href = "/" }:
       </div>
       <span
         className={cn(
-          "font-extrabold tracking-tight",
+          "font-semibold tracking-tight text-primary-900",
           size === "sm" ? "text-lg" :
             size === "lg" ? "text-2xl" :
               "text-xl",

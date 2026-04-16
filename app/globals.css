@@ -8,7 +8,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Consolas, libレーションモノ, DejaVu Sans Mono, monospace;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Roboto Mono, Menlo,
+    Monaco, Consolas, libレーションモノ, DejaVu Sans Mono, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -76,12 +78,10 @@
   --color-control-border-subtle: var(--control-border-subtle);
   /* Shadow utilities for Tailwind v4 */
   --shadow-inset-input:
-    inset 0 1px 1px oklch(0 0 0 / 0.1),
-    inset 0 2px 4px oklch(0 0 0 / 0.08),
+    inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08),
     inset 0 -1px 0 oklch(1 0 0 / 0.2);
   --shadow-inset-input-dark:
-    inset 0 1px 2px oklch(0 0 0 / 0.4),
-    inset 0 2px 8px oklch(0 0 0 / 0.3),
+    inset 0 1px 2px oklch(0 0 0 / 0.4), inset 0 2px 8px oklch(0 0 0 / 0.3),
     inset 0 -1px 0 oklch(1 0 0 / 0.05);
   --shadow-inner-xs: var(--shadow-inset-input);
 }
@@ -95,18 +95,18 @@
   --popover-foreground: oklch(0.145 0 0);
   /* --- Primary Color System --- */
   /* Base: oklch(0.62 0.23 28.5). Lighter shades retained close to Hue 26-28 to ensure rich Red presence */
-  --primary-50: oklch(0.97 0.03 26);
+  --primary-50: oklch(0.99 0.03 26);
   /* Sáng nhất, dùng làm nền lót (nhẹ và hồng đỏ, không bị ám vàng) */
-  --primary-100: oklch(0.93 0.06 26.5);
-  --primary-200: oklch(0.86 0.10 27);
-  --primary-300: oklch(0.78 0.14 27.5);
-  --primary-400: oklch(0.70 0.18 28);
-  --primary-500: oklch(0.62 0.23 28.5);
-  /* Base color - Cùng chuẩn với sidebar */
+  --primary-100: oklch(0.96 0.06 26.5);
+  --primary-200: oklch(0.9 0.1 27);
+  --primary-300: oklch(0.82 0.14 27.5);
+  --primary-400: oklch(0.68 0.18 28);
+  --primary-500: oklch(0.6 0.23 28.5);
+  /* Base color - Cùng chuẩn với sidebar (tuned from new base) */
   --primary-600: oklch(0.54 0.20 27);
-  --primary-700: oklch(0.45 0.17 25);
+  --primary-700: oklch(0.46 0.17 25);
   --primary-800: oklch(0.36 0.14 23);
-  --primary-900: oklch(0.27 0.10 21);
+  --primary-900: oklch(0.28 0.10 21);
   --primary-950: oklch(0.18 0.06 18);
   /* Tối nhất, mang sắc đỏ rượu (wine/burgundy dark) */
 
@@ -148,12 +148,14 @@
   --warning: oklch(0.68 0.19 80);
   --warning-dark: oklch(0.48 0.15 80);
   --warning-foreground: oklch(0.98 0.06 80);
-  --destructive-dark: oklch(0.40 0.20 25);
+  --destructive-dark: oklch(0.4 0.2 25);
   --destructive-foreground: oklch(1 0 0);
   --info: oklch(0.55 0.18 250);
-  --info-dark: oklch(0.40 0.15 250);
+  --info-dark: oklch(0.4 0.15 250);
 
-  --shadow-inset-input: inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08), inset 0 -1px 0 oklch(1 0 0 / 0.2);
+  --shadow-inset-input:
+    inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08),
+    inset 0 -1px 0 oklch(1 0 0 / 0.2);
 
   /* Standardized Control Tokens */
   --control-bg: oklch(1 0 0);
@@ -171,23 +173,23 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   /* --- Primary Color System (Dark Mode Inverted) --- */
-  --primary-50: oklch(0.18 0.06 18);
+  --primary-50: oklch(0.26 0.06 18);
   /* Maps to dark 950: Nền tối cho component tint (burgundy) */
-  --primary-100: oklch(0.27 0.10 21);
-  --primary-200: oklch(0.36 0.14 23);
-  --primary-300: oklch(0.45 0.17 25);
-  --primary-400: oklch(0.54 0.20 27);
-  --primary-500: oklch(0.62 0.23 28.5);
+  --primary-100: oklch(0.36 0.1 21);
+  --primary-200: oklch(0.46 0.14 23);
+  --primary-300: oklch(0.56 0.17 25);
+  --primary-400: oklch(0.66 0.2 27);
+  --primary-500: oklch(0.6 0.23 28.5);
   /* Base color */
-  --primary-600: oklch(0.70 0.18 28);
+  --primary-600: oklch(0.72 0.18 28);
   --primary-700: oklch(0.78 0.14 27.5);
   --primary-800: oklch(0.86 0.10 27);
-  --primary-900: oklch(0.93 0.06 26.5);
+  --primary-900: oklch(0.92 0.06 26.5);
   --primary-950: oklch(0.97 0.03 26);
   /* Text sáng nhất (hồng đỏ nhạt) */
 
   --primary: var(--primary-500);
-  --primary-shadow: oklch(0.40 0.23 28.5);
+  --primary-shadow: oklch(0.4 0.23 28.5);
   --destructive-shadow: oklch(0.45 0.25 15);
   --destructive-shadow-tint: oklch(0.45 0.25 15 / 0.3);
   --primary-foreground: oklch(1 0 0);
@@ -217,10 +219,10 @@
   /* Semantic status colors for dark mode - more vibrant text */
   --success: oklch(0.78 0.18 160);
   --success-foreground: oklch(0.95 0.05 160);
-  --warning: oklch(0.85 0.20 85);
+  --warning: oklch(0.85 0.2 85);
   --warning-foreground: oklch(0.98 0.05 85);
-  --destructive: oklch(0.70 0.28 25);
-  --destructive-dark: oklch(0.70 0.28 25);
+  --destructive: oklch(0.7 0.28 25);
+  --destructive-dark: oklch(0.7 0.28 25);
   --destructive-foreground: oklch(1 0 0);
 
   --shadow-inset-input: var(--shadow-inset-input-dark);
@@ -279,7 +281,7 @@
     -webkit-text-fill-color: var(--foreground) !important;
 
     /* SET THE BLUE COLOR DIRECTLY */
-    /* Using transition on background-color is a standard trick to 
+    /* Using transition on background-color is a standard trick to
        override the instant user-agent paint of the autofill blue. */
     background-color: #ebf1fe !important;
     transition: background-color 5000s ease-in-out 0s !important;
@@ -298,28 +300,28 @@
    We match that exact specificity and load AFTER Sonner's stylesheet so these
    rules win in the cascade. ─────────────────────────────────────────────── */
 @layer sonner-overrides {
-  [data-sonner-toast][data-styled='true'][data-type='error'] {
+  [data-sonner-toast][data-styled="true"][data-type="error"] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     border-left: 4px solid var(--destructive) !important;
   }
 
-  [data-sonner-toast][data-styled='true'][data-type='success'] {
+  [data-sonner-toast][data-styled="true"][data-type="success"] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     border-left: 4px solid var(--success) !important;
   }
 
-  [data-sonner-toast][data-styled='true'][data-type='warning'] {
+  [data-sonner-toast][data-styled="true"][data-type="warning"] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     border-left: 4px solid var(--warning) !important;
   }
 
-  [data-sonner-toast][data-styled='true'][data-type='info'] {
+  [data-sonner-toast][data-styled="true"][data-type="info"] {
     border-top: 1px solid var(--border);
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
@@ -330,8 +332,8 @@
 @layer utilities {
   /* Flashcard & Carousel Depth Utilities */
   .shadow-flashcard {
-    box-shadow: 
-      0 10px 15px -3px oklch(0 0 0 / 0.1), 
+    box-shadow:
+      0 10px 15px -3px oklch(0 0 0 / 0.1),
       0 4px 6px -4px oklch(0 0 0 / 0.1),
       0 1px 0 0 oklch(1 0 0 / 1.1) inset;
   }
@@ -342,7 +344,9 @@
 
   /* Text shadow with zero offset + large blur (the "glow" technique from the design guide) */
   .text-shadow-glow {
-    text-shadow: 0 0 40px rgba(0, 0, 0, 0.6), 0 0 80px rgba(0, 0, 0, 0.3);
+    text-shadow:
+      0 0 40px rgba(0, 0, 0, 0.6),
+      0 0 80px rgba(0, 0, 0, 0.3);
   }
 
   .text-shadow-glow-sm {
@@ -364,7 +368,6 @@
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0px);

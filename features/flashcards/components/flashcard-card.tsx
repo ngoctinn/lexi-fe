@@ -1,110 +1,177 @@
 "use client";
 
-import { Flashcard } from "../types";
-import { cn } from "@/lib/utils";
+import { type KeyboardEvent, type MouseEvent } from "react";
 import { Volume2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { Flashcard } from "../types";
 
 interface FlashcardCardProps {
   card: Flashcard;
-  isFlipped: boolean;
-  onFlip: () => void;
+  isRevealed: boolean;
+  onToggleReveal: () => void;
   className?: string;
 }
 
-export function FlashcardCard({ card, isFlipped, onFlip, className }: FlashcardCardProps) {
-  const handlePlayAudio = (e: React.MouseEvent) => {
-    e.stopPropagation();
+export function FlashcardCard({
+  card,
+  isRevealed,
+  onToggleReveal,
+  className,
+}: FlashcardCardProps) {
+  const handlePlayAudio = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+
+    if (card.audio_url) {
+      const audio = new Audio(card.audio_url);
+      void audio.play().catch(() => {});
+      return;
+    }
+
     if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(card.word);
-      utterance.lang = "en-US"; 
+      utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     }
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onToggleReveal();
+    }
+  };
+
   return (
-    <div
-      className={cn("relative h-96 w-full max-w-[600px] cursor-pointer group", className)}
-      style={{ perspective: "1000px" }}
-      onClick={onFlip}
+    <Card
+      size="lg"
+      className={cn(
+        "w-full max-w-3xl cursor-pointer border-border/70 shadow-lg shadow-black/5 transition-transform duration-200 hover:-translate-y-0.5",
+        "min-h-104",
+        className,
+      )}
+      onClick={onToggleReveal}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isRevealed}
+      aria-label={
+        isRevealed
+          ? `Ẩn đáp án của ${card.word}`
+          : `Xem đáp án của ${card.word}`
+      }
     >
-      <div
-        className={cn(
-          "absolute inset-0 h-full w-full transition-all duration-500 ease-out [transform-style:preserve-3d]",
-          isFlipped ? "[transform:rotateX(180deg)]" : ""
-        )}
-      >
-        {/* Front Face */}
-        <Card size="lg" className="absolute inset-0 m-0 h-full w-full backface-hidden [backface-visibility:hidden]">
-          <CardContent className="relative flex flex-col items-center justify-center p-6 sm:p-8 w-full h-full text-center">
-            {card.word_type && (
-              <span className="absolute top-6 left-6 text-xs font-semibold px-2 py-1 rounded bg-muted text-muted-foreground uppercase tracking-widest">
-                {card.word_type}
-              </span>
-            )}
-            <button
-              onClick={handlePlayAudio}
-              className="absolute top-6 right-6 p-2 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-full transition-colors"
-              title="Nghe phát âm"
-            >
-              <Volume2 className="h-5 w-5" />
-            </button>
-            
-            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-2">
+      <CardContent className="relative flex flex-1 flex-col gap-4 px-5 py-4 text-left sm:px-6 sm:py-5">
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-300 ease-out motion-reduce:transition-none",
+            isRevealed
+              ? "pointer-events-none translate-y-1 scale-[0.98] opacity-0"
+              : "translate-y-0 scale-100 opacity-100",
+          )}
+        >
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               {card.word}
             </h2>
+            {card.word_type && (
+              <Badge variant="soft-primary" size="lg" className="uppercase">
+                {card.word_type}
+              </Badge>
+            )}
+          </div>
 
-            <p className="absolute bottom-6 text-sm text-muted-foreground opacity-60 group-hover:opacity-100 transition-opacity">
-              Nhấn phím Space để lật thẻ
-            </p>
-          </CardContent>
-        </Card>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            {card.phonetic && (
+              <p className="font-mono text-sm text-muted-foreground sm:text-base">
+                {card.phonetic}
+              </p>
+            )}
+            <Button
+              variant="soft-primary"
+              size="icon-sm"
+              type="button"
+              onClick={handlePlayAudio}
+              aria-label={`Nghe phát âm ${card.word}`}
+            >
+              <Volume2 className="size-4" />
+            </Button>
+          </div>
 
-        {/* Back Face */}
-        <Card size="lg" className="absolute inset-0 m-0 h-full w-full backface-hidden [backface-visibility:hidden] [transform:rotateX(180deg)]">
-          <CardContent className="relative flex flex-col p-6 sm:p-8 w-full h-full">
-            
-            {/* Header */}
-            <div className="flex flex-col items-center justify-center pb-6 border-b border-border flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <h2 className="text-3xl font-bold tracking-tight text-foreground">{card.word}</h2>
-                <button
-                  onClick={handlePlayAudio}
-                  className="p-1.5 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-full transition-colors"
-                >
-                  <Volume2 className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                {card.phonetic && <span className="text-muted-foreground font-mono text-[15px]">{card.phonetic}</span>}
-                {card.word_type && <span className="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary uppercase">{card.word_type}</span>}
-              </div>
-            </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Nhấn Space hoặc chạm vào thẻ để xem đáp án.
+          </p>
+        </div>
 
-            {/* Body */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-6 text-left w-full space-y-6">
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Định nghĩa</h3>
-                <p className="text-lg text-foreground leading-relaxed">
-                  {card.definition_vi || "Chưa có định nghĩa"}
-                </p>
-              </div>
-              
-              {card.example_sentence && (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Ví dụ</h3>
-                  <div className="border-l-4 border-primary/20 pl-4 py-1">
-                    <p className="text-base italic text-foreground/90 leading-relaxed">
-                      &quot;{card.example_sentence}&quot;
-                    </p>
-                  </div>
-                </div>
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col justify-start text-left transition-all duration-300 ease-out motion-reduce:transition-none",
+            isRevealed
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-1 opacity-0",
+          )}
+        >
+          <div className="space-y-3 px-5 pt-5 sm:px-6 sm:pt-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                {card.word}
+              </h2>
+              {card.word_type && (
+                <Badge variant="soft-primary" size="lg" className="uppercase">
+                  {card.word_type}
+                </Badge>
               )}
             </div>
 
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {card.phonetic && (
+                <p className="font-mono text-sm text-muted-foreground sm:text-base">
+                  {card.phonetic}
+                </p>
+              )}
+              <Button
+                variant="soft-primary"
+                size="icon-sm"
+                type="button"
+                onClick={handlePlayAudio}
+                aria-label={`Nghe phát âm ${card.word}`}
+              >
+                <Volume2 className="size-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="px-5 py-4 sm:px-6 sm:py-5">
+            <Separator />
+          </div>
+
+          <div className="space-y-5 px-5 pb-5 text-left sm:px-6 sm:pb-6">
+            <section className="space-y-2">
+              <p className="text-sm font-bold text-foreground">Định nghĩa</p>
+              <p className="max-w-2xl text-base leading-relaxed text-foreground/90">
+                {card.definition_vi || "Chưa có định nghĩa"}
+              </p>
+            </section>
+
+            {card.example_sentence && (
+              <section className="space-y-2">
+                <p className="text-sm font-bold text-foreground">Ví dụ</p>
+                <p className="max-w-2xl text-sm leading-relaxed text-foreground/70 sm:text-base">
+                  - {card.example_sentence}
+                </p>
+              </section>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

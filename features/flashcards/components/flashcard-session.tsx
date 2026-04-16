@@ -14,22 +14,24 @@ interface FlashcardSessionProps {
 }
 
 export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
-  const [queue] = useState<Flashcard[]>(initialQueue);
+  const queue = initialQueue;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [isFinished, setIsFinished] = useState(initialQueue.length === 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [goodCardsCount, setGoodCardsCount] = useState(0);
+  const [correctCardsCount, setCorrectCardsCount] = useState(0);
 
   const currentCard = queue[currentIndex];
   const totalCards = queue.length;
   const progressPercentage =
-    totalCards === 0 ? 100 : Math.round((currentIndex / totalCards) * 100);
+    totalCards === 0
+      ? 100
+      : Math.round(((currentIndex + 1) / totalCards) * 100);
 
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
   const stateRef = useRef({
-    isFlipped,
+    isRevealed,
     isSubmitting,
     isFinished,
     currentCard,
@@ -39,26 +41,26 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
 
   useEffect(() => {
     stateRef.current = {
-      isFlipped,
+      isRevealed,
       isSubmitting,
       isFinished,
       currentCard,
       currentIndex,
       queue,
     };
-  }, [isFlipped, isSubmitting, isFinished, currentCard, currentIndex, queue]);
+  }, [isRevealed, isSubmitting, isFinished, currentCard, currentIndex, queue]);
 
   const handleFlip = useCallback(() => {
-    if (stateRef.current.isFinished) return;
-    setIsFlipped((prev) => !prev);
+    if (stateRef.current.isFinished || stateRef.current.isSubmitting) return;
+    setIsRevealed((prev) => !prev);
   }, []);
 
   const handleRate = useCallback(
     async (difficulty: ReviewDifficulty, key?: string) => {
-      const { isFlipped, isSubmitting, currentCard, currentIndex, queue } =
+      const { isRevealed, isSubmitting, currentCard, currentIndex, queue } =
         stateRef.current;
 
-      if (!currentCard || isSubmitting || !isFlipped) {
+      if (!currentCard || isSubmitting || !isRevealed) {
         return;
       }
 
@@ -69,7 +71,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
       }
 
       if (difficulty === "good" || difficulty === "easy") {
-        setGoodCardsCount((prev) => prev + 1);
+        setCorrectCardsCount((prev) => prev + 1);
       }
 
       try {
@@ -78,7 +80,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         toast.error("Không thể lưu tiến độ. Vui lòng thử lại sau.");
       }
 
-      setIsFlipped(false);
+      setIsRevealed(false);
 
       setTimeout(() => {
         if (currentIndex < queue.length - 1) {
@@ -103,23 +105,22 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         return;
       }
 
-      const { isFinished, isFlipped, isSubmitting } = stateRef.current;
+      const { isFinished, isRevealed, isSubmitting } = stateRef.current;
       if (isFinished) return;
+
+      if (e.repeat) {
+        return;
+      }
 
       const key = e.key;
       const code = e.code;
 
-      if (e.type === "keydown") {
-        const isFlipKey =
-          key === " " ||
-          code === "Space" ||
-          key === "Enter" ||
-          code === "Enter";
-        if (isFlipKey) {
-          e.preventDefault();
-          handleFlip();
-          return;
-        }
+      const isFlipKey =
+        key === " " || code === "Space" || key === "Enter" || code === "Enter";
+      if (isFlipKey) {
+        e.preventDefault();
+        handleFlip();
+        return;
       }
 
       const ratingMap: Record<string, ReviewDifficulty> = {
@@ -143,7 +144,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
 
       const difficulty = ratingMap[key] || ratingMap[code];
 
-      if (difficulty && isFlipped && !isSubmitting) {
+      if (difficulty && isRevealed && !isSubmitting) {
         e.preventDefault();
         const displayKey =
           difficulty === "forgot"
@@ -158,17 +159,15 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
     };
 
     window.addEventListener("keydown", handleKeyEvent, true);
-    window.addEventListener("keyup", handleKeyEvent, true);
 
     return () => {
       window.removeEventListener("keydown", handleKeyEvent, true);
-      window.removeEventListener("keyup", handleKeyEvent, true);
     };
   }, [handleFlip, handleRate]);
 
   if (isFinished || queue.length === 0) {
     const retentionRate =
-      totalCards > 0 ? Math.round((goodCardsCount / totalCards) * 100) : 100;
+      totalCards > 0 ? Math.round((correctCardsCount / totalCards) * 100) : 100;
     return (
       <SessionSummary
         reviewedCount={totalCards}
@@ -178,33 +177,31 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-3xl mx-auto space-y-8 py-8 animate-in fade-in duration-300">
-      <div className="w-full flex flex-col space-y-2">
-        <div className="flex justify-between items-center text-sm text-muted-foreground font-medium">
-          <span>
-            {currentIndex + 1} / {totalCards} Thẻ
-          </span>
-          <span>{progressPercentage}%</span>
-        </div>
-        <Progress value={progressPercentage} className="h-2" />
+    <div className="flex w-full max-w-3xl flex-col gap-4 animate-in fade-in duration-300">
+      <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+        <span>
+          {currentIndex + 1} / {totalCards}
+        </span>
       </div>
+
+      <Progress value={progressPercentage} />
 
       <FlashcardCard
         card={currentCard}
-        isFlipped={isFlipped}
-        onFlip={handleFlip}
+        isRevealed={isRevealed}
+        onToggleReveal={handleFlip}
       />
 
-      <div className="h-24 w-full flex items-center justify-center">
-        {isFlipped ? (
+      <div className="w-full">
+        {isRevealed ? (
           <SRSControls
             onRate={handleRate}
             disabled={isSubmitting}
             activeKey={activeKey}
           />
         ) : (
-          <p className="text-sm text-muted-foreground animate-pulse">
-            Nhấn (Space) hoặc bấm vào thẻ để lật
+          <p className="text-center text-sm text-muted-foreground">
+            Nhấn Space hoặc chạm vào thẻ để xem đáp án.
           </p>
         )}
       </div>

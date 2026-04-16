@@ -28,6 +28,7 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/vocabulary") ||
+    pathname.startsWith("/flashcards") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/onboarding") || // Cần login mới được onboarding
     pathname.startsWith("/learn") ||
