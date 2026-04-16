@@ -20,19 +20,32 @@ export const columns: ColumnDef<VocabularyItem>[] = [
   {
     accessorKey: "word",
     header: "Từ vựng",
-    cell: ({ row }) => <div className="font-semibold text-primary/90 text-base">{row.getValue("word")}</div>,
+    cell: ({ row }) => (
+      <div className="font-semibold text-primary/90 text-base">
+        {row.getValue("word")}
+      </div>
+    ),
   },
   {
     accessorKey: "meaning",
     header: "Ý nghĩa",
-    cell: ({ row }) => <div className="text-muted-foreground">{row.getValue("meaning")}</div>,
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">{row.getValue("meaning")}</div>
+    ),
   },
   {
     accessorKey: "type",
     header: "Loại từ",
     cell: ({ row }) => {
       const type = row.getValue("type") as string;
-      return <Badge variant="secondary" className="capitalize text-[10px] font-semibold">{type}</Badge>;
+      return (
+        <Badge
+          variant="secondary"
+          className="capitalize text-[10px] font-semibold"
+        >
+          {type}
+        </Badge>
+      );
     },
   },
   {
@@ -62,29 +75,32 @@ export const columns: ColumnDef<VocabularyItem>[] = [
       };
 
       const handleDelete = async () => {
-         const result = await deleteFlashcardAction(item.id);
-         if (result.success) {
-           toast.success(result.message);
-         }
+        const result = await deleteFlashcardAction(item.id);
+        if (result.success) {
+          toast.success(result.message);
+        }
       };
 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="icon">
               <span className="sr-only">Mở menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuLabel>Tùy chọn</DropdownMenuLabel>
-            <DropdownMenuItem onClick={handlePlayAudio} className="cursor-pointer gap-2">
+            <DropdownMenuItem
+              onClick={handlePlayAudio}
+              className="cursor-pointer gap-2"
+            >
               <Volume2 className="h-4 w-4" /> Phát âm
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
-               onClick={handleDelete} 
-               className="text-destructive focus:bg-destructive/10 cursor-pointer gap-2"
+            <DropdownMenuItem
+              onClick={handleDelete}
+              className="text-destructive focus:bg-destructive/10 cursor-pointer gap-2"
             >
               <Trash2 className="h-4 w-4" /> Xóa thẻ
             </DropdownMenuItem>

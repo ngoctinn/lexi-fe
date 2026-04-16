@@ -10,22 +10,31 @@ export function LandingHeader() {
         <Logo className="pl-2" />
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-bold text-muted-foreground">
-          <a href="#features" className="hover:text-foreground transition-colors">
+          <a
+            href="#features"
+            className="hover:text-foreground transition-colors"
+          >
             Tính năng
           </a>
-          <a href="#how-it-works" className="hover:text-foreground transition-colors">
+          <a
+            href="#how-it-works"
+            className="hover:text-foreground transition-colors"
+          >
             Hệ thống
           </a>
-          <a href="#testimonials" className="hover:text-foreground transition-colors">
+          <a
+            href="#testimonials"
+            className="hover:text-foreground transition-colors"
+          >
             Cộng đồng
           </a>
         </nav>
 
         <div className="flex items-center gap-2 pr-1">
-          <Button variant="ghost" className="rounded-full hidden sm:flex text-muted-foreground hover:text-foreground font-bold hover:bg-muted" asChild>
+          <Button variant="ghost" className="hidden sm:flex" asChild>
             <Link href="/login">Đăng nhập</Link>
           </Button>
-          <Button className="rounded-full px-6 text-base" asChild>
+          <Button size="2xl" asChild>
             <Link href="/learn">
               Bắt đầu <ArrowRight data-icon="inline-end" />
             </Link>

@@ -5,30 +5,30 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-bold whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-[1rem] border border-transparent bg-clip-padding text-sm font-bold whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[0_2px_0_0_var(--color-primary-shadow)] hover:brightness-[1.1] active:translate-y-0.5 active:shadow-none",
+          "bg-primary text-primary-foreground shadow-[0_4px_0_0_var(--color-primary-shadow)] hover:brightness-[1.1] active:translate-y-0.5 active:shadow-none",
         outline:
-          "border-2 border-control-border bg-control-bg shadow-[0_2px_0_0_rgba(0,0,0,0.05)] hover:bg-control-hover hover:text-foreground active:translate-y-0.5 active:shadow-[0_0px_0_0_rgba(0,0,0,0)]",
+          "border-2 border-control-border bg-control-bg shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:bg-control-hover hover:text-foreground active:translate-y-0.5 active:shadow-none",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-[0_2px_0_0_rgba(0,0,0,0.1)] hover:brightness-95 active:translate-y-0.5 active:shadow-[0_0px_0_0_rgba(0,0,0,0)]",
+          "bg-background text-foreground border border-border/60 shadow-[0_4px_0_0_rgba(0,0,0,0.07)] hover:bg-muted/30 active:translate-y-0.5 active:shadow-none",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
         destructive:
-          "bg-destructive/10 text-destructive border border-destructive/20 shadow-[0_2px_0_0_var(--color-destructive-shadow-tint)] hover:bg-destructive/15 active:translate-y-0.5 active:shadow-none",
+          "bg-destructive/10 text-destructive border border-destructive/20 shadow-[0_4px_0_0_var(--color-destructive-shadow-tint)] hover:bg-destructive/15 active:translate-y-0.5 active:shadow-none",
         link: "text-primary underline-offset-4 hover:underline",
-        soft: "bg-primary/10 text-primary border border-primary/20 shadow-[0_2px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/15 active:translate-y-0.5 active:shadow-none",
+        soft: "bg-primary/10 text-primary border border-primary/20 shadow-[0_4px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/15 active:translate-y-0.5 active:shadow-none",
         "soft-primary":
-          "bg-primary/10 text-primary border border-primary/20 shadow-[0_2px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/15 active:translate-y-0.5 active:shadow-none",
+          "bg-primary/10 text-primary border border-primary/20 shadow-[0_4px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/15 active:translate-y-0.5 active:shadow-none",
         "soft-warning":
-          "bg-warning/10 text-warning border border-warning/20 shadow-[0_2px_0_0_rgba(234,179,8,0.1)] hover:bg-warning/15 active:translate-y-0.5 active:shadow-none",
+          "bg-warning/10 text-warning border border-warning/20 shadow-[0_4px_0_0_rgba(234,179,8,0.1)] hover:bg-warning/15 active:translate-y-0.5 active:shadow-none",
         "soft-success":
-          "bg-success/10 text-success border border-success/20 shadow-[0_2px_0_0_rgba(34,197,94,0.1)] hover:bg-success/15 active:translate-y-0.5 active:shadow-none",
+          "bg-success/10 text-success border border-success/20 shadow-[0_4px_0_0_rgba(34,197,94,0.1)] hover:bg-success/15 active:translate-y-0.5 active:shadow-none",
         "soft-info":
-          "bg-info/10 text-info border border-info/20 shadow-[0_2px_0_0_rgba(59,130,246,0.1)] hover:bg-info/15 active:translate-y-0.5 active:shadow-none",
+          "bg-info/10 text-info border border-info/20 shadow-[0_4px_0_0_rgba(59,130,246,0.1)] hover:bg-info/15 active:translate-y-0.5 active:shadow-none",
       },
       size: {
         default:
