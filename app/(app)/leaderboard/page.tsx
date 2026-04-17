@@ -12,10 +12,10 @@ import { PageHeader } from "@/components/shared/page-header";
 
 export default function LeaderboardPage() {
   return (
-    <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 md:p-8">
+    <div className="flex flex-1 flex-col">
       <PageHeader icon={Trophy} title="Bảng xếp hạng" />
 
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center p-4 md:p-8">
         <Empty>
           <EmptyMedia>
             <Trophy className="size-12 text-primary/50" />

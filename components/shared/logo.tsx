@@ -19,15 +19,15 @@ export function Logo({
 }: LogoProps) {
   const iconSize = showText
     ? size === "sm"
-      ? 28
+      ? 32
       : size === "lg"
-        ? 44
-        : 36
+        ? 52
+        : 42
     : size === "sm"
-      ? 36
+      ? 42
       : size === "lg"
-        ? 56
-        : 48;
+        ? 64
+        : 52;
 
   return (
     <Link
@@ -51,7 +51,7 @@ export function Logo({
         <span
           className={cn(
             "font-extrabold tracking-tight text-primary-700",
-            size === "sm" ? "text-xl" : size === "lg" ? "text-3xl" : "text-2xl",
+            size === "sm" ? "text-2xl" : size === "lg" ? "text-4xl" : "text-3xl",
             textClassName,
           )}
         >

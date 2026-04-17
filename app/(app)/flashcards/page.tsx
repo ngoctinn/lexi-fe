@@ -13,11 +13,13 @@ export default async function FlashcardOverviewPage() {
   const queue = await fetchPracticeQueue();
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6">
+    <div className="flex flex-1 flex-col">
       <PageHeader icon={BookOpen} title="Luyện từ vựng" />
 
-      <div className="flex flex-1 items-start justify-center">
-        <FlashcardDeckOverview queue={queue} />
+      <div className="mx-auto w-full max-w-6xl p-4 sm:p-6">
+        <div className="flex-1">
+          <FlashcardDeckOverview queue={queue} />
+        </div>
       </div>
     </div>
   );

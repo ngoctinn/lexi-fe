@@ -1,19 +1,22 @@
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { SessionSetupForm } from "@/features/session/components/setup/session-setup-form";
 import { PageHeader } from "@/components/shared/page-header";
-import { Mic } from "lucide-react";
+import { Map } from "lucide-react";
 
 export const metadata = {
-  title: "Bắt đầu luyện nói",
+  title: "Lộ trình luyện nói",
 };
 
 export default async function NewSessionPage() {
   const scenarios = await getScenarios();
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-7xl flex-col gap-6 overflow-hidden px-4 py-4 sm:px-6 lg:px-8 md:py-8">
-      <PageHeader icon={Mic} title="Thiết lập cuộc trò chuyện" />
-      <SessionSetupForm scenarios={scenarios} />
+    <div className="flex flex-1 flex-col">
+      <PageHeader icon={Map} title="Lộ trình luyện nói" />
+      
+      <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
+        <SessionSetupForm scenarios={scenarios} />
+      </div>
     </div>
   );
 }

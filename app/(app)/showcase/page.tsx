@@ -8,10 +8,12 @@ export const metadata = {
 
 export default function ShowcasePage() {
   return (
-    <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 md:p-8">
+    <div className="flex flex-1 flex-col">
       <PageHeader icon={LayoutGrid} title="Showcase" />
 
-      <Showcase />
+      <div className="flex-1 p-4 md:p-8">
+        <Showcase />
+      </div>
     </div>
   );
 }

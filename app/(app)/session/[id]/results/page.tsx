@@ -40,7 +40,7 @@ export default async function SessionResultsPage({
   }
 
   return (
-    <div className="container flex flex-col gap-6 py-8">
+    <div className="flex flex-1 flex-col">
       <PageHeader
         icon={BadgeCheck}
         title="Kết quả luyện nói"

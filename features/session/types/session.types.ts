@@ -50,6 +50,9 @@ export interface Scenario {
   ai_roles: string[];
   is_active: boolean;
   usage_count: number;
+  // Dùng cho lộ trình học — sắp xếp và nhóm scenario theo cấp độ
+  difficulty_level?: "beginner" | "intermediate" | "advanced";
+  order?: number;
 }
 
 export interface Turn {

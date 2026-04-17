@@ -102,12 +102,12 @@ export function AppSidebar({
                 <Image
                   src="/logo.svg"
                   alt="Lexi"
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                   priority
-                  className="size-8 shrink-0 object-contain"
+                  className="size-10 shrink-0 object-contain"
                 />
-                <span className="font-extrabold tracking-tight text-xl text-sidebar-foreground group-data-[collapsible=icon]:hidden">
+                <span className="font-extrabold tracking-tight text-2xl text-sidebar-foreground group-data-[collapsible=icon]:hidden">
                   LexiLearn
                 </span>
               </Link>
