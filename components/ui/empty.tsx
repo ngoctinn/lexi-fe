@@ -60,7 +60,7 @@ const emptyMediaVariants = cva(
       variant: {
         default: "bg-transparent",
         icon: "flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground/80 [&_svg:not([class*='size-'])]:size-5",
-        circle: "flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary [&_svg:not([class*='size-'])]:size-6",
+        circle: "flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 [&_svg:not([class*='size-'])]:size-6",
         destructive: "flex size-12 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive [&_svg:not([class*='size-'])]:size-6",
         image: "h-auto w-auto max-w-[200px] mb-4 opacity-90",
       },

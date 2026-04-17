@@ -18,15 +18,15 @@ const buttonVariants = cva(
         ghost:
           "border border-control-border-subtle bg-control-bg-subtle text-foreground shadow-none hover:bg-control-hover aria-expanded:bg-muted aria-expanded:text-foreground active:translate-y-0! active:shadow-none!",
         destructive:
-          "border border-destructive/10 bg-destructive/5 text-destructive shadow-none hover:bg-destructive/10",
+          "border-destructive-200 bg-destructive-50 text-destructive-600 shadow-[inset_0_-4px_0_0_var(--color-destructive-shadow-tint)] hover:bg-destructive-100",
         link: "!h-auto !min-h-0 !rounded-none !border-0 !bg-transparent !px-0 !py-0 !font-medium !text-primary-700 !shadow-none active:!translate-y-0 hover:!text-primary-800 hover:!underline",
-        soft: "border border-primary/10 bg-primary/5 text-primary shadow-none hover:bg-primary/10",
+        soft: "border-primary-200 bg-primary-50 text-primary-600 shadow-[inset_0_-4px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary-100",
         "soft-warning":
-          "border border-warning/10 bg-warning/5 text-warning shadow-none hover:bg-warning/10",
+          "border-warning-200 bg-warning-50 text-warning-600 shadow-[inset_0_-4px_0_0_var(--color-warning-shadow-tint)] hover:bg-warning-100",
         "soft-success":
-          "border border-success/10 bg-success/5 text-success shadow-none hover:bg-success/10",
+          "border-success-200 bg-success-50 text-success-600 shadow-[inset_0_-4px_0_0_var(--color-success-shadow-tint)] hover:bg-success-100",
         "soft-info":
-          "border border-info/10 bg-info/5 text-info shadow-none hover:bg-info/10",
+          "border-info-200 bg-info-50 text-info-600 shadow-[inset_0_-4px_0_0_var(--color-info-shadow-tint)] hover:bg-info-100",
         "level-a1":
           "border-emerald-700 bg-emerald-500 text-white shadow-[inset_0_-4px_0_0_#047857] hover:bg-emerald-600",
         "level-a2":

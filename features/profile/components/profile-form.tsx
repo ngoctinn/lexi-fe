@@ -121,7 +121,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 className={cn(
                   "relative size-10 rounded-full border transition-colors overflow-hidden",
                   formData.avatar_url === url
-                    ? "border-primary ring-2 ring-primary/20"
+                    ? "border-primary-500 ring-2 ring-primary-200"
                     : "border-transparent",
                 )}
               >

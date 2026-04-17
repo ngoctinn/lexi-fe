@@ -57,7 +57,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={cn(
-        "text-sm text-balance text-muted-foreground md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4 group-has-[.bg-primary\/10]/alert:text-primary/80 group-has-[.bg-success\/10]/alert:text-success/80 group-has-[.bg-warning\/10]/alert:text-warning/80 group-has-[.bg-destructive\/10]/alert:text-destructive/80",
+        "text-sm text-balance text-muted-foreground md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4 group-has-[.bg-primary-100]/alert:text-primary-800 group-has-[.bg-success-100]/alert:text-success-800 group-has-[.bg-warning-100]/alert:text-warning-800 group-has-[.bg-destructive-100]/alert:text-destructive-800",
         className
       )}
       {...props}

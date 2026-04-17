@@ -19,7 +19,7 @@ export function LandingTestimonials() {
               <CardHeader className="pb-3">
                 <div className="flex gap-0.5 mb-2">
                   {Array.from({ length: rating }).map((_, i) => (
-                    <Star key={i} className="text-primary fill-primary" style={{ width: 16, height: 16 }} />
+                    <Star key={i} className="text-primary-500 fill-primary-500" style={{ width: 16, height: 16 }} />
                   ))}
                 </div>
                 <CardDescription className="text-base text-foreground/80 leading-relaxed">&ldquo;{content}&rdquo;</CardDescription>
@@ -27,8 +27,8 @@ export function LandingTestimonials() {
               <CardContent>
                 <Separator className="mb-4" />
                 <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-primary font-bold text-sm">{name.charAt(0)}</span>
+                  <div className="size-9 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                    <span className="text-primary-600 font-bold text-sm">{name.charAt(0)}</span>
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold">{name}</span>

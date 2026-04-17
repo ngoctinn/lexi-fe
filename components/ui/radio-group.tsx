@@ -8,13 +8,13 @@ import { CheckIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const radioGroupItemVariants = cva(
-  "peer relative flex shrink-0 outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-3 focus-visible:ring-primary/20",
+  "peer relative flex shrink-0 outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-3 focus-visible:ring-primary-200",
   {
     variants: {
       variant: {
         default:
           "aspect-square size-4 rounded-full border border-control-border bg-control-bg shadow-inner-xs data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:shadow-none",
-        card: "flex-col items-start gap-1 p-4 rounded-xl border border-control-border bg-control-bg text-left hover:bg-control-hover data-[state=checked]:border-primary data-[state=checked]:bg-primary/5 data-[state=checked]:shadow-none",
+        card: "flex-col items-start gap-1 p-4 rounded-xl border border-control-border bg-control-bg text-left hover:bg-control-hover data-[state=checked]:border-primary-500 data-[state=checked]:bg-primary-50 data-[state=checked]:shadow-none",
       },
     },
     defaultVariants: {
@@ -55,7 +55,7 @@ function RadioGroupItem({
           {children}
           <RadioGroupPrimitive.Indicator
             data-slot="radio-group-indicator"
-            className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary/15 text-primary animate-in zoom-in-50 duration-200"
+            className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary-100 text-primary-600 animate-in zoom-in-50 duration-200"
           >
             <CheckIcon className="size-3.5 stroke-[3]" />
           </RadioGroupPrimitive.Indicator>

@@ -30,7 +30,7 @@ export function Showcase() {
           </p>
         </div>
         <div className="flex gap-4">
-          <div className="px-5 py-2.5 bg-background shadow-flashcard-solid rounded-2xl border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
+          <div className="px-5 py-2.5 bg-background shadow-flashcard-solid rounded-2xl border border-primary-100 text-primary-600 text-[10px] font-black uppercase tracking-[0.2em]">
             v2.0 Beta
           </div>
         </div>
@@ -52,13 +52,13 @@ export function Showcase() {
         </div>
 
         {/* Dashboard Preview */}
-        <div className="md:col-span-4 lg:col-span-6 bg-background rounded-[2.5rem] p-4 lg:p-8 border border-primary/5 shadow-flashcard-solid">
+        <div className="md:col-span-4 lg:col-span-6 bg-background rounded-[2.5rem] p-4 lg:p-8 border border-primary-50 shadow-flashcard-solid">
            <div className="mb-8 px-4 flex justify-between items-center">
              <div>
                <h2 className="text-2xl font-bold tracking-tight text-foreground">Dashboard Preview</h2>
                <p className="text-muted-foreground text-sm">Cái nhìn tổng quan về trung tâm điều khiển của học viên.</p>
              </div>
-             <Badge variant="outline" className="border-primary/20 text-primary">Khu vực riêng tư</Badge>
+             <Badge variant="outline" className="border-primary-200 text-primary-600">Khu vực riêng tư</Badge>
            </div>
            <Dashboard />
         </div>
@@ -105,7 +105,7 @@ export function Showcase() {
         </div>
       </div>
 
-      <div className="mt-20 py-10 border-t border-primary/5 text-center">
+      <div className="mt-20 py-10 border-t border-primary-50 text-center">
         <p className="text-sm font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">
           Designed by Antigravity & Lexi Team • 2026
         </p>

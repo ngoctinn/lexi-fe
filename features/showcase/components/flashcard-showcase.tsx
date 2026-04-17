@@ -59,7 +59,7 @@ export function FlashcardShowcase() {
                     )}
                   >
                     <div className="flex-1 flex flex-col justify-center items-center text-center gap-6">
-                      <div className="size-14 rounded-3xl bg-primary/5 flex items-center justify-center mb-2 ring-1 ring-primary/10">
+                      <div className="size-14 rounded-3xl bg-primary-50 flex items-center justify-center mb-2 ring-1 ring-primary-100">
                         <span className="text-primary font-bold text-lg">
                           # {index + 1}
                         </span>
@@ -68,7 +68,7 @@ export function FlashcardShowcase() {
                         <h4 className="text-3xl font-bold tracking-tighter text-primary leading-none uppercase">
                           {card.term}
                         </h4>
-                        <div className="h-1 w-8 bg-primary/20 mx-auto rounded-full" />
+                        <div className="h-1 w-8 bg-primary-200 mx-auto rounded-full" />
                       </div>
                       <p className="text-sm leading-relaxed text-muted-foreground antialiased font-medium px-4">
                         {card.desc}
@@ -76,7 +76,7 @@ export function FlashcardShowcase() {
                     </div>
 
                     {/* Technique 3: Baseline alignment */}
-                    <div className="flex items-baseline justify-between mt-auto pt-6 border-t border-primary/5">
+                    <div className="flex items-baseline justify-between mt-auto pt-6 border-t border-primary-50">
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
                         {card.type}
                       </span>

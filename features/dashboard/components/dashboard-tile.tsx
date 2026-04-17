@@ -28,7 +28,7 @@ export function DashboardTile({
       <Link
         href={href}
         className={cn(
-          "flex h-full min-h-36 flex-col gap-4 p-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30",
+          "flex h-full min-h-36 flex-col gap-4 p-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-300",
           featured && "min-h-44 md:min-h-48",
         )}
       >

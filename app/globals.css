@@ -56,14 +56,60 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-success: var(--success);
-  --color-success-dark: var(--success-dark);
   --color-success-foreground: var(--success-foreground);
+  --color-success-50: var(--success-50);
+  --color-success-100: var(--success-100);
+  --color-success-200: var(--success-200);
+  --color-success-300: var(--success-300);
+  --color-success-400: var(--success-400);
+  --color-success-500: var(--success-500);
+  --color-success-600: var(--success-600);
+  --color-success-700: var(--success-700);
+  --color-success-800: var(--success-800);
+  --color-success-900: var(--success-900);
+  --color-success-950: var(--success-950);
   --color-warning: var(--warning);
   --color-warning-dark: var(--warning-dark);
   --color-warning-foreground: var(--warning-foreground);
+  --color-warning-50: var(--warning-50);
+  --color-warning-100: var(--warning-100);
+  --color-warning-200: var(--warning-200);
+  --color-warning-300: var(--warning-300);
+  --color-warning-400: var(--warning-400);
+  --color-warning-500: var(--warning-500);
+  --color-warning-600: var(--warning-600);
+  --color-warning-700: var(--warning-700);
+  --color-warning-800: var(--warning-800);
+  --color-warning-900: var(--warning-900);
+  --color-warning-950: var(--warning-950);
   --color-info: var(--info);
   --color-info-dark: var(--info-dark);
+  --color-info-50: var(--info-50);
+  --color-info-100: var(--info-100);
+  --color-info-200: var(--info-200);
+  --color-info-300: var(--info-300);
+  --color-info-400: var(--info-400);
+  --color-info-500: var(--info-500);
+  --color-info-600: var(--info-600);
+  --color-info-700: var(--info-700);
+  --color-info-800: var(--info-800);
+  --color-info-900: var(--info-900);
+  --color-info-950: var(--info-950);
+  --color-destructive-50: var(--destructive-50);
+  --color-destructive-100: var(--destructive-100);
+  --color-destructive-200: var(--destructive-200);
+  --color-destructive-300: var(--destructive-300);
+  --color-destructive-400: var(--destructive-400);
+  --color-destructive-500: var(--destructive-500);
+  --color-destructive-600: var(--destructive-600);
+  --color-destructive-700: var(--destructive-700);
+  --color-destructive-800: var(--destructive-800);
+  --color-destructive-900: var(--destructive-900);
+  --color-destructive-950: var(--destructive-950);
+  --color-primary-shadow-tint: var(--primary-shadow-tint);
+  --color-success-shadow-tint: var(--success-shadow-tint);
+  --color-warning-shadow-tint: var(--warning-shadow-tint);
+  --color-info-shadow-tint: var(--info-shadow-tint);
   --color-destructive-dark: var(--destructive-dark);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -96,20 +142,18 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   /* --- Primary Color System --- */
-  /* Base: oklch(0.62 0.23 28.5). Lighter shades retained close to Hue 26-28 to ensure rich Red presence */
-  --primary-50: oklch(0.99 0.03 26);
-  /* Sáng nhất, dùng làm nền lót (nhẹ và hồng đỏ, không bị ám vàng) */
-  --primary-100: oklch(0.96 0.06 26.5);
-  --primary-200: oklch(0.9 0.1 27);
-  --primary-300: oklch(0.82 0.14 27.5);
-  --primary-400: oklch(0.68 0.18 28);
-  --primary-500: oklch(0.6 0.23 28.5);
-  /* Base color - Cùng chuẩn với sidebar (tuned from new base) */
-  --primary-600: oklch(0.54 0.2 27);
-  --primary-700: oklch(0.46 0.17 25);
-  --primary-800: oklch(0.36 0.14 23);
-  --primary-900: oklch(0.28 0.1 21);
-  --primary-950: oklch(0.18 0.06 18);
+  /* Tối ưu hóa dải màu Primary theo chuẩn OKLCH: Độ sáng (L) mượt mà hơn, Chroma (C) rực rỡ và Hue (H) ổn định */
+  --primary-50: oklch(0.98 0.025 26);
+  --primary-100: oklch(0.95 0.05 26.5);
+  --primary-200: oklch(0.89 0.09 27);
+  --primary-300: oklch(0.82 0.13 27.5);
+  --primary-400: oklch(0.73 0.18 28);
+  --primary-500: oklch(0.63 0.23 28.5); /* Màu chủ đạo - nâng nhẹ độ sáng để tạo sức sống */
+  --primary-600: oklch(0.56 0.21 27);
+  --primary-700: oklch(0.48 0.17 25.5);
+  --primary-800: oklch(0.4 0.14 24);
+  --primary-900: oklch(0.32 0.1 22.5);
+  --primary-950: oklch(0.24 0.07 21);
   /* Tối nhất, mang sắc đỏ rượu (wine/burgundy dark) */
 
   --primary: var(--primary-500);
@@ -127,6 +171,10 @@
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
+  --primary-shadow-tint: oklch(0.46 0.17 25 / 0.1);
+  --success-shadow-tint: oklch(0.45 0.14 155 / 0.1);
+  --warning-shadow-tint: oklch(0.48 0.15 80 / 0.1);
+  --info-shadow-tint: oklch(0.4 0.15 250 / 0.1);
   --ring: var(--primary-500);
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
@@ -145,16 +193,64 @@
   --sidebar-ring: hsl(212 20% 68%);
 
   /* Semantic status colors with accessibility-first L values (Light Mode) */
-  --success: oklch(0.62 0.17 155);
-  --success-dark: oklch(0.45 0.14 155);
+  --success-50: oklch(0.98 0.04 155);
+  --success-100: oklch(0.95 0.06 155);
+  --success-200: oklch(0.89 0.1 155);
+  --success-300: oklch(0.82 0.13 155);
+  --success-400: oklch(0.72 0.15 155);
+  --success-500: oklch(0.62 0.17 155);
+  --success-600: oklch(0.53 0.15 155);
+  --success-700: oklch(0.45 0.13 155);
+  --success-800: oklch(0.36 0.11 155);
+  --success-900: oklch(0.28 0.09 155);
+  --success-950: oklch(0.19 0.06 155);
+  --success: var(--success-500);
+  --success-dark: var(--success-700);
   --success-foreground: oklch(0.98 0.04 155);
-  --warning: oklch(0.68 0.19 80);
-  --warning-dark: oklch(0.48 0.15 80);
+
+  --warning-50: oklch(0.98 0.06 80);
+  --warning-100: oklch(0.95 0.08 80);
+  --warning-200: oklch(0.89 0.12 80);
+  --warning-300: oklch(0.82 0.15 80);
+  --warning-400: oklch(0.72 0.17 80);
+  --warning-500: oklch(0.68 0.19 80);
+  --warning-600: oklch(0.58 0.17 80);
+  --warning-700: oklch(0.48 0.15 80);
+  --warning-800: oklch(0.38 0.13 80);
+  --warning-900: oklch(0.28 0.11 80);
+  --warning-950: oklch(0.18 0.08 80);
+  --warning: var(--warning-500);
+  --warning-dark: var(--warning-700);
   --warning-foreground: oklch(0.98 0.06 80);
-  --destructive-dark: oklch(0.4 0.2 25);
+
+  --destructive-50: oklch(0.98 0.04 25);
+  --destructive-100: oklch(0.95 0.07 25);
+  --destructive-200: oklch(0.89 0.12 25);
+  --destructive-300: oklch(0.82 0.16 25);
+  --destructive-400: oklch(0.72 0.21 25);
+  --destructive-500: oklch(0.57 0.26 25);
+  --destructive-600: oklch(0.49 0.23 25);
+  --destructive-700: oklch(0.4 0.2 25);
+  --destructive-800: oklch(0.32 0.16 25);
+  --destructive-900: oklch(0.24 0.12 25);
+  --destructive-950: oklch(0.18 0.09 25);
+  --destructive: var(--destructive-500);
+  --destructive-dark: var(--destructive-700);
   --destructive-foreground: oklch(1 0 0);
-  --info: oklch(0.55 0.18 250);
-  --info-dark: oklch(0.4 0.15 250);
+
+  --info-50: oklch(0.98 0.04 250);
+  --info-100: oklch(0.95 0.08 250);
+  --info-200: oklch(0.89 0.12 250);
+  --info-300: oklch(0.82 0.15 250);
+  --info-400: oklch(0.72 0.16 250);
+  --info-500: oklch(0.55 0.18 250);
+  --info-600: oklch(0.47 0.16 250);
+  --info-700: oklch(0.4 0.15 250);
+  --info-800: oklch(0.32 0.12 250);
+  --info-900: oklch(0.24 0.1 250);
+  --info-950: oklch(0.18 0.07 250);
+  --info: var(--info-500);
+  --info-dark: var(--info-700);
 
   --shadow-inset-input:
     inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08),
@@ -176,23 +272,27 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   /* --- Primary Color System (Dark Mode Inverted) --- */
-  --primary-50: oklch(0.26 0.06 18);
-  /* Maps to dark 950: Nền tối cho component tint (burgundy) */
-  --primary-100: oklch(0.36 0.1 21);
-  --primary-200: oklch(0.46 0.14 23);
-  --primary-300: oklch(0.56 0.17 25);
-  --primary-400: oklch(0.66 0.2 27);
-  --primary-500: oklch(0.6 0.23 28.5);
-  /* Base color */
+  --primary-50: oklch(0.28 0.07 21);
+  /* Tương đương với dark 950: Nền tối sâu cho các thành phần tint */
+  --primary-100: oklch(0.35 0.1 22.5);
+  --primary-200: oklch(0.45 0.14 24);
+  --primary-300: oklch(0.55 0.17 25.5);
+  --primary-400: oklch(0.65 0.2 27);
+  --primary-500: oklch(0.63 0.23 28.5);
+  /* Base color - giữ độ rực rỡ cho dark mode */
   --primary-600: oklch(0.72 0.18 28);
-  --primary-700: oklch(0.78 0.14 27.5);
-  --primary-800: oklch(0.86 0.1 27);
-  --primary-900: oklch(0.92 0.06 26.5);
+  --primary-700: oklch(0.8 0.14 27.5);
+  --primary-800: oklch(0.88 0.1 27);
+  --primary-900: oklch(0.93 0.06 26.5);
   --primary-950: oklch(0.97 0.03 26);
-  /* Text sáng nhất (hồng đỏ nhạt) */
+  /* Text sáng nhất */
 
   --primary: var(--primary-500);
-  --primary-shadow: oklch(0.4 0.23 28.5);
+  --primary-shadow: oklch(0.45 0.23 28.5);
+  --primary-shadow-tint: oklch(0.4 0.23 28.5 / 0.3);
+  --success-shadow-tint: oklch(0.45 0.14 160 / 0.3);
+  --warning-shadow-tint: oklch(0.48 0.15 85 / 0.3);
+  --info-shadow-tint: oklch(0.4 0.15 250 / 0.3);
   --destructive-shadow: oklch(0.45 0.25 15);
   --destructive-shadow-tint: oklch(0.45 0.25 15 / 0.3);
   --primary-foreground: oklch(1 0 0);

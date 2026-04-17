@@ -113,7 +113,7 @@ export function DataDisplayShowcase() {
                   <CarouselItem key={index}>
                     <Card className="aspect-[4/5] flex flex-col p-8 border-none bg-card shadow-flashcard rounded-3xl relative overflow-hidden transition-all group-active:translate-y-0.5">
                       <div className="flex-1 flex flex-col justify-center items-center text-center gap-4">
-                        <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
+                        <div className="size-12 rounded-2xl bg-primary-100 flex items-center justify-center mb-2">
                           <span className="text-primary font-bold">
                             # {index + 1}
                           </span>
@@ -126,7 +126,7 @@ export function DataDisplayShowcase() {
                         </p>
                       </div>
 
-                      <div className="flex items-baseline justify-between mt-auto pt-4 border-t border-primary/5">
+                      <div className="flex items-baseline justify-between mt-auto pt-4 border-t border-primary-50">
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/40">
                           Vocabulary
                         </span>

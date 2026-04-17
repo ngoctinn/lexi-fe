@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Star, Trophy, CheckCircle } from "lucide-react";
+import { ArrowRight, Star, Trophy, CheckCircle, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -11,18 +11,18 @@ export function LandingHero() {
       id="hero"
     >
       <div
-        aria-hidden
-        className="pointer-events-none absolute -top-32 -right-32 size-150 rounded-full bg-primary/8 blur-3xl"
+        className="pointer-events-none absolute -top-32 -right-32 size-150 rounded-full bg-primary-50 blur-3xl"
+        aria-hidden="true"
       />
       <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 size-100 rounded-full bg-primary/5 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 -left-32 size-100 rounded-full bg-primary-50 blur-3xl"
+        aria-hidden="true"
       />
 
       <div className="container mx-auto px-6 max-w-6xl grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div className="flex flex-col items-start gap-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.08] tracking-tight">
-            <span className="text-primary">Nắm Vững Từng Từ Vựng</span>{" "}
+            <span className="text-primary-600">Nắm Vững Từng Từ Vựng</span>{" "}
             <span className="text-primary-800">
               Tự Tin Trong Mọi Cuộc Hội Thoại.
             </span>
@@ -68,7 +68,7 @@ export function LandingHero() {
             <div className="flex flex-col gap-0.5">
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} className="text-primary fill-primary" />
+                  <Star key={i} className="text-primary-500 fill-primary-500" />
                 ))}
               </div>
               <span className="text-sm text-muted-foreground">
@@ -80,8 +80,8 @@ export function LandingHero() {
 
         <div className="relative flex items-center justify-center">
           <div
-            aria-hidden
-            className="absolute size-105 rounded-full bg-primary/15 blur-3xl"
+            className="absolute size-105 rounded-full bg-primary-100 blur-3xl"
+            aria-hidden="true"
           />
           <div className="relative z-10 animate-float">
             <Image
@@ -96,8 +96,8 @@ export function LandingHero() {
 
           <div className="absolute top-6 -left-4 z-20 bg-card border shadow-xl rounded-2xl px-4 py-3 animate-float-delayed">
             <div className="flex items-center gap-2.5">
-              <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Trophy className="text-primary" />
+              <div className="size-9 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                <Brain className="text-primary-600 size-5" />
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -110,8 +110,8 @@ export function LandingHero() {
 
           <div className="absolute -bottom-4 right-0 z-20 bg-card border shadow-xl rounded-2xl px-4 py-3 animate-float-slow">
             <div className="flex items-center gap-2.5">
-              <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <CheckCircle className="text-primary" />
+              <div className="size-9 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                <CheckCircle className="text-primary-600 size-5" />
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">

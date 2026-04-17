@@ -18,7 +18,7 @@ export function LandingConversationPreview() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 right-0 size-96 rounded-full bg-primary/8 blur-3xl"
+        className="pointer-events-none absolute -top-24 right-0 size-96 rounded-full bg-primary-100 blur-3xl"
       />
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] items-center">
@@ -70,7 +70,7 @@ export function LandingConversationPreview() {
             </div>
           </div>
 
-          <Card className="overflow-hidden border-border/70 shadow-xl shadow-primary/5">
+          <Card className="overflow-hidden border-border/70 shadow-xl shadow-primary-50">
             <CardHeader className="border-b bg-muted/40 px-5 py-4">
               <div className="flex items-center justify-between gap-4">
                 <CardTitle className="text-base">Mẫu hội thoại AI</CardTitle>
@@ -96,7 +96,7 @@ export function LandingConversationPreview() {
               </div>
 
               <div className="flex justify-end">
-                <div className="max-w-[82%] rounded-3xl rounded-tr-md bg-primary px-4 py-3 text-sm leading-relaxed text-primary-foreground shadow-lg shadow-primary/15">
+                <div className="max-w-[82%] rounded-3xl rounded-tr-md bg-primary-500 px-4 py-3 text-sm leading-relaxed text-primary-foreground shadow-lg shadow-primary-200">
                   Được chứ. Mình sẽ đưa bạn vào tình huống thực tế, gợi ý câu
                   trả lời tự nhiên và sửa ngay sau mỗi lượt nói.
                 </div>

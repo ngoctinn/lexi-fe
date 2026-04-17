@@ -7,9 +7,9 @@ export function ScoringSkeleton() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 animate-in fade-in duration-700">
       <div className="relative flex items-center justify-center mb-10">
-        <div className="absolute inset-0 size-32 animate-ping rounded-full bg-primary/20 z-0" style={{ animationDuration: '3s' }} />
-        <div className="flex size-32 flex-col items-center justify-center rounded-full bg-primary/5 border-4 border-primary/30 shadow-[0_0_30px_rgba(var(--primary),0.2)] backdrop-blur z-10">
-          <Loader2 className="size-10 text-primary animate-spin" />
+        <div className="absolute inset-0 size-32 animate-ping rounded-full bg-primary-200 z-0" style={{ animationDuration: '3s' }} />
+        <div className="flex size-32 flex-col items-center justify-center rounded-full bg-primary-50 border-4 border-primary-300 shadow-[0_0_30px_var(--color-primary-200)] backdrop-blur z-10">
+          <Loader2 className="size-10 text-primary-600 animate-spin" />
         </div>
       </div>
       

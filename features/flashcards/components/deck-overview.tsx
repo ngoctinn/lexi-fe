@@ -43,7 +43,7 @@ function formatNextReview(card: Flashcard) {
 function playPronunciation(card: Flashcard) {
   if (card.audio_url) {
     const audio = new Audio(card.audio_url);
-    void audio.play().catch(() => {});
+    void audio.play().catch(() => { });
     return;
   }
 
@@ -174,7 +174,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
               </span>
               <div className="flex items-center gap-1.5">
                 <span className="text-2xl leading-none md:text-3xl" aria-hidden>
-                  🗂️
+                  🎯
                 </span>
                 <span className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                   {newCards.length}
@@ -188,7 +188,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
               </span>
               <div className="flex items-center gap-1.5">
                 <span className="text-2xl leading-none md:text-3xl" aria-hidden>
-                  🗂️
+                  ⏰
                 </span>
                 <span className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                   {studiedCards.length}
@@ -197,7 +197,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
             </div>
 
             {hasCards ? (
-              <Button asChild size="sm" className="self-center px-6">
+              <Button asChild size="lg" variant="soft" className="self-center px-12">
                 <Link href="/flashcards/review">
                   Vào học
                   <ArrowRight className="size-5" aria-hidden />
