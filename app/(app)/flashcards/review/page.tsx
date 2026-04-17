@@ -1,36 +1,36 @@
 import { fetchPracticeQueue } from "@/features/flashcards/actions/practice-actions";
 import { FlashcardSession } from "@/features/flashcards/components/flashcard-session";
-import { SessionSummary } from "@/features/flashcards/components/session-summary";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Flashcards | Lexi",
-  description: "Ôn tập flashcard theo SRS trong một màn hình riêng.",
+  title: "Review Flashcards | Lexi",
+  description: "Ôn flashcards theo vòng Recall → Reveal → Feedback → Repeat.",
 };
 
-export default async function FlashcardPracticePage() {
+export default async function FlashcardReviewPage() {
   const queue = await fetchPracticeQueue();
+
+  if (queue.length === 0) {
+    redirect("/flashcards");
+  }
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6">
       <div className="flex items-center justify-between gap-3">
         <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit">
-          <Link href="/dashboard">
+          <Link href="/flashcards">
             <ChevronLeft className="size-4" />
-            Về tổng quan
+            Về deck overview
           </Link>
         </Button>
       </div>
 
       <div className="flex flex-1 items-center justify-center">
-        {queue.length === 0 ? (
-          <SessionSummary reviewedCount={0} retentionRate={100} />
-        ) : (
-          <FlashcardSession initialQueue={queue} />
-        )}
+        <FlashcardSession initialQueue={queue} />
       </div>
     </div>
   );

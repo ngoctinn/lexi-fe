@@ -3,30 +3,29 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Flashcard, ReviewDifficulty } from "../types";
 import { FlashcardCard } from "./flashcard-card";
-import { SRSControls } from "./srs-controls";
 import { SessionSummary } from "./session-summary";
 import { updateFlashcardSRS } from "../actions/practice-actions";
 import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
+import { FlashcardProgress } from "./flashcard-progress";
+import { FeedbackButtons } from "./feedback-buttons";
 
 interface FlashcardSessionProps {
   initialQueue: Flashcard[];
 }
 
 export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
-  const queue = initialQueue;
+  const [queue, setQueue] = useState(initialQueue);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
   const [isFinished, setIsFinished] = useState(initialQueue.length === 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [correctCardsCount, setCorrectCardsCount] = useState(0);
+  const relearnQueueRef = useRef<Flashcard[]>([]);
+  const [isRelearning, setIsRelearning] = useState(false);
 
   const currentCard = queue[currentIndex];
   const totalCards = queue.length;
-  const progressPercentage =
-    totalCards === 0
-      ? 100
-      : Math.round(((currentIndex + 1) / totalCards) * 100);
+  const initialTotalCards = initialQueue.length;
 
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
@@ -74,6 +73,16 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         setCorrectCardsCount((prev) => prev + 1);
       }
 
+      if (difficulty === "forgot") {
+        const hasCard = relearnQueueRef.current.some(
+          (item) => item.flashcard_id === currentCard.flashcard_id,
+        );
+
+        if (!hasCard) {
+          relearnQueueRef.current = [...relearnQueueRef.current, currentCard];
+        }
+      }
+
       try {
         await updateFlashcardSRS(currentCard.flashcard_id, difficulty);
       } catch {
@@ -85,6 +94,11 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
       setTimeout(() => {
         if (currentIndex < queue.length - 1) {
           setCurrentIndex((prev) => prev + 1);
+        } else if (relearnQueueRef.current.length > 0) {
+          setQueue(relearnQueueRef.current);
+          relearnQueueRef.current = [];
+          setCurrentIndex(0);
+          setIsRelearning(true);
         } else {
           setIsFinished(true);
         }
@@ -167,10 +181,12 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
 
   if (isFinished || queue.length === 0) {
     const retentionRate =
-      totalCards > 0 ? Math.round((correctCardsCount / totalCards) * 100) : 100;
+      initialTotalCards > 0
+        ? Math.round((correctCardsCount / initialTotalCards) * 100)
+        : 100;
     return (
       <SessionSummary
-        reviewedCount={totalCards}
+        reviewedCount={initialTotalCards}
         retentionRate={retentionRate}
       />
     );
@@ -178,13 +194,11 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
 
   return (
     <div className="flex w-full max-w-3xl flex-col gap-4 animate-in fade-in duration-300">
-      <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
-        <span>
-          {currentIndex + 1} / {totalCards}
-        </span>
-      </div>
-
-      <Progress value={progressPercentage} />
+      <FlashcardProgress
+        currentIndex={currentIndex}
+        totalCards={totalCards}
+        isRelearning={isRelearning}
+      />
 
       <FlashcardCard
         card={currentCard}
@@ -194,7 +208,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
 
       <div className="w-full">
         {isRevealed ? (
-          <SRSControls
+          <FeedbackButtons
             onRate={handleRate}
             disabled={isSubmitting}
             activeKey={activeKey}

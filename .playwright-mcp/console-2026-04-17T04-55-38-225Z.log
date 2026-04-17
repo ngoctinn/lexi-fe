@@ -64,3 +64,17 @@ Fast Refresh requires at least one parent function component in your React tree.
 [  567728ms] [LOG] [Fast Refresh] done in 147ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
 [  581518ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
 [  581693ms] [LOG] [Fast Refresh] done in 120ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1372287ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1373057ms] [LOG] [Fast Refresh] done in 871ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1412791ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1412817ms] [LOG] [Fast Refresh] done in 127ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1586686ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1589258ms] [LOG] [Fast Refresh] done in 2667ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1589530ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1589963ms] [LOG] [Fast Refresh] done in 532ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1604769ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1604799ms] [LOG] [Fast Refresh] done in 110ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1621749ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1621845ms] [LOG] [Fast Refresh] done in 197ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1628926ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431
+[ 1628973ms] [LOG] [Fast Refresh] done in 125ms @ http://localhost:3000/_next/static/chunks/0nb~_next_dist_0sj1oe1._.js:2431

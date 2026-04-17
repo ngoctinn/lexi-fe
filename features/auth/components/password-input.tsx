@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -22,11 +21,10 @@ export const PasswordInput = React.forwardRef<
         type={showPassword ? "text" : "password"}
         className={cn("pr-12", className)}
       />
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon-sm"
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 size-8 text-muted-foreground hover:bg-muted/50"
+        aria-label={showPassword ? "Ẩn mật khẩu" : "Hiển thị mật khẩu"}
+        className="absolute right-2.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg border border-control-border-subtle bg-control-bg-subtle text-muted-foreground shadow-none transition-all outline-none cursor-pointer select-none hover:bg-control-hover focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:shadow-none"
         onClick={() => setShowPassword((prev) => !prev)}
       >
         {showPassword ? (
@@ -34,10 +32,7 @@ export const PasswordInput = React.forwardRef<
         ) : (
           <Eye className="size-4" />
         )}
-        <span className="sr-only">
-          {showPassword ? "Ẩn mật khẩu" : "Hiển thị mật khẩu"}
-        </span>
-      </Button>
+      </button>
     </div>
   );
 });
