@@ -70,9 +70,9 @@ export function TranscriptPanel({
                 {aiStreamingText}
                 {isAiStreaming && (
                   <div className="flex items-center gap-1 h-5 ml-1">
-                    <span className="size-1.5 rounded-full bg-primary/40 animate-[bounce_1s_infinite]" />
-                    <span className="size-1.5 rounded-full bg-primary/60 animate-[bounce_1s_0.2s_infinite]" />
-                    <span className="size-1.5 rounded-full bg-primary/80 animate-[bounce_1s_0.4s_infinite]" />
+                    <span className="size-1.5 rounded-full bg-primary-300 animate-[bounce_1s_infinite]" />
+                    <span className="size-1.5 rounded-full bg-primary-400 animate-[bounce_1s_0.2s_infinite]" />
+                    <span className="size-1.5 rounded-full bg-primary-500 animate-[bounce_1s_0.4s_infinite]" />
                   </div>
                 )}
               </div>

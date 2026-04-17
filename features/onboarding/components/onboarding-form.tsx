@@ -128,7 +128,7 @@ export function OnboardingForm() {
                     "flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ring-offset-background",
                     "hover:bg-accent/50",
                     data.current_level === lvl.id
-                      ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
+                      ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
                       : "bg-card/50",
                   )}
                 >
@@ -162,7 +162,7 @@ export function OnboardingForm() {
                     "flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ring-offset-background",
                     "hover:bg-accent/50",
                     data.learning_goal === lvl.id
-                      ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
+                      ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
                       : "bg-card/50",
                   )}
                 >

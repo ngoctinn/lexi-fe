@@ -66,7 +66,7 @@ export function SidebarAccountMenu({ profile }: SidebarAccountMenuProps) {
       <DropdownMenuTrigger
         type="button"
         className={cn(
-          "group flex h-auto min-h-14 w-full items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-accent/30 px-3 py-2.5 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2",
+          "group flex h-auto min-h-14 w-full items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-accent/30 px-3 py-2.5 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-300 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2",
         )}
       >
         <Avatar size="sm" className="shrink-0">

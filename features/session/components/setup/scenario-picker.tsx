@@ -48,8 +48,8 @@ export function ScenarioPicker({
               "group flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
-                ? "border-primary bg-primary/5 shadow-sm"
-                : "border-border/60 bg-muted/20 hover:border-primary/40 hover:bg-primary/5",
+                ? "border-primary bg-primary-50 shadow-sm"
+                : "border-border/60 bg-muted/20 hover:border-primary-300 hover:bg-primary-50",
             )}
           >
             <div
@@ -57,7 +57,7 @@ export function ScenarioPicker({
                 "flex size-8 items-center justify-center rounded-lg transition-colors",
                 isSelected
                   ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+                  : "bg-muted text-muted-foreground group-hover:bg-primary-100 group-hover:text-primary",
               )}
             >
               <Icon className="size-4" aria-hidden />

@@ -31,7 +31,7 @@ export function PageHeader({
     >
       <div className="flex min-w-0 items-center gap-3">
         {/* Icon wrapper - size-10 khớp với Logo 40px của Sidebar */}
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/10">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary border border-primary-100">
           <Icon className="size-5.5" strokeWidth={2.25} />
         </div>
 

@@ -43,7 +43,7 @@ export function MicButton({
   return (
     <div className={cn("relative flex items-center justify-center", className)}>
       {isListening && (
-        <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping duration-1000" />
+        <div className="absolute inset-0 rounded-full bg-primary-200 animate-ping duration-1000" />
       )}
       <Button
         type="button"
@@ -55,7 +55,7 @@ export function MicButton({
         onClick={onToggle}
         className={cn(
           "shrink-0 relative z-10 rounded-full",
-          isListening && "ring-4 ring-primary/20 bg-primary shadow-lg shadow-primary/20 hover:bg-primary-600"
+          isListening && "ring-4 ring-primary-200 bg-primary shadow-lg shadow-primary-200 hover:bg-primary-600"
         )}
         aria-label={isListening ? "Stop recording" : "Start recording"}
         title={getTooltipContent()}

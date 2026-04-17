@@ -68,7 +68,7 @@ const communityNavItems = [
 ];
 
 const sidebarIconClassName =
-  "text-sidebar-icon group-data-[active=true]/menu-button:text-primary";
+  "text-sidebar-icon group-data-[active=true]/menu-button:text-primary-400";
 const sidebarIconStrokeWidth = 2.15;
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -84,10 +84,10 @@ export function AppSidebar({
 
   return (
     <Sidebar
-      variant="inset"
+      variant="floating"
       collapsible="icon"
       {...sidebarProps}
-      className={cn("border-r-0 bg-sidebar", className)}
+      className={cn("bg-transparent border-none", className)}
     >
       <SidebarHeader className="pt-4 pb-2">
         <SidebarMenu>

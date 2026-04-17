@@ -64,7 +64,7 @@ export function TurnBubble({
           className={cn(
             "group relative rounded-2xl px-4 py-3 text-[15px] leading-relaxed transition-all",
             isUser
-              ? "rounded-tr-sm bg-primary/10 text-primary border border-primary/20 shadow-sm"
+              ? "rounded-tr-sm bg-primary-50 text-primary border border-primary-100 shadow-sm"
               : "rounded-tl-sm bg-muted text-foreground ring-1 ring-border shadow-sm",
             turn.is_pending && "opacity-70 animate-pulse",
           )}
@@ -76,7 +76,7 @@ export function TurnBubble({
             {showTranslation && turn.translated_content && (
               <div className={cn(
                 "text-sm border-t pt-2 mt-1",
-                isUser ? "border-primary/20 text-primary/80" : "border-border text-muted-foreground"
+                isUser ? "border-primary-100 text-primary" : "border-border text-muted-foreground"
               )}>
                 <span className="italic font-medium">{turn.translated_content}</span>
               </div>

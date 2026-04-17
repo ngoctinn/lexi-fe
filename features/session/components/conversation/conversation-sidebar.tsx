@@ -71,13 +71,13 @@ export function ConversationSidebar({
 
         <div className="flex flex-col gap-3 px-1">
           <div className="flex flex-wrap items-center gap-2 px-1">
-            <Badge variant="secondary" className="bg-blue-500/5 text-blue-600 border-blue-500/10 hover:bg-blue-500/5 pr-3 py-1 gap-1.5 shadow-none">
+            <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50 pr-3 py-1 gap-1.5 shadow-none">
               <UserCircle className="size-3.5 opacity-70" />
               <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">Bạn:</span>
               <span className="text-[12px] font-bold">{myRole || "Học viên"}</span>
             </Badge>
 
-            <Badge variant="secondary" className="bg-blue-500/5 text-blue-600 border-blue-500/10 hover:bg-blue-500/5 pr-3 py-1 gap-1.5 shadow-none">
+            <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50 pr-3 py-1 gap-1.5 shadow-none">
               <Bot className="size-3.5 opacity-70" />
               <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">Đối phương:</span>
               <span className="text-[12px] font-bold">{partnerRole || "AI Assistant"}</span>
@@ -103,7 +103,7 @@ export function ConversationSidebar({
               <Badge 
                 key={i} 
                 variant="secondary" 
-                className="bg-primary/5 text-primary border-primary/10 hover:bg-primary/5 font-bold text-[11px] px-2.5 py-1.5 shadow-none"
+                className="bg-primary-50 text-primary border-primary-100 hover:bg-primary-100 font-bold text-[11px] px-2.5 py-1.5 shadow-none"
               >
                 {goal}
               </Badge>

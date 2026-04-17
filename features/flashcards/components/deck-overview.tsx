@@ -63,7 +63,7 @@ function QueueRow({ card }: { card: Flashcard }) {
       <button
         type="button"
         onClick={() => playPronunciation(card)}
-        className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition hover:bg-primary/15"
+        className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary transition hover:bg-primary-100"
         aria-label={`Nghe phát âm ${card.word}`}
       >
         <Volume2 className="size-4" aria-hidden />
@@ -160,7 +160,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
 
       <CardContent className="p-4 pt-0">
         <div className="space-y-4">
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-primary/10">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-primary-50">
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
               style={{ width: `${progressValue}%` }}

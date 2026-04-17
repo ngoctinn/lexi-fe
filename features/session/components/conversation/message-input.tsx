@@ -78,13 +78,13 @@ export function MessageInput({
             size="xl"
             className={cn(
               "items-center transition-all bg-background border-border/60",
-              isRecording && "border-primary ring-2 ring-primary/20 bg-primary/5",
+              isRecording && "border-primary ring-2 ring-primary-100 bg-primary-50",
             )}
           >
             {isRecording ? (
               <div className="flex-1 flex items-center px-4 h-full gap-4 animate-in fade-in duration-300">
                 <Waveform className="h-6 flex-1 text-primary" />
-                <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                <div className="flex items-center gap-2 px-3 py-1 bg-primary-100 rounded-full border border-primary-100">
                   <div className="size-2 rounded-full bg-primary animate-pulse" />
                   <span className="text-xs text-primary font-bold tabular-nums">
                     {formatTime(timer)}
@@ -109,7 +109,7 @@ export function MessageInput({
                   variant="ghost"
                   disabled={disabled || !value.trim()}
                   onClick={handleSend}
-                  className="hover:bg-primary/10 hover:text-primary rounded-lg transition-colors"
+                  className="hover:bg-primary-50 hover:text-primary rounded-lg transition-colors"
                 >
                   <SendHorizontal className="size-5" />
                 </InputGroupButton>

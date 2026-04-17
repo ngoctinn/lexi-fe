@@ -75,7 +75,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
           BÁO CÁO PHIÊN HỌC
         </Badge>
         <div className="relative flex items-center justify-center mb-6">
-          <div className="absolute inset-0 size-40 animate-[spin_10s_linear_infinite] rounded-full border-t-2 border-r-2 border-primary/40 -z-10" />
+          <div className="absolute inset-0 size-40 animate-[spin_10s_linear_infinite] rounded-full border-t-2 border-r-2 border-primary-300 -z-10" />
           <div className="flex size-40 flex-col items-center justify-center rounded-full bg-background border shadow-xl">
             <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase opacity-80 mb-1">
               Tổng kết

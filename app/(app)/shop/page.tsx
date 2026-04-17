@@ -18,7 +18,7 @@ export default function ShopPage() {
       <div className="flex flex-1 items-center justify-center p-4 md:p-8">
         <Empty>
           <EmptyMedia>
-            <Store className="size-12 text-primary/50" />
+            <Store className="size-12 text-primary-300" />
           </EmptyMedia>
           <EmptyHeader>
             <EmptyTitle>Cửa hàng Lexi</EmptyTitle>

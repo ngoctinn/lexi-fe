@@ -55,8 +55,8 @@ export function LevelPicker({ value, onChange }: LevelPickerProps) {
             className={cn(
               "flex h-12 min-w-16 items-center justify-center rounded-xl border-2 px-4 text-sm font-bold transition-all duration-200",
               isSelected
-                ? "border-primary bg-primary/10 text-primary shadow-sm shadow-primary/5"
-                : "border-control-border-subtle bg-control-bg-subtle/50 text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary",
+                ? "border-primary bg-primary-50 text-primary shadow-sm shadow-primary-50"
+                : "border-control-border-subtle bg-control-bg-subtle/50 text-muted-foreground hover:border-primary-300 hover:bg-primary-50 hover:text-primary",
             )}
           >
             {level.value}

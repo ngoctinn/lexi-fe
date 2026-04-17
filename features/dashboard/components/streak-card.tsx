@@ -58,7 +58,7 @@ export function StreakCard({
             </p>
           </div>
 
-          <div className="rounded-full bg-primary/10 px-3 py-1.5 text-right ring-1 ring-primary/15">
+          <div className="rounded-full bg-primary-50 px-3 py-1.5 text-right ring-1 ring-primary-100">
             <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700">
               <span className="text-base leading-none">🏆</span>
               <span>{bestStreak}</span>

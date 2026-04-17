@@ -2,19 +2,12 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Loader2, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Loader2, Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// Removed DropdownMenu imports as we moved to inline soft checkboxes
 import {
   Field,
   FieldLabel,
@@ -226,50 +219,39 @@ export function SessionSetupForm({
                     {selectedGoals.length}/{selectedScenario.goals.length}
                   </span>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="xl"
-                      className="w-full justify-between rounded-xl px-4 font-medium border-border/40 hover:bg-accent/50 group"
-                    >
-                      <span className="truncate">
-                        {selectedGoals.length === selectedScenario.goals.length
-                          ? "Tất cả mục tiêu"
-                          : `${selectedGoals.length} mục tiêu đã chọn`}
-                      </span>
-                      <ChevronDown className="size-4 opacity-40 group-hover:opacity-100 transition-opacity shrink-0" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-72 rounded-xl">
-                    <DropdownMenuLabel>Danh sách mục tiêu</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {selectedScenario.goals.map((goal) => {
-                      const isSelected = selectedGoals.includes(goal);
-                      return (
-                        <DropdownMenuCheckboxItem
-                          key={goal}
-                          checked={isSelected}
-                          onSelect={(event) => event.preventDefault()}
-                          onCheckedChange={(checked) => {
-                            setSelectedGoals((current) => {
-                              const next = checked
-                                ? Array.from(new Set([...current, goal]))
-                                : current.filter((item) => item !== goal);
-                              return next.length > 0 ? next : current;
-                            });
-                          }}
-                        >
-                          {goal}
-                        </DropdownMenuCheckboxItem>
-                      );
-                    })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <FieldDescription>
-                  AI sẽ dựa vào mục tiêu này để điều hướng hội thoại.
-                </FieldDescription>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {selectedScenario.goals.map((goal) => {
+                    const isSelected = selectedGoals.includes(goal);
+                    return (
+                      <button
+                        key={goal}
+                        type="button"
+                        onClick={() => {
+                          setSelectedGoals((current) => {
+                            const next = isSelected
+                              ? current.filter((item) => item !== goal)
+                              : Array.from(new Set([...current, goal]));
+                            return next.length > 0 ? next : current;
+                          });
+                        }}
+                        className={cn(
+                          "relative flex h-12 items-center justify-center rounded-xl border px-6 text-sm font-bold transition-all duration-200",
+                          isSelected
+                            ? "border-primary bg-primary-50 text-primary shadow-sm"
+                            : "border-border/40 bg-muted/30 text-muted-foreground hover:border-primary-300 hover:bg-primary-50 hover:text-primary",
+                        )}
+                      >
+                        {isSelected && (
+                          <div className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in duration-200">
+                            <Check className="size-3.5 stroke-[3]" />
+                          </div>
+                        )}
+                        {goal}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Removed FieldDescription per user request */}
               </Field>
 
               {/* Roles */}
@@ -338,9 +320,7 @@ export function SessionSetupForm({
                     <SelectItem value="male">Nam (Giọng chuẩn)</SelectItem>
                   </SelectContent>
                 </Select>
-                <FieldDescription>
-                  Bạn sẽ nghe thấy giọng này trong suốt buổi hội thoại.
-                </FieldDescription>
+                {/* Removed FieldDescription per user request */}
               </Field>
             </FieldGroup>
 

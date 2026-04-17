@@ -22,7 +22,7 @@ export default async function AppLayout({
   }
 
   return (
-    <SidebarProvider className="h-full overflow-hidden">
+    <SidebarProvider className="h-full overflow-hidden bg-muted/50">
       <AppSidebar profile={profile} />
       <SidebarInset className="overflow-hidden">
         <div className="flex flex-1 flex-col overflow-y-auto">{children}</div>

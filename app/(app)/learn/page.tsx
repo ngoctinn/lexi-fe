@@ -18,7 +18,7 @@ export default function LearnPage() {
       <div className="flex flex-1 items-center justify-center p-4 md:p-8">
         <Empty>
           <EmptyMedia>
-            <Map className="size-12 text-primary/50" />
+            <Map className="size-12 text-primary-300" />
           </EmptyMedia>
           <EmptyHeader>
             <EmptyTitle>Lộ trình học đang được xây dựng</EmptyTitle>
