@@ -18,10 +18,9 @@ export interface ProfileData {
  */
 export async function getProfile(): Promise<ProfileData | null> {
   try {
-    // Gọi API Backend: GET /profile
-    // Tận dụng cơ chế cache của Next.js với tag 'profile'
+    // Gọi API Backend: GET /profile và gắn cache tag để có thể invalidate sau khi update.
     const profile = await apiRequest<ProfileData>("/profile", {
-      next: { tags: ["profile"], revalidate: 0 },
+      next: { tags: ["profile"] },
     });
     return profile;
   } catch (error) {

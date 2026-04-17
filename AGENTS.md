@@ -1,137 +1,254 @@
 # AGENTS.md - Lexi
 
 ## Goal
+
 Build MVP web app luyện nói tiếng Anh với AI + flashcard.
-Code đơn giản, đúng chuẩn, dễ hiểu cho beginner.
+
+Yêu cầu:
+
+- Code đơn giản, dễ hiểu cho beginner
+- Không over-engineering
+- Ưu tiên tốc độ build hơn hoàn hảo
 
 ---
 
-## 1. Suy nghĩ trước khi code
+# 1. Thinking Rules (Bắt buộc trước khi code)
 
-Đừng giả định. Đừng che giấu sự mơ hồ. Làm rõ các đánh đổi.
+Không được giả định khi chưa rõ.
 
 Trước khi implement:
-- Nêu rõ các giả định. Nếu không chắc, hãy hỏi.
-- Nếu có nhiều cách hiểu, trình bày tất cả. Không tự ý chọn.
-- Nếu có cách đơn giản hơn, nói ra. Sẵn sàng phản biện khi cần.
-- Nếu có điều gì chưa rõ, dừng lại. Nêu rõ và hỏi.
+
+- Liệt kê **assumptions**
+- Nếu có ambiguity → đưa ra các cách hiểu
+- Nếu thiếu thông tin → hỏi lại trước khi code
+- Nếu có cách đơn giản hơn → đề xuất rõ ràng
+
+Nếu không chắc:
+→ dừng lại và hỏi
 
 ---
 
-## 2. Ưu tiên sự đơn giản
+# 2. Simplicity First
 
-Viết lượng code tối thiểu để giải quyết vấn đề.
+Luôn chọn cách đơn giản nhất có thể.
 
-- Không thêm tính năng ngoài yêu cầu.
-- Không abstraction cho code dùng một lần.
-- Không thêm tính linh hoạt hoặc config không được yêu cầu.
-- Không xử lý lỗi cho trường hợp không thể xảy ra.
-- Nếu viết 200 dòng mà có thể làm trong 50 dòng, viết lại.
+Không:
 
-Tự hỏi: một senior có thấy code này quá phức tạp không. Nếu có, đơn giản hóa.
+- thêm feature ngoài yêu cầu
+- abstraction cho code dùng 1 lần
+- config hoặc flexibility không cần thiết
+- xử lý edge case không tồn tại
 
----
+Rule:
 
-## 3. Thay đổi có kiểm soát
+> Nếu có thể làm trong 50 dòng, không viết 200 dòng
 
-Chỉ sửa những gì cần thiết. Chỉ dọn dẹp những gì bạn tạo ra.
+Checklist:
 
-Khi sửa code:
-- Không cải thiện code, comment, format xung quanh.
-- Không refactor những thứ không bị lỗi.
-- Giữ nguyên style hiện tại.
-- Nếu thấy dead code không liên quan, chỉ mention, không xóa.
-
-Khi thay đổi tạo ra code thừa:
-- Xóa import, biến, function do bạn làm không còn dùng.
-- Không xóa dead code có sẵn nếu không được yêu cầu.
-
-Mỗi dòng thay đổi phải phục vụ trực tiếp yêu cầu.
+- Code có thể ngắn hơn không?
+- Có thể bỏ abstraction không?
+- Có đang "future-proof" không cần thiết?
 
 ---
 
-## 4. Thực thi theo mục tiêu
+# 3. Controlled Changes
 
-Xác định tiêu chí thành công và verify được.
+Chỉ thay đổi những gì cần thiết.
 
-Chuyển task thành mục tiêu:
-- Fix bug: tái hiện bug rồi sửa để pass.
-- Add feature: UI và logic hoạt động.
-- Refactor: đảm bảo không thay đổi behavior.
+Khi sửa:
 
-Plan:
-1. Step → verify
-2. Step → verify
-3. Step → verify
+- Không refactor ngoài scope
+- Không đổi format/style có sẵn
+- Không "clean code" toàn file
 
-Tiêu chí rõ giúp tự kiểm chứng. Tiêu chí mơ hồ sẽ phải hỏi lại.
+Được phép:
+
+- Xóa code do mình tạo ra nhưng không dùng
+
+Không được:
+
+- Xóa code cũ không liên quan (chỉ mention)
 
 ---
 
-## Next.js Rules
+# 4. Execution Flow
 
-- Docs first (nextjs_docs + nextjs_index)
+Mỗi task phải có tiêu chí rõ ràng.
+
+## Plan
+
+1. Step nhỏ → verify
+2. Step nhỏ → verify
+3. Step nhỏ → verify
+
+## Mapping task
+
+- Bug → reproduce → fix → verify
+- Feature → UI + logic chạy được
+- Refactor → behavior không đổi
+
+Nếu không define được success criteria → hỏi lại
+
+---
+
+# 5. MCP Workflow (Quan trọng)
+
+## Vai trò từng MCP
+
+- nextjs MCP → docs + debug
+- filesystem MCP → đọc/ghi code
+- shadcn MCP → UI component
+
+## Flow chuẩn
+
+```text
+1. nextjs_docs (nếu liên quan Next.js)
+2. shadcn MCP (nếu cần UI)
+3. filesystem MCP (code)
+4. nextjs_call (debug)
+```
+
+## Rules
+
+- Next.js → luôn docs first
+- Không đoán API
+- Không debug bằng suy luận
+
+---
+
+# 6. Next.js Rules
+
 - Server Components mặc định
 - Chỉ dùng "use client" khi cần
 - Fetch ở server
 - Ưu tiên cache
 
 Không:
-- Fetch ở client khi không cần
-- Lạm dụng "use client"
-- Dùng API route khi có Server Actions
+
+- fetch client nếu không cần
+- lạm dụng "use client"
+- dùng API route khi Server Actions đủ
 
 ---
 
-## Code Rules
+# 7. Code Rules
 
 - Component nhỏ, rõ ràng
-- TypeScript rõ type
 - Không nested sâu
+- TypeScript phải rõ type
 
 State:
+
 - Global → Zustand
 - Server → React Query
 
 ---
 
-## UI Rules
+# 8. UI Rules
 
 - UI rõ ràng, dễ dùng
-- Ưu tiên ShadcnUI
-- Không dùng placeholder kém chất lượng
+- Ưu tiên shadcn/ui
+- Không dùng UI placeholder kém
 
 ---
 
-## Comment
+# 9. Comment Rules
 
-- Viết bằng tiếng Việt
-- Giải thích lý do, không chỉ mô tả
-
----
-
-## Workflow
-
-1. view_file trước khi sửa
-2. Hiểu code hiện tại
-3. Xác định scope thay đổi
-4. Code đúng scope
-5. Kiểm tra build và UI
+- Viết tiếng Việt
+- Giải thích **tại sao**, không chỉ **làm gì**
 
 ---
 
-## Definition of Done
+# 10. File Editing Rules (Filesystem MCP)
+
+Trước khi sửa:
+
+```text
+view_file → hiểu code
+```
+
+Khi sửa:
+
+```text
+edit_file (dryRun=true) → check → apply
+```
+
+Không:
+
+- sửa khi chưa đọc file
+- sửa nhiều file cùng lúc nếu không cần
+
+---
+
+# 11. Definition of Done
 
 - Logic đúng
-- Không lỗi build hoặc lint
-- UI hoạt động tốt trên mobile và desktop
+- Không lỗi build / lint
+- UI chạy trên mobile + desktop
 - Code đơn giản, dễ hiểu
 
 ---
 
-## Avoid
+# 12. Anti-patterns
 
-- Over-engineering
-- Tự suy đoán
-- Refactor không cần thiết
-- Thêm tính năng ngoài yêu cầu
+Không được:
+
+- over-engineering
+- tự suy đoán requirement
+- refactor ngoài scope
+- thêm feature không yêu cầu
+- viết abstraction sớm
+
+---
+
+# 13. Mental Model
+
+```text
+Simplicity > Clean code
+Working > Perfect
+Explicit > Magic
+```
+
+---
+
+# 14. Preferred Style
+
+- Trực tiếp, không vòng vo
+- Nếu code chưa tối ưu → nói rõ
+- Nếu approach sai → phản biện
+- Không "chiều user" khi user sai
+
+---
+
+# 15. When to Ask
+
+Phải hỏi khi:
+
+- requirement không rõ
+- nhiều cách implement khác nhau
+- có trade-off đáng kể
+- thiếu context
+
+---
+
+# 16. Example Good Behavior
+
+```text
+User: "build login"
+
+Agent:
+- assumption: dùng email/password?
+- hỏi lại nếu chưa rõ
+- đề xuất dùng shadcn form
+- implement minimal version
+```
+
+---
+
+# Summary
+
+```text
+Think → Simplify → Scope → Implement → Verify
+```
+
+---

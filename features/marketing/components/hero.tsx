@@ -11,11 +11,11 @@ export function LandingHero() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 -right-32 size-[600px] rounded-full bg-primary/8 blur-3xl"
+        className="pointer-events-none absolute -top-32 -right-32 size-150 rounded-full bg-primary/8 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 size-[400px] rounded-full bg-primary/5 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 -left-32 size-100 rounded-full bg-primary/5 blur-3xl"
       />
 
       <div className="container mx-auto px-6 max-w-6xl grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -27,7 +27,7 @@ export function LandingHero() {
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground max-w-[480px] leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-120 leading-relaxed">
             Kết hợp Flashcards thông minh, luyện nói cùng AI và lộ trình cá nhân
             hóa — học đúng cách, đúng lúc, đúng tốc độ của bạn.
           </p>
@@ -68,7 +68,7 @@ export function LandingHero() {
         <div className="relative flex items-center justify-center">
           <div
             aria-hidden
-            className="absolute size-[420px] rounded-full bg-primary/15 blur-3xl"
+            className="absolute size-105 rounded-full bg-primary/15 blur-3xl"
           />
           <div className="relative z-10 animate-float">
             <Image

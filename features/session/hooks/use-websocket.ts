@@ -52,10 +52,10 @@ export function useWebSocket({
     React.useState<WsConnectionState>("disconnected");
 
   // Keep refs updated without re-running effects
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     onMessageRef.current = onMessage;
     onConnectionChangeRef.current = onConnectionChange;
-  });
+  }, [onConnectionChange, onMessage]);
 
   const setConnState = React.useCallback((state: WsConnectionState) => {
     setConnectionState(state);
@@ -133,7 +133,7 @@ export function useWebSocket({
   React.useEffect(() => {
     connectRef.current = connect;
     scheduleReconnectRef.current = scheduleReconnect;
-  });
+  }, [connect, scheduleReconnect]);
 
   function disconnect() {
     const isDevMock = process.env.NODE_ENV === "development" && !WS_BASE;

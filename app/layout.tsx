@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
+import { AmplifyProvider } from "@/components/providers/amplify-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { ThemeProvider } from "../components/providers/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -16,9 +19,6 @@ export const metadata: Metadata = {
     "Nền tảng học tiếng Anh cá nhân hóa với Flashcards 3D và Trình đối thoại AI thông minh.",
 };
 
-import { AmplifyProvider } from "@/components/providers/amplify-provider";
-import { QueryProvider } from "@/components/providers/query-provider";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,10 +33,12 @@ export default function RootLayout({
       <body className="h-full flex flex-col">
         <AmplifyProvider>
           <QueryProvider>
-            <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+            <ThemeProvider>
+              <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+              <Toaster />
+            </ThemeProvider>
           </QueryProvider>
         </AmplifyProvider>
-        <Toaster />
       </body>
     </html>
   );
