@@ -16,6 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldGroup,
+} from "@/components/ui/field";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -40,9 +46,12 @@ const CONTEXT_LABELS: Record<string, string> = {
 };
 
 const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: "Cơ bản",
-  intermediate: "Trung cấp",
-  advanced: "Nâng cao",
+  A1: "Cơ bản",
+  A2: "Căn bản",
+  B1: "Trung cấp",
+  B2: "Trung cấp khá",
+  C1: "Cao cấp",
+  C2: "Thành thạo",
 };
 
 function getContextLabel(context: string) {
@@ -195,46 +204,26 @@ export function SessionSetupForm({
                 <h2 className="text-xl font-bold tracking-tight leading-snug line-clamp-2">
                   {selectedScenario.scenario_title}
                 </h2>
-                <div className="flex shrink-0 flex-col items-end gap-1.5">
-                  <Badge variant="outline" className="rounded-full text-[10px]">
-                    {getContextLabel(selectedScenario.context)}
-                  </Badge>
-                  {selectedScenario.difficulty_level && (
-                    <Badge
-                      variant="secondary"
-                      className="rounded-full text-[10px]"
-                    >
-                      {DIFFICULTY_LABELS[selectedScenario.difficulty_level] ??
-                        selectedScenario.difficulty_level}
-                    </Badge>
-                  )}
-                </div>
+                <Badge variant="default" className="rounded-full text-[10px] font-bold px-2.5 py-0.5 shrink-0">
+                  {getContextLabel(selectedScenario.context)} • {selectedScenario.difficulty_level}
+                </Badge>
               </div>
-
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {selectedScenario.my_character} nói chuyện với{" "}
-                {selectedScenario.ai_character}
-              </p>
-
-              {/* Context description */}
-              <p className="text-xs text-muted-foreground/70 italic line-clamp-3">
-                {selectedScenario.context}
-              </p>
             </div>
 
             {/* Divider */}
             <div className="h-px bg-border/60" />
 
             {/* Cấu hình */}
-            <div className="flex flex-col gap-5">
+            {/* Cấu hình */}
+            <FieldGroup className="flex-1 overflow-y-auto pr-1 custom-scrollbar gap-8">
               {/* Mục tiêu */}
-              <div>
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Mục tiêu
-                  </p>
-                  <span className="text-[10px] font-medium text-muted-foreground/70">
-                    {selectedGoals.length}/{selectedScenario.goals.length} đã chọn
+              <Field>
+                <div className="flex items-center justify-between mb-1">
+                  <FieldLabel className="text-foreground/80">
+                    Mục tiêu luyện tập
+                  </FieldLabel>
+                  <span className="text-[10px] font-medium text-muted-foreground/50">
+                    {selectedGoals.length}/{selectedScenario.goals.length}
                   </span>
                 </div>
                 <DropdownMenu>
@@ -242,18 +231,19 @@ export function SessionSetupForm({
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full justify-between rounded-xl px-4 font-medium"
+                      size="xl"
+                      className="w-full justify-between rounded-xl px-4 font-medium border-border/40 hover:bg-accent/50 group"
                     >
                       <span className="truncate">
                         {selectedGoals.length === selectedScenario.goals.length
                           ? "Tất cả mục tiêu"
-                          : `${selectedGoals.length} mục tiêu`}
+                          : `${selectedGoals.length} mục tiêu đã chọn`}
                       </span>
-                      <ChevronDown className="size-4 opacity-60 shrink-0" />
+                      <ChevronDown className="size-4 opacity-40 group-hover:opacity-100 transition-opacity shrink-0" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-72">
-                    <DropdownMenuLabel>Mục tiêu luyện tập</DropdownMenuLabel>
+                  <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-72 rounded-xl">
+                    <DropdownMenuLabel>Danh sách mục tiêu</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {selectedScenario.goals.map((goal) => {
                       const isSelected = selectedGoals.includes(goal);
@@ -277,26 +267,26 @@ export function SessionSetupForm({
                     })}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+                <FieldDescription>
+                  AI sẽ dựa vào mục tiêu này để điều hướng hội thoại.
+                </FieldDescription>
+              </Field>
 
               {/* Roles */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label
-                    htmlFor="user-role"
-                    className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 block"
-                  >
+              <div className="grid grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel htmlFor="user-role" className="text-foreground/80 mb-1">
                     Vai của bạn
-                  </label>
+                  </FieldLabel>
                   <Select
                     value={selectedUserRole}
                     onValueChange={setSelectedUserRole}
                     disabled={!selectedScenario.user_roles.length}
                   >
-                    <SelectTrigger id="user-role" className="rounded-xl">
+                    <SelectTrigger id="user-role" size="xl" className="rounded-xl border-border/40">
                       <SelectValue placeholder="Chọn vai" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl">
                       {selectedScenario.user_roles.map((role) => (
                         <SelectItem key={role} value={role}>
                           {role}
@@ -304,24 +294,21 @@ export function SessionSetupForm({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
 
-                <div>
-                  <label
-                    htmlFor="ai-role"
-                    className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 block"
-                  >
+                <Field>
+                  <FieldLabel htmlFor="ai-role" className="text-foreground/80 mb-1">
                     Vai AI
-                  </label>
+                  </FieldLabel>
                   <Select
                     value={selectedAiRole}
                     onValueChange={setSelectedAiRole}
                     disabled={!selectedScenario.ai_roles.length}
                   >
-                    <SelectTrigger id="ai-role" className="rounded-xl">
+                    <SelectTrigger id="ai-role" size="xl" className="rounded-xl border-border/40">
                       <SelectValue placeholder="Chọn vai" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl">
                       {selectedScenario.ai_roles.map((role) => (
                         <SelectItem key={role} value={role}>
                           {role}
@@ -329,33 +316,33 @@ export function SessionSetupForm({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
               </div>
 
               {/* Giọng AI */}
-              <div>
-                <label
-                  htmlFor="ai-gender"
-                  className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 block"
-                >
-                  Giọng AI
-                </label>
+              <Field>
+                <FieldLabel htmlFor="ai-gender" className="text-foreground/80 mb-1">
+                  Giọng nói AI
+                </FieldLabel>
                 <Select
                   value={formData.ai_gender}
                   onValueChange={(v) =>
                     set("ai_gender", v as "male" | "female")
                   }
                 >
-                  <SelectTrigger id="ai-gender" className="rounded-xl">
+                  <SelectTrigger id="ai-gender" size="xl" className="rounded-xl border-border/40">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="female">Nữ (Female)</SelectItem>
-                    <SelectItem value="male">Nam (Male)</SelectItem>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="female">Nữ (Giọng chuẩn)</SelectItem>
+                    <SelectItem value="male">Nam (Giọng chuẩn)</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
+                <FieldDescription>
+                  Bạn sẽ nghe thấy giọng này trong suốt buổi hội thoại.
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
 
             {/* Submit — push to bottom */}
             <div className="mt-auto pt-4">
@@ -390,14 +377,14 @@ export function SessionSetupForm({
       {selectedScenario && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 p-4 backdrop-blur-sm lg:hidden">
           <div className="mx-auto flex max-w-lg items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">
-                {selectedScenario.scenario_title}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {getContextLabel(selectedScenario.context)}
-              </p>
-            </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold">
+                  {selectedScenario.scenario_title}
+                </p>
+                <p className="text-[10px] text-muted-foreground font-medium">
+                  {getContextLabel(selectedScenario.context)} • {selectedScenario.difficulty_level}
+                </p>
+              </div>
             <Button
               type="submit"
               size="sm"
