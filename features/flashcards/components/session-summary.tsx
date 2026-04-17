@@ -52,7 +52,7 @@ export function SessionSummary({
         </div>
 
         <Button asChild size="lg" className="min-w-50">
-          <Link href="/vocabulary">Quay lại deck</Link>
+          <Link href="/dashboard">Về tổng quan</Link>
         </Button>
       </Empty>
     </div>

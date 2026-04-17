@@ -1,10 +1,12 @@
 import {
   LandingHeader,
   LandingHero,
+  LandingConversationPreview,
   LandingStats,
   LandingFeatures,
   LandingHowItWorks,
   LandingTestimonials,
+  LandingFAQ,
   LandingCTA,
   LandingFooter,
 } from "@/features/marketing";
@@ -17,12 +19,14 @@ export default function LandingPage() {
 
       <main className="flex-1">
         <LandingHero />
+        <LandingConversationPreview />
         <LandingStats />
         <LandingFeatures />
         <Separator />
         <LandingHowItWorks />
         <Separator />
         <LandingTestimonials />
+        <LandingFAQ />
         <LandingCTA />
       </main>
 

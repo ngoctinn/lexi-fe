@@ -27,7 +27,6 @@ export async function middleware(request: NextRequest) {
   // 2. Nhóm Route cần được bảo vệ (Yêu cầu đăng nhập)
   const isProtectedRoute =
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/vocabulary") ||
     pathname.startsWith("/flashcards") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/onboarding") || // Cần login mới được onboarding

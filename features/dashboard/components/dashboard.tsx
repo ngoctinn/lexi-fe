@@ -5,14 +5,14 @@ import { StreakCard } from "./streak-card";
 export function Dashboard() {
   const overviewCards = [
     {
-      title: "Từ vựng",
+      title: "Flashcard",
       value: "1,248",
-      suffix: "từ",
-      description: "Số từ đã học và đang được ghi nhớ trong hệ thống.",
+      suffix: "thẻ",
+      description: "Số thẻ đã học và đang được theo dõi trong hệ thống.",
       progress: 62,
-      progressLabel: "Mục tiêu 2,000 từ",
-      footerLabel: "Từ cần ôn hôm nay",
-      footerValue: "38 từ",
+      progressLabel: "Mục tiêu 2,000 thẻ",
+      footerLabel: "Thẻ cần ôn hôm nay",
+      footerValue: "38 thẻ",
     },
     {
       title: "Luyện nói",
@@ -28,10 +28,10 @@ export function Dashboard() {
 
   const tiles = [
     {
-      title: "Ôn từ ngay",
-      description: "Vào lại bộ từ đang cần ôn để giữ nhịp nhớ.",
-      href: "/vocabulary",
-      label: "38 từ",
+      title: "Ôn flashcard",
+      description: "Vào lại phiên flashcard để giữ nhịp nhớ.",
+      href: "/flashcards",
+      label: "38 thẻ",
     },
     {
       title: "Bắt đầu luyện nói",

@@ -18,7 +18,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import { InstantLookup } from "@/features/vocabulary/components/lookup/instant-lookup";
 
 interface ConversationScreenProps {
   sessionId: string;
@@ -155,7 +154,6 @@ export function ConversationScreen({
         url={ui.currentAudioUrl}
         onEnded={() => setCurrentAudioUrl(null)}
       />
-      <InstantLookup />
     </div>
   );
 }

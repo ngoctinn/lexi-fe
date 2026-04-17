@@ -102,3 +102,31 @@ export const STATS = [
   { value: "30 ngày", label: "Đến giao tiếp tự tin" },
   { value: "4.9 ★", label: "Đánh giá trung bình" },
 ];
+
+export const FAQS = [
+  {
+    question: "Lexi phù hợp với ai?",
+    answer:
+      "Lexi phù hợp với người muốn học tiếng Anh theo cách ngắn gọn hơn: luyện nói, ôn từ vựng và có lộ trình rõ ràng mỗi ngày.",
+  },
+  {
+    question: "Tôi có cần học lâu mỗi ngày không?",
+    answer:
+      "Không. Lexi được thiết kế cho các buổi học ngắn, đều đặn. Chỉ cần 10-20 phút mỗi ngày là đã đủ để duy trì nhịp học.",
+  },
+  {
+    question: "Lexi hỗ trợ luyện nói như thế nào?",
+    answer:
+      "Bạn vào một tình huống cụ thể, trò chuyện với AI, nhận phản hồi ngay sau lượt nói và tiếp tục theo ngữ cảnh đó.",
+  },
+  {
+    question: "Có thể học trên điện thoại không?",
+    answer:
+      "Có. Giao diện được tối ưu cho mobile để bạn có thể học ở bất cứ đâu, miễn là có vài phút trống trong ngày.",
+  },
+  {
+    question: "Lexi có thay thế giáo viên không?",
+    answer:
+      "Lexi không cố thay thế lớp học truyền thống; nó giúp bạn luyện tập thường xuyên hơn, có phản hồi ngay và giữ nhịp học tốt hơn.",
+  },
+];

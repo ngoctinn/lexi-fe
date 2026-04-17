@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Star, Trophy, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export function LandingHero() {
   return (
@@ -39,8 +40,20 @@ export function LandingHero() {
               </Link>
             </Button>
             <Button size="xl" variant="outline" asChild>
-              <a href="#how-it-works">Xem cách hoạt động</a>
+              <a href="#preview">Xem demo hội thoại</a>
             </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {["Giao tiếp hằng ngày", "Du lịch", "Phỏng vấn"].map((label) => (
+              <Badge
+                key={label}
+                variant="default"
+                className="rounded-full px-3 py-1 text-xs font-semibold"
+              >
+                {label}
+              </Badge>
+            ))}
           </div>
 
           <div className="flex items-center gap-4">

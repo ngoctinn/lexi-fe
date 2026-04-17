@@ -4,7 +4,6 @@ import * as React from "react";
 import Image from "next/image";
 import {
   Map,
-  BookOpen,
   Trophy,
   Store,
   LayoutDashboard,
@@ -42,11 +41,6 @@ const mainNavItems = [
     title: "Lộ trình học",
     url: "/learn",
     icon: Map,
-  },
-  {
-    title: "Luyện từ",
-    url: "/vocabulary",
-    icon: BookOpen,
   },
   {
     title: "Flashcard",

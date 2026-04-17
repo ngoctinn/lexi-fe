@@ -18,9 +18,9 @@ export default async function FlashcardPracticePage() {
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6">
       <div className="flex items-center justify-between gap-3">
         <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit">
-          <Link href="/vocabulary">
+          <Link href="/dashboard">
             <ChevronLeft className="size-4" />
-            Quay lại deck
+            Về tổng quan
           </Link>
         </Button>
       </div>
