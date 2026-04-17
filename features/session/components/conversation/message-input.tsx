@@ -72,61 +72,63 @@ export function MessageInput({
     <div
       className={cn("flex flex-col gap-1 w-full max-w-4xl mx-auto", className)}
     >
-      {/* Hiệu ứng sóng âm phía trên input khi đang ghi âm */}
-      {isRecording && (
-        <div className="flex items-center gap-3 mb-1">
-          <Waveform className="h-6" />
-          <span className="text-xs text-primary font-semibold tabular-nums ml-2">
-            {formatTime(timer)}
-          </span>
-          <span className="text-xs text-muted-foreground font-medium ml-4">
-            Đang ghi âm...
-          </span>
+      <div className="flex items-center gap-4 w-full">
+        <div className="relative flex-1 group">
+          <InputGroup
+            size="xl"
+            className={cn(
+              "items-center transition-all bg-background border-border/60",
+              isRecording && "border-primary ring-2 ring-primary/20 bg-primary/5",
+            )}
+          >
+            {isRecording ? (
+              <div className="flex-1 flex items-center px-4 h-full gap-4 animate-in fade-in duration-300">
+                <Waveform className="h-6 flex-1 text-primary" />
+                <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                  <div className="size-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-xs text-primary font-bold tabular-nums">
+                    {formatTime(timer)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <InputGroupInput
+                value={value}
+                onChange={(e) => onValueChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Nhập câu trả lời bằng tiếng Anh..."
+                disabled={disabled}
+                className="bg-transparent border-none shadow-none focus-visible:ring-0"
+              />
+            )}
+            
+            {!isRecording && (
+              <InputGroupAddon align="inline-end" className="pr-2">
+                <InputGroupButton
+                  size="icon-sm"
+                  variant="ghost"
+                  disabled={disabled || !value.trim()}
+                  onClick={handleSend}
+                  className="hover:bg-primary/10 hover:text-primary rounded-lg transition-colors"
+                >
+                  <SendHorizontal className="size-5" />
+                </InputGroupButton>
+              </InputGroupAddon>
+            )}
+          </InputGroup>
         </div>
-      )}
-      <div className="flex items-center gap-3 w-full">
-        <InputGroup
-          size="xl"
-          className={cn(
-            "flex-1 items-center transition-all bg-background",
-            isRecording && "border-primary bg-primary/5",
-          )}
-        >
-          <InputGroupInput
-            value={value}
-            onChange={(e) => onValueChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              isRecording
-                ? "Đang ghi âm..."
-                : "Nhập câu trả lời bằng tiếng Anh..."
-            }
-            disabled={disabled || isRecording}
-            aria-label={
-              isRecording
-                ? "Đang ghi âm, nhập liệu tạm khóa"
-                : "Nhập câu trả lời"
-            }
-          />
-          <InputGroupAddon align="inline-end" className="pr-1.5 h-full">
-            <InputGroupButton
-              size="icon-sm"
-              variant="ghost"
-              disabled={disabled || !value.trim() || isRecording}
-              onClick={handleSend}
-              className="hover:bg-primary/10 hover:text-primary shrink-0"
-            >
-              <SendHorizontal />
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
+        
         <MicButton
           recorderState={recorderState}
           onToggle={onToggleMic}
           disabled={disabled}
-          className="shrink-0"
+          className={cn(
+            "shrink-0 transition-transform duration-200",
+            isRecording && "scale-110"
+          )}
         />
       </div>
+      
     </div>
   );
 }

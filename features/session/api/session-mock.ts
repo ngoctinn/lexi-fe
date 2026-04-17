@@ -46,7 +46,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1",
     scenario_title: "Chào hỏi cơ bản",
-    context: "social",
+    context: "Giao tiếp xã hội",
     my_character: "Người mới",
     ai_character: "Bạn mới quen",
     goals: ["Giới thiệu tên", "Hỏi thăm", "Tạm biệt lịch sự"],
@@ -60,7 +60,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1_2",
     scenario_title: "Gọi cà phê",
-    context: "coffee",
+    context: "Tại quán cà phê",
     my_character: "Khách hàng",
     ai_character: "Nhân viên quán",
     goals: ["Chọn đồ uống", "Chọn size", "Hỏi về giá"],
@@ -74,7 +74,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1_3",
     scenario_title: "Hỏi đường",
-    context: "travel",
+    context: "Đi lại & Hỏi đường",
     my_character: "Du khách",
     ai_character: "Người địa phương",
     goals: ["Hỏi vị trí", "Hỏi phương tiện", "Cảm ơn"],
@@ -88,7 +88,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1_4",
     scenario_title: "Tại hiệu thuốc",
-    context: "health",
+    context: "Sức khỏe & Y tế",
     my_character: "Bệnh nhân",
     ai_character: "Dược sĩ",
     goals: ["Mô tả triệu chứng", "Hỏi liều dùng", "Thanh toán"],
@@ -102,7 +102,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1_5",
     scenario_title: "Check-in khách sạn",
-    context: "travel",
+    context: "Du lịch & Khách sạn",
     my_character: "Khách du lịch",
     ai_character: "Lễ tân",
     goals: ["Cung cấp thông tin đặt phòng", "Hỏi giờ ăn sáng", "Nhận phòng"],
@@ -116,7 +116,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1_6",
     scenario_title: "Mua vé xem phim",
-    context: "daily_life",
+    context: "Đời sống hàng ngày",
     my_character: "Người xem",
     ai_character: "Nhân viên quầy vé",
     goals: ["Chọn phim", "Chọn chỗ ngồi", "Thanh toán"],
@@ -130,7 +130,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s1_7",
     scenario_title: "Đổi tiền ngoại tệ",
-    context: "world",
+    context: "Tài chính & Ngân hàng",
     my_character: "Du khách",
     ai_character: "Nhân viên ngân hàng",
     goals: ["Hỏi tỷ giá", "Yêu cầu đổi tiền", "Xác nhận số tiền"],
@@ -144,7 +144,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s2",
     scenario_title: "Mua sắm ở cửa hàng",
-    context: "daily_life",
+    context: "Mua sắm",
     my_character: "Khách hàng",
     ai_character: "Nhân viên bán hàng",
     goals: ["Hỏi giá sản phẩm", "Nhờ tư vấn kích cỡ", "Thanh toán lịch sự"],
@@ -158,7 +158,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s3",
     scenario_title: "Đặt món ăn",
-    context: "daily_life",
+    context: "Ẩm thực & Nhà hàng",
     my_character: "Thực khách",
     ai_character: "Nhân viên phục vụ",
     goals: ["Gọi món từ menu", "Hỏi về nguyên liệu", "Thanh toán và tip"],
@@ -173,7 +173,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s4",
     scenario_title: "Làm thủ tục sân bay",
-    context: "travel",
+    context: "Du lịch & Hàng không",
     my_character: "Hành khách",
     ai_character: "Nhân viên check-in",
     goals: ["Check-in chuyến bay", "Hỏi hành lý", "Trao đổi về cổng lên máy bay"],
@@ -187,7 +187,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s5",
     scenario_title: "Phỏng vấn xin việc",
-    context: "work",
+    context: "Công việc & Sự nghiệp",
     my_character: "Ứng viên",
     ai_character: "Nhà tuyển dụng",
     goals: ["Giới thiệu bản thân", "Nêu kinh nghiệm làm việc", "Trả lời câu hỏi tình huống"],
@@ -201,7 +201,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s6",
     scenario_title: "Họp nhóm công việc",
-    context: "work",
+    context: "Công sở & Hội họp",
     my_character: "Thành viên nhóm",
     ai_character: "Trưởng nhóm",
     goals: [
@@ -220,7 +220,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s7",
     scenario_title: "Thuyết trình sản phẩm",
-    context: "work",
+    context: "Kinh doanh & Thuyết trình",
     my_character: "Người thuyết trình",
     ai_character: "Nhà đầu tư",
     goals: [
@@ -238,7 +238,7 @@ const mockScenarios: Scenario[] = [
   {
     scenario_id: "s8",
     scenario_title: "Thảo luận tin tức thời sự",
-    context: "world",
+    context: "Xã hội & Thế giới",
     my_character: "Người tham gia thảo luận",
     ai_character: "Chuyên gia bình luận",
     goals: [
@@ -407,11 +407,12 @@ export const mockSessionApi = {
   },
 
   async getHint(sessionId: string): Promise<string> {
-    // Simple mock hints based on session id
+    // Detailed markdown hints with code blocks for better UX demonstration
     const hints = [
-      "Hãy trả lời ngắn gọn và nêu 1 ví dụ.",
-      "Sử dụng thì quá khứ cho hành động đã hoàn tất.",
-      "Thêm một câu nối để làm rõ ý.",
+      "Trong tình huống này, bạn nên bắt đầu bằng một câu chào lịch sự và nêu rõ mục đích của mình để nhân viên dễ dàng hỗ trợ.\n\nVí dụ bạn có thể sử dụng:\n```text\nHi there! I'm here to check in for my flight to London, and I have my passport ready.\n```",
+      "Để yêu cầu một vị trí ngồi cụ thể, hãy sử dụng cấu trúc câu hỏi lịch sự với 'if' hoặc 'would it be possible'.\n\nBạn hãy thử dùng câu này:\n```text\nI was wondering if there are any aisle seats available near the front of the plane?\n```",
+      "Khi được hỏi về hành lý, bạn nên liệt kê rõ ràng số lượng kiện hàng ký gửi và xách tay để thủ tục diễn ra nhanh chóng.\n\nCâu trả lời gợi ý:\n```text\nI have one large suitcase to check in and this backpack as my carry-on bag.\n```",
+      "Nếu bạn cần hỏi về thời gian hoặc địa điểm (như cửa khởi hành), hãy sử dụng cấu trúc 'Could you tell me...'.\n\nVí dụ cụ thể:\n```text\nCould you please tell me which gate I should go to and what time the boarding starts?\n```"
     ];
     const idx =
       Math.abs(

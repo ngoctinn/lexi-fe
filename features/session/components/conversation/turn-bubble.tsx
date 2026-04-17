@@ -56,77 +56,70 @@ export function TurnBubble({
       {/* Bubble Container */}
       <div
         className={cn(
-          "flex flex-col gap-1 max-w-[85%] sm:max-w-[75%]",
+          "flex flex-col gap-1.5 max-w-[80%]",
           isUser && "items-end",
         )}
       >
         <div
           className={cn(
-            "relative rounded-2xl px-4 py-2.5 text-sm md:text-base transition-opacity duration-300",
-            "shadow-sm ring-1 ring-inset",
+            "group relative rounded-2xl px-4 py-3 text-[15px] leading-relaxed transition-all",
             isUser
-              ? "rounded-br-sm bg-primary/10 text-foreground ring-primary/20"
-              : "rounded-bl-sm bg-muted text-foreground ring-border",
-            turn.is_pending && "opacity-60 grayscale-30",
+              ? "rounded-tr-sm bg-primary/10 text-primary border border-primary/20 shadow-sm"
+              : "rounded-tl-sm bg-muted text-foreground ring-1 ring-border shadow-sm",
+            turn.is_pending && "opacity-70 animate-pulse",
           )}
         >
-          <span>{turn.content}</span>
+          <div className="flex flex-col gap-2">
+            <span>{turn.content}</span>
 
-          {turn.is_pending && (
-            <div className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium animate-pulse">
-              <div className="size-1 rounded-full bg-muted-foreground" />
-              Đang gửi...
-            </div>
-          )}
+            {/* Translation (if active) */}
+            {showTranslation && turn.translated_content && (
+              <div className={cn(
+                "text-sm border-t pt-2 mt-1",
+                isUser ? "border-primary/20 text-primary/80" : "border-border text-muted-foreground"
+              )}>
+                <span className="italic font-medium">{turn.translated_content}</span>
+              </div>
+            )}
+          </div>
 
-          {/* Translation */}
-          {showTranslation && turn.translated_content && (
-            <div className="mt-2 text-sm text-muted-foreground border-t border-border/50 pt-2 font-medium">
-              {turn.translated_content}
-            </div>
-          )}
+          {/* Action Overlay (Subtle) */}
+          <div className={cn(
+            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+            isUser ? "right-full mr-2" : "left-full ml-2"
+          )}>
+            {!isUser && turn.audio_url && (
+              <Button
+                variant="secondary"
+                size="icon-xs"
+                className="rounded-full bg-background/80 backdrop-blur shadow-sm border border-border/50"
+                onClick={() => onPlayAudio?.(turn.audio_url!)}
+              >
+                <Volume2 className={cn("size-3", isPlaying && "text-primary")} />
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              size="icon-xs"
+              className={cn(
+                "rounded-full bg-background/80 backdrop-blur shadow-sm border border-border/50",
+                showTranslation && "text-primary"
+              )}
+              onClick={toggleTranslate}
+            >
+              <Languages className="size-3" />
+            </Button>
+          </div>
         </div>
 
-        {/* Action Row */}
-        <div
-          className={cn(
-            "flex items-center gap-1 mt-0.5",
-            isUser ? "justify-end" : "justify-start",
-          )}
-        >
-          {!isUser && turn.audio_url && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-6 rounded-full hover:bg-muted"
-              onClick={() => onPlayAudio?.(turn.audio_url!)}
-              title="Phát ghi âm"
-            >
-              <Volume2
-                className={cn("size-3.5", isPlaying && "text-primary")}
-              />
-            </Button>
-          )}
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "size-6 rounded-full hover:bg-muted",
-              showTranslation && "bg-muted",
-            )}
-            onClick={toggleTranslate}
-            title="Dịch câu này"
-          >
-            <Languages className="size-3.5" />
-          </Button>
-
-          {turn.is_hint_used && (
-            <Badge variant="warning" size="xs" className="ml-1">
+        {/* Status badges */}
+        {turn.is_hint_used && (
+          <div className={cn("flex px-1", isUser ? "justify-end" : "justify-start")}>
+            <Badge variant="warning" size="xs" className="text-[9px] font-bold uppercase tracking-widest">
               Dùng gợi ý
             </Badge>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

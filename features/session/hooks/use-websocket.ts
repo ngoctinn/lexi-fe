@@ -11,6 +11,7 @@ import {
   WsServerEvent,
 } from "@/features/session/types/session.types";
 import { useSessionStore } from "@/features/session/stores/use-session-store";
+import { mockSessionApi } from "@/features/session/api/session-mock";
 
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? "";
 const RECONNECT_BASE_MS = 1000;
@@ -194,10 +195,11 @@ export function useWebSocket({
             break;
           }
           case WsClientEvent.USE_HINT:
-            setTimeout(() => {
+            setTimeout(async () => {
+              const hint = await mockSessionApi.getHint(sessionId);
               emitServerMessage({
                 event: WsServerEvent.HINT_TEXT,
-                hint: "Gợi ý mẫu: Hãy diễn đạt ngắn gọn.",
+                hint: hint,
               });
             }, 150);
             break;

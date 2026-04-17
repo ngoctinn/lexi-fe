@@ -65,15 +65,17 @@ export function TranscriptPanel({
               <AvatarImage src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`} alt={aiName} />
               <AvatarFallback className="text-[10px]">AI</AvatarFallback>
             </Avatar>
-            <div className="relative rounded-2xl rounded-bl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-2.5 text-sm md:text-base max-w-[85%] sm:max-w-[75%]">
-              {aiStreamingText}
-              {isAiStreaming && (
-                <span className="ml-1 inline-flex w-3 items-center">
-                  <span className="animate-[pulse_1.5s_infinite] text-primary">.</span>
-                  <span className="animate-[pulse_1.5s_0.2s_infinite] text-primary">.</span>
-                  <span className="animate-[pulse_1.5s_0.4s_infinite] text-primary">.</span>
-                </span>
-              )}
+            <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-[15px] leading-relaxed max-w-[80%] shadow-sm">
+              <div className="flex flex-col gap-2">
+                {aiStreamingText}
+                {isAiStreaming && (
+                  <div className="flex items-center gap-1 h-5 ml-1">
+                    <span className="size-1.5 rounded-full bg-primary/40 animate-[bounce_1s_infinite]" />
+                    <span className="size-1.5 rounded-full bg-primary/60 animate-[bounce_1s_0.2s_infinite]" />
+                    <span className="size-1.5 rounded-full bg-primary/80 animate-[bounce_1s_0.4s_infinite]" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

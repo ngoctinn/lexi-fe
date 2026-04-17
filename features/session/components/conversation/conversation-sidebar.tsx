@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Lightbulb, History, Copy, Check } from "lucide-react";
+import { Lightbulb, Copy, Check, Target, Info, UserCircle, Bot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,10 @@ interface ConversationSidebarProps {
   isAiStreaming?: boolean;
   disabled?: boolean;
   className?: string;
+  scenarioGoals?: string[];
+  context?: string;
+  myRole?: string;
+  partnerRole?: string;
 }
 
 export function ConversationSidebar({
@@ -31,109 +37,150 @@ export function ConversationSidebar({
   isAiStreaming,
   disabled,
   className,
+  scenarioGoals = [],
+  context,
+  myRole,
+  partnerRole,
 }: ConversationSidebarProps) {
   const [copied, setCopied] = React.useState(false);
 
   const handleCopy = () => {
     if (currentHint) {
-      navigator.clipboard.writeText(currentHint);
+      // Intelligent copy: if there's exactly one code block, copy just its content
+      const codeBlockMatch = currentHint.match(/```(?:[a-z]*)\n?([\s\S]*?)\n?```/);
+      const textToCopy = codeBlockMatch ? codeBlockMatch[1].trim() : currentHint;
+
+      navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      toast.success("Đã sao chép gợi ý");
+      toast.success(codeBlockMatch ? "Đã chép nội dung code" : "Đã sao chép gợi ý");
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
   return (
-    <aside className={cn("flex flex-col gap-4 w-[320px] max-w-full border-l bg-muted/20 px-6 py-8", className)}>
+    <aside className={cn("flex flex-col h-full bg-accent/5 px-6 py-6 gap-6", className)}>
       
+      {/* Session Context Section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
+            <Info className="size-4.5" />
+          </div>
+          <h3 className="text-sm font-bold tracking-tight">Bối cảnh & Vai trò</h3>
+        </div>
+
+        <div className="flex flex-col gap-3 px-1">
+          <div className="flex flex-wrap items-center gap-2 px-1">
+            <Badge variant="secondary" className="bg-blue-500/5 text-blue-600 border-blue-500/10 hover:bg-blue-500/5 pr-3 py-1 gap-1.5 shadow-none">
+              <UserCircle className="size-3.5 opacity-70" />
+              <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">Bạn:</span>
+              <span className="text-[12px] font-bold">{myRole || "Học viên"}</span>
+            </Badge>
+
+            <Badge variant="secondary" className="bg-blue-500/5 text-blue-600 border-blue-500/10 hover:bg-blue-500/5 pr-3 py-1 gap-1.5 shadow-none">
+              <Bot className="size-3.5 opacity-70" />
+              <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">Đối phương:</span>
+              <span className="text-[12px] font-bold">{partnerRole || "AI Assistant"}</span>
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      <div className="h-px bg-border/40" />
+
+      {/* Practice Goals Section */}
+      <div className="flex flex-col gap-5">
+        <div className="flex items-center gap-2">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Target className="size-4.5" />
+          </div>
+          <h3 className="text-sm font-bold tracking-tight">Mục tiêu bài luyện</h3>
+        </div>
+
+        <div className="flex flex-wrap gap-2 px-1">
+          {scenarioGoals.length > 0 ? (
+            scenarioGoals.map((goal, i) => (
+              <Badge 
+                key={i} 
+                variant="secondary" 
+                className="bg-primary/5 text-primary border-primary/10 hover:bg-primary/5 font-bold text-[11px] px-2.5 py-1.5 shadow-none"
+              >
+                {goal}
+              </Badge>
+            ))
+          ) : (
+             <p className="text-[11px] text-muted-foreground italic col-span-2">Cùng bắt đầu hội thoại nào!</p>
+          )}
+        </div>
+      </div>
+
+      <div className="h-px bg-border/40" />
+
       {/* Hint Section */}
-      <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+      <div className="flex-1 flex flex-col gap-5 overflow-hidden">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 font-bold text-sm tracking-tight">
-            <div className="p-1 rounded-md bg-amber-100 dark:bg-amber-900/30">
-              <Lightbulb className="size-4" />
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
+              <Lightbulb className="size-4.5" />
             </div>
-            <span>Gợi ý phản hồi</span>
+            <h3 className="text-sm font-bold tracking-tight">Phân tích & Gợi ý</h3>
           </div>
           <Button 
-            variant="soft-warning" 
+            variant="outline" 
             size="sm" 
             onClick={onGetHint} 
             disabled={disabled || isAiStreaming || !!currentHint}
-            className="text-[10px] uppercase font-heavy tracking-widest h-7 px-4"
+            className="h-8 text-[11px] font-bold"
           >
             Lấy gợi ý
           </Button>
         </div>
 
-        <div className="flex-1 -mx-2 px-2 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0 -mx-1 px-1">
           {currentHint ? (
-            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
-               <div className="relative p-5 rounded-2xl bg-background border shadow-sm group overflow-hidden">
-                  <div className="absolute top-0 right-0 p-3 opacity-5 overflow-hidden">
-                    <Lightbulb className="size-24 -rotate-12" />
+            <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-500">
+               <div className="flex flex-col gap-4">
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-[16px]/relaxed font-medium text-foreground tracking-tight">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({ children }) => <span className="block mb-4 last:mb-0 leading-relaxed">{children}</span>,
+                        code: ({ children }) => (
+                          <code className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-[13px] font-bold text-foreground border border-border/50">
+                            {children}
+                          </code>
+                        ),
+                        pre: ({ children }) => (
+                          <pre className="p-4 rounded-2xl bg-muted/50 border border-border/70 my-4 last:mb-0 whitespace-pre-wrap break-words text-foreground font-mono text-[14px] leading-relaxed">
+                            {children}
+                          </pre>
+                        ),
+                      }}
+                    >
+                      {currentHint}
+                    </ReactMarkdown>
                   </div>
                   
-                  <div className="relative z-10">
-                    <Badge variant="soft" className="mb-3 font-bold text-[10px] uppercase tracking-wider">
-                      Mẫu câu gợi ý
-                    </Badge>
-                    
-                    <p className="text-[15px]/relaxed font-semibold italic text-foreground tracking-tight">
-                      {`"${currentHint}"`}
-                    </p>
-                    
-                    <div className="mt-6 flex items-center gap-2">
-                       <Button 
-                         variant="secondary" 
-                         size="sm" 
-                         className="h-8 text-xs font-bold px-3 rounded-lg"
-                         onClick={handleCopy}
-                       >
-                         {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-                         {copied ? "Đã chép" : "Sao chép"}
-                       </Button>
-                       <Button 
-                         variant="default" 
-                         size="sm" 
-                         className="h-8 text-xs font-bold px-3 rounded-lg"
-                         onClick={() => onSelectHint?.(currentHint)}
-                       >
-                         Sử dụng
-                       </Button>
-                    </div>
+                  <div className="flex items-center pt-2">
+                     <Button 
+                       variant="ghost" 
+                       size="xs"
+                       className="h-7 text-[10px] font-bold text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors"
+                       onClick={handleCopy}
+                     >
+                       {copied ? "Đã sao chép" : "Sao chép gợi ý"}
+                     </Button>
                   </div>
                </div>
-               
-               <p className="text-[11px] text-muted-foreground px-2 font-medium italic">
-                 Mẹo: Bạn có thể thay đổi từ ngữ trong mẫu câu để phù hợp với ý của mình.
-               </p>
             </div>
           ) : (
-            <Empty className="py-12 border-dashed border-2 rounded-2xl bg-background/50">
-              <EmptyHeader>
-                <EmptyMedia variant="icon" className="bg-amber-50 dark:bg-amber-950 text-amber-500">
-                  <Lightbulb />
-                </EmptyMedia>
-                <EmptyTitle className="text-sm font-bold">Hãy thử tự trả lời</EmptyTitle>
-                  <EmptyDescription className="text-xs">
-                    Bấm {`"Lấy gợi ý"`} nếu bạn cần ý tưởng để tiếp tục cuộc hội thoại.
-                  </EmptyDescription>
-                </EmptyHeader>
-            </Empty>
+            <div className="py-20 text-center animate-in fade-in duration-700">
+              <p className="text-xs text-muted-foreground/40 font-medium tracking-tight">
+                AI đang chờ để phân tích...
+              </p>
+            </div>
           )}
         </div>
-      </div>
-
-
-      {/* Help Note */}
-      <div className="mt-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
-         <div className="flex items-start gap-3">
-            <History className="text-primary mt-0.5" />
-            <p className="text-[11px]/relaxed text-muted-foreground font-medium">
-              Sử dụng tổ hợp phím <kbd className="font-mono text-primary/80">Enter</kbd> để gửi tin nhắn văn bản.
-            </p>
-         </div>
       </div>
     </aside>
   );

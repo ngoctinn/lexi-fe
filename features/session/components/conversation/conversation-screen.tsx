@@ -25,6 +25,10 @@ interface ConversationScreenProps {
   initialTurns?: Turn[];
   scenarioTitle?: string;
   aiCharacter?: string;
+  scenarioGoals?: string[];
+  context?: string;
+  myRole?: string;
+  partnerRole?: string;
 }
 
 export function ConversationScreen({
@@ -33,6 +37,10 @@ export function ConversationScreen({
   initialTurns,
   scenarioTitle = "Phiên luyện nói",
   aiCharacter = "AI Assistant",
+  scenarioGoals = [],
+  context,
+  myRole,
+  partnerRole,
 }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({
     sessionId,
@@ -84,6 +92,10 @@ export function ConversationScreen({
               <SheetTitle className="sr-only">Menu hội thoại</SheetTitle>
               <ConversationSidebar
                 currentHint={ui.currentHint}
+                scenarioGoals={scenarioGoals}
+                context={context}
+                myRole={myRole}
+                partnerRole={partnerRole}
                 onGetHint={requestHint}
                 onSelectHint={handleSelectHint}
                 isAiStreaming={ui.isAiStreaming}
@@ -96,8 +108,8 @@ export function ConversationScreen({
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Main Chat Area */}
-        <main className="flex flex-1 flex-col overflow-hidden relative">
+        {/* Main Chat Area (60%) */}
+        <main className="flex flex-[3] flex-col overflow-hidden relative border-r">
           <TranscriptPanel
             turns={ui.turns}
             isAiStreaming={ui.isAiStreaming}
@@ -109,7 +121,7 @@ export function ConversationScreen({
           />
 
           {/* Input Area */}
-          <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-8">
+          <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-6">
             <MessageInput
               value={inputValue}
               onValueChange={setInputValue}
@@ -119,34 +131,39 @@ export function ConversationScreen({
               disabled={ui.isControlsDisabled}
             />
 
-            {/* Connection/Upload status */}
-            <div className="mt-2 h-4 flex items-center justify-center">
-              {ui.wsState !== "connected" && (
-                <span className="text-[10px] text-muted-foreground animate-pulse">
-                  {ui.wsState === "connecting"
-                    ? "Đang kết nối..."
-                    : "Mất kết nối máy chủ"}
-                </span>
-              )}
-              {ui.recorderState === "uploading" && (
-                <div className="w-full max-w-50 h-1 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-              )}
-            </div>
+            {/* Connection/Upload status - Show only when needed to save space */}
+            {(ui.wsState !== "connected" || ui.recorderState === "uploading") && (
+              <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
+                {ui.wsState !== "connected" && (
+                  <span className="text-[10px] text-muted-foreground font-medium animate-pulse">
+                    {ui.wsState === "connecting"
+                      ? "Đang kết nối..."
+                      : "Mất kết nối máy chủ"}
+                  </span>
+                )}
+                {ui.recorderState === "uploading" && (
+                  <div className="w-full max-w-[200px] h-1 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </main>
 
-        {/* Desktop Sidebar */}
+        {/* Desktop Sidebar (40%) */}
         <ConversationSidebar
           currentHint={ui.currentHint}
+          scenarioGoals={scenarioGoals}
+          myRole={myRole}
+          partnerRole={partnerRole}
           onGetHint={requestHint}
           isAiStreaming={ui.isAiStreaming}
           disabled={ui.isControlsDisabled}
-          className="hidden lg:flex"
+          className="hidden lg:flex flex-[2]"
         />
       </div>
 

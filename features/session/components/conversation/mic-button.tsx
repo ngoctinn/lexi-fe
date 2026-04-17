@@ -42,6 +42,9 @@ export function MicButton({
 
   return (
     <div className={cn("relative flex items-center justify-center", className)}>
+      {isListening && (
+        <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping duration-1000" />
+      )}
       <Button
         type="button"
         variant={isListening ? "soft" : "default"}
@@ -50,18 +53,21 @@ export function MicButton({
           disabled || isProcessing || recorderState === "permission-denied"
         }
         onClick={onToggle}
-        className="shrink-0"
+        className={cn(
+          "shrink-0 relative z-10 rounded-full",
+          isListening && "ring-4 ring-primary/20 bg-primary shadow-lg shadow-primary/20 hover:bg-primary-600"
+        )}
         aria-label={isListening ? "Stop recording" : "Start recording"}
         title={getTooltipContent()}
       >
         {isProcessing ? (
-          <Loader2 className="animate-spin size-5" />
+          <Loader2 className="animate-spin size-6" />
         ) : isListening ? (
-          <Square className="fill-current size-5" />
+          <Square className="fill-primary-foreground size-5 text-primary-foreground" />
         ) : recorderState === "permission-denied" ? (
-          <MicOff className="size-5" />
+          <MicOff className="size-6" />
         ) : (
-          <Mic className="size-5" />
+          <Mic className="size-6" />
         )}
       </Button>
     </div>

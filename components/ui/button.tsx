@@ -18,15 +18,15 @@ const buttonVariants = cva(
         ghost:
           "border border-control-border-subtle bg-control-bg-subtle text-foreground shadow-none hover:bg-control-hover aria-expanded:bg-muted aria-expanded:text-foreground active:translate-y-0! active:shadow-none!",
         destructive:
-          "border border-destructive/15 bg-destructive/10 text-destructive shadow-[inset_0_-4px_0_0_var(--color-destructive-shadow)] hover:bg-destructive/20",
+          "border border-destructive/10 bg-destructive/5 text-destructive shadow-none hover:bg-destructive/10",
         link: "!h-auto !min-h-0 !rounded-none !border-0 !bg-transparent !px-0 !py-0 !font-medium !text-primary-700 !shadow-none active:!translate-y-0 hover:!text-primary-800 hover:!underline",
-        soft: "border border-primary/25 bg-primary/10 text-primary shadow-[inset_0_-4px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/20",
+        soft: "border border-primary/10 bg-primary/5 text-primary shadow-none hover:bg-primary/10",
         "soft-warning":
-          "border border-warning/25 bg-warning/10 text-warning shadow-[inset_0_-4px_0_0_var(--color-warning-dark)] hover:bg-warning/20",
+          "border border-warning/10 bg-warning/5 text-warning shadow-none hover:bg-warning/10",
         "soft-success":
-          "border border-success/25 bg-success/10 text-success shadow-[inset_0_-4px_0_0_var(--color-success-dark)] hover:bg-success/20",
+          "border border-success/10 bg-success/5 text-success shadow-none hover:bg-success/10",
         "soft-info":
-          "border border-info/25 bg-info/10 text-info shadow-[inset_0_-4px_0_0_var(--color-info-dark)] hover:bg-info/20",
+          "border border-info/10 bg-info/5 text-info shadow-none hover:bg-info/10",
         "level-a1":
           "border-emerald-700 bg-emerald-500 text-white shadow-[inset_0_-4px_0_0_#047857] hover:bg-emerald-600",
         "level-a2":
