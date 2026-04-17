@@ -11,11 +11,16 @@ export default async function NewSessionPage() {
   const scenarios = await getScenarios();
 
   return (
-    <div className="flex flex-1 flex-col">
+    // flex-col + flex-1 → fill toàn bộ SidebarInset, không scroll page
+    <div className="flex flex-1 flex-col overflow-hidden">
       <PageHeader icon={Map} title="Lộ trình luyện nói" />
-      
-      <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
-        <SessionSetupForm scenarios={scenarios} />
+
+      {/* 
+        px/py: padding ngang, không padding dọc để form dùng hết chiều cao.
+        flex-1 + overflow-hidden: form tự quản lý scroll bên trong.
+      */}
+      <div className="flex flex-1 overflow-hidden px-4 sm:px-6 lg:px-8 py-6">
+        <SessionSetupForm scenarios={scenarios} className="w-full" />
       </div>
     </div>
   );

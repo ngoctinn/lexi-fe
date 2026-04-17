@@ -5,28 +5,40 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-xl border border-transparent bg-clip-padding text-sm font-bold whitespace-nowrap transition-all outline-none cursor-pointer select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-[5px] active:shadow-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-xl border border-transparent bg-clip-padding text-sm font-bold whitespace-nowrap transition-all outline-none cursor-pointer select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-[3px] active:shadow-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "border-primary-shadow bg-primary text-primary-foreground shadow-[0_5px_0_0_var(--color-primary-shadow)] hover:bg-primary-600",
+          "border-primary-shadow bg-primary text-primary-foreground shadow-[inset_0_-5px_0_0_var(--color-primary-shadow)] hover:bg-primary-600",
         outline:
-          "border-2 border-control-border bg-control-bg text-foreground shadow-[0_5px_0_0_var(--color-control-border)] hover:bg-control-hover hover:text-foreground",
+          "border-2 border-control-border bg-control-bg text-foreground shadow-[inset_0_-5px_0_0_var(--color-control-border)] hover:bg-control-hover hover:text-foreground",
         secondary:
-          "border border-border bg-background text-foreground shadow-[0_5px_0_0_var(--color-border)] hover:bg-muted/40",
+          "border border-border bg-background text-foreground shadow-[inset_0_-5px_0_0_var(--color-border)] hover:bg-muted/40",
         ghost:
           "border border-control-border-subtle bg-control-bg-subtle text-foreground shadow-none hover:bg-control-hover aria-expanded:bg-muted aria-expanded:text-foreground active:translate-y-0! active:shadow-none!",
         destructive:
-          "border border-destructive/15 bg-destructive/10 text-destructive shadow-[0_5px_0_0_var(--color-destructive-shadow)] hover:bg-destructive/20",
+          "border border-destructive/15 bg-destructive/10 text-destructive shadow-[inset_0_-5px_0_0_var(--color-destructive-shadow)] hover:bg-destructive/20",
         link: "!h-auto !min-h-0 !rounded-none !border-0 !bg-transparent !px-0 !py-0 !font-medium !text-primary-700 !shadow-none active:!translate-y-0 hover:!text-primary-800 hover:!underline",
-        soft: "border border-primary/25 bg-primary/10 text-primary shadow-[0_5px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/20",
+        soft: "border border-primary/25 bg-primary/10 text-primary shadow-[inset_0_-5px_0_0_var(--color-primary-shadow-tint)] hover:bg-primary/20",
         "soft-warning":
-          "border border-warning/25 bg-warning/10 text-warning shadow-[0_5px_0_0_var(--color-warning-dark)] hover:bg-warning/20",
+          "border border-warning/25 bg-warning/10 text-warning shadow-[inset_0_-5px_0_0_var(--color-warning-dark)] hover:bg-warning/20",
         "soft-success":
-          "border border-success/25 bg-success/10 text-success shadow-[0_5px_0_0_var(--color-success-dark)] hover:bg-success/20",
+          "border border-success/25 bg-success/10 text-success shadow-[inset_0_-5px_0_0_var(--color-success-dark)] hover:bg-success/20",
         "soft-info":
-          "border border-info/25 bg-info/10 text-info shadow-[0_5px_0_0_var(--color-info-dark)] hover:bg-info/20",
+          "border border-info/25 bg-info/10 text-info shadow-[inset_0_-5px_0_0_var(--color-info-dark)] hover:bg-info/20",
+        "level-a1":
+          "border-emerald-700 bg-emerald-500 text-white shadow-[inset_0_-5px_0_0_#047857] hover:bg-emerald-600",
+        "level-a2":
+          "border-cyan-700 bg-cyan-500 text-white shadow-[inset_0_-5px_0_0_#0e7490] hover:bg-cyan-600",
+        "level-b1":
+          "border-blue-700 bg-blue-500 text-white shadow-[inset_0_-5px_0_0_#1d4ed8] hover:bg-blue-600",
+        "level-b2":
+          "border-indigo-700 bg-indigo-500 text-white shadow-[inset_0_-5px_0_0_#4338ca] hover:bg-indigo-600",
+        "level-c1":
+          "border-purple-700 bg-purple-500 text-white shadow-[inset_0_-5px_0_0_#6d28d9] hover:bg-purple-600",
+        "level-c2":
+          "border-rose-700 bg-rose-500 text-white shadow-[inset_0_-5px_0_0_#be123c] hover:bg-rose-600",
       },
       size: {
         xs: "h-7 gap-1 rounded-lg px-2 text-xs active:!translate-y-[2px] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
@@ -42,7 +54,8 @@ const buttonVariants = cva(
         "icon-sm":
           "size-9 rounded-lg in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3.5",
         "icon-lg": "size-12 rounded-xl active:!translate-y-[3px]",
-        "icon-xl": "size-14 rounded-xl active:!translate-y-[3px]",
+        "icon-xl": "size-14 rounded-xl active:!translate-y-[2px]",
+        "icon-2xl": "size-24 rounded-full active:!translate-y-[3px] [&_svg:not([class*='size-'])]:size-10",
       },
     },
     defaultVariants: {

@@ -51,7 +51,7 @@ export interface Scenario {
   is_active: boolean;
   usage_count: number;
   // Dùng cho lộ trình học — sắp xếp và nhóm scenario theo cấp độ
-  difficulty_level?: "beginner" | "intermediate" | "advanced";
+  difficulty_level?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
   order?: number;
 }
 
