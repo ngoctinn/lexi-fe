@@ -216,12 +216,18 @@ export function SessionSetupForm({
       prompt_snapshot: buildPromptSnapshot(),
     };
 
-    const result = await createSession(finalDto);
+    try {
+      const result = await createSession(finalDto);
 
-    if (result.success && result.session_id) {
-      router.push(`/session/${result.session_id}`);
-    } else {
+      if (result.success && result.session_id) {
+        router.push(`/session/${result.session_id}`);
+        return;
+      }
+
       toast.error(result.error ?? "Không thể tạo phiên học. Vui lòng thử lại.");
+      setIsPending(false);
+    } catch {
+      toast.error("Không thể tạo phiên học. Vui lòng thử lại.");
       setIsPending(false);
     }
   };

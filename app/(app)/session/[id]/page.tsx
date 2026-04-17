@@ -1,11 +1,29 @@
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { fetchAuthSession } from "aws-amplify/auth/server";
+import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
+import { runWithAmplifyServerContext } from "@/lib/amplify-server";
 
 interface SessionPageProps {
   params: Promise<{ id: string }>;
+}
+
+async function getSessionToken() {
+  return runWithAmplifyServerContext({
+    nextServerContext: { cookies },
+    operation: async (contextSpec) => {
+      const session = await fetchAuthSession(contextSpec);
+
+      return (
+        session.tokens?.idToken?.toString() ??
+        session.tokens?.accessToken?.toString() ??
+        null
+      );
+    },
+  });
 }
 
 export async function generateMetadata({
@@ -37,12 +55,17 @@ export async function generateMetadata({
 export default async function SessionPage({ params }: SessionPageProps) {
   const { id } = await params;
 
-  const [{ success, session }, scenarios] = await Promise.all([
+  const [{ success, session }, scenarios, idToken] = await Promise.all([
     getSession(id),
     getScenarios(),
+    getSessionToken(),
   ]);
   if (!success || !session) {
     notFound();
+  }
+
+  if (!idToken) {
+    redirect("/login");
   }
 
   const scenario = scenarios.find(
@@ -52,7 +75,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
   return (
     <ConversationScreen
       sessionId={session.session_id}
-      idToken="mock-token"
+      idToken={idToken}
       initialTurns={session.turns ?? []}
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}
       aiCharacter={scenario?.ai_character ?? "AI Assistant"}

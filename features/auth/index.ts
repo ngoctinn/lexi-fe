@@ -4,4 +4,10 @@ export * from "./components/forgot-password-form";
 export * from "./components/reset-password-form";
 export * from "./components/verify-form";
 
-export * from "./types/schema";
+export * from "./schemas";
+export type {
+  LoginSchema as LoginInput,
+  SignupSchema as SignupInput,
+  ForgotPasswordSchema as ForgotPasswordInput,
+  ResetPasswordSchema as ResetPasswordInput,
+} from "./schemas";

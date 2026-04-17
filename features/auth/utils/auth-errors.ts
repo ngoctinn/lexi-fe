@@ -13,7 +13,6 @@ export function translateCognitoError(error: unknown): string {
   const message = cognitoError.message || "";
 
   switch (errorName) {
-    // Auth errors
     case "UserNotFoundException":
       return "Tài khoản không tồn tại.";
     case "NotAuthorizedException":
@@ -25,7 +24,6 @@ export function translateCognitoError(error: unknown): string {
     case "UserLambdaValidationException":
       return "Lỗi xác thực người dùng từ hệ thống.";
 
-    // SignUp errors
     case "UsernameExistsException":
       return "Email này đã được sử dụng bởi một tài khoản khác.";
     case "InvalidPasswordException":
@@ -37,7 +35,6 @@ export function translateCognitoError(error: unknown): string {
         return "Mật khẩu cần ít nhất một ký tự đặc biệt.";
       return "Mật khẩu không đáp ứng yêu cầu bộ bảo mật của hệ thống.";
 
-    // OTP/Verification errors
     case "CodeMismatchException":
       return "Mã xác nhận không chính xác. Vui lòng kiểm tra lại.";
     case "ExpiredCodeException":
@@ -45,7 +42,6 @@ export function translateCognitoError(error: unknown): string {
     case "CodeDeliveryFailureException":
       return "Không thể gửi mã xác nhận. Vui lòng kiểm tra lại email.";
 
-    // Limit/General errors
     case "LimitExceededException":
       return "Hành động quá nhanh. Vui lòng đợi một lát trước khi thử lại.";
     case "TooManyRequestsException":

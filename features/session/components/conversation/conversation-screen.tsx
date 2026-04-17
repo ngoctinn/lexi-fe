@@ -42,8 +42,14 @@ export function ConversationScreen({
   });
   const [inputValue, setInputValue] = React.useState("");
   const hasStartedRef = React.useRef(false);
-  const { startSession, toggleMic, requestHint, translateTurn, sendMessage } =
-    actions;
+  const {
+    startSession,
+    toggleMic,
+    requestHint,
+    translateTurn,
+    sendMessage,
+    setCurrentAudioUrl,
+  } = actions;
 
   const handleSelectHint = (hint: string) => {
     setInputValue(hint);
@@ -145,7 +151,10 @@ export function ConversationScreen({
         />
       </div>
 
-      <AiAudioPlayer url={ui.currentAudioUrl} />
+      <AiAudioPlayer
+        url={ui.currentAudioUrl}
+        onEnded={() => setCurrentAudioUrl(null)}
+      />
       <InstantLookup />
     </div>
   );

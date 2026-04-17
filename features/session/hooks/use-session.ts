@@ -49,8 +49,15 @@ export function useSession({
   const setAiStreaming = useSessionStore((s) => s.setAiStreaming);
   const setHint = useSessionStore((s) => s.setHint);
   const setHintPanelOpen = useSessionStore((s) => s.setHintPanelOpen);
+  const setCurrentAudioUrl = useSessionStore((s) => s.setCurrentAudioUrl);
+  const resetSessionState = useSessionStore((s) => s.reset);
 
-  // Sync initial turns once
+  // Reset state khi đổi session để không leak dữ liệu giữa các phiên.
+  React.useEffect(() => {
+    resetSessionState();
+  }, [resetSessionState, sessionId]);
+
+  // Chỉ nạp turns ban đầu sau khi đã reset state.
   React.useEffect(() => {
     if (initialTurns.length > 0 && turns.length === 0) {
       setTurns(initialTurns);
@@ -75,8 +82,29 @@ export function useSession({
           break;
 
         case WsServerEvent.AI_TEXT_CHUNK:
-          setAiStreamingText((prev) => (event.done ? "" : prev + event.chunk));
-          setAiStreaming(!event.done, event.done ? "" : undefined);
+          if (event.done) {
+            const finalText = `${useSessionStore.getState().aiStreamingText}${event.chunk}`;
+            const currentAudioUrl = useSessionStore.getState().currentAudioUrl;
+
+            if (finalText.trim().length > 0) {
+              setTurns((prev: Turn[]) => [
+                ...prev,
+                {
+                  turn_index: prev.length,
+                  speaker: TurnSpeaker.AI,
+                  content: finalText,
+                  audio_url: currentAudioUrl,
+                  is_hint_used: false,
+                },
+              ]);
+            }
+
+            setAiStreamingText("");
+            setAiStreaming(false, "");
+          } else {
+            setAiStreamingText((prev) => prev + event.chunk);
+            setAiStreaming(true);
+          }
           break;
 
         case WsServerEvent.TURN_SAVED:
@@ -90,7 +118,22 @@ export function useSession({
           break;
 
         case WsServerEvent.AI_AUDIO_URL:
-          // Handle audio...
+          setCurrentAudioUrl(event.url);
+          setTurns((prev: Turn[]) => {
+            const next = [...prev];
+
+            for (let index = next.length - 1; index >= 0; index -= 1) {
+              if (next[index].speaker === TurnSpeaker.AI) {
+                next[index] = {
+                  ...next[index],
+                  audio_url: event.url,
+                };
+                break;
+              }
+            }
+
+            return next;
+          });
           break;
 
         case WsServerEvent.HINT_TEXT:
@@ -115,6 +158,7 @@ export function useSession({
       setTurns,
       setHint,
       setHintPanelOpen,
+      setCurrentAudioUrl,
     ],
   );
 
@@ -266,6 +310,7 @@ export function useSession({
       toggleHintPanel,
       translateTurn,
       sendMessage,
+      setCurrentAudioUrl,
     },
   };
 }

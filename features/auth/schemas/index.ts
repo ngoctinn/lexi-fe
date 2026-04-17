@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// --- Base Rules ---
 const emailRule = z
   .string()
   .email("Email không hợp lệ")
@@ -14,7 +13,6 @@ const passwordStrongRule = passwordBaseRule
 
 const otpRule = z.string().length(6, "Mã xác thực phải có 6 chữ số");
 
-// --- Schemas ---
 export const loginSchema = z.object({
   email: emailRule,
   password: passwordBaseRule,
@@ -45,7 +43,6 @@ export const verifySchema = z.object({
   otp: otpRule,
 });
 
-// --- Types ---
 export type LoginSchema = z.infer<typeof loginSchema>;
 export type SignupSchema = z.infer<typeof signupSchema>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
