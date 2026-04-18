@@ -42,6 +42,7 @@ export function useWebSocket({
   const reconnectTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const pendingTimeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
   const isMountedRef = React.useRef(true);
   const shouldReconnectRef = React.useRef(true);
   const connectRef = React.useRef<(() => void) | null>(null);
@@ -52,7 +53,6 @@ export function useWebSocket({
   const [connectionState, setConnectionState] =
     React.useState<WsConnectionState>("disconnected");
 
-  // Keep refs updated without re-running effects
   React.useEffect(() => {
     onMessageRef.current = onMessage;
     onConnectionChangeRef.current = onConnectionChange;
@@ -67,11 +67,29 @@ export function useWebSocket({
     onMessageRef.current?.(message);
   }, []);
 
+  const clearPendingTimeouts = React.useCallback(() => {
+    pendingTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    pendingTimeoutsRef.current = [];
+  }, []);
+
+  const scheduleMockTimeout = React.useCallback(
+    (callback: () => void, delay: number) => {
+      const timeoutId = setTimeout(() => {
+        pendingTimeoutsRef.current = pendingTimeoutsRef.current.filter(
+          (item) => item !== timeoutId,
+        );
+        callback();
+      }, delay);
+
+      pendingTimeoutsRef.current.push(timeoutId);
+    },
+    [],
+  );
+
   const connect = React.useCallback(() => {
     if (!isMountedRef.current) return;
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    // Development mock fallback: if no WS_BASE is provided, simulate a connected WS
     const isDevMock = process.env.NODE_ENV === "development" && !WS_BASE;
     if (isDevMock) {
       reconnectAttemptRef.current = 0;
@@ -141,6 +159,7 @@ export function useWebSocket({
     shouldReconnectRef.current = false;
     isMountedRef.current = false;
     if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+    clearPendingTimeouts();
     if (isDevMock) {
       setConnectionState("disconnected");
       onConnectionChangeRef.current?.("disconnected");
@@ -152,7 +171,6 @@ export function useWebSocket({
   function send(payload: WsClientPayload) {
     const isDevMock = process.env.NODE_ENV === "development" && !WS_BASE;
     if (isDevMock) {
-      // Simulate server responses for dev when there's no real WS
       try {
         switch (payload.action) {
           case WsClientEvent.START_SESSION:
@@ -162,19 +180,16 @@ export function useWebSocket({
             });
             break;
           case WsClientEvent.SEND_MESSAGE: {
-            // Determine the optimistic turn index from the session store
             const turns = useSessionStore.getState().turns;
             const turnIndex = Math.max(0, turns.length - 1);
-            // Mark turn saved
-            setTimeout(() => {
+            scheduleMockTimeout(() => {
               emitServerMessage({
                 event: WsServerEvent.TURN_SAVED,
                 turn_index: turnIndex,
               });
             }, 200);
 
-            // Simulate AI reply
-            setTimeout(() => {
+            scheduleMockTimeout(() => {
               emitServerMessage({
                 event: WsServerEvent.AI_TEXT_CHUNK,
                 chunk: `Mock AI: trả lời "${payload.text}"`,
@@ -186,7 +201,7 @@ export function useWebSocket({
           case WsClientEvent.AUDIO_UPLOADED: {
             const turns = useSessionStore.getState().turns;
             const turnIndex = Math.max(0, turns.length - 1);
-            setTimeout(() => {
+            scheduleMockTimeout(() => {
               emitServerMessage({
                 event: WsServerEvent.TURN_SAVED,
                 turn_index: turnIndex,
@@ -195,7 +210,7 @@ export function useWebSocket({
             break;
           }
           case WsClientEvent.USE_HINT:
-            setTimeout(async () => {
+            scheduleMockTimeout(async () => {
               const hint = await mockSessionApi.getHint(sessionId);
               emitServerMessage({
                 event: WsServerEvent.HINT_TEXT,
@@ -237,9 +252,10 @@ export function useWebSocket({
       isMountedRef.current = false;
       shouldReconnectRef.current = false;
       if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      clearPendingTimeouts();
       wsRef.current?.close();
     };
-  }, [connect]);
+  }, [clearPendingTimeouts, connect]);
 
   return { connectionState, send, disconnect };
 }

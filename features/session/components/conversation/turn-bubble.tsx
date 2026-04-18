@@ -42,7 +42,6 @@ export function TurnBubble({
         isUser ? "justify-end" : "justify-start",
       )}
     >
-      {/* AI Avatar */}
       {!isUser && (
         <Avatar className="size-8 shrink-0 mb-1 border shadow-sm">
           <AvatarImage
@@ -53,7 +52,6 @@ export function TurnBubble({
         </Avatar>
       )}
 
-      {/* Bubble Container */}
       <div
         className={cn(
           "flex flex-col gap-1.5 max-w-[80%]",
@@ -72,22 +70,28 @@ export function TurnBubble({
           <div className="flex flex-col gap-2">
             <span>{turn.content}</span>
 
-            {/* Translation (if active) */}
             {showTranslation && turn.translated_content && (
-              <div className={cn(
-                "text-sm border-t pt-2 mt-1",
-                isUser ? "border-primary-100 text-primary" : "border-border text-muted-foreground"
-              )}>
-                <span className="italic font-medium">{turn.translated_content}</span>
+              <div
+                className={cn(
+                  "text-sm border-t pt-2 mt-1",
+                  isUser
+                    ? "border-primary-100 text-primary"
+                    : "border-border text-muted-foreground",
+                )}
+              >
+                <span className="italic font-medium">
+                  {turn.translated_content}
+                </span>
               </div>
             )}
           </div>
 
-          {/* Action Overlay (Subtle) */}
-          <div className={cn(
-            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200",
-            isUser ? "right-full mr-2" : "left-full ml-2"
-          )}>
+          <div
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+              isUser ? "right-full mr-2" : "left-full ml-2",
+            )}
+          >
             {!isUser && turn.audio_url && (
               <Button
                 variant="secondary"
@@ -95,7 +99,9 @@ export function TurnBubble({
                 className="rounded-full bg-background/80 backdrop-blur shadow-sm border border-border/50"
                 onClick={() => onPlayAudio?.(turn.audio_url!)}
               >
-                <Volume2 className={cn("size-3", isPlaying && "text-primary")} />
+                <Volume2
+                  className={cn("size-3", isPlaying && "text-primary")}
+                />
               </Button>
             )}
             <Button
@@ -103,7 +109,7 @@ export function TurnBubble({
               size="icon-xs"
               className={cn(
                 "rounded-full bg-background/80 backdrop-blur shadow-sm border border-border/50",
-                showTranslation && "text-primary"
+                showTranslation && "text-primary",
               )}
               onClick={toggleTranslate}
             >
@@ -112,10 +118,18 @@ export function TurnBubble({
           </div>
         </div>
 
-        {/* Status badges */}
         {turn.is_hint_used && (
-          <div className={cn("flex px-1", isUser ? "justify-end" : "justify-start")}>
-            <Badge variant="warning" size="xs" className="text-[9px] font-bold uppercase tracking-widest">
+          <div
+            className={cn(
+              "flex px-1",
+              isUser ? "justify-end" : "justify-start",
+            )}
+          >
+            <Badge
+              variant="warning"
+              size="xs"
+              className="text-[9px] font-bold uppercase tracking-widest"
+            >
               Dùng gợi ý
             </Badge>
           </div>

@@ -41,8 +41,28 @@ function buildMockScoring(session: Session): NonNullable<Session["scoring"]> {
   };
 }
 
+function cloneTurn(turn: Turn): Turn {
+  return { ...turn };
+}
+
+function cloneSession(session: Session): Session {
+  return {
+    ...session,
+    scoring: session.scoring ? { ...session.scoring } : session.scoring,
+    turns: session.turns?.map(cloneTurn),
+  };
+}
+
+function cloneScenario(scenario: Scenario): Scenario {
+  return {
+    ...scenario,
+    goals: [...scenario.goals],
+    user_roles: [...scenario.user_roles],
+    ai_roles: [...scenario.ai_roles],
+  };
+}
+
 const mockScenarios: Scenario[] = [
-  // ── Beginner ────────────────────────────────────────────────────
   {
     scenario_id: "s1",
     scenario_title: "Chào hỏi cơ bản",
@@ -169,14 +189,17 @@ const mockScenarios: Scenario[] = [
     difficulty_level: "A2",
     order: 9,
   },
-  // ── Intermediate ─────────────────────────────────────────────────
   {
     scenario_id: "s4",
     scenario_title: "Làm thủ tục sân bay",
     context: "Du lịch & Hàng không",
     my_character: "Hành khách",
     ai_character: "Nhân viên check-in",
-    goals: ["Check-in chuyến bay", "Hỏi hành lý", "Trao đổi về cổng lên máy bay"],
+    goals: [
+      "Check-in chuyến bay",
+      "Hỏi hành lý",
+      "Trao đổi về cổng lên máy bay",
+    ],
     user_roles: ["Hành khách", "Du khách"],
     ai_roles: ["Nhân viên check-in"],
     is_active: true,
@@ -190,7 +213,11 @@ const mockScenarios: Scenario[] = [
     context: "Công việc & Sự nghiệp",
     my_character: "Ứng viên",
     ai_character: "Nhà tuyển dụng",
-    goals: ["Giới thiệu bản thân", "Nêu kinh nghiệm làm việc", "Trả lời câu hỏi tình huống"],
+    goals: [
+      "Giới thiệu bản thân",
+      "Nêu kinh nghiệm làm việc",
+      "Trả lời câu hỏi tình huống",
+    ],
     user_roles: ["Ứng viên", "Kỹ sư phần mềm"],
     ai_roles: ["Nhà tuyển dụng"],
     is_active: true,
@@ -204,11 +231,7 @@ const mockScenarios: Scenario[] = [
     context: "Công sở & Hội họp",
     my_character: "Thành viên nhóm",
     ai_character: "Trưởng nhóm",
-    goals: [
-      "Báo cáo tiến độ",
-      "Đề xuất ý kiến",
-      "Phản hồi feedback lịch sự",
-    ],
+    goals: ["Báo cáo tiến độ", "Đề xuất ý kiến", "Phản hồi feedback lịch sự"],
     user_roles: ["Thành viên nhóm", "Senior dev"],
     ai_roles: ["Trưởng nhóm", "Project manager"],
     is_active: true,
@@ -216,7 +239,6 @@ const mockScenarios: Scenario[] = [
     difficulty_level: "B2",
     order: 6,
   },
-  // ── Advanced ──────────────────────────────────────────────────────
   {
     scenario_id: "s7",
     scenario_title: "Thuyết trình sản phẩm",
@@ -255,7 +277,9 @@ const mockScenarios: Scenario[] = [
   },
 ];
 
-const mockSessions: Session[] = [
+let mockSessionSequence = 3;
+
+let mockSessions: Session[] = [
   {
     session_id: "mock-1",
     user_id: "u1",
@@ -311,11 +335,11 @@ const mockSessions: Session[] = [
 
 export const mockSessionApi = {
   async getScenarios(): Promise<Scenario[]> {
-    return mockScenarios;
+    return mockScenarios.map(cloneScenario);
   },
 
   async getSessions(): Promise<Session[]> {
-    return mockSessions;
+    return mockSessions.map(cloneSession);
   },
 
   async getSession(sessionId: string): Promise<GetSessionResult> {
@@ -323,7 +347,7 @@ export const mockSessionApi = {
       (session) => session.session_id === sessionId,
     );
     if (existing) {
-      return { success: true, session: existing };
+      return { success: true, session: cloneSession(existing) };
     }
 
     const fallbackScenario = mockScenarios[0];
@@ -361,26 +385,29 @@ export const mockSessionApi = {
   async createSession(
     dto: CreateSessionDto,
   ): Promise<{ success: boolean; session_id?: string; error?: string }> {
-    const sessionId = `mock-${Date.now()}`;
+    const sessionId = `mock-${mockSessionSequence++}`;
     const matchedScenario =
       mockScenarios.find(
         (scenario) => scenario.scenario_id === dto.scenario_id,
       ) ?? mockScenarios[0];
 
-    mockSessions.unshift({
-      session_id: sessionId,
-      user_id: "u1",
-      scenario_id: dto.scenario_id,
-      ai_gender: dto.ai_gender,
-      level: dto.level,
-      prompt_snapshot:
-        dto.prompt_snapshot || buildPromptSnapshot(matchedScenario, dto),
-      total_turns: 0,
-      user_turns: 0,
-      hint_used_count: 0,
-      created_at: new Date().toISOString(),
-      turns: [],
-    });
+    mockSessions = [
+      {
+        session_id: sessionId,
+        user_id: "u1",
+        scenario_id: dto.scenario_id,
+        ai_gender: dto.ai_gender,
+        level: dto.level,
+        prompt_snapshot:
+          dto.prompt_snapshot || buildPromptSnapshot(matchedScenario, dto),
+        total_turns: 0,
+        user_turns: 0,
+        hint_used_count: 0,
+        created_at: new Date().toISOString(),
+        turns: [],
+      },
+      ...mockSessions,
+    ];
 
     return { success: true, session_id: sessionId };
   },
@@ -388,12 +415,15 @@ export const mockSessionApi = {
   async endSession(
     sessionId: string,
   ): Promise<{ success: boolean; error?: string }> {
-    const session = mockSessions.find((item) => item.session_id === sessionId);
-
-    if (session && !session.scoring) {
-      session.scoring = buildMockScoring(session);
-      session.updated_at = new Date().toISOString();
-    }
+    mockSessions = mockSessions.map((item) =>
+      item.session_id === sessionId && !item.scoring
+        ? {
+            ...item,
+            scoring: buildMockScoring(item),
+            updated_at: new Date().toISOString(),
+          }
+        : item,
+    );
 
     return { success: true };
   },
@@ -407,12 +437,11 @@ export const mockSessionApi = {
   },
 
   async getHint(sessionId: string): Promise<string> {
-    // Detailed markdown hints with code blocks for better UX demonstration
     const hints = [
       "Trong tình huống này, bạn nên bắt đầu bằng một câu chào lịch sự và nêu rõ mục đích của mình để nhân viên dễ dàng hỗ trợ.\n\nVí dụ bạn có thể sử dụng:\n```text\nHi there! I'm here to check in for my flight to London, and I have my passport ready.\n```",
       "Để yêu cầu một vị trí ngồi cụ thể, hãy sử dụng cấu trúc câu hỏi lịch sự với 'if' hoặc 'would it be possible'.\n\nBạn hãy thử dùng câu này:\n```text\nI was wondering if there are any aisle seats available near the front of the plane?\n```",
       "Khi được hỏi về hành lý, bạn nên liệt kê rõ ràng số lượng kiện hàng ký gửi và xách tay để thủ tục diễn ra nhanh chóng.\n\nCâu trả lời gợi ý:\n```text\nI have one large suitcase to check in and this backpack as my carry-on bag.\n```",
-      "Nếu bạn cần hỏi về thời gian hoặc địa điểm (như cửa khởi hành), hãy sử dụng cấu trúc 'Could you tell me...'.\n\nVí dụ cụ thể:\n```text\nCould you please tell me which gate I should go to and what time the boarding starts?\n```"
+      "Nếu bạn cần hỏi về thời gian hoặc địa điểm (như cửa khởi hành), hãy sử dụng cấu trúc 'Could you tell me...'.\n\nVí dụ cụ thể:\n```text\nCould you please tell me which gate I should go to and what time the boarding starts?\n```",
     ];
     const idx =
       Math.abs(

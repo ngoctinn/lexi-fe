@@ -7,7 +7,7 @@ import { SessionSummary } from "./session-summary";
 import { updateFlashcardSRS } from "../actions/practice-actions";
 import { toast } from "sonner";
 import { FlashcardProgress } from "./flashcard-progress";
-import { FeedbackButtons } from "./feedback-buttons";
+import { SRSControls } from "./srs-controls";
 
 interface FlashcardSessionProps {
   initialQueue: Flashcard[];
@@ -22,6 +22,10 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
   const [correctCardsCount, setCorrectCardsCount] = useState(0);
   const relearnQueueRef = useRef<Flashcard[]>([]);
   const [isRelearning, setIsRelearning] = useState(false);
+  const activeKeyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const advanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentCard = queue[currentIndex];
   const totalCards = queue.length;
@@ -49,6 +53,18 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
     };
   }, [isRevealed, isSubmitting, isFinished, currentCard, currentIndex, queue]);
 
+  useEffect(() => {
+    return () => {
+      if (activeKeyTimeoutRef.current) {
+        clearTimeout(activeKeyTimeoutRef.current);
+      }
+
+      if (advanceTimeoutRef.current) {
+        clearTimeout(advanceTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleFlip = useCallback(() => {
     if (stateRef.current.isFinished || stateRef.current.isSubmitting) return;
     setIsRevealed((prev) => !prev);
@@ -66,7 +82,30 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
       setIsSubmitting(true);
       if (key) {
         setActiveKey(key);
-        setTimeout(() => setActiveKey(null), 150);
+
+        if (activeKeyTimeoutRef.current) {
+          clearTimeout(activeKeyTimeoutRef.current);
+        }
+
+        activeKeyTimeoutRef.current = setTimeout(() => {
+          setActiveKey(null);
+          activeKeyTimeoutRef.current = null;
+        }, 150);
+      }
+
+      try {
+        const result = await updateFlashcardSRS(
+          currentCard.flashcard_id,
+          difficulty,
+        );
+
+        if (!result.success) {
+          throw new Error("Không thể lưu tiến độ.");
+        }
+      } catch {
+        toast.error("Không thể lưu tiến độ. Vui lòng thử lại sau.");
+        setIsSubmitting(false);
+        return;
       }
 
       if (difficulty === "good" || difficulty === "easy") {
@@ -83,15 +122,13 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         }
       }
 
-      try {
-        await updateFlashcardSRS(currentCard.flashcard_id, difficulty);
-      } catch {
-        toast.error("Không thể lưu tiến độ. Vui lòng thử lại sau.");
-      }
-
       setIsRevealed(false);
 
-      setTimeout(() => {
+      if (advanceTimeoutRef.current) {
+        clearTimeout(advanceTimeoutRef.current);
+      }
+
+      advanceTimeoutRef.current = setTimeout(() => {
         if (currentIndex < queue.length - 1) {
           setCurrentIndex((prev) => prev + 1);
         } else if (relearnQueueRef.current.length > 0) {
@@ -103,6 +140,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
           setIsFinished(true);
         }
         setIsSubmitting(false);
+        advanceTimeoutRef.current = null;
       }, 150);
     },
     [],
@@ -208,7 +246,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
 
       <div className="w-full">
         {isRevealed ? (
-          <FeedbackButtons
+          <SRSControls
             onRate={handleRate}
             disabled={isSubmitting}
             activeKey={activeKey}

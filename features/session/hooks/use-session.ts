@@ -28,13 +28,11 @@ export function useSession({
   idToken,
   initialTurns = [],
 }: UseSessionOptions) {
-  // Select specific pieces from the store to avoid subscribing to the whole store
   const turns = useSessionStore((s) => s.turns);
   const uploadUrl = useSessionStore((s) => s.uploadUrl);
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
 
-  // Select additional pieces that should trigger re-renders when changed
   const aiStreamingText = useSessionStore((s) => s.aiStreamingText);
   const lastSttResult = useSessionStore((s) => s.lastSttResult);
   const currentHint = useSessionStore((s) => s.currentHint);
@@ -52,19 +50,16 @@ export function useSession({
   const setCurrentAudioUrl = useSessionStore((s) => s.setCurrentAudioUrl);
   const resetSessionState = useSessionStore((s) => s.reset);
 
-  // Reset state khi đổi session để không leak dữ liệu giữa các phiên.
   React.useEffect(() => {
     resetSessionState();
   }, [resetSessionState, sessionId]);
 
-  // Chỉ nạp turns ban đầu sau khi đã reset state.
   React.useEffect(() => {
     if (initialTurns.length > 0 && turns.length === 0) {
       setTurns(initialTurns);
     }
   }, [initialTurns, turns, setTurns]);
 
-  // --- WebSocket Message Orchestration ---
   const handleWsMessage = React.useCallback(
     (event: WsServerPayload) => {
       switch (event.event) {
@@ -162,7 +157,6 @@ export function useSession({
     ],
   );
 
-  // --- WebSocket infrastructure ---
   const { connectionState, send, disconnect } = useWebSocket({
     sessionId,
     idToken,
@@ -171,7 +165,6 @@ export function useSession({
       useSessionStore.getState().setWsState(wsState),
   });
 
-  // --- Audio infrastructure ---
   const {
     state: recorderState,
     startRecording,
@@ -191,19 +184,17 @@ export function useSession({
     },
   });
 
-  // Keep store recorder state in sync
   React.useEffect(() => {
     setRecorderState(recorderState);
   }, [recorderState, setRecorderState]);
-
-  // --- Actions ---
 
   const sendMessage = React.useCallback(
     (text: string) => {
       if (!text.trim()) return;
 
+      const nextTurnIndex = useSessionStore.getState().turns.length;
       const newTurn: Turn = {
-        turn_index: turns.length,
+        turn_index: nextTurnIndex,
         speaker: TurnSpeaker.USER,
         content: text,
         is_hint_used: false,
@@ -213,7 +204,7 @@ export function useSession({
 
       send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
     },
-    [send, sessionId, setTurns, turns.length],
+    [send, sessionId, setTurns],
   );
 
   const startSession = React.useCallback(() => {
@@ -224,7 +215,6 @@ export function useSession({
     setHint(null);
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
 
-    // Parallel fetch mock if in dev
     if (process.env.NODE_ENV === "development") {
       const hint = await SessionService.getHint(sessionId);
       setHint(hint);

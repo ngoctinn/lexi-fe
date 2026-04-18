@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { toast } from "sonner";
 
 import { useSession } from "@/features/session/hooks/use-session";
 import { SessionHeader } from "../shared/session-header";
@@ -26,7 +25,6 @@ interface ConversationScreenProps {
   scenarioTitle?: string;
   aiCharacter?: string;
   scenarioGoals?: string[];
-  context?: string;
   myRole?: string;
   partnerRole?: string;
 }
@@ -38,7 +36,6 @@ export function ConversationScreen({
   scenarioTitle = "Phiên luyện nói",
   aiCharacter = "AI Assistant",
   scenarioGoals = [],
-  context,
   myRole,
   partnerRole,
 }: ConversationScreenProps) {
@@ -58,11 +55,6 @@ export function ConversationScreen({
     setCurrentAudioUrl,
   } = actions;
 
-  const handleSelectHint = (hint: string) => {
-    setInputValue(hint);
-    toast.success("Đã điền gợi ý vào ô nhập liệu");
-  };
-
   React.useEffect(() => {
     if (ui.wsState === "connected" && !hasStartedRef.current) {
       hasStartedRef.current = true;
@@ -80,7 +72,6 @@ export function ConversationScreen({
           className="flex-1 border-none bg-transparent h-auto p-0"
         />
 
-        {/* Mobile Sidebar Trigger */}
         <div className="lg:hidden">
           <Sheet>
             <SheetTrigger asChild>
@@ -93,11 +84,9 @@ export function ConversationScreen({
               <ConversationSidebar
                 currentHint={ui.currentHint}
                 scenarioGoals={scenarioGoals}
-                context={context}
                 myRole={myRole}
                 partnerRole={partnerRole}
                 onGetHint={requestHint}
-                onSelectHint={handleSelectHint}
                 isAiStreaming={ui.isAiStreaming}
                 disabled={ui.isControlsDisabled}
                 className="border-none w-full h-full"
@@ -106,10 +95,8 @@ export function ConversationScreen({
           </Sheet>
         </div>
       </header>
-
       <div className="flex flex-1 overflow-hidden">
-        {/* Main Chat Area (60%) */}
-        <main className="flex flex-[3] flex-col overflow-hidden relative border-r">
+        <main className="flex flex-3 flex-col overflow-hidden relative border-r">
           <TranscriptPanel
             turns={ui.turns}
             isAiStreaming={ui.isAiStreaming}
@@ -120,7 +107,6 @@ export function ConversationScreen({
             onTranslate={translateTurn}
           />
 
-          {/* Input Area */}
           <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-6">
             <MessageInput
               value={inputValue}
@@ -131,8 +117,8 @@ export function ConversationScreen({
               disabled={ui.isControlsDisabled}
             />
 
-            {/* Connection/Upload status - Show only when needed to save space */}
-            {(ui.wsState !== "connected" || ui.recorderState === "uploading") && (
+            {(ui.wsState !== "connected" ||
+              ui.recorderState === "uploading") && (
               <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
                 {ui.wsState !== "connected" && (
                   <span className="text-[10px] text-muted-foreground font-medium animate-pulse">
@@ -142,7 +128,7 @@ export function ConversationScreen({
                   </span>
                 )}
                 {ui.recorderState === "uploading" && (
-                  <div className="w-full max-w-[200px] h-1 bg-muted rounded-full overflow-hidden">
+                  <div className="w-full max-w-12.5 h-1 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
@@ -154,7 +140,6 @@ export function ConversationScreen({
           </div>
         </main>
 
-        {/* Desktop Sidebar (40%) */}
         <ConversationSidebar
           currentHint={ui.currentHint}
           scenarioGoals={scenarioGoals}
@@ -163,7 +148,7 @@ export function ConversationScreen({
           onGetHint={requestHint}
           isAiStreaming={ui.isAiStreaming}
           disabled={ui.isControlsDisabled}
-          className="hidden lg:flex flex-[2]"
+          className="hidden lg:flex flex-2"
         />
       </div>
 

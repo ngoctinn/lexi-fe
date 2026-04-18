@@ -11,16 +11,11 @@ export interface Flashcard {
   next_review_at: string; // ISO Date string
 
   // Vocabulary Data
-  word_type?: string;           // Loại từ (n, v, adj...)
-  definition_vi?: string;       // Định nghĩa tiếng Việt
-  phonetic?: string;            // Cách phát âm (IPA)
-  audio_url?: string;           // Audio
-  example_sentence?: string;    // Câu ví dụ mẫu
+  word_type?: string; // Loại từ (n, v, adj...)
+  definition_vi?: string; // Định nghĩa tiếng Việt
+  phonetic?: string; // Cách phát âm (IPA)
+  audio_url?: string; // Audio
+  example_sentence?: string; // Câu ví dụ mẫu
 }
 
 export type ReviewDifficulty = "forgot" | "hard" | "good" | "easy";
-
-export interface ReviewResponse {
-  flashcard_id: string;
-  difficulty: ReviewDifficulty;
-}

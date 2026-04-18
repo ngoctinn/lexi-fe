@@ -1,5 +1,6 @@
 import { fetchPracticeQueue } from "@/features/flashcards/actions/practice-actions";
 import { FlashcardDeckOverview } from "@/features/flashcards/components/deck-overview";
+import { FlashcardEmptyState } from "@/features/flashcards/components/flashcard-empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { BookOpen } from "lucide-react";
 import { Metadata } from "next";
@@ -16,11 +17,15 @@ export default async function FlashcardOverviewPage() {
     <div className="flex flex-1 flex-col">
       <PageHeader icon={BookOpen} title="Luyện từ vựng" />
 
-      <div className="mx-auto w-full max-w-6xl p-4 sm:p-6">
-        <div className="flex-1">
-          <FlashcardDeckOverview queue={queue} />
+      {queue.length === 0 ? (
+        <FlashcardEmptyState />
+      ) : (
+        <div className="mx-auto w-full max-w-6xl p-4 sm:p-6">
+          <div className="flex-1">
+            <FlashcardDeckOverview queue={queue} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

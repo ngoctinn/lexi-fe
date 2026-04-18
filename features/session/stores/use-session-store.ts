@@ -7,7 +7,6 @@ import type {
 } from "../types/session.types";
 
 interface SessionStoreState extends SessionUiState {
-  // Actions
   setTurns: (turns: Turn[] | ((prev: Turn[]) => Turn[])) => void;
   setAiStreamingText: (text: string | ((prev: string) => string)) => void;
   setAiStreaming: (isStreaming: boolean, text?: string) => void;

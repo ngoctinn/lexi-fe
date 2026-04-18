@@ -69,7 +69,6 @@ export function ScoringResult({ session }: ScoringResultProps) {
 
   return (
     <div className="flex flex-col gap-8 mx-auto w-full max-w-4xl px-4 py-8 animate-in fade-in zoom-in-95 duration-500">
-      {/* Header Overall */}
       <div className="flex flex-col items-center justify-center text-center pb-6">
         <Badge variant="outline" className="mb-4 text-xs font-semibold py-1">
           BÁO CÁO PHIÊN HỌC
@@ -137,7 +136,6 @@ export function ScoringResult({ session }: ScoringResultProps) {
         ))}
       </div>
 
-      {/* Stats row using standard components */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="flex flex-col items-center p-4 bg-muted/30">
           <span className="text-3xl font-black">{totalTurns}</span>
@@ -157,7 +155,6 @@ export function ScoringResult({ session }: ScoringResultProps) {
         </Card>
       </div>
 
-      {/* CTAs */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
         <Button
           variant="outline"

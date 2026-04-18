@@ -1,14 +1,22 @@
 export const SessionDomain = {
   isControlsDisabled: (
-    wsState: string,
-    recorderState: string,
+    wsState:
+      | "disconnected"
+      | "connecting"
+      | "connected"
+      | "reconnecting"
+      | "error",
+    recorderState:
+      | "idle"
+      | "permission-denied"
+      | "recording"
+      | "uploading"
+      | "processing"
+      | "error",
     isAiStreaming: boolean,
-  ): boolean => {
-    return (
-      wsState !== "connected" ||
-      recorderState === "uploading" ||
-      recorderState === "processing" ||
-      isAiStreaming
-    );
-  },
+  ): boolean =>
+    wsState !== "connected" ||
+    recorderState === "uploading" ||
+    recorderState === "processing" ||
+    isAiStreaming,
 };

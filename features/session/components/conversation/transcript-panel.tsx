@@ -26,7 +26,6 @@ export function TranscriptPanel({
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    // Auto scroll on new turn or while streaming
     const el = scrollRef.current;
     if (el) {
       el.scrollTop = el.scrollHeight;
@@ -34,9 +33,14 @@ export function TranscriptPanel({
   }, [turns.length, aiStreamingText, isAiStreaming]);
 
   return (
-    <div ref={scrollRef} className={cn("relative flex-1 min-h-0 overflow-y-auto px-4 py-4", className)}>
+    <div
+      ref={scrollRef}
+      className={cn(
+        "relative flex-1 min-h-0 overflow-y-auto px-4 py-4",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-6 w-full pb-8 lg:px-4">
-        
         {turns.length === 0 && !isAiStreaming && (
           <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
             <div className="size-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
@@ -58,11 +62,13 @@ export function TranscriptPanel({
           />
         ))}
 
-        {/* AI Streaming Bubble */}
         {(isAiStreaming || aiStreamingText) && (
           <div className="flex w-full items-end gap-2 px-4 py-2 justify-start slide-in-bottom">
             <Avatar className="size-8 shrink-0 mb-1 border shadow-sm">
-              <AvatarImage src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`} alt={aiName} />
+              <AvatarImage
+                src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
+                alt={aiName}
+              />
               <AvatarFallback className="text-[10px]">AI</AvatarFallback>
             </Avatar>
             <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-[15px] leading-relaxed max-w-[80%] shadow-sm">

@@ -2,18 +2,12 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Check, ChevronDown, Loader2, Sparkles } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-// Removed DropdownMenu imports as we moved to inline soft checkboxes
-import {
-  Field,
-  FieldLabel,
-  FieldDescription,
-  FieldGroup,
-} from "@/components/ui/field";
+import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -80,13 +74,11 @@ export function SessionSetupForm({
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Scenario đang được chọn
   const selectedScenario = React.useMemo(
     () => scenarios.find((s) => s.scenario_id === formData.scenario_id),
     [scenarios, formData.scenario_id],
   );
 
-  // Cập nhật roles và goals khi scenario thay đổi
   React.useEffect(() => {
     if (!selectedScenario) return;
 
@@ -111,7 +103,8 @@ export function SessionSetupForm({
 
     const userRole = selectedUserRole || selectedScenario.user_roles[0] || "";
     const aiRole = selectedAiRole || selectedScenario.ai_roles[0] || "";
-    const goals = selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
+    const goals =
+      selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
 
     return [
       `Scenario: ${selectedScenario.scenario_title}`,
@@ -168,12 +161,12 @@ export function SessionSetupForm({
       className={cn("flex h-full w-full", className)}
       {...props}
     >
-      {/* ── Cột trái: Lộ trình học (scroll độc lập) ─────────────────────── */}
       <div className="flex w-full lg:w-3/5 flex-col overflow-y-auto pr-2 custom-scrollbar">
         <div className="flex flex-col items-center justify-start py-6">
-          {/* Title */}
           <div className="mb-8 w-full max-w-xs text-center">
-            <h2 className="text-lg font-bold tracking-tight">Lộ trình luyện nói</h2>
+            <h2 className="text-lg font-bold tracking-tight">
+              Lộ trình luyện nói
+            </h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Chọn tình huống phù hợp để bắt đầu
             </p>
@@ -187,29 +180,27 @@ export function SessionSetupForm({
         </div>
       </div>
 
-      {/* ── Cột phải: Chi tiết + cấu hình (cố định, không scroll) ──────── */}
       <div className="hidden shrink-0 lg:flex lg:w-2/5 flex-col pl-8 border-l border-border/60">
         {selectedScenario ? (
           <div className="flex h-full flex-col gap-6">
-            {/* Scenario header */}
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <h2 className="text-xl font-bold tracking-tight leading-snug line-clamp-2">
                   {selectedScenario.scenario_title}
                 </h2>
-                <Badge variant="default" className="rounded-full text-[10px] font-bold px-2.5 py-0.5 shrink-0">
-                  {getContextLabel(selectedScenario.context)} • {selectedScenario.difficulty_level}
+                <Badge
+                  variant="default"
+                  className="rounded-full text-[10px] font-bold px-2.5 py-0.5 shrink-0"
+                >
+                  {getContextLabel(selectedScenario.context)} •{" "}
+                  {selectedScenario.difficulty_level}
                 </Badge>
               </div>
             </div>
 
-            {/* Divider */}
             <div className="h-px bg-border/60" />
 
-            {/* Cấu hình */}
-            {/* Cấu hình */}
             <FieldGroup className="flex-1 overflow-y-auto pr-1 custom-scrollbar gap-8">
-              {/* Mục tiêu */}
               <Field>
                 <div className="flex items-center justify-between mb-1">
                   <FieldLabel className="text-foreground/80">
@@ -243,7 +234,7 @@ export function SessionSetupForm({
                       >
                         {isSelected && (
                           <div className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in duration-200">
-                            <Check className="size-3.5 stroke-[3]" />
+                            <Check className="size-3.5 stroke-3" />
                           </div>
                         )}
                         {goal}
@@ -251,13 +242,14 @@ export function SessionSetupForm({
                     );
                   })}
                 </div>
-                {/* Removed FieldDescription per user request */}
               </Field>
 
-              {/* Roles */}
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="user-role" className="text-foreground/80 mb-1">
+                  <FieldLabel
+                    htmlFor="user-role"
+                    className="text-foreground/80 mb-1"
+                  >
                     Vai của bạn
                   </FieldLabel>
                   <Select
@@ -265,7 +257,11 @@ export function SessionSetupForm({
                     onValueChange={setSelectedUserRole}
                     disabled={!selectedScenario.user_roles.length}
                   >
-                    <SelectTrigger id="user-role" size="xl" className="rounded-xl border-border/40">
+                    <SelectTrigger
+                      id="user-role"
+                      size="xl"
+                      className="rounded-xl border-border/40"
+                    >
                       <SelectValue placeholder="Chọn vai" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
@@ -279,7 +275,10 @@ export function SessionSetupForm({
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="ai-role" className="text-foreground/80 mb-1">
+                  <FieldLabel
+                    htmlFor="ai-role"
+                    className="text-foreground/80 mb-1"
+                  >
                     Vai AI
                   </FieldLabel>
                   <Select
@@ -287,7 +286,11 @@ export function SessionSetupForm({
                     onValueChange={setSelectedAiRole}
                     disabled={!selectedScenario.ai_roles.length}
                   >
-                    <SelectTrigger id="ai-role" size="xl" className="rounded-xl border-border/40">
+                    <SelectTrigger
+                      id="ai-role"
+                      size="xl"
+                      className="rounded-xl border-border/40"
+                    >
                       <SelectValue placeholder="Chọn vai" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
@@ -301,9 +304,11 @@ export function SessionSetupForm({
                 </Field>
               </div>
 
-              {/* Giọng AI */}
               <Field>
-                <FieldLabel htmlFor="ai-gender" className="text-foreground/80 mb-1">
+                <FieldLabel
+                  htmlFor="ai-gender"
+                  className="text-foreground/80 mb-1"
+                >
                   Giọng nói AI
                 </FieldLabel>
                 <Select
@@ -312,7 +317,11 @@ export function SessionSetupForm({
                     set("ai_gender", v as "male" | "female")
                   }
                 >
-                  <SelectTrigger id="ai-gender" size="xl" className="rounded-xl border-border/40">
+                  <SelectTrigger
+                    id="ai-gender"
+                    size="xl"
+                    className="rounded-xl border-border/40"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -320,11 +329,9 @@ export function SessionSetupForm({
                     <SelectItem value="male">Nam (Giọng chuẩn)</SelectItem>
                   </SelectContent>
                 </Select>
-                {/* Removed FieldDescription per user request */}
               </Field>
             </FieldGroup>
 
-            {/* Submit — push to bottom */}
             <div className="mt-auto pt-4">
               <Button
                 type="submit"
@@ -353,18 +360,18 @@ export function SessionSetupForm({
         )}
       </div>
 
-      {/* ── Mobile: Bottom sheet CTA ─────────────────────────────────────── */}
       {selectedScenario && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 p-4 backdrop-blur-sm lg:hidden">
           <div className="mx-auto flex max-w-lg items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold">
-                  {selectedScenario.scenario_title}
-                </p>
-                <p className="text-[10px] text-muted-foreground font-medium">
-                  {getContextLabel(selectedScenario.context)} • {selectedScenario.difficulty_level}
-                </p>
-              </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold">
+                {selectedScenario.scenario_title}
+              </p>
+              <p className="text-[10px] text-muted-foreground font-medium">
+                {getContextLabel(selectedScenario.context)} •{" "}
+                {selectedScenario.difficulty_level}
+              </p>
+            </div>
             <Button
               type="submit"
               size="sm"

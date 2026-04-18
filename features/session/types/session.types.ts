@@ -1,11 +1,10 @@
-// =============================================================================
-// ENUMS
-// =============================================================================
-
 export enum TurnSpeaker {
   USER = "USER",
   AI = "AI",
 }
+
+export type AIGender = "male" | "female";
+export type SessionLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 
 export enum ScoringSkill {
   FLUENCY = "fluency",
@@ -35,10 +34,6 @@ export enum WsServerEvent {
   ERROR = "ERROR",
 }
 
-// =============================================================================
-// DOMAIN ENTITIES
-// =============================================================================
-
 export interface Scenario {
   scenario_id: string;
   scenario_title: string;
@@ -50,8 +45,7 @@ export interface Scenario {
   ai_roles: string[];
   is_active: boolean;
   usage_count: number;
-  // Dùng cho lộ trình học — sắp xếp và nhóm scenario theo cấp độ
-  difficulty_level?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+  difficulty_level?: SessionLevel;
   order?: number;
 }
 
@@ -62,7 +56,7 @@ export interface Turn {
   translated_content?: string | null;
   audio_url?: string | null;
   is_hint_used: boolean;
-  is_pending?: boolean; // For local optimistic updates
+  is_pending?: boolean;
 }
 
 export interface Scoring {
@@ -78,8 +72,8 @@ export interface Session {
   session_id: string;
   user_id: string;
   scenario_id: string;
-  ai_gender: "male" | "female";
-  level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+  ai_gender: AIGender;
+  level: SessionLevel;
   prompt_snapshot: string;
   total_turns: number;
   user_turns: number;
@@ -90,10 +84,6 @@ export interface Session {
   created_at?: string;
   updated_at?: string;
 }
-
-// =============================================================================
-// WEBSOCKET EVENT PAYLOADS — Client → Server
-// =============================================================================
 
 export interface WsStartSessionPayload {
   action: WsClientEvent.START_SESSION;
@@ -128,10 +118,6 @@ export type WsClientPayload =
   | WsUseHintPayload
   | WsEndSessionPayload
   | WsSendMessagePayload;
-
-// =============================================================================
-// WEBSOCKET EVENT PAYLOADS — Server → Client
-// =============================================================================
 
 export interface WsSessionReadyEvent {
   event: WsServerEvent.SESSION_READY;
@@ -193,10 +179,6 @@ export type WsServerPayload =
   | WsScoringCompleteEvent
   | WsErrorEvent;
 
-// =============================================================================
-// UI STATE TYPES
-// =============================================================================
-
 export type RecorderState =
   | "idle"
   | "permission-denied"
@@ -226,14 +208,10 @@ export interface SessionUiState {
   isControlsDisabled?: boolean;
 }
 
-// =============================================================================
-// SERVER ACTION DTOs
-// =============================================================================
-
 export interface CreateSessionDto {
   scenario_id: string;
-  ai_gender: "male" | "female";
-  level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+  ai_gender: AIGender;
+  level: SessionLevel;
   prompt_snapshot: string;
 }
 

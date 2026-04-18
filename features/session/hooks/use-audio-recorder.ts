@@ -5,7 +5,7 @@ import type { RecorderState } from "@/features/session/types/session.types";
 import { useS3Upload } from "./use-s3-upload";
 
 const SAMPLE_RATE = 16_000;
-const MIME_TYPE = "audio/webm;codecs=opus"; // Supported in Chrome/Firefox; Server converts to PCM
+const MIME_TYPE = "audio/webm;codecs=opus";
 
 interface UseAudioRecorderOptions {
   onRecordingComplete: (s3Key: string) => void;
@@ -44,7 +44,6 @@ export function useAudioRecorder({
 
   const startRecording = React.useCallback(
     async (presignedUrl: string, s3Key: string) => {
-      // Already recording — stop previous
       if (state === "recording") {
         stopRecording();
         return;
@@ -54,7 +53,6 @@ export function useAudioRecorder({
       s3KeyRef.current = s3Key;
       chunksRef.current = [];
 
-      // Request microphone permission
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -72,8 +70,9 @@ export function useAudioRecorder({
         return;
       }
 
-      // Check MIME support, fallback gracefully
-      const mimeType = MediaRecorder.isTypeSupported(MIME_TYPE) ? MIME_TYPE : "";
+      const mimeType = MediaRecorder.isTypeSupported(MIME_TYPE)
+        ? MIME_TYPE
+        : "";
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
       mediaRecorderRef.current = recorder;
 
@@ -82,39 +81,54 @@ export function useAudioRecorder({
       };
 
       recorder.onstop = async () => {
-        // Stop all tracks to release mic indicator
         streamRef.current?.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
 
         setState("uploading");
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        try {
+          const blob = new Blob(chunksRef.current, {
+            type: recorder.mimeType || "audio/webm",
+          });
+          const result = await uploadToS3(presignedUrlRef.current, blob);
 
-        const result = await uploadToS3(presignedUrlRef.current, blob);
-
-        if (result.success) {
-          setState("idle");
-          onRecordingComplete(s3KeyRef.current);
-        } else {
+          if (result.success) {
+            setState("idle");
+            onRecordingComplete(s3KeyRef.current);
+          } else {
+            setState("error");
+            onError(result.error ?? "Upload audio thất bại.");
+          }
+        } catch {
           setState("error");
-          onError(result.error ?? "Upload audio thất bại.");
+          onError("Upload audio thất bại.");
+        } finally {
+          chunksRef.current = [];
+          mediaRecorderRef.current = null;
         }
       };
 
       recorder.onerror = () => {
+        streamRef.current?.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+        chunksRef.current = [];
+        mediaRecorderRef.current = null;
         setState("error");
         onError("Lỗi ghi âm.");
       };
 
       setState("recording");
-      recorder.start(250); // Collect data every 250ms
+      recorder.start(250);
     },
-    [state, stopRecording, uploadToS3, onRecordingComplete, onError]
+    [state, stopRecording, uploadToS3, onRecordingComplete, onError],
   );
 
-  // Cleanup on unmount
   React.useEffect(() => {
     return () => {
       mediaRecorderRef.current?.stop();
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      chunksRef.current = [];
+      mediaRecorderRef.current = null;
     };
   }, []);
 

@@ -80,7 +80,6 @@ export default async function SessionPage({ params }: SessionPageProps) {
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}
       aiCharacter={scenario?.ai_character ?? "AI Assistant"}
       scenarioGoals={scenario?.goals ?? []}
-      context={scenario?.context}
       myRole={scenario?.my_character}
       partnerRole={scenario?.ai_character}
     />
