@@ -26,24 +26,14 @@ export const selectTriggerVariants = cva(
   },
 );
 
-const SelectContext = React.createContext<{
-  size?: VariantProps<typeof selectTriggerVariants>["size"];
-}>({});
-
 function Select({
   children,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root> & {
-  size?: VariantProps<typeof selectTriggerVariants>["size"];
-}) {
+}: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return (
-    <SelectContext.Provider
-      value={{ size: props.value ? undefined : undefined }}
-    >
-      <SelectPrimitive.Root data-slot="select" {...props}>
-        {children}
-      </SelectPrimitive.Root>
-    </SelectContext.Provider>
+    <SelectPrimitive.Root data-slot="select" {...props}>
+      {children}
+    </SelectPrimitive.Root>
   );
 }
 
@@ -153,7 +143,7 @@ function SelectLabel({
     <SelectPrimitive.Label
       data-slot="select-label"
       className={cn(
-        "px-2 py-1.5 text-xs font-heavy uppercase tracking-widest text-muted-foreground",
+        "px-2 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground",
         className,
       )}
       {...props}
@@ -171,7 +161,6 @@ const SelectItem = React.forwardRef<
       data-slot="select-item"
       className={cn(
         "relative flex w-full cursor-default items-center gap-1.5 rounded-lg py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
-        "in-data-[size=lg]:text-[15px] in-data-[size=xl]:text-[15px]",
         className,
       )}
       {...props}

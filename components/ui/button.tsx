@@ -27,18 +27,6 @@ const buttonVariants = cva(
           "border-success-200 bg-success-50 text-success-600 shadow-[inset_0_-4px_0_0_var(--color-success-shadow-tint)] hover:bg-success-100",
         "soft-info":
           "border-info-200 bg-info-50 text-info-600 shadow-[inset_0_-4px_0_0_var(--color-info-shadow-tint)] hover:bg-info-100",
-        "level-a1":
-          "border-emerald-700 bg-emerald-500 text-white shadow-[inset_0_-4px_0_0_#047857] hover:bg-emerald-600",
-        "level-a2":
-          "border-cyan-700 bg-cyan-500 text-white shadow-[inset_0_-4px_0_0_#0e7490] hover:bg-cyan-600",
-        "level-b1":
-          "border-blue-700 bg-blue-500 text-white shadow-[inset_0_-4px_0_0_#1d4ed8] hover:bg-blue-600",
-        "level-b2":
-          "border-indigo-700 bg-indigo-500 text-white shadow-[inset_0_-4px_0_0_#4338ca] hover:bg-indigo-600",
-        "level-c1":
-          "border-purple-700 bg-purple-500 text-white shadow-[inset_0_-4px_0_0_#6d28d9] hover:bg-purple-600",
-        "level-c2":
-          "border-rose-700 bg-rose-500 text-white shadow-[inset_0_-4px_0_0_#be123c] hover:bg-rose-600",
       },
       size: {
         xs: "h-7 gap-1 rounded-lg px-2 text-xs active:!translate-y-[1px] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
@@ -55,7 +43,8 @@ const buttonVariants = cva(
           "size-9 rounded-lg in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3.5",
         "icon-lg": "size-12 rounded-xl active:!translate-y-[2px]",
         "icon-xl": "size-14 rounded-xl active:!translate-y-[2px]",
-        "icon-2xl": "size-24 rounded-full active:!translate-y-[2px] [&_svg:not([class*='size-'])]:size-10",
+        "icon-2xl":
+          "size-24 rounded-full active:!translate-y-[2px] [&_svg:not([class*='size-'])]:size-10",
       },
     },
     defaultVariants: {

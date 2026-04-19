@@ -41,7 +41,8 @@ const LEVEL_CONFIG = {
     } as React.CSSProperties,
     pathColor: "#10b981",
     ringColor: "#34d399",
-    variant: "level-a1" as const,
+    buttonClassName:
+      "border-emerald-700 bg-emerald-500 text-white shadow-[inset_0_-4px_0_0_#047857] hover:bg-emerald-600",
   },
   A2: {
     label: "A2 — Sơ cấp",
@@ -51,7 +52,8 @@ const LEVEL_CONFIG = {
     } as React.CSSProperties,
     pathColor: "#06b6d4",
     ringColor: "#22d3ee",
-    variant: "level-a2" as const,
+    buttonClassName:
+      "border-cyan-700 bg-cyan-500 text-white shadow-[inset_0_-4px_0_0_#0e7490] hover:bg-cyan-600",
   },
   B1: {
     label: "B1 — Trung cấp",
@@ -61,7 +63,8 @@ const LEVEL_CONFIG = {
     } as React.CSSProperties,
     pathColor: "#3b82f6",
     ringColor: "#60a5fa",
-    variant: "level-b1" as const,
+    buttonClassName:
+      "border-blue-700 bg-blue-500 text-white shadow-[inset_0_-4px_0_0_#1d4ed8] hover:bg-blue-600",
   },
   B2: {
     label: "B2 — Thượng cấp",
@@ -71,7 +74,8 @@ const LEVEL_CONFIG = {
     } as React.CSSProperties,
     pathColor: "#6366f1",
     ringColor: "#818cf8",
-    variant: "level-b2" as const,
+    buttonClassName:
+      "border-indigo-700 bg-indigo-500 text-white shadow-[inset_0_-4px_0_0_#4338ca] hover:bg-indigo-600",
   },
   C1: {
     label: "C1 — Cao cấp",
@@ -81,7 +85,8 @@ const LEVEL_CONFIG = {
     } as React.CSSProperties,
     pathColor: "#a855f7",
     ringColor: "#c084fc",
-    variant: "level-c1" as const,
+    buttonClassName:
+      "border-purple-700 bg-purple-500 text-white shadow-[inset_0_-4px_0_0_#6d28d9] hover:bg-purple-600",
   },
   C2: {
     label: "C2 — Thành thạo",
@@ -91,7 +96,8 @@ const LEVEL_CONFIG = {
     } as React.CSSProperties,
     pathColor: "#f43f5e",
     ringColor: "#fb7185",
-    variant: "level-c2" as const,
+    buttonClassName:
+      "border-rose-700 bg-rose-500 text-white shadow-[inset_0_-4px_0_0_#be123c] hover:bg-rose-600",
   },
 } as const;
 
@@ -338,7 +344,7 @@ export function LearningPath({
           const isLocked = status === "locked";
           const isCompleted = status === "completed";
           const Icon = ICON_MAP[scenario.context] ?? BookOpen;
-          const variant = config.variant;
+          const buttonClassName = config.buttonClassName;
 
           const haloStyle = isSelected
             ? {
@@ -371,8 +377,9 @@ export function LearningPath({
               >
                 <Button
                   type="button"
-                  variant={variant}
+                  variant="default"
                   size="icon-2xl"
+                  className={buttonClassName}
                   disabled={isLocked}
                   onClick={() => onSelect(scenario.scenario_id)}
                   aria-pressed={isSelected}
