@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -79,8 +80,12 @@ export function ConversationScreen({
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="p-0 sm:w-[320px]">
+            <SheetContent side="right" className="p-0 sm:w-80">
               <SheetTitle className="sr-only">Menu hội thoại</SheetTitle>
+              <SheetDescription className="sr-only">
+                Các công cụ và tùy chọn của phiên hội thoại trên thiết bị di
+                động.
+              </SheetDescription>
               <ConversationSidebar
                 currentHint={ui.currentHint}
                 scenarioGoals={scenarioGoals}

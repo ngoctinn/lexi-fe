@@ -8,6 +8,7 @@ interface LogoProps {
   size?: "sm" | "default" | "md" | "lg";
   href?: string;
   showText?: boolean;
+  loading?: "lazy" | "eager";
 }
 
 export function Logo({
@@ -16,7 +17,10 @@ export function Logo({
   size = "md",
   href = "/",
   showText = true,
+  loading,
 }: LogoProps) {
+  const imageLoading = loading ?? (showText ? "lazy" : "eager");
+
   const iconSize = showText
     ? size === "sm"
       ? 32
@@ -44,14 +48,18 @@ export function Logo({
         alt="Lexi"
         width={iconSize}
         height={iconSize}
-        priority={showText === false}
+        loading={imageLoading}
         className="shrink-0 object-contain transition-transform group-active:translate-y-0.5"
       />
       {showText && (
         <span
           className={cn(
             "font-extrabold tracking-tight text-primary-700",
-            size === "sm" ? "text-2xl" : size === "lg" ? "text-4xl" : "text-3xl",
+            size === "sm"
+              ? "text-2xl"
+              : size === "lg"
+                ? "text-4xl"
+                : "text-3xl",
             textClassName,
           )}
         >

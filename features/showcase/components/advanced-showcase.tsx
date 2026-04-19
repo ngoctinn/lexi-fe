@@ -6,11 +6,33 @@ import { CalendarIcon, ChevronsUpDown, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { FieldGroup, Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  FieldGroup,
+  Field,
+  FieldLabel,
+  FieldDescription,
+} from "@/components/ui/field";
 
 const languages = [
   { label: "English", value: "en" },
@@ -29,7 +51,9 @@ export function AdvancedShowcase() {
     <Card>
       <CardHeader>
         <CardTitle>Advanced Components</CardTitle>
-        <CardDescription>Complex interactive elements like Calendar and Command.</CardDescription>
+        <CardDescription>
+          Complex interactive elements like Calendar and Command.
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-8">
         <FieldGroup>
@@ -42,11 +66,15 @@ export function AdvancedShowcase() {
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal h-12 rounded-xl",
-                    !date && "text-muted-foreground"
+                    !date && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon data-icon="inline-start" />
-                  {date ? format(date, "PPP") : <span>Pick a date to reach your goal</span>}
+                  {date ? (
+                    format(date, "PPP")
+                  ) : (
+                    <span>Pick a date to reach your goal</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -72,12 +100,13 @@ export function AdvancedShowcase() {
                   className="w-full justify-between h-12 rounded-xl font-normal"
                 >
                   {value
-                    ? languages.find((language) => language.value === value)?.label
+                    ? languages.find((language) => language.value === value)
+                        ?.label
                     : "Select language..."}
                   <ChevronsUpDown data-icon="inline-end" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0" align="start">
+              <PopoverContent className="w-75 p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search language..." />
                   <CommandList>
@@ -88,14 +117,18 @@ export function AdvancedShowcase() {
                           key={language.value}
                           value={language.value}
                           onSelect={(currentValue) => {
-                            setValue(currentValue === value ? "" : currentValue);
+                            setValue(
+                              currentValue === value ? "" : currentValue,
+                            );
                             setOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2",
-                              value === language.value ? "opacity-100" : "opacity-0"
+                              value === language.value
+                                ? "opacity-100"
+                                : "opacity-0",
                             )}
                           />
                           {language.label}
@@ -106,7 +139,9 @@ export function AdvancedShowcase() {
                 </Command>
               </PopoverContent>
             </Popover>
-            <FieldDescription>This helps set your learning context.</FieldDescription>
+            <FieldDescription>
+              This helps set your learning context.
+            </FieldDescription>
           </Field>
         </FieldGroup>
       </CardContent>

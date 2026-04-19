@@ -67,7 +67,7 @@ export function OnboardingForm() {
     >
       <CardHeader className="text-center pb-2 pt-8">
         <div className="flex flex-col items-center gap-4">
-          <Logo size="md" />
+          <Logo size="md" loading="eager" />
 
           <div className="space-y-1 mt-4">
             <CardTitle className="text-xl font-bold tracking-tight">
