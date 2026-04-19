@@ -13,10 +13,8 @@ import { FlashcardShowcase } from "./flashcard-showcase";
 import { AdvancedShowcase } from "./advanced-showcase";
 import { SizingShowcase } from "./sizing-showcase";
 import { LoginForm } from "@/features/auth";
-import { Dashboard } from "@/features/dashboard";
 import { Badge } from "@/components/ui/badge";
-
-export function Showcase() {
+export function Showcase({ dashboard }: { dashboard?: React.ReactNode }) {
   return (
     <div className="container mx-auto py-16 px-4 max-w-7xl animate-in fade-in duration-700">
       <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -60,7 +58,7 @@ export function Showcase() {
              </div>
              <Badge variant="outline" className="border-primary-200 text-primary-600">Khu vực riêng tư</Badge>
            </div>
-           <Dashboard />
+           {dashboard}
         </div>
 
         {/* Indicators (Tall Block) */}

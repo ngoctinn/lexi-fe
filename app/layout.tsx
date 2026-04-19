@@ -33,9 +33,15 @@ export default function RootLayout({
       <body className="h-full flex flex-col">
         <AmplifyProvider>
           <QueryProvider>
-            <ThemeProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              forcedTheme="light"
+              enableSystem={false}
+              disableTransitionOnChange
+            >
               <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
-              <Toaster />
+              <Toaster position="top-center" />
             </ThemeProvider>
           </QueryProvider>
         </AmplifyProvider>

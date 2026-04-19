@@ -33,8 +33,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -477,8 +475,6 @@ export function UsersManagement({ users }: UsersManagementProps) {
           </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
-            <FieldSet className="space-y-4">
-              <FieldLegend variant="label">Thông tin cơ bản</FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field>
                   <FieldLabel htmlFor="user-display-name">
@@ -562,10 +558,8 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   </FieldContent>
                 </Field>
               </FieldGroup>
-            </FieldSet>
 
-            <FieldSet className="space-y-4">
-              <FieldLegend variant="label">Học tập</FieldLegend>
+
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field className="md:col-span-2">
                   <FieldLabel htmlFor="user-learning-goal">
@@ -625,10 +619,8 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   </FieldContent>
                 </Field>
               </FieldGroup>
-            </FieldSet>
 
-            <FieldSet className="space-y-4">
-              <FieldLegend variant="label">Ghi chú nội bộ</FieldLegend>
+
               <FieldGroup className="grid gap-4">
                 <Field>
                   <FieldLabel htmlFor="user-notes">Ghi chú</FieldLabel>
@@ -646,7 +638,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   <FieldDescription>Chỉ admin thấy.</FieldDescription>
                 </Field>
               </FieldGroup>
-            </FieldSet>
+
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
               <SheetClose asChild>

@@ -3,8 +3,6 @@
 @import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -165,10 +163,8 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.57 0.26 25);
   --destructive-shadow: oklch(0.35 0.15 20);
   --destructive-shadow-tint: oklch(0.35 0.15 20 / 0.15);
-  --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --primary-shadow-tint: oklch(0.46 0.17 25 / 0.1);
@@ -206,7 +202,7 @@
   --success-950: oklch(0.19 0.06 155);
   --success: var(--success-500);
   --success-dark: var(--success-700);
-  --success-foreground: oklch(0.98 0.04 155);
+  --success-foreground: var(--success-900);
 
   --warning-50: oklch(0.98 0.06 80);
   --warning-100: oklch(0.95 0.08 80);
@@ -221,7 +217,7 @@
   --warning-950: oklch(0.18 0.08 80);
   --warning: var(--warning-500);
   --warning-dark: var(--warning-700);
-  --warning-foreground: oklch(0.98 0.06 80);
+  --warning-foreground: var(--warning-900);
 
   --destructive-50: oklch(0.98 0.04 25);
   --destructive-100: oklch(0.95 0.07 25);
@@ -236,7 +232,7 @@
   --destructive-950: oklch(0.18 0.09 25);
   --destructive: var(--destructive-500);
   --destructive-dark: var(--destructive-700);
-  --destructive-foreground: oklch(1 0 0);
+  --destructive-foreground: var(--destructive-900);
 
   --info-50: oklch(0.98 0.04 250);
   --info-100: oklch(0.95 0.08 250);
@@ -251,6 +247,7 @@
   --info-950: oklch(0.18 0.07 250);
   --info: var(--info-500);
   --info-dark: var(--info-700);
+  --info-foreground: var(--info-900);
 
   --shadow-inset-input:
     inset 0 1px 1px oklch(0 0 0 / 0.1), inset 0 2px 4px oklch(0 0 0 / 0.08),
@@ -262,81 +259,6 @@
   --control-hover: oklch(0.95 0 0);
   --control-border: oklch(0.922 0 0);
   --control-border-subtle: oklch(0.922 0 0 / 50%);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  /* --- Primary Color System (Dark Mode Inverted) --- */
-  --primary-50: oklch(0.28 0.07 21);
-  /* Tương đương với dark 950: Nền tối sâu cho các thành phần tint */
-  --primary-100: oklch(0.35 0.1 22.5);
-  --primary-200: oklch(0.45 0.14 24);
-  --primary-300: oklch(0.55 0.17 25.5);
-  --primary-400: oklch(0.65 0.2 27);
-  --primary-500: oklch(0.63 0.23 28.5);
-  /* Base color - giữ độ rực rỡ cho dark mode */
-  --primary-600: oklch(0.72 0.18 28);
-  --primary-700: oklch(0.8 0.14 27.5);
-  --primary-800: oklch(0.88 0.1 27);
-  --primary-900: oklch(0.93 0.06 26.5);
-  --primary-950: oklch(0.97 0.03 26);
-  /* Text sáng nhất */
-
-  --primary: var(--primary-500);
-  --primary-shadow: oklch(0.45 0.23 28.5);
-  --primary-shadow-tint: oklch(0.4 0.23 28.5 / 0.3);
-  --success-shadow-tint: oklch(0.45 0.14 160 / 0.3);
-  --warning-shadow-tint: oklch(0.48 0.15 85 / 0.3);
-  --info-shadow-tint: oklch(0.4 0.15 250 / 0.3);
-  --destructive-shadow: oklch(0.45 0.25 15);
-  --destructive-shadow-tint: oklch(0.45 0.25 15 / 0.3);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: var(--primary-500);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: hsl(212 20% 13%);
-  --sidebar-foreground: hsl(212 20% 96%);
-  --sidebar-primary: var(--primary-500);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-icon: hsl(212 16% 72%);
-  --sidebar-accent: hsl(212 18% 18%);
-  --sidebar-accent-foreground: hsl(212 20% 96%);
-  --sidebar-border: hsl(212 18% 22%);
-  --sidebar-ring: hsl(212 20% 68%);
-
-  /* Semantic status colors for dark mode - more vibrant text */
-  --success: oklch(0.78 0.18 160);
-  --success-foreground: oklch(0.95 0.05 160);
-  --warning: oklch(0.85 0.2 85);
-  --warning-foreground: oklch(0.98 0.05 85);
-  --destructive: oklch(0.7 0.28 25);
-  --destructive-dark: oklch(0.7 0.28 25);
-  --destructive-foreground: oklch(1 0 0);
-
-  --shadow-inset-input: var(--shadow-inset-input-dark);
-
-  /* Standardized Dark Control Tokens */
-  --control-bg: oklch(0.205 0 0);
-  --control-bg-subtle: oklch(1 0 0 / 5%);
-  --control-hover: oklch(1 0 0 / 8%);
-  --control-border: oklch(1 0 0 / 10%);
-  --control-border-subtle: oklch(1 0 0 / 15%);
 }
 
 @layer base {
@@ -392,9 +314,7 @@
     caret-color: var(--foreground) !important;
   }
 
-  .dark input:-webkit-autofill {
-    background-color: #1e293b !important;
-  }
+
 }
 
 /* ─── Sonner toast border overrides ───────────────────────────────────────────
@@ -404,32 +324,87 @@
    We match that exact specificity and load AFTER Sonner's stylesheet so these
    rules win in the cascade. ─────────────────────────────────────────────── */
 @layer sonner-overrides {
+  [data-sonner-toast][data-styled="true"] {
+    padding: 1rem 1.25rem !important;
+    border-radius: 1.25rem !important;
+    box-shadow: 0 15px 30px -5px rgb(0 0 0 / 0.05) !important;
+    width: min(420px, calc(100vw - 2rem)) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  [data-sonner-toast] [data-icon] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    border-radius: 0.75rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  [data-sonner-toast][data-type="error"] [data-icon] {
+    background-color: var(--destructive-100) !important;
+  }
+  [data-sonner-toast][data-type="success"] [data-icon] {
+    background-color: var(--success-100) !important;
+  }
+  [data-sonner-toast][data-type="warning"] [data-icon] {
+    background-color: var(--warning-100) !important;
+  }
+  [data-sonner-toast][data-type="info"] [data-icon] {
+    background-color: var(--info-100) !important;
+  }
+
+  [data-sonner-toast][data-styled="true"] [data-title] {
+    color: var(--foreground) !important;
+  }
+
+  [data-sonner-toast][data-styled="true"] [data-description] {
+    color: var(--muted-foreground) !important;
+  }
+
+  [data-sonner-toast][data-styled="true"][data-type="error"] [data-title],
+  [data-sonner-toast][data-styled="true"][data-type="error"] [data-description] {
+    color: var(--destructive-foreground) !important;
+  }
+
+  [data-sonner-toast][data-styled="true"][data-type="success"] [data-title],
+  [data-sonner-toast][data-styled="true"][data-type="success"] [data-description] {
+    color: var(--success-foreground) !important;
+  }
+
+  [data-sonner-toast][data-styled="true"][data-type="warning"] [data-title],
+  [data-sonner-toast][data-styled="true"][data-type="warning"] [data-description] {
+    color: var(--warning-foreground) !important;
+  }
+
+  [data-sonner-toast][data-styled="true"][data-type="info"] [data-title],
+  [data-sonner-toast][data-styled="true"][data-type="info"] [data-description] {
+    color: var(--info-foreground) !important;
+  }
+
   [data-sonner-toast][data-styled="true"][data-type="error"] {
-    border-top: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--destructive) !important;
+    background-color: var(--destructive-50) !important;
+    color: var(--destructive-foreground) !important;
+    border: 1px solid var(--destructive-200) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="success"] {
-    border-top: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--success) !important;
+    background-color: var(--success-50) !important;
+    color: var(--success-foreground) !important;
+    border: 1px solid var(--success-200) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="warning"] {
-    border-top: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--warning) !important;
+    background-color: var(--warning-50) !important;
+    color: var(--warning-foreground) !important;
+    border: 1px solid var(--warning-200) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="info"] {
-    border-top: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    border-left: 4px solid var(--primary) !important;
+    background-color: var(--info-50) !important;
+    color: var(--info-foreground) !important;
+    border: 1px solid var(--info-200) !important;
   }
 }
 

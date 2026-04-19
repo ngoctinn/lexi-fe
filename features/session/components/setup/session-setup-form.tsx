@@ -148,7 +148,6 @@ function SessionSettingsSheet({
   selectedGoals,
   formData,
   onUserRoleChange,
-  onAiRoleChange,
   onGoalsToggle,
   onAiGenderChange,
   isPending,
@@ -159,7 +158,6 @@ function SessionSettingsSheet({
   selectedGoals: string[];
   formData: CreateSessionDto;
   onUserRoleChange: (value: string) => void;
-  onAiRoleChange: (value: string) => void;
   onGoalsToggle: (goal: string) => void;
   onAiGenderChange: (value: "male" | "female") => void;
   isPending: boolean;
@@ -223,64 +221,44 @@ function SessionSettingsSheet({
               </div>
             </Field>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               <Field>
-                <FieldLabel
-                  htmlFor="user-role"
-                  className="mb-1 text-foreground/80"
-                >
+                <FieldLabel className="mb-1 text-foreground/80">
                   Vai của bạn
                 </FieldLabel>
-                <Select
-                  value={selectedUserRole}
-                  onValueChange={onUserRoleChange}
-                  disabled={!selectedScenario.user_roles.length}
-                >
-                  <SelectTrigger
-                    id="user-role"
-                    size="xl"
-                    className="rounded-xl border-border/40"
-                  >
-                    <SelectValue placeholder="Chọn vai" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {selectedScenario.user_roles.map((role) => (
-                      <SelectItem key={role} value={role}>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles])).map((role) => {
+                    const isSelected = selectedUserRole === role;
+
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => onUserRoleChange(role)}
+                        className={cn(
+                          "relative flex h-12 items-center justify-center rounded-xl border px-6 text-sm font-bold transition-all duration-200",
+                          isSelected
+                            ? "border-primary bg-primary-50 text-primary shadow-sm"
+                            : "border-border/40 bg-muted/30 text-muted-foreground hover:border-primary-300 hover:bg-primary-50 hover:text-primary",
+                        )}
+                      >
+                        {isSelected && (
+                          <div className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in duration-200">
+                            <Check className="size-3.5 stroke-3" />
+                          </div>
+                        )}
                         {role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </button>
+                    );
+                  })}
+                </div>
               </Field>
 
-              <Field>
-                <FieldLabel
-                  htmlFor="ai-role"
-                  className="mb-1 text-foreground/80"
-                >
-                  Vai AI
-                </FieldLabel>
-                <Select
-                  value={selectedAiRole}
-                  onValueChange={onAiRoleChange}
-                  disabled={!selectedScenario.ai_roles.length}
-                >
-                  <SelectTrigger
-                    id="ai-role"
-                    size="xl"
-                    className="rounded-xl border-border/40"
-                  >
-                    <SelectValue placeholder="Chọn vai" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {selectedScenario.ai_roles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+              {selectedAiRole && (
+                <div className="rounded-lg border border-dashed bg-muted/30 p-3 text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">AI sẽ đóng vai:</span> {selectedAiRole}
+                </div>
+              )}
             </div>
 
             <Field>
@@ -385,15 +363,11 @@ export function SessionSetupForm({
   React.useEffect(() => {
     if (!selectedScenario) return;
 
+    const allRoles = Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]));
+    const defaultUserRole = allRoles[0] ?? selectedScenario.my_character ?? "";
+
     setSelectedUserRole((current) =>
-      selectedScenario.user_roles.includes(current)
-        ? current
-        : (selectedScenario.user_roles[0] ?? ""),
-    );
-    setSelectedAiRole((current) =>
-      selectedScenario.ai_roles.includes(current)
-        ? current
-        : (selectedScenario.ai_roles[0] ?? ""),
+      allRoles.includes(current) ? current : defaultUserRole,
     );
     setSelectedGoals((current) => {
       const visible = selectedScenario.goals.filter((goal) =>
@@ -403,11 +377,26 @@ export function SessionSetupForm({
     });
   }, [selectedScenario]);
 
+  React.useEffect(() => {
+    if (!selectedScenario || !selectedUserRole) return;
+    const allRoles = Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]));
+    const nextAiRole = allRoles.find((r) => r !== selectedUserRole) ?? selectedUserRole;
+    setSelectedAiRole(nextAiRole);
+  }, [selectedUserRole, selectedScenario]);
+
   const buildPromptSnapshot = React.useCallback(() => {
     if (!selectedScenario) return "";
 
-    const userRole = selectedUserRole || selectedScenario.user_roles[0] || "";
-    const aiRole = selectedAiRole || selectedScenario.ai_roles[0] || "";
+    const userRole =
+      selectedUserRole ||
+      selectedScenario.user_roles[0] ||
+      selectedScenario.my_character ||
+      "";
+    const aiRole =
+      selectedAiRole ||
+      selectedScenario.ai_roles[0] ||
+      selectedScenario.ai_character ||
+      "";
     const goals =
       selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
 
@@ -437,6 +426,27 @@ export function SessionSetupForm({
       toast.error("Vui lòng chọn một kịch bản hợp lệ.");
       return;
     }
+
+    const resolvedUserRole =
+      selectedUserRole ||
+      selectedScenario.user_roles[0] ||
+      selectedScenario.my_character ||
+      "";
+    const resolvedAiRole =
+      selectedAiRole ||
+      selectedScenario.ai_roles[0] ||
+      selectedScenario.ai_character ||
+      "";
+
+    if (
+      resolvedUserRole &&
+      resolvedAiRole &&
+      resolvedUserRole === resolvedAiRole
+    ) {
+      toast.error("Vai trò học viên và vai trò AI phải khác nhau.");
+      return;
+    }
+
     setIsPending(true);
 
     const finalDto: CreateSessionDto = {
@@ -515,7 +525,6 @@ export function SessionSetupForm({
             selectedGoals={selectedGoals}
             formData={formData}
             onUserRoleChange={setSelectedUserRole}
-            onAiRoleChange={setSelectedAiRole}
             onGoalsToggle={toggleGoal}
             onAiGenderChange={(value) => set("ai_gender", value)}
             isPending={isPending}

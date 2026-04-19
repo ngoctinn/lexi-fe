@@ -30,6 +30,15 @@ function normalizeText(value: string, fallback: string) {
   return trimmed.length > 0 ? trimmed : fallback;
 }
 
+function normalizeList(values: string[]) {
+  return Array.from(new Set(values.map((item) => item.trim()).filter(Boolean)));
+}
+
+function findOverlappingRoles(left: string[], right: string[]) {
+  const rightSet = new Set(right);
+  return left.filter((item) => rightSet.has(item));
+}
+
 function createUserId(displayName: string) {
   const base = displayName
     .normalize("NFD")
@@ -182,7 +191,9 @@ export async function upsertAdminUser(user: AdminUser): Promise<{
     sessions_completed: Number.isFinite(user.sessions_completed)
       ? Math.max(0, Math.trunc(user.sessions_completed))
       : 0,
-    streak: Number.isFinite(user.streak) ? Math.max(0, Math.trunc(user.streak)) : 0,
+    streak: Number.isFinite(user.streak)
+      ? Math.max(0, Math.trunc(user.streak))
+      : 0,
     last_active_at: normalizeText(user.last_active_at, now),
     updated_at: now,
     notes: user.notes.trim(),
@@ -212,6 +223,31 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
 }> {
   const scenarios = await ensureAdminScenarios();
   const now = new Date().toISOString();
+  const myCharacter = normalizeText(scenario.my_character, "Học viên");
+  const aiCharacter = normalizeText(scenario.ai_character, "AI Assistant");
+  const goals = normalizeList(scenario.goals);
+  const userRoles = normalizeList(scenario.user_roles);
+  const aiRoles = normalizeList(scenario.ai_roles);
+  const conflictingRoles = findOverlappingRoles(userRoles, aiRoles);
+  const primaryUserRole = userRoles[0] ?? myCharacter;
+  const primaryAiRole = aiRoles[0] ?? aiCharacter;
+
+  if (primaryUserRole === primaryAiRole) {
+    return {
+      success: false,
+      error: "Vai trò học viên và vai trò AI phải khác nhau.",
+    };
+  }
+
+  if (conflictingRoles.length > 0) {
+    return {
+      success: false,
+      error: `Vai trò học viên và vai trò AI không được trùng nhau: ${conflictingRoles.join(
+        ", ",
+      )}.`,
+    };
+  }
+
   const normalizedScenario: AdminScenario = {
     ...scenario,
     scenario_id: normalizeText(
@@ -220,11 +256,11 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
     ),
     scenario_title: normalizeText(scenario.scenario_title, "Kịch bản mới"),
     context: normalizeText(scenario.context, "Chủ đề mới"),
-    my_character: normalizeText(scenario.my_character, "Học viên"),
-    ai_character: normalizeText(scenario.ai_character, "AI Assistant"),
-    goals: scenario.goals.map((goal) => goal.trim()).filter(Boolean),
-    user_roles: scenario.user_roles.map((role) => role.trim()).filter(Boolean),
-    ai_roles: scenario.ai_roles.map((role) => role.trim()).filter(Boolean),
+    my_character: primaryUserRole,
+    ai_character: primaryAiRole,
+    goals,
+    user_roles: userRoles,
+    ai_roles: aiRoles,
     usage_count: Number.isFinite(scenario.usage_count)
       ? Math.max(0, Math.trunc(scenario.usage_count))
       : 0,

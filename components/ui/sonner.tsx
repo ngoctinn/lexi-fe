@@ -13,7 +13,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       icons={{
         success: (
-          <CircleCheckIcon className="size-5 text-success fill-success/10" />
+          <CircleCheckIcon className="size-5 text-success fill-success/20" />
         ),
         info: (
           <InfoIcon className="size-5 text-info fill-info/10" />
@@ -31,7 +31,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:relative group-[.toaster]:isolate group-[.toaster]:!bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-2xl sm:rounded-xl overflow-hidden group-[.toaster]:p-4 group-[.toaster]:gap-5 group-[.toaster]:border group-[.toaster]:items-start",
+            "group toast group-[.toaster]:relative group-[.toaster]:isolate group-[.toaster]:shadow-2xl sm:rounded-xl overflow-hidden group-[.toaster]:p-4 group-[.toaster]:gap-6 group-[.toaster]:border group-[.toaster]:items-center",
           description: "group-[.toast]:text-muted-foreground leading-relaxed",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground group-[.toast]:font-bold group-[.toast]:rounded-md group-[.toast]:px-4 group-[.toast]:py-2",
@@ -39,15 +39,15 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:font-bold group-[.toast]:rounded-md group-[.toast]:px-4 group-[.toast]:py-2",
           title: "font-bold text-base leading-tight",
           default:
-            "border-l-4 border-l-foreground",
+            "",
           success:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-success/5 !border-l-4 !border-l-success",
+            "",
           error:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-destructive/5 !border-l-4 !border-l-destructive",
+            "",
           warning:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-warning/5 !border-l-4 !border-l-warning",
+            "",
           info:
-            "before:absolute before:inset-0 before:-z-10 before:!bg-info/5 !border-l-4 !border-l-info",
+            "",
         },
       }}
       {...props}

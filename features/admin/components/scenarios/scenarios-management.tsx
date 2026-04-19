@@ -32,8 +32,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -184,7 +182,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         return normalizeSearch(
           [
             scenario.scenario_title,
-            scenario.context,
             scenario.my_character,
             scenario.ai_character,
             scenario.notes,
@@ -239,8 +236,8 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!draft.scenario_title.trim() || !draft.context.trim()) {
-      toast.error("Vui lòng nhập tiêu đề và ngữ cảnh cho kịch bản.");
+    if (!draft.scenario_title.trim()) {
+      toast.error("Vui lòng nhập tiêu đề cho kịch bản.");
       return;
     }
 
@@ -252,15 +249,16 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
     setIsSaving(true);
 
     try {
+      const finalRoles = draft.user_roles.map((role) => role.trim()).filter(Boolean);
+      
       const result = await upsertAdminScenario({
         ...draft,
         scenario_title: draft.scenario_title.trim(),
-        context: draft.context.trim(),
-        my_character: draft.my_character.trim(),
-        ai_character: draft.ai_character.trim(),
+        my_character: finalRoles[0] ?? "Học viên",
+        ai_character: finalRoles.length > 1 ? finalRoles[1] : (finalRoles[0] ?? "AI Assistant"),
         goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
-        user_roles: draft.user_roles.map((role) => role.trim()).filter(Boolean),
-        ai_roles: draft.ai_roles.map((role) => role.trim()).filter(Boolean),
+        user_roles: finalRoles,
+        ai_roles: finalRoles,
         notes: draft.notes.trim(),
       });
 
@@ -441,9 +439,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                                 {scenario.scenario_title}
                               </p>
                             </div>
-                            <p className="max-w-[18rem] text-sm text-muted-foreground">
-                              {scenario.context}
-                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -457,8 +452,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                               {scenario.goals.length} mục tiêu
                             </p>
                             <p className="text-muted-foreground">
-                              {scenario.user_roles.length} vai trò học viên,{" "}
-                              {scenario.ai_roles.length} vai trò AI
+                              {Array.from(new Set([...scenario.user_roles, ...scenario.ai_roles])).length} nhân vật
                             </p>
                           </div>
                         </TableCell>
@@ -538,8 +532,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
           </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
-            <FieldSet className="space-y-4">
-              <FieldLegend variant="label">Thông tin cơ bản</FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field className="md:col-span-2">
                   <FieldLabel htmlFor="scenario-title">
@@ -557,19 +549,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                   </FieldContent>
                 </Field>
 
-                <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-context">Ngữ cảnh</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="scenario-context"
-                      value={draft.context}
-                      onChange={(event) =>
-                        updateDraft("context", event.target.value)
-                      }
-                      placeholder="Ví dụ: Đời sống hàng ngày"
-                    />
-                  </FieldContent>
-                </Field>
 
                 <Field>
                   <FieldLabel htmlFor="scenario-level">Level</FieldLabel>
@@ -640,49 +619,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                   </FieldContent>
                 </Field>
               </FieldGroup>
-            </FieldSet>
 
-            <FieldSet className="space-y-4">
-              <FieldLegend variant="label">Nhân vật</FieldLegend>
-              <FieldGroup className="grid gap-4 md:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor="scenario-my-character">
-                    Vai trò học viên
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="scenario-my-character"
-                      value={draft.my_character}
-                      onChange={(event) =>
-                        updateDraft("my_character", event.target.value)
-                      }
-                      placeholder="Ví dụ: Khách hàng"
-                    />
-                  </FieldContent>
-                </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="scenario-ai-character">
-                    Vai trò AI
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="scenario-ai-character"
-                      value={draft.ai_character}
-                      onChange={(event) =>
-                        updateDraft("ai_character", event.target.value)
-                      }
-                      placeholder="Ví dụ: Nhân viên bán hàng"
-                    />
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
-            </FieldSet>
 
-            <FieldSet className="space-y-4">
-              <FieldLegend variant="label">
-                Mục tiêu và vai trò hỗ trợ
-              </FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field className="md:col-span-2">
                   <FieldLabel htmlFor="scenario-goals">
@@ -702,45 +641,24 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                   <FieldDescription>Mỗi dòng là một mục tiêu.</FieldDescription>
                 </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="scenario-user-roles">
-                    Vai trò học viên
+                <Field className="md:col-span-2">
+                  <FieldLabel htmlFor="scenario-roles">
+                    Các vai trò trong kịch bản
                   </FieldLabel>
                   <FieldContent>
                     <Textarea
-                      id="scenario-user-roles"
+                      id="scenario-roles"
                       value={draft.user_roles.join("\n")}
-                      onChange={(event) =>
-                        updateDraft(
-                          "user_roles",
-                          splitLines(event.target.value),
-                        )
-                      }
-                      placeholder="Mỗi dòng là một vai trò"
+                      onChange={(event) => {
+                        const roles = splitLines(event.target.value);
+                        updateDraft("user_roles", roles);
+                        updateDraft("ai_roles", roles);
+                      }}
+                      placeholder="Mỗi dòng là một vai trò (ví dụ: Khách hàng, Nhân viên)"
                       className="min-h-28"
                     />
                   </FieldContent>
-                  <FieldDescription>Mỗi dòng là một vai trò.</FieldDescription>
-                </Field>
-
-                <Field>
-                  <FieldLabel htmlFor="scenario-ai-roles">
-                    Vai trò AI
-                  </FieldLabel>
-                  <FieldContent>
-                    <Textarea
-                      id="scenario-ai-roles"
-                      value={draft.ai_roles.join("\n")}
-                      onChange={(event) =>
-                        updateDraft("ai_roles", splitLines(event.target.value))
-                      }
-                      placeholder="Mỗi dòng là một vai trò"
-                      className="min-h-28"
-                    />
-                  </FieldContent>
-                  <FieldDescription>
-                    Mỗi dòng là một vai trò AI.
-                  </FieldDescription>
+                  <FieldDescription>Hệ thống sẽ tự động phân vai AI dựa trên lựa chọn của học viên.</FieldDescription>
                 </Field>
 
                 <Field className="md:col-span-2">
@@ -760,7 +678,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                   </FieldContent>
                 </Field>
               </FieldGroup>
-            </FieldSet>
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
               <SheetClose asChild>
