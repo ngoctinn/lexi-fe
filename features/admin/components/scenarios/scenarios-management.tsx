@@ -10,7 +10,6 @@ import {
   Plus,
   Search,
   SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,13 +19,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Field,
   FieldContent,
@@ -37,7 +36,13 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -51,7 +56,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 const LEVEL_OPTIONS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 
-const SCENARIO_STATUS_TABS: Array<{ value: "all" | "active" | "inactive"; label: string }> = [
+const SCENARIO_STATUS_TABS: Array<{
+  value: "all" | "active" | "inactive";
+  label: string;
+}> = [
   { value: "all", label: "Tất cả" },
   { value: "active", label: "Đang mở" },
   { value: "inactive", label: "Đã ẩn" },
@@ -143,11 +151,13 @@ interface ScenariosManagementProps {
 export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
   const [records, setRecords] = React.useState(scenarios);
   const [query, setQuery] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState<"all" | "active" | "inactive">(
-    "all",
-  );
+  const [statusFilter, setStatusFilter] = React.useState<
+    "all" | "active" | "inactive"
+  >("all");
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState<AdminScenario>(() => createEmptyScenario(1));
+  const [draft, setDraft] = React.useState<AdminScenario>(() =>
+    createEmptyScenario(1),
+  );
   const [isSaving, setIsSaving] = React.useState(false);
 
   React.useEffect(() => {
@@ -199,7 +209,10 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
   const summary = React.useMemo(() => {
     const active = records.filter((scenario) => scenario.is_active).length;
     const inactive = records.length - active;
-    const totalUsage = records.reduce((sum, scenario) => sum + scenario.usage_count, 0);
+    const totalUsage = records.reduce(
+      (sum, scenario) => sum + scenario.usage_count,
+      0,
+    );
 
     return { active, inactive, totalUsage };
   }, [records]);
@@ -256,20 +269,22 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         return;
       }
 
+      const updatedScenario = result.scenario;
+
       setRecords((current) => {
         const exists = current.some(
-          (item) => item.scenario_id === result.scenario?.scenario_id,
+          (item) => item.scenario_id === updatedScenario.scenario_id,
         );
 
         if (exists) {
           return current.map((item) =>
-            item.scenario_id === result.scenario?.scenario_id
-              ? result.scenario
+            item.scenario_id === updatedScenario.scenario_id
+              ? updatedScenario
               : item,
           );
         }
 
-        return [result.scenario, ...current];
+        return [updatedScenario, ...current];
       });
 
       setIsDialogOpen(false);
@@ -295,16 +310,18 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         return;
       }
 
+      const updatedScenario = result.scenario;
+
       setRecords((current) =>
         current.map((item) =>
-          item.scenario_id === result.scenario?.scenario_id
-            ? result.scenario
+          item.scenario_id === updatedScenario.scenario_id
+            ? updatedScenario
             : item,
         ),
       );
 
       toast.success(
-        result.scenario.is_active ? "Đã bật kịch bản." : "Đã ẩn kịch bản.",
+        updatedScenario.is_active ? "Đã bật kịch bản." : "Đã ẩn kịch bản.",
       );
     } catch {
       toast.error("Không thể cập nhật trạng thái. Vui lòng thử lại.");
@@ -355,7 +372,8 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Sắp xếp, bật/tắt và cập nhật các tình huống luyện nói cho học viên.
+                Sắp xếp, bật/tắt và cập nhật các tình huống luyện nói cho học
+                viên.
               </p>
             </div>
 
@@ -439,7 +457,8 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                               {scenario.goals.length} mục tiêu
                             </p>
                             <p className="text-muted-foreground">
-                              {scenario.user_roles.length} vai trò học viên, {scenario.ai_roles.length} vai trò AI
+                              {scenario.user_roles.length} vai trò học viên,{" "}
+                              {scenario.ai_roles.length} vai trò AI
                             </p>
                           </div>
                         </TableCell>
@@ -453,7 +472,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                             <div className="font-medium text-foreground">
                               {scenario.usage_count}
                             </div>
-                            <div className="text-muted-foreground">lượt dùng</div>
+                            <div className="text-muted-foreground">
+                              lượt dùng
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
@@ -462,7 +483,11 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
-                              variant={scenario.is_active ? "soft-warning" : "soft-success"}
+                              variant={
+                                scenario.is_active
+                                  ? "soft-warning"
+                                  : "soft-success"
+                              }
                               size="sm"
                               onClick={() => handleToggleActive(scenario)}
                               disabled={isSaving}
@@ -503,23 +528,23 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         </CardContent>
       </Card>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-5xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
+      <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <SheetContent className="w-full lg:w-[40vw] lg:max-w-none">
+          <SheetHeader>
+            <SheetTitle>
               {draft.scenario_id ? "Chỉnh sửa kịch bản" : "Thêm kịch bản"}
-            </DialogTitle>
-            <DialogDescription>
-              Tạo hoặc cập nhật cấu hình cho một tình huống luyện nói. ID sẽ được sinh tự động nếu để trống.
-            </DialogDescription>
-          </DialogHeader>
+            </SheetTitle>
+            <SheetDescription>Cập nhật nhanh kịch bản.</SheetDescription>
+          </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
             <FieldSet className="space-y-4">
               <FieldLegend variant="label">Thông tin cơ bản</FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-title">Tiêu đề kịch bản</FieldLabel>
+                  <FieldLabel htmlFor="scenario-title">
+                    Tiêu đề kịch bản
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="scenario-title"
@@ -538,7 +563,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                     <Input
                       id="scenario-context"
                       value={draft.context}
-                      onChange={(event) => updateDraft("context", event.target.value)}
+                      onChange={(event) =>
+                        updateDraft("context", event.target.value)
+                      }
                       placeholder="Ví dụ: Đời sống hàng ngày"
                     />
                   </FieldContent>
@@ -550,7 +577,10 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                     <Select
                       value={draft.difficulty_level ?? "A2"}
                       onValueChange={(value) =>
-                        updateDraft("difficulty_level", value as AdminScenario["difficulty_level"])
+                        updateDraft(
+                          "difficulty_level",
+                          value as AdminScenario["difficulty_level"],
+                        )
                       }
                     >
                       <SelectTrigger id="scenario-level" className="w-full">
@@ -568,7 +598,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="scenario-order">Thứ tự hiển thị</FieldLabel>
+                  <FieldLabel htmlFor="scenario-order">
+                    Thứ tự hiển thị
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="scenario-order"
@@ -585,9 +617,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                       }
                     />
                   </FieldContent>
-                  <FieldDescription>
-                    Các kịch bản sẽ được sắp theo số nhỏ trước.
-                  </FieldDescription>
+                  <FieldDescription>Số nhỏ hiển thị trước.</FieldDescription>
                 </Field>
 
                 <Field>
@@ -616,7 +646,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
               <FieldLegend variant="label">Nhân vật</FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field>
-                  <FieldLabel htmlFor="scenario-my-character">Vai trò học viên</FieldLabel>
+                  <FieldLabel htmlFor="scenario-my-character">
+                    Vai trò học viên
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="scenario-my-character"
@@ -630,7 +662,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="scenario-ai-character">Vai trò AI</FieldLabel>
+                  <FieldLabel htmlFor="scenario-ai-character">
+                    Vai trò AI
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="scenario-ai-character"
@@ -646,42 +680,53 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
             </FieldSet>
 
             <FieldSet className="space-y-4">
-              <FieldLegend variant="label">Mục tiêu và vai trò hỗ trợ</FieldLegend>
+              <FieldLegend variant="label">
+                Mục tiêu và vai trò hỗ trợ
+              </FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-goals">Mục tiêu luyện tập</FieldLabel>
+                  <FieldLabel htmlFor="scenario-goals">
+                    Mục tiêu luyện tập
+                  </FieldLabel>
                   <FieldContent>
                     <Textarea
                       id="scenario-goals"
                       value={draft.goals.join("\n")}
-                      onChange={(event) => updateDraft("goals", splitLines(event.target.value))}
+                      onChange={(event) =>
+                        updateDraft("goals", splitLines(event.target.value))
+                      }
                       placeholder="Mỗi dòng là một mục tiêu"
                       className="min-h-32"
                     />
                   </FieldContent>
-                  <FieldDescription>
-                    Mỗi dòng tương ứng với một mục tiêu. Cần ít nhất một mục tiêu để lưu.
-                  </FieldDescription>
+                  <FieldDescription>Mỗi dòng là một mục tiêu.</FieldDescription>
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="scenario-user-roles">Vai trò học viên</FieldLabel>
+                  <FieldLabel htmlFor="scenario-user-roles">
+                    Vai trò học viên
+                  </FieldLabel>
                   <FieldContent>
                     <Textarea
                       id="scenario-user-roles"
                       value={draft.user_roles.join("\n")}
                       onChange={(event) =>
-                        updateDraft("user_roles", splitLines(event.target.value))
+                        updateDraft(
+                          "user_roles",
+                          splitLines(event.target.value),
+                        )
                       }
                       placeholder="Mỗi dòng là một vai trò"
                       className="min-h-28"
                     />
                   </FieldContent>
-                  <FieldDescription>Mỗi dòng là một vai trò người học có thể chọn.</FieldDescription>
+                  <FieldDescription>Mỗi dòng là một vai trò.</FieldDescription>
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="scenario-ai-roles">Vai trò AI</FieldLabel>
+                  <FieldLabel htmlFor="scenario-ai-roles">
+                    Vai trò AI
+                  </FieldLabel>
                   <FieldContent>
                     <Textarea
                       id="scenario-ai-roles"
@@ -694,17 +739,21 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                     />
                   </FieldContent>
                   <FieldDescription>
-                    Mỗi dòng là một vai trò AI phù hợp cho kịch bản này.
+                    Mỗi dòng là một vai trò AI.
                   </FieldDescription>
                 </Field>
 
                 <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-notes">Ghi chú nội bộ</FieldLabel>
+                  <FieldLabel htmlFor="scenario-notes">
+                    Ghi chú nội bộ
+                  </FieldLabel>
                   <FieldContent>
                     <Textarea
                       id="scenario-notes"
                       value={draft.notes}
-                      onChange={(event) => updateDraft("notes", event.target.value)}
+                      onChange={(event) =>
+                        updateDraft("notes", event.target.value)
+                      }
                       placeholder="Ví dụ: ưu tiên dùng cho học viên A2 và B1..."
                       className="min-h-28"
                     />
@@ -714,19 +763,19 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
             </FieldSet>
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
-              <DialogClose asChild>
+              <SheetClose asChild>
                 <Button type="button" variant="outline">
                   Hủy
                 </Button>
-              </DialogClose>
+              </SheetClose>
               <Button type="submit" disabled={isSaving}>
                 {isSaving ? <Loader2 className="size-4 animate-spin" /> : null}
                 Lưu kịch bản
               </Button>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

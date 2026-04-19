@@ -28,6 +28,9 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 
+const sidebarIconClassName =
+  "text-sidebar-icon group-data-[active=true]/menu-button:text-primary-400";
+
 const navigationItems = [
   {
     title: "Tổng quan",
@@ -66,7 +69,11 @@ function isActivePath(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function AdminSidebar({ profile, className, ...props }: AdminSidebarProps) {
+export function AdminSidebar({
+  profile,
+  className,
+  ...props
+}: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -113,7 +120,10 @@ export function AdminSidebar({ profile, className, ...props }: AdminSidebarProps
                   size="lg"
                 >
                   <Link href={item.href}>
-                    <item.icon className="text-sidebar-icon" strokeWidth={2.15} />
+                    <item.icon
+                      className={sidebarIconClassName}
+                      strokeWidth={2.15}
+                    />
                     <span className="group-data-[collapsible=icon]:hidden">
                       {item.title}
                     </span>
@@ -138,7 +148,10 @@ export function AdminSidebar({ profile, className, ...props }: AdminSidebarProps
                   size="lg"
                 >
                   <Link href={item.href}>
-                    <item.icon className="text-sidebar-icon" strokeWidth={2.15} />
+                    <item.icon
+                      className={sidebarIconClassName}
+                      strokeWidth={2.15}
+                    />
                     <span className="group-data-[collapsible=icon]:hidden">
                       {item.title}
                     </span>

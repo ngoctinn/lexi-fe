@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAuthSession } from "aws-amplify/auth/server";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
+import {
+  MOCK_AUTH_COOKIE_NAME,
+  MOCK_AUTH_COOKIE_VALUE,
+} from "@/features/auth/mock-auth";
 
 /**
  * Middleware xử lý Authentication và Route Guard
@@ -23,6 +27,9 @@ export async function middleware(request: NextRequest) {
   });
 
   const { pathname } = request.nextUrl;
+  const isMockAuthenticated =
+    request.cookies.get(MOCK_AUTH_COOKIE_NAME)?.value ===
+    MOCK_AUTH_COOKIE_VALUE;
 
   // 2. Nhóm Route cần được bảo vệ (Yêu cầu đăng nhập)
   const isProtectedRoute =
@@ -34,7 +41,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/learn") ||
     pathname.startsWith("/practice");
 
-  if (isProtectedRoute && !authenticated) {
+  if (isProtectedRoute && !authenticated && !isMockAuthenticated) {
     const loginUrl = new URL("/login", request.url);
     // Lưu lại URL đang định truy cập để redirect sau khi login thành công
     loginUrl.searchParams.set("callbackUrl", pathname);
@@ -48,7 +55,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password");
 
-  if (isAuthRoute && authenticated) {
+  if (isAuthRoute && (authenticated || isMockAuthenticated)) {
     // Nếu đã login mà cố vào trang login/signup => về dashboard
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }

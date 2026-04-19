@@ -106,17 +106,29 @@ function MetricCard({
 }
 
 export default async function AdminPage() {
-  const [users, scenarios] = await Promise.all([getAdminUsers(), getAdminScenarios()]);
+  const [users, scenarios] = await Promise.all([
+    getAdminUsers(),
+    getAdminScenarios(),
+  ]);
 
   const activeUsers = users.filter((user) => user.status === "active").length;
-  const activeScenarios = scenarios.filter((scenario) => scenario.is_active).length;
+  const activeScenarios = scenarios.filter(
+    (scenario) => scenario.is_active,
+  ).length;
   const reviewUsers = users.filter(
     (user) => user.status === "review" || user.status === "paused",
   ).length;
-  const totalUsage = scenarios.reduce((sum, scenario) => sum + scenario.usage_count, 0);
+  const totalUsage = scenarios.reduce(
+    (sum, scenario) => sum + scenario.usage_count,
+    0,
+  );
 
   const recentUsers = [...users]
-    .sort((left, right) => new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime())
+    .sort(
+      (left, right) =>
+        new Date(right.updated_at).getTime() -
+        new Date(left.updated_at).getTime(),
+    )
     .slice(0, 5);
   const popularScenarios = [...scenarios]
     .sort((left, right) => right.usage_count - left.usage_count)
@@ -144,7 +156,10 @@ export default async function AdminPage() {
 
       <div className="flex-1 p-4 md:p-8">
         <div className="flex flex-col gap-6">
-          <Card size="lg" className="border-border/60 bg-linear-to-br from-primary-50 via-background to-muted/30">
+          <Card
+            size="lg"
+            className="border-border/60 bg-linear-to-br from-primary-50 via-background to-muted/30"
+          >
             <CardContent className="flex flex-col gap-6 py-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-4">
                 <Badge variant="soft" size="sm">
@@ -155,7 +170,7 @@ export default async function AdminPage() {
                     Quản lý học viên và kịch bản
                   </h2>
                   <p className="max-w-2xl text-sm text-muted-foreground">
-                    Theo dõi người dùng, bật hoặc ẩn tình huống, và giữ trải nghiệm luyện nói đồng bộ cho học viên.
+                    Theo dõi nhanh người dùng và kịch bản.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -228,9 +243,7 @@ export default async function AdminPage() {
             <Card size="lg" className="border-border/60">
               <CardHeader className="border-b border-border/60 pb-4">
                 <CardTitle>Người dùng gần đây</CardTitle>
-                <CardDescription>
-                  Những tài khoản vừa được cập nhật trong hệ thống.
-                </CardDescription>
+                <CardDescription>Cập nhật gần đây.</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -250,9 +263,17 @@ export default async function AdminPage() {
                         <TableRow key={user.id}>
                           <TableCell className="whitespace-normal">
                             <div className="flex items-center gap-3">
-                              <Avatar size="sm" className="ring-1 ring-border/40">
-                                <AvatarImage src={user.avatar_url} alt={user.display_name} />
-                                <AvatarFallback>{getInitials(user.display_name)}</AvatarFallback>
+                              <Avatar
+                                size="sm"
+                                className="ring-1 ring-border/40"
+                              >
+                                <AvatarImage
+                                  src={user.avatar_url}
+                                  alt={user.display_name}
+                                />
+                                <AvatarFallback>
+                                  {getInitials(user.display_name)}
+                                </AvatarFallback>
                               </Avatar>
                               <div className="min-w-0 space-y-1">
                                 <p className="font-semibold leading-none text-foreground">
@@ -288,9 +309,7 @@ export default async function AdminPage() {
             <Card size="lg" className="border-border/60">
               <CardHeader className="border-b border-border/60 pb-4">
                 <CardTitle>Kịch bản được dùng nhiều</CardTitle>
-                <CardDescription>
-                  Các tình huống có lượt mở cao nhất trong thời gian gần đây.
-                </CardDescription>
+                <CardDescription>Đang được dùng nhiều.</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -304,7 +323,9 @@ export default async function AdminPage() {
                   </TableHeader>
                   <TableBody>
                     {popularScenarios.map((scenario) => {
-                      const statusMeta = getScenarioStatusMeta(scenario.is_active);
+                      const statusMeta = getScenarioStatusMeta(
+                        scenario.is_active,
+                      );
 
                       return (
                         <TableRow key={scenario.scenario_id}>

@@ -9,11 +9,6 @@ interface PageHeaderProps {
   className?: string;
 }
 
-/**
- * PageHeader Component
- * Đã hạ z-index về 0 để không che mất đường phân cách dọc (vertical separator) 
- * và bóng đổ của Sidebar khi ở chế độ expand.
- */
 export function PageHeader({
   icon: Icon,
   title,
@@ -23,14 +18,13 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "sticky top-0 z-0 h-20 bg-background border-b border-border/40",
+        "sticky top-0 z-20 h-20 border-b border-border/40 bg-background/95 backdrop-blur",
         "flex w-full shrink-0 items-center justify-between px-4 sm:px-6 md:px-8",
-        "rounded-t-xl", // Bo góc để khớp với SidebarInset card
+        "rounded-t-xl",
         className,
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
-        {/* Icon wrapper - size-10 khớp với Logo 40px của Sidebar */}
         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary border border-primary-100">
           <Icon className="size-5.5" strokeWidth={2.25} />
         </div>
@@ -41,9 +35,7 @@ export function PageHeader({
       </div>
 
       {actions && (
-        <div className="flex shrink-0 items-center gap-2">
-          {actions}
-        </div>
+        <div className="flex shrink-0 items-center gap-2">{actions}</div>
       )}
     </div>
   );

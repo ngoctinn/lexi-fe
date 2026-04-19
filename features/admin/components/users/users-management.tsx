@@ -20,13 +20,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Field,
   FieldContent,
@@ -37,7 +37,13 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -61,7 +67,10 @@ const USER_STATUS_META: Record<
   review: { label: "Cần hỗ trợ", variant: "warning" },
 };
 
-const USER_FILTER_TABS: Array<{ value: "all" | AdminUserStatus; label: string }> = [
+const USER_FILTER_TABS: Array<{
+  value: "all" | AdminUserStatus;
+  label: string;
+}> = [
   { value: "all", label: "Tất cả" },
   { value: "active", label: "Hoạt động" },
   { value: "invited", label: "Mới mời" },
@@ -158,9 +167,9 @@ interface UsersManagementProps {
 export function UsersManagement({ users }: UsersManagementProps) {
   const [records, setRecords] = React.useState(users);
   const [query, setQuery] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState<"all" | AdminUserStatus>(
-    "all",
-  );
+  const [statusFilter, setStatusFilter] = React.useState<
+    "all" | AdminUserStatus
+  >("all");
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<AdminUser>(() => createEmptyUser());
   const [isSaving, setIsSaving] = React.useState(false);
@@ -194,7 +203,8 @@ export function UsersManagement({ users }: UsersManagementProps) {
       })
       .sort(
         (left, right) =>
-          new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime(),
+          new Date(right.updated_at).getTime() -
+          new Date(left.updated_at).getTime(),
       );
   }, [query, records, statusFilter]);
 
@@ -208,7 +218,10 @@ export function UsersManagement({ users }: UsersManagementProps) {
     return { active, invited, attention };
   }, [records]);
 
-  const updateDraft = <K extends keyof AdminUser>(key: K, value: AdminUser[K]) => {
+  const updateDraft = <K extends keyof AdminUser>(
+    key: K,
+    value: AdminUser[K],
+  ) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
@@ -332,7 +345,9 @@ export function UsersManagement({ users }: UsersManagementProps) {
 
           <Tabs
             value={statusFilter}
-            onValueChange={(value) => setStatusFilter(value as "all" | AdminUserStatus)}
+            onValueChange={(value) =>
+              setStatusFilter(value as "all" | AdminUserStatus)
+            }
             className="w-full"
           >
             <TabsList variant="line" className="w-full flex-wrap justify-start">
@@ -367,8 +382,13 @@ export function UsersManagement({ users }: UsersManagementProps) {
                         <TableCell className="whitespace-normal">
                           <div className="flex items-center gap-3">
                             <Avatar size="sm" className="ring-1 ring-border/40">
-                              <AvatarImage src={user.avatar_url} alt={user.display_name} />
-                              <AvatarFallback>{getInitials(user.display_name)}</AvatarFallback>
+                              <AvatarImage
+                                src={user.avatar_url}
+                                alt={user.display_name}
+                              />
+                              <AvatarFallback>
+                                {getInitials(user.display_name)}
+                              </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 space-y-1">
                               <p className="font-semibold leading-none text-foreground">
@@ -447,28 +467,30 @@ export function UsersManagement({ users }: UsersManagementProps) {
         </CardContent>
       </Card>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
+      <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <SheetContent className="w-full lg:w-[40vw] lg:max-w-none">
+          <SheetHeader>
+            <SheetTitle>
               {draft.id ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
-            </DialogTitle>
-            <DialogDescription>
-              Cập nhật thông tin học viên, cấp độ hiện tại và các ghi chú cần theo dõi.
-            </DialogDescription>
-          </DialogHeader>
+            </SheetTitle>
+            <SheetDescription>Sửa nhanh thông tin.</SheetDescription>
+          </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
             <FieldSet className="space-y-4">
               <FieldLegend variant="label">Thông tin cơ bản</FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field>
-                  <FieldLabel htmlFor="user-display-name">Tên hiển thị</FieldLabel>
+                  <FieldLabel htmlFor="user-display-name">
+                    Tên hiển thị
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="user-display-name"
                       value={draft.display_name}
-                      onChange={(event) => updateDraft("display_name", event.target.value)}
+                      onChange={(event) =>
+                        updateDraft("display_name", event.target.value)
+                      }
                       placeholder="Ví dụ: Nguyễn Minh Anh"
                     />
                   </FieldContent>
@@ -481,7 +503,9 @@ export function UsersManagement({ users }: UsersManagementProps) {
                       id="user-email"
                       type="email"
                       value={draft.email}
-                      onChange={(event) => updateDraft("email", event.target.value)}
+                      onChange={(event) =>
+                        updateDraft("email", event.target.value)
+                      }
                       placeholder="example@lexi.app"
                     />
                   </FieldContent>
@@ -493,7 +517,10 @@ export function UsersManagement({ users }: UsersManagementProps) {
                     <Select
                       value={draft.current_level}
                       onValueChange={(value) =>
-                        updateDraft("current_level", value as AdminUser["current_level"])
+                        updateDraft(
+                          "current_level",
+                          value as AdminUser["current_level"],
+                        )
                       }
                     >
                       <SelectTrigger id="user-level" className="w-full">
@@ -523,13 +550,13 @@ export function UsersManagement({ users }: UsersManagementProps) {
                         <SelectValue placeholder="Chọn trạng thái" />
                       </SelectTrigger>
                       <SelectContent>
-                        {USER_FILTER_TABS.filter((tab) => tab.value !== "all").map(
-                          (tab) => (
-                            <SelectItem key={tab.value} value={tab.value}>
-                              {tab.label}
-                            </SelectItem>
-                          ),
-                        )}
+                        {USER_FILTER_TABS.filter(
+                          (tab) => tab.value !== "all",
+                        ).map((tab) => (
+                          <SelectItem key={tab.value} value={tab.value}>
+                            {tab.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FieldContent>
@@ -541,19 +568,25 @@ export function UsersManagement({ users }: UsersManagementProps) {
               <FieldLegend variant="label">Học tập</FieldLegend>
               <FieldGroup className="grid gap-4 md:grid-cols-2">
                 <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="user-learning-goal">Mục tiêu học tập</FieldLabel>
+                  <FieldLabel htmlFor="user-learning-goal">
+                    Mục tiêu học tập
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="user-learning-goal"
                       value={draft.learning_goal}
-                      onChange={(event) => updateDraft("learning_goal", event.target.value)}
+                      onChange={(event) =>
+                        updateDraft("learning_goal", event.target.value)
+                      }
                       placeholder="Ví dụ: Du lịch tự tin"
                     />
                   </FieldContent>
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="user-sessions-completed">Số buổi đã học</FieldLabel>
+                  <FieldLabel htmlFor="user-sessions-completed">
+                    Số buổi đã học
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="user-sessions-completed"
@@ -603,32 +636,32 @@ export function UsersManagement({ users }: UsersManagementProps) {
                     <Textarea
                       id="user-notes"
                       value={draft.notes}
-                      onChange={(event) => updateDraft("notes", event.target.value)}
+                      onChange={(event) =>
+                        updateDraft("notes", event.target.value)
+                      }
                       placeholder="Ví dụ: cần thêm bài tập phản xạ, ưu tiên hội thoại ngắn..."
                       className="min-h-28"
                     />
                   </FieldContent>
-                  <FieldDescription>
-                    Ghi chú này chỉ dành cho admin và không hiển thị cho học viên.
-                  </FieldDescription>
+                  <FieldDescription>Chỉ admin thấy.</FieldDescription>
                 </Field>
               </FieldGroup>
             </FieldSet>
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
-              <DialogClose asChild>
+              <SheetClose asChild>
                 <Button type="button" variant="outline">
                   Hủy
                 </Button>
-              </DialogClose>
+              </SheetClose>
               <Button type="submit" disabled={isSaving}>
                 {isSaving ? <Loader2 className="size-4 animate-spin" /> : null}
                 Lưu người dùng
               </Button>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

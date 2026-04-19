@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { clearMockAuthSession } from "@/features/auth/actions/mock-auth.actions";
 
 import type { ProfileData } from "@/features/profile/api/profile.actions";
 
@@ -53,12 +54,8 @@ export function SidebarAccountMenu({ profile }: SidebarAccountMenuProps) {
   );
 
   const handleLogout = React.useCallback(async () => {
-    try {
-      await signOut();
-      router.refresh();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await Promise.allSettled([signOut(), clearMockAuthSession()]);
+    router.replace("/login");
   }, [router]);
 
   return (
