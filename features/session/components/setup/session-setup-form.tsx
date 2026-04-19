@@ -1,12 +1,23 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Sparkles } from "lucide-react";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale/vi";
+import { ArrowRight, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import {
   Select,
@@ -15,47 +26,321 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { LearningPath } from "./learning-path";
 import { createSession } from "@/features/session/actions/create-session";
 import type {
   Scenario,
   CreateSessionDto,
+  Session,
 } from "@/features/session/types/session.types";
 import { toast } from "sonner";
 
-const CONTEXT_LABELS: Record<string, string> = {
-  work: "Công việc",
-  daily_life: "Đời sống",
-  travel: "Du lịch",
-  social: "Giao tiếp",
-  world: "Khám phá",
-  food: "Ẩm thực",
-};
+function formatSessionDate(createdAt?: string) {
+  if (!createdAt) {
+    return "Vừa xong";
+  }
 
-const DIFFICULTY_LABELS: Record<string, string> = {
-  A1: "Cơ bản",
-  A2: "Căn bản",
-  B1: "Trung cấp",
-  B2: "Trung cấp khá",
-  C1: "Cao cấp",
-  C2: "Thành thạo",
-};
+  return format(new Date(createdAt), "dd/MM/yyyy HH:mm", {
+    locale: vi,
+  });
+}
 
-function getContextLabel(context: string) {
-  return CONTEXT_LABELS[context] ?? context;
+function RecentSessionsCard({
+  sessions,
+  scenarioMap,
+}: {
+  sessions: Session[];
+  scenarioMap: Map<string, Scenario>;
+}) {
+  const recentSessions = React.useMemo(
+    () =>
+      [...sessions]
+        .sort(
+          (a, b) =>
+            new Date(b.created_at ?? 0).getTime() -
+            new Date(a.created_at ?? 0).getTime(),
+        )
+        .slice(0, 4),
+    [sessions],
+  );
+
+  return (
+    <Card size="sm" className="flex h-full min-h-0 flex-col">
+      <CardHeader className="shrink-0 pb-3">
+        <CardTitle className="text-base font-semibold tracking-tight">
+          Lịch sử gần đây
+        </CardTitle>
+        <CardDescription>
+          Mở lại phiên gần nhất ngay trong lộ trình luyện nói này.
+        </CardDescription>
+        <CardAction>
+          <Badge
+            variant="secondary"
+            className="rounded-full px-2.5 py-1 text-[11px] font-semibold"
+          >
+            {sessions.length} phiên
+          </Badge>
+        </CardAction>
+      </CardHeader>
+
+      <CardContent className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-2">
+        {recentSessions.length > 0 ? (
+          recentSessions.map((session) => {
+            const isCompleted = Boolean(session.scoring);
+            const scenario = scenarioMap.get(session.scenario_id);
+            const scenarioTitle =
+              scenario?.scenario_title ?? session.scenario_id;
+            const href = isCompleted
+              ? `/session/${session.session_id}/results`
+              : `/session/${session.session_id}`;
+
+            return (
+              <Link
+                key={session.session_id}
+                href={href}
+                className="group flex items-start justify-between gap-4 rounded-lg border bg-background p-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              >
+                <div className="min-w-0 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant={isCompleted ? "secondary" : "default"}
+                      className="shrink-0"
+                    >
+                      {isCompleted ? "Hoàn thành" : "Đang học"}
+                    </Badge>
+                    <span className="truncate text-sm font-semibold text-foreground">
+                      {scenarioTitle}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {formatSessionDate(session.created_at)} · Level{" "}
+                    {session.level}
+                  </p>
+                </div>
+
+                <ArrowRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            );
+          })
+        ) : (
+          <div className="rounded-lg border border-dashed bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+            Chưa có lịch sử hội thoại. Bắt đầu một phiên mới để phần này xuất
+            hiện.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function SessionSettingsSheet({
+  selectedScenario,
+  selectedUserRole,
+  selectedAiRole,
+  selectedGoals,
+  formData,
+  onUserRoleChange,
+  onAiRoleChange,
+  onGoalsToggle,
+  onAiGenderChange,
+  isPending,
+}: {
+  selectedScenario: Scenario;
+  selectedUserRole: string;
+  selectedAiRole: string;
+  selectedGoals: string[];
+  formData: CreateSessionDto;
+  onUserRoleChange: (value: string) => void;
+  onAiRoleChange: (value: string) => void;
+  onGoalsToggle: (goal: string) => void;
+  onAiGenderChange: (value: "male" | "female") => void;
+  isPending: boolean;
+}) {
+  return (
+    <SheetContent side="right" className="sm:w-xl! sm:max-w-none!">
+      <SheetHeader>
+        <SheetTitle>Thiết lập cuộc hội thoại</SheetTitle>
+        <SheetDescription>
+          Tùy chỉnh nhanh vai, mục tiêu và giọng AI trước khi bắt đầu.
+        </SheetDescription>
+      </SheetHeader>
+
+      <div className="flex h-full min-h-0 flex-col gap-6 pb-4">
+        <div className="flex items-start justify-between gap-3 rounded-lg border bg-card px-4 py-3">
+          <p className="min-w-0 truncate text-sm font-semibold text-foreground">
+            {selectedScenario.scenario_title}
+          </p>
+
+          <Badge variant="secondary" className="shrink-0 rounded-full">
+            {selectedGoals.length}/{selectedScenario.goals.length} mục tiêu
+          </Badge>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+          <FieldGroup className="gap-8">
+            <Field>
+              <div className="flex items-center justify-between mb-1">
+                <FieldLabel className="text-foreground/80">
+                  Mục tiêu luyện tập
+                </FieldLabel>
+                <span className="text-[10px] font-medium text-muted-foreground/50">
+                  {selectedGoals.length}/{selectedScenario.goals.length}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-3 mt-2">
+                {selectedScenario.goals.map((goal) => {
+                  const isSelected = selectedGoals.includes(goal);
+
+                  return (
+                    <button
+                      key={goal}
+                      type="button"
+                      onClick={() => onGoalsToggle(goal)}
+                      className={cn(
+                        "relative flex h-12 items-center justify-center rounded-xl border px-6 text-sm font-bold transition-all duration-200",
+                        isSelected
+                          ? "border-primary bg-primary-50 text-primary shadow-sm"
+                          : "border-border/40 bg-muted/30 text-muted-foreground hover:border-primary-300 hover:bg-primary-50 hover:text-primary",
+                      )}
+                    >
+                      {isSelected && (
+                        <div className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in duration-200">
+                          <Check className="size-3.5 stroke-3" />
+                        </div>
+                      )}
+                      {goal}
+                    </button>
+                  );
+                })}
+              </div>
+            </Field>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel
+                  htmlFor="user-role"
+                  className="mb-1 text-foreground/80"
+                >
+                  Vai của bạn
+                </FieldLabel>
+                <Select
+                  value={selectedUserRole}
+                  onValueChange={onUserRoleChange}
+                  disabled={!selectedScenario.user_roles.length}
+                >
+                  <SelectTrigger
+                    id="user-role"
+                    size="xl"
+                    className="rounded-xl border-border/40"
+                  >
+                    <SelectValue placeholder="Chọn vai" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    {selectedScenario.user_roles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel
+                  htmlFor="ai-role"
+                  className="mb-1 text-foreground/80"
+                >
+                  Vai AI
+                </FieldLabel>
+                <Select
+                  value={selectedAiRole}
+                  onValueChange={onAiRoleChange}
+                  disabled={!selectedScenario.ai_roles.length}
+                >
+                  <SelectTrigger
+                    id="ai-role"
+                    size="xl"
+                    className="rounded-xl border-border/40"
+                  >
+                    <SelectValue placeholder="Chọn vai" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    {selectedScenario.ai_roles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+
+            <Field>
+              <FieldLabel
+                htmlFor="ai-gender"
+                className="mb-1 text-foreground/80"
+              >
+                Giọng nói AI
+              </FieldLabel>
+              <Select
+                value={formData.ai_gender}
+                onValueChange={(value) =>
+                  onAiGenderChange(value as "male" | "female")
+                }
+              >
+                <SelectTrigger
+                  id="ai-gender"
+                  size="xl"
+                  className="rounded-xl border-border/40"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="female">Nữ (Giọng chuẩn)</SelectItem>
+                  <SelectItem value="male">Nam (Giọng chuẩn)</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+          </FieldGroup>
+        </div>
+
+        <SheetFooter className="shrink-0 border-t border-border/60 pt-4">
+          <Button
+            type="submit"
+            size="lg"
+            className="h-12 w-full rounded-2xl font-semibold"
+            disabled={isPending}
+          >
+            {isPending ? "Đang khởi tạo..." : "Bắt đầu hội thoại"}
+          </Button>
+        </SheetFooter>
+      </div>
+    </SheetContent>
+  );
 }
 
 interface SessionSetupFormProps extends React.ComponentProps<"form"> {
   scenarios: Scenario[];
+  sessions: Session[];
 }
 
 export function SessionSetupForm({
   scenarios,
+  sessions,
   className,
   ...props
 }: SessionSetupFormProps) {
   const router = useRouter();
   const [isPending, setIsPending] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [selectedUserRole, setSelectedUserRole] = React.useState("");
   const [selectedAiRole, setSelectedAiRole] = React.useState("");
   const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
@@ -79,6 +364,24 @@ export function SessionSetupForm({
     [scenarios, formData.scenario_id],
   );
 
+  const scenarioMap = React.useMemo(
+    () =>
+      new Map(scenarios.map((scenario) => [scenario.scenario_id, scenario])),
+    [scenarios],
+  );
+
+  const recentSessions = React.useMemo(() => sessions, [sessions]);
+
+  const toggleGoal = React.useCallback((goal: string) => {
+    setSelectedGoals((current) => {
+      const next = current.includes(goal)
+        ? current.filter((item) => item !== goal)
+        : Array.from(new Set([...current, goal]));
+
+      return next.length > 0 ? next : current;
+    });
+  }, []);
+
   React.useEffect(() => {
     if (!selectedScenario) return;
 
@@ -93,7 +396,9 @@ export function SessionSetupForm({
         : (selectedScenario.ai_roles[0] ?? ""),
     );
     setSelectedGoals((current) => {
-      const visible = selectedScenario.goals.filter((g) => current.includes(g));
+      const visible = selectedScenario.goals.filter((goal) =>
+        current.includes(goal),
+      );
       return visible.length > 0 ? visible : selectedScenario.goals;
     });
   }, [selectedScenario]);
@@ -108,20 +413,21 @@ export function SessionSetupForm({
 
     return [
       `Scenario: ${selectedScenario.scenario_title}`,
-      `Context: ${selectedScenario.context}`,
       `User role: ${userRole}`,
       `AI role: ${aiRole}`,
       `My character: ${selectedScenario.my_character}`,
       `AI character: ${selectedScenario.ai_character}`,
       `Goals: ${goals.join(" | ")}`,
       `AI gender: ${formData.ai_gender}`,
+      `Level: ${formData.level}`,
     ].join("\n");
   }, [
     formData.ai_gender,
+    formData.level,
     selectedAiRole,
     selectedScenario,
-    selectedUserRole,
     selectedGoals,
+    selectedUserRole,
   ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,7 +437,6 @@ export function SessionSetupForm({
       toast.error("Vui lòng chọn một kịch bản hợp lệ.");
       return;
     }
-
     setIsPending(true);
 
     const finalDto: CreateSessionDto = {
@@ -161,233 +466,62 @@ export function SessionSetupForm({
       className={cn("flex h-full w-full", className)}
       {...props}
     >
-      <div className="flex w-full lg:w-3/5 flex-col overflow-y-auto pr-2 custom-scrollbar">
-        <div className="flex flex-col items-center justify-start py-6">
-          <div className="mb-8 w-full max-w-xs text-center">
-            <h2 className="text-lg font-bold tracking-tight">
-              Lộ trình luyện nói
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Chọn tình huống phù hợp để bắt đầu
-            </p>
-          </div>
+      <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <div className="grid h-full w-full gap-6 pb-28 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)] lg:pb-0">
+          <section className="flex min-h-0 flex-col overflow-y-auto pr-2 custom-scrollbar">
+            <div className="flex flex-col items-center justify-start py-6">
+              <div className="mb-8 flex w-full flex-col gap-4 text-left">
+                <div className="max-w-xs">
+                  <h2 className="text-lg font-bold tracking-tight">
+                    Lộ trình luyện nói
+                  </h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Chọn tình huống phù hợp để bắt đầu
+                  </p>
+                </div>
+              </div>
 
-          <LearningPath
-            scenarios={scenarios}
-            value={formData.scenario_id}
-            onSelect={(id) => set("scenario_id", id)}
+              <LearningPath
+                scenarios={scenarios}
+                value={formData.scenario_id}
+                onSelect={(id) => {
+                  set("scenario_id", id);
+                  setIsSettingsOpen(true);
+                }}
+              />
+
+              <div className="mt-6 w-full lg:hidden">
+                <RecentSessionsCard
+                  sessions={recentSessions}
+                  scenarioMap={scenarioMap}
+                />
+              </div>
+            </div>
+          </section>
+
+          <aside className="hidden min-h-0 flex-1 flex-col gap-4 lg:flex">
+            <RecentSessionsCard
+              sessions={recentSessions}
+              scenarioMap={scenarioMap}
+            />
+          </aside>
+        </div>
+
+        {selectedScenario && (
+          <SessionSettingsSheet
+            selectedScenario={selectedScenario}
+            selectedUserRole={selectedUserRole}
+            selectedAiRole={selectedAiRole}
+            selectedGoals={selectedGoals}
+            formData={formData}
+            onUserRoleChange={setSelectedUserRole}
+            onAiRoleChange={setSelectedAiRole}
+            onGoalsToggle={toggleGoal}
+            onAiGenderChange={(value) => set("ai_gender", value)}
+            isPending={isPending}
           />
-        </div>
-      </div>
-
-      <div className="hidden shrink-0 lg:flex lg:w-2/5 flex-col pl-8 border-l border-border/60">
-        {selectedScenario ? (
-          <div className="flex h-full flex-col gap-6">
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <h2 className="text-xl font-bold tracking-tight leading-snug line-clamp-2">
-                  {selectedScenario.scenario_title}
-                </h2>
-                <Badge
-                  variant="default"
-                  className="rounded-full text-[10px] font-bold px-2.5 py-0.5 shrink-0"
-                >
-                  {getContextLabel(selectedScenario.context)} •{" "}
-                  {selectedScenario.difficulty_level}
-                </Badge>
-              </div>
-            </div>
-
-            <div className="h-px bg-border/60" />
-
-            <FieldGroup className="flex-1 overflow-y-auto pr-1 custom-scrollbar gap-8">
-              <Field>
-                <div className="flex items-center justify-between mb-1">
-                  <FieldLabel className="text-foreground/80">
-                    Mục tiêu luyện tập
-                  </FieldLabel>
-                  <span className="text-[10px] font-medium text-muted-foreground/50">
-                    {selectedGoals.length}/{selectedScenario.goals.length}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {selectedScenario.goals.map((goal) => {
-                    const isSelected = selectedGoals.includes(goal);
-                    return (
-                      <button
-                        key={goal}
-                        type="button"
-                        onClick={() => {
-                          setSelectedGoals((current) => {
-                            const next = isSelected
-                              ? current.filter((item) => item !== goal)
-                              : Array.from(new Set([...current, goal]));
-                            return next.length > 0 ? next : current;
-                          });
-                        }}
-                        className={cn(
-                          "relative flex h-12 items-center justify-center rounded-xl border px-6 text-sm font-bold transition-all duration-200",
-                          isSelected
-                            ? "border-primary bg-primary-50 text-primary shadow-sm"
-                            : "border-border/40 bg-muted/30 text-muted-foreground hover:border-primary-300 hover:bg-primary-50 hover:text-primary",
-                        )}
-                      >
-                        {isSelected && (
-                          <div className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in duration-200">
-                            <Check className="size-3.5 stroke-3" />
-                          </div>
-                        )}
-                        {goal}
-                      </button>
-                    );
-                  })}
-                </div>
-              </Field>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Field>
-                  <FieldLabel
-                    htmlFor="user-role"
-                    className="text-foreground/80 mb-1"
-                  >
-                    Vai của bạn
-                  </FieldLabel>
-                  <Select
-                    value={selectedUserRole}
-                    onValueChange={setSelectedUserRole}
-                    disabled={!selectedScenario.user_roles.length}
-                  >
-                    <SelectTrigger
-                      id="user-role"
-                      size="xl"
-                      className="rounded-xl border-border/40"
-                    >
-                      <SelectValue placeholder="Chọn vai" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      {selectedScenario.user_roles.map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {role}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-
-                <Field>
-                  <FieldLabel
-                    htmlFor="ai-role"
-                    className="text-foreground/80 mb-1"
-                  >
-                    Vai AI
-                  </FieldLabel>
-                  <Select
-                    value={selectedAiRole}
-                    onValueChange={setSelectedAiRole}
-                    disabled={!selectedScenario.ai_roles.length}
-                  >
-                    <SelectTrigger
-                      id="ai-role"
-                      size="xl"
-                      className="rounded-xl border-border/40"
-                    >
-                      <SelectValue placeholder="Chọn vai" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      {selectedScenario.ai_roles.map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {role}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
-
-              <Field>
-                <FieldLabel
-                  htmlFor="ai-gender"
-                  className="text-foreground/80 mb-1"
-                >
-                  Giọng nói AI
-                </FieldLabel>
-                <Select
-                  value={formData.ai_gender}
-                  onValueChange={(v) =>
-                    set("ai_gender", v as "male" | "female")
-                  }
-                >
-                  <SelectTrigger
-                    id="ai-gender"
-                    size="xl"
-                    className="rounded-xl border-border/40"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem value="female">Nữ (Giọng chuẩn)</SelectItem>
-                    <SelectItem value="male">Nam (Giọng chuẩn)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
-
-            <div className="mt-auto pt-4">
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full h-14 text-base font-semibold rounded-2xl gap-2"
-                disabled={isPending || !selectedScenario}
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="size-5 animate-spin" />
-                    Đang khởi tạo...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="size-5" />
-                    Bắt đầu hội thoại
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex h-full items-center justify-center rounded-3xl border border-dashed bg-muted/20 p-8 text-center text-sm text-muted-foreground">
-            Chưa có kịch bản nào. Vui lòng thử lại sau.
-          </div>
         )}
-      </div>
-
-      {selectedScenario && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 p-4 backdrop-blur-sm lg:hidden">
-          <div className="mx-auto flex max-w-lg items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold">
-                {selectedScenario.scenario_title}
-              </p>
-              <p className="text-[10px] text-muted-foreground font-medium">
-                {getContextLabel(selectedScenario.context)} •{" "}
-                {selectedScenario.difficulty_level}
-              </p>
-            </div>
-            <Button
-              type="submit"
-              size="sm"
-              className="shrink-0 gap-1.5 rounded-xl"
-              disabled={isPending}
-            >
-              {isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Sparkles className="size-4" />
-              )}
-              Bắt đầu
-            </Button>
-          </div>
-        </div>
-      )}
+      </Sheet>
     </form>
   );
 }

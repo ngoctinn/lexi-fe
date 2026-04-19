@@ -68,7 +68,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
   };
 
   return (
-    <div className="flex flex-col gap-8 mx-auto w-full max-w-4xl px-4 py-8 animate-in fade-in zoom-in-95 duration-500">
+    <div className="flex w-full flex-col gap-8 animate-in fade-in zoom-in-95 duration-500">
       <div className="flex flex-col items-center justify-center text-center pb-6">
         <Badge variant="outline" className="mb-4 text-xs font-semibold py-1">
           BÁO CÁO PHIÊN HỌC
@@ -155,14 +155,14 @@ export function ScoringResult({ session }: ScoringResultProps) {
         </Card>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-center sm:items-center mt-6">
         <Button
           variant="outline"
           size="lg"
           className="w-full sm:w-auto min-w-40"
           asChild
         >
-          <Link href="/sessions">Lịch sử</Link>
+          <Link href="/dashboard">Về tổng quan</Link>
         </Button>
         <Button size="lg" className="w-full sm:w-auto min-w-40" asChild>
           <Link href="/session/new">Luyện bài khác</Link>

@@ -44,11 +44,11 @@ export function SessionHeader({
     const res = await endSession(sessionId);
     setIsPending(false);
     if (res.success) {
-      toast.success("Kết thúc phiên học. Đang tính điểm...");
+      toast.success("Đã nộp bài. Đang tính điểm...");
       onEnd?.();
       router.push(`/session/${sessionId}/results`);
     } else {
-      toast.error(res.error ?? "Không thể kết thúc phiên học.");
+      toast.error(res.error ?? "Không thể nộp bài.");
     }
   };
 
@@ -94,21 +94,22 @@ export function SessionHeader({
                 data-icon="inline-start"
                 className="size-3.5 fill-current"
               />
-              <span className="hidden sm:inline">Kết thúc</span>
+              <span className="hidden sm:inline">Nộp &amp; chấm điểm</span>
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Kết thúc phiên học?</AlertDialogTitle>
+              <AlertDialogTitle>Nộp bài và chấm điểm?</AlertDialogTitle>
               <AlertDialogDescription>
-                Bạn có chắc chắn muốn kết thúc bài luyện nói này không? Hệ thống
-                sẽ ngừng ghi âm và bắt đầu chấm điểm phần thực hành của bạn.
+                Nút micro chỉ dừng lượt ghi âm hiện tại. Nút này sẽ chốt phiên
+                luyện nói, ngừng ghi âm và bắt đầu chấm điểm phần thực hành của
+                bạn.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Hủy</AlertDialogCancel>
               <AlertDialogAction onClick={handleEnd}>
-                Xác nhận & Chấm điểm
+                Nộp &amp; chấm điểm
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

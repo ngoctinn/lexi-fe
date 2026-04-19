@@ -29,14 +29,14 @@ export function MicButton({
       case "permission-denied":
         return "Quyền truy cập micro bị từ chối. Vui lòng click vào ổ khóa trên thanh địa chỉ để cấp quyền lại.";
       case "recording":
-        return "Đang lắng nghe... Nhấn để dừng và gửi";
+        return "Đang lắng nghe... Nhấn để dừng lượt ghi âm này và gửi";
       case "uploading":
       case "processing":
         return "Đang xử lý âm thanh...";
       case "error":
         return "Đã xảy ra lỗi micro. Vui lòng tải lại trang.";
       default:
-        return "Nhấn để bắt đầu nói";
+        return "Nhấn để bắt đầu ghi âm lượt này";
     }
   };
 
@@ -55,9 +55,12 @@ export function MicButton({
         onClick={onToggle}
         className={cn(
           "shrink-0 relative z-10 rounded-full",
-          isListening && "ring-4 ring-primary-200 bg-primary shadow-lg shadow-primary-200 hover:bg-primary-600"
+          isListening &&
+            "ring-4 ring-primary-200 bg-primary shadow-lg shadow-primary-200 hover:bg-primary-600",
         )}
-        aria-label={isListening ? "Stop recording" : "Start recording"}
+        aria-label={
+          isListening ? "Dừng ghi âm lượt này" : "Bắt đầu ghi âm lượt này"
+        }
         title={getTooltipContent()}
       >
         {isProcessing ? (

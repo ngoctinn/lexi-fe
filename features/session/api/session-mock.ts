@@ -277,7 +277,11 @@ const mockScenarios: Scenario[] = [
   },
 ];
 
-let mockSessionSequence = 3;
+let mockSessionSequence = 9;
+
+const now = Date.now();
+const hour = 60 * 60 * 1000;
+const day = 24 * hour;
 
 let mockSessions: Session[] = [
   {
@@ -328,7 +332,148 @@ let mockSessions: Session[] = [
     total_turns: 3,
     user_turns: 1,
     hint_used_count: 0,
-    created_at: new Date().toISOString(),
+    created_at: new Date(now - 35 * 60 * 1000).toISOString(),
+    turns: [],
+  },
+  {
+    session_id: "mock-3",
+    user_id: "u1",
+    scenario_id: "s3",
+    ai_gender: "female",
+    level: "A2",
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[2], {
+      ai_gender: "female",
+      level: "A2",
+    }),
+    total_turns: 6,
+    user_turns: 3,
+    hint_used_count: 1,
+    created_at: new Date(now - 4 * hour).toISOString(),
+    scoring: {
+      overall: 84,
+      fluency: 86,
+      pronunciation: 82,
+      grammar: 79,
+      vocabulary: 88,
+      feedback:
+        "Bạn phản hồi tự nhiên ở phần gọi món, chỉ cần giữ nhịp câu đều hơn một chút.",
+    },
+    turns: [],
+  },
+  {
+    session_id: "mock-4",
+    user_id: "u1",
+    scenario_id: "s4",
+    ai_gender: "male",
+    level: "B1",
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[3], {
+      ai_gender: "male",
+      level: "B1",
+    }),
+    total_turns: 5,
+    user_turns: 2,
+    hint_used_count: 0,
+    created_at: new Date(now - 10 * hour).toISOString(),
+    scoring: {
+      overall: 79,
+      fluency: 80,
+      pronunciation: 77,
+      grammar: 76,
+      vocabulary: 83,
+      feedback:
+        "Phần hỏi hành lý ổn, nhưng bạn có thể mở rộng câu trả lời hơn khi gặp tình huống sân bay.",
+    },
+    turns: [],
+  },
+  {
+    session_id: "mock-5",
+    user_id: "u1",
+    scenario_id: "s5",
+    ai_gender: "female",
+    level: "B2",
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[4], {
+      ai_gender: "female",
+      level: "B2",
+    }),
+    total_turns: 7,
+    user_turns: 4,
+    hint_used_count: 2,
+    created_at: new Date(now - 1 * day).toISOString(),
+    scoring: {
+      overall: 87.5,
+      fluency: 88,
+      pronunciation: 86,
+      grammar: 84,
+      vocabulary: 90,
+      feedback:
+        "Cách trả lời rõ ràng và đúng trọng tâm. Hãy luyện thêm phần ví dụ cụ thể để tăng độ thuyết phục.",
+    },
+    turns: [],
+  },
+  {
+    session_id: "mock-6",
+    user_id: "u1",
+    scenario_id: "s6",
+    ai_gender: "male",
+    level: "B2",
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[5], {
+      ai_gender: "male",
+      level: "B2",
+    }),
+    total_turns: 2,
+    user_turns: 1,
+    hint_used_count: 0,
+    created_at: new Date(now - 2 * day).toISOString(),
+    turns: [],
+  },
+  {
+    session_id: "mock-7",
+    user_id: "u1",
+    scenario_id: "s7",
+    ai_gender: "female",
+    level: "C1",
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[6], {
+      ai_gender: "female",
+      level: "C1",
+    }),
+    total_turns: 8,
+    user_turns: 4,
+    hint_used_count: 1,
+    created_at: new Date(now - 3 * day).toISOString(),
+    scoring: {
+      overall: 90,
+      fluency: 91,
+      pronunciation: 89,
+      grammar: 87,
+      vocabulary: 92,
+      feedback:
+        "Bạn giữ được mạch thuyết trình tốt. Phần phản biện sẽ mạnh hơn nếu thêm ví dụ số liệu cụ thể.",
+    },
+    turns: [],
+  },
+  {
+    session_id: "mock-8",
+    user_id: "u1",
+    scenario_id: "s8",
+    ai_gender: "male",
+    level: "C2",
+    prompt_snapshot: buildPromptSnapshot(mockScenarios[7], {
+      ai_gender: "male",
+      level: "C2",
+    }),
+    total_turns: 10,
+    user_turns: 5,
+    hint_used_count: 3,
+    created_at: new Date(now - 5 * day).toISOString(),
+    scoring: {
+      overall: 92,
+      fluency: 93,
+      pronunciation: 91,
+      grammar: 90,
+      vocabulary: 94,
+      feedback:
+        "Bài thảo luận rất chắc, vốn từ tốt. Bạn đã sẵn sàng cho các chủ đề có độ học thuật cao hơn.",
+    },
     turns: [],
   },
 ];

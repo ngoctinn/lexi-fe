@@ -76,7 +76,7 @@ function SheetContent({
         )}
         {...props}
       >
-        <div className="flex h-full flex-col p-10 overflow-y-auto">
+        <div className="flex h-full min-h-0 flex-col overflow-y-auto p-10">
           {children}
         </div>
 

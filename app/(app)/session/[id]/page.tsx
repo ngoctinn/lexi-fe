@@ -6,12 +6,25 @@ import { getSession } from "@/features/session/actions/get-session";
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
+import {
+  MOCK_AUTH_COOKIE_NAME,
+  MOCK_AUTH_COOKIE_VALUE,
+  MOCK_SESSION_TOKEN,
+} from "@/features/auth/mock-auth";
 
 interface SessionPageProps {
   params: Promise<{ id: string }>;
 }
 
 async function getSessionToken() {
+  const cookieStore = await cookies();
+
+  if (
+    cookieStore.get(MOCK_AUTH_COOKIE_NAME)?.value === MOCK_AUTH_COOKIE_VALUE
+  ) {
+    return MOCK_SESSION_TOKEN;
+  }
+
   return runWithAmplifyServerContext({
     nextServerContext: { cookies },
     operation: async (contextSpec) => {
@@ -54,6 +67,9 @@ export async function generateMetadata({
 
 export default async function SessionPage({ params }: SessionPageProps) {
   const { id } = await params;
+  const isDevMockSession =
+    process.env.NODE_ENV === "development" && !process.env.NEXT_PUBLIC_WS_URL;
+  const callbackUrl = `/session/${id}`;
 
   const [{ success, session }, scenarios, idToken] = await Promise.all([
     getSession(id),
@@ -64,8 +80,8 @@ export default async function SessionPage({ params }: SessionPageProps) {
     notFound();
   }
 
-  if (!idToken) {
-    redirect("/login");
+  if (!idToken && !isDevMockSession) {
+    redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
   const scenario = scenarios.find(
@@ -75,7 +91,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
   return (
     <ConversationScreen
       sessionId={session.session_id}
-      idToken={idToken}
+      idToken={idToken ?? ""}
       initialTurns={session.turns ?? []}
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}
       aiCharacter={scenario?.ai_character ?? "AI Assistant"}

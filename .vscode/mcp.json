@@ -11,6 +11,14 @@
     "filesystem": {
       "command": "npx",
       "args": ["@modelcontextprotocol/server-filesystem", "."]
+    },
+    "awslabs.aws-documentation-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_DOCUMENTATION_PARTITION": "aws"
+      }
     }
   }
 }

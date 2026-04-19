@@ -12,6 +12,7 @@ import {
 } from "@/features/session/types/session.types";
 import { useSessionStore } from "@/features/session/stores/use-session-store";
 import { mockSessionApi } from "@/features/session/api/session-mock";
+import { MOCK_SESSION_TOKEN } from "@/features/auth/mock-auth";
 
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? "";
 const RECONNECT_BASE_MS = 1000;
@@ -90,7 +91,9 @@ export function useWebSocket({
     if (!isMountedRef.current) return;
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    const isDevMock = process.env.NODE_ENV === "development" && !WS_BASE;
+    const isDevMock =
+      process.env.NODE_ENV === "development" &&
+      (!WS_BASE || idToken === MOCK_SESSION_TOKEN);
     if (isDevMock) {
       reconnectAttemptRef.current = 0;
       setConnState("connected");
@@ -155,7 +158,9 @@ export function useWebSocket({
   }, [connect, scheduleReconnect]);
 
   function disconnect() {
-    const isDevMock = process.env.NODE_ENV === "development" && !WS_BASE;
+    const isDevMock =
+      process.env.NODE_ENV === "development" &&
+      (!WS_BASE || idToken === MOCK_SESSION_TOKEN);
     shouldReconnectRef.current = false;
     isMountedRef.current = false;
     if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
@@ -169,7 +174,9 @@ export function useWebSocket({
   }
 
   function send(payload: WsClientPayload) {
-    const isDevMock = process.env.NODE_ENV === "development" && !WS_BASE;
+    const isDevMock =
+      process.env.NODE_ENV === "development" &&
+      (!WS_BASE || idToken === MOCK_SESSION_TOKEN);
     if (isDevMock) {
       try {
         switch (payload.action) {

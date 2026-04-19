@@ -1,5 +1,6 @@
 export const MOCK_AUTH_COOKIE_NAME = "lexi_mock_auth";
 export const MOCK_AUTH_COOKIE_VALUE = "admin";
+export const MOCK_SESSION_TOKEN = "mock-session-token";
 
 export const MOCK_ADMIN_LOGIN = {
   email: "admin@lexi.app",

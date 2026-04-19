@@ -81,6 +81,11 @@ export function AppSidebar({
   ...sidebarProps
 }: AppSidebarProps) {
   const pathname = usePathname();
+  const isSpeakingFlowPath =
+    pathname === "/session/new" || pathname.startsWith("/session/");
+
+  const isMainNavItemActive = (itemUrl: string) =>
+    itemUrl === pathname || (itemUrl === "/session/new" && isSpeakingFlowPath);
 
   return (
     <Sidebar
@@ -126,7 +131,7 @@ export function AppSidebar({
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
-                  isActive={item.url === pathname}
+                  isActive={isMainNavItemActive(item.url)}
                   tooltip={item.title}
                   size="lg"
                   className="transition-all duration-200"
