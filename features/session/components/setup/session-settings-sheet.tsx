@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowLeftRight, UserCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -18,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { RoleSwapCard } from "./role-swap-card";
 import type { Scenario, CreateSessionDto } from "../../types/session.types";
 
 interface SessionSettingsSheetProps {
@@ -55,7 +55,7 @@ export function SessionSettingsSheet({
       </SheetHeader>
 
       <div className="flex h-full min-h-0 flex-col gap-6 pb-4">
-        <div className="min-h-0 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 custom-scrollbar">
           <FieldGroup>
             {/* Vai diễn Section */}
             <Field>
@@ -63,54 +63,17 @@ export function SessionSettingsSheet({
                 Vai diễn hội thoại
               </FieldLabel>
 
-              <div className="relative mt-2 flex flex-col gap-1.5 rounded-2xl border border-border/40 bg-muted/10 p-1.5">
-                {/* Bạn là */}
-                <div className="flex items-center gap-3 rounded-xl bg-background p-3 shadow-xs">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary-50 text-primary shrink-0">
-                    <UserCircle className="size-5" />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none mb-1">
-                      Bạn là
-                    </span>
-                    <span className="text-sm font-bold truncate leading-tight">
-                      {selectedUserRole}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Swap Button */}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  type="button"
-                  onClick={() => {
-                    const prevUser = selectedUserRole;
-                    const prevAi = selectedAiRole;
-                    onUserRoleChange(prevAi);
-                    onAiRoleChange(prevUser);
-                  }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 h-8 gap-1.5 px-3 active:translate-y-[-30%]!"
-                >
-                  <ArrowLeftRight className="size-3.5" />
-                  <span className="text-xs font-bold">Tráo vai</span>
-                </Button>
-
-                {/* AI là */}
-                <div className="flex items-center gap-3 rounded-xl bg-background p-3 shadow-xs">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-info-50 text-info-600 shrink-0">
-                    <Bot className="size-5" />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none mb-1">
-                      AI là
-                    </span>
-                    <span className="text-sm font-bold truncate leading-tight">
-                      {selectedAiRole}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <RoleSwapCard
+                className="mt-2"
+                userRole={selectedUserRole}
+                aiRole={selectedAiRole}
+                onSwap={() => {
+                  const prevUser = selectedUserRole;
+                  const prevAi = selectedAiRole;
+                  onUserRoleChange(prevAi);
+                  onAiRoleChange(prevUser);
+                }}
+              />
             </Field>
 
             <Field>

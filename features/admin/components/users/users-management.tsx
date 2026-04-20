@@ -351,9 +351,9 @@ export function UsersManagement({ users }: UsersManagementProps) {
             onValueChange={(value) =>
               setStatusFilter(value as "all" | AdminUserStatus)
             }
-            className="w-full"
+            className="w-fit"
           >
-            <TabsList className="w-full flex-wrap justify-start">
+            <TabsList className="flex-wrap justify-start">
               {USER_FILTER_TABS.map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value}>
                   {tab.label}

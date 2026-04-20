@@ -31,9 +31,7 @@ function formatNextReview(card: Flashcard, now: number | null) {
     return `${card.interval_days} ngày`;
   }
 
-  const diffDays = Math.round(
-    (nextReviewDate.getTime() - now) / 86400000,
-  );
+  const diffDays = Math.round((nextReviewDate.getTime() - now) / 86400000);
   if (diffDays <= 0) {
     return "Ôn hôm nay";
   }
@@ -48,7 +46,7 @@ function formatNextReview(card: Flashcard, now: number | null) {
 function playPronunciation(card: Flashcard) {
   if (card.audio_url) {
     const audio = new Audio(card.audio_url);
-    void audio.play().catch(() => { });
+    void audio.play().catch(() => {});
     return;
   }
 
@@ -203,7 +201,12 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
             </div>
 
             {hasCards ? (
-              <Button asChild size="lg" variant="soft" className="self-center px-12">
+              <Button
+                asChild
+                size="lg"
+                variant="soft"
+                className="self-center px-12"
+              >
                 <Link href="/flashcards/review">
                   Vào học
                   <ArrowRight className="size-5" aria-hidden />
@@ -248,9 +251,19 @@ function QueueCard({ queue, now }: { queue: Flashcard[]; now: number | null }) {
         <Tabs defaultValue="studied" className="w-full">
           <TabsList>
             <TabsTrigger value="studied">
-              Đã học ({studiedCards.length})
+              Đã học{" "}
+              <span className="font-bold text-foreground tabular-nums">
+                {studiedCards.length}
+              </span>{" "}
+              từ
             </TabsTrigger>
-            <TabsTrigger value="new">Chưa học ({newCards.length})</TabsTrigger>
+            <TabsTrigger value="new">
+              Chưa học{" "}
+              <span className="font-bold text-foreground tabular-nums">
+                {newCards.length}
+              </span>{" "}
+              từ
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="studied">

@@ -405,9 +405,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
             onValueChange={(value) =>
               setStatusFilter(value as "all" | "active" | "inactive")
             }
-            className="w-full"
+            className="w-fit"
           >
-            <TabsList className="w-full flex-wrap justify-start">
+            <TabsList className="flex-wrap justify-start">
               {SCENARIO_STATUS_TABS.map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value}>
                   {tab.label}
