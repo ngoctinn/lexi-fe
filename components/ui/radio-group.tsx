@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { RadioGroup as RadioGroupPrimitive } from "radix-ui"
-import { cva, type VariantProps } from "class-variance-authority"
-import { CheckIcon } from "lucide-react"
+import * as React from "react";
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
+import { cva, type VariantProps } from "class-variance-authority";
+import { CheckIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const radioGroupItemVariants = cva(
   "peer relative flex shrink-0 outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-3 focus-visible:ring-primary-200",
@@ -20,8 +20,8 @@ const radioGroupItemVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
-)
+  },
+);
 
 function RadioGroup({
   className,
@@ -33,7 +33,7 @@ function RadioGroup({
       className={cn("grid w-full gap-2", className)}
       {...props}
     />
-  )
+  );
 }
 
 function RadioGroupItem({
@@ -57,7 +57,7 @@ function RadioGroupItem({
             data-slot="radio-group-indicator"
             className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary-100 text-primary-600 animate-in zoom-in-50 duration-200"
           >
-            <CheckIcon className="size-3.5 stroke-[3]" />
+            <CheckIcon className="size-3.5 stroke-3" />
           </RadioGroupPrimitive.Indicator>
         </>
       ) : (
@@ -69,7 +69,7 @@ function RadioGroupItem({
         </RadioGroupPrimitive.Indicator>
       )}
     </RadioGroupPrimitive.Item>
-  )
+  );
 }
 
-export { RadioGroup, RadioGroupItem }
+export { RadioGroup, RadioGroupItem };
