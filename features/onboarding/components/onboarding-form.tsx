@@ -108,7 +108,7 @@ export function OnboardingForm() {
                   required
                 />
               </InputGroup>
-              <FieldDescription className="text-center text-xs-plus">
+              <FieldDescription className="text-center text-sm">
                 Tên này sẽ xuất hiện trên trang cá nhân của bạn.
               </FieldDescription>
             </Field>

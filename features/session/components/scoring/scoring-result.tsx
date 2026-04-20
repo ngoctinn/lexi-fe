@@ -108,7 +108,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
                   {Math.round(skill.score)}
                 </span>
               </div>
-              <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
+              <CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">
                 {skill.label}
               </CardTitle>
             </CardHeader>
@@ -126,7 +126,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
       <div className="grid grid-cols-2 gap-4">
         <Card className="flex flex-col items-center p-6 bg-muted/30 border-none shadow-none">
           <span className="text-4xl font-black text-foreground">{totalTurns}</span>
-          <span className="text-xs-plus text-muted-foreground font-bold uppercase tracking-wider mt-1">
+          <span className="text-sm text-muted-foreground font-bold uppercase tracking-wider mt-1">
             Lượt nói
           </span>
         </Card>
@@ -135,7 +135,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
           <span className="text-4xl font-black text-warning-600">
             {session.hint_used_count || 0}
           </span>
-          <span className="text-xs-plus text-warning-600/70 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-1">
+          <span className="text-sm text-warning-600/70 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-1">
             <Lightbulb className="size-3.5" />
             Gợi ý
           </span>
@@ -143,10 +143,10 @@ export function ScoringResult({ session }: ScoringResultProps) {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-center sm:items-center mt-10">
-        <Button variant="outline" size="xl" className="w-full sm:w-48 font-bold" asChild>
+        <Button variant="outline" size="xl" className="w-full sm:w-48" asChild>
           <Link href="/dashboard">Về tổng quan</Link>
         </Button>
-        <Button size="xl" className="w-full sm:w-48 font-bold" asChild>
+        <Button size="xl" className="w-full sm:w-48" asChild>
           <Link href="/session/new">Luyện bài khác</Link>
         </Button>
       </div>

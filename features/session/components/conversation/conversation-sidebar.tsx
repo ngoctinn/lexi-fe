@@ -72,7 +72,7 @@ export function ConversationSidebar({
           <div className="flex flex-wrap items-center gap-2 px-1">
             <Badge
               variant="info"
-              size="md"
+              size="lg"
               className="shadow-none"
             >
               <UserCircle className="size-3.5 opacity-70" />
@@ -86,7 +86,7 @@ export function ConversationSidebar({
 
             <Badge
               variant="info"
-              size="md"
+              size="lg"
               className="shadow-none"
             >
               <Bot className="size-3.5 opacity-70" />
@@ -119,13 +119,13 @@ export function ConversationSidebar({
               <Badge
                 key={i}
                 variant="default"
-                size="md"
+                size="lg"
                 className="shadow-none"
               >                {goal}
               </Badge>
             ))
           ) : (
-            <p className="text-xs-plus text-muted-foreground italic col-span-2">
+            <p className="text-sm text-muted-foreground italic col-span-2">
               Cùng bắt đầu hội thoại nào!
             </p>
           )}
@@ -149,7 +149,7 @@ export function ConversationSidebar({
             size="sm"
             onClick={onGetHint}
             disabled={disabled || isAiStreaming || !!currentHint}
-            className="h-8 text-xs-plus font-bold"
+            className="text-sm"
           >
             Lấy gợi ý
           </Button>
@@ -188,7 +188,7 @@ export function ConversationSidebar({
                   <Button
                     variant="ghost"
                     size="xs"
-                    className="h-7 text-2xs font-bold text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors"
+                    className="text-muted-foreground hover:text-foreground"
                     onClick={handleCopy}
                   >
                     {copied ? "Đã sao chép" : "Sao chép gợi ý"}

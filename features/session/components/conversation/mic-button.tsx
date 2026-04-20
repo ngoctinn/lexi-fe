@@ -47,7 +47,7 @@ export function MicButton({
       )}
       <Button
         type="button"
-        variant={isListening ? "soft" : "default"}
+        variant="default"
         size="icon-xl"
         disabled={
           disabled || isProcessing || recorderState === "permission-denied"
@@ -55,8 +55,7 @@ export function MicButton({
         onClick={onToggle}
         className={cn(
           "shrink-0 relative z-10 rounded-full",
-          isListening &&
-            "ring-4 ring-primary-200 bg-primary shadow-lg shadow-primary-200 hover:bg-primary-600",
+          isListening && "ring-4 ring-primary-200 shadow-lg shadow-primary-200",
         )}
         aria-label={
           isListening ? "Dừng ghi âm lượt này" : "Bắt đầu ghi âm lượt này"
