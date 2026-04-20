@@ -301,9 +301,11 @@ export function FlashcardDeckOverview({ queue }: FlashcardDeckOverviewProps) {
   }, []);
 
   return (
-    <div className="grid w-full max-w-6xl items-start gap-4 lg:grid-cols-[4fr_6fr]">
-      <ProgressCard queue={queue} />
-      <QueueCard queue={queue} now={now} />
-    </div>
+    <main className="flex-1 px-4 py-4 md:px-6 md:py-8">
+      <div className="mx-auto w-full max-w-6xl grid items-start gap-4 lg:grid-cols-[4fr_6fr]">
+        <ProgressCard queue={queue} />
+        <QueueCard queue={queue} now={now} />
+      </div>
+    </main>
   );
 }

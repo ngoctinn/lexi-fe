@@ -16,14 +16,7 @@ export default async function FlashcardOverviewPage() {
   return (
     <div className="flex flex-1 flex-col">
       <PageHeader icon={BookOpen} title="Luyện từ vựng" />
-
-      {queue.length === 0 ? (
-        <FlashcardEmptyState />
-      ) : (
-        <main className="mx-auto w-full max-w-6xl p-4 sm:p-6 flex-1">
-          <FlashcardDeckOverview queue={queue} />
-        </main>
-      )}
+      <FlashcardDeckOverview queue={queue} />
     </div>
   );
 }

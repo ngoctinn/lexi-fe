@@ -19,42 +19,44 @@ export function SessionSummary({
   retentionRate = 100,
 }: SessionSummaryProps) {
   return (
-    <div className="flex w-full items-center justify-center animate-in fade-in zoom-in duration-500">
-      <Empty variant="outline" size="full" className="max-w-2xl">
-        <EmptyMedia variant="circle">
-          <CheckCircle2 className="size-6" />
-        </EmptyMedia>
-        <EmptyHeader>
-          <EmptyTitle>Hoàn thành phiên hôm nay</EmptyTitle>
-          <EmptyDescription className="mx-auto max-w-md">
-            Bạn đã ôn xong {reviewedCount} thẻ. Lịch SRS tiếp theo đã được cập
-            nhật.
-          </EmptyDescription>
-        </EmptyHeader>
+    <Empty
+      variant="outline"
+      size="full"
+      className="mx-auto w-full max-w-2xl animate-in fade-in zoom-in duration-500"
+    >
+      <EmptyMedia variant="circle">
+        <CheckCircle2 className="size-6" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle>Hoàn thành phiên hôm nay</EmptyTitle>
+        <EmptyDescription className="mx-auto max-w-md">
+          Bạn đã ôn xong {reviewedCount} thẻ. Lịch SRS tiếp theo đã được cập
+          nhật.
+        </EmptyDescription>
+      </EmptyHeader>
 
-        <div className="grid w-full gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border bg-card p-4 text-center">
-            <span className="text-3xl font-bold text-primary">
-              {reviewedCount}
-            </span>
-            <span className="mt-1 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Đã ôn
-            </span>
-          </div>
-          <div className="rounded-xl border bg-card p-4 text-center">
-            <span className="text-3xl font-bold text-primary">
-              {retentionRate}%
-            </span>
-            <span className="mt-1 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Độ nhớ
-            </span>
-          </div>
+      <div className="grid w-full gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border bg-card p-4 text-center">
+          <span className="text-3xl font-bold text-primary">
+            {reviewedCount}
+          </span>
+          <span className="mt-1 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Đã ôn
+          </span>
         </div>
+        <div className="rounded-xl border bg-card p-4 text-center">
+          <span className="text-3xl font-bold text-primary">
+            {retentionRate}%
+          </span>
+          <span className="mt-1 block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Độ nhớ
+          </span>
+        </div>
+      </div>
 
-        <Button asChild size="lg" className="min-w-50">
-          <Link href="/flashcards">Về deck overview</Link>
-        </Button>
-      </Empty>
-    </div>
+      <Button asChild size="lg" className="min-w-50">
+        <Link href="/flashcards">Về deck overview</Link>
+      </Button>
+    </Empty>
   );
 }

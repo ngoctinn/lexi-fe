@@ -12,14 +12,12 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    <main className="flex min-h-screen flex-col px-4 py-4 md:px-8 md:py-8">
       <PageHeader icon={UserRound} title="Hồ sơ cá nhân" />
-      
-      <div className="flex-1 p-4 md:p-8">
-        <div className="mx-auto w-full max-w-4xl animate-in fade-in duration-700">
-          <ProfileForm initialData={profile} />
-        </div>
+
+      <div className="mx-auto w-full max-w-4xl animate-in fade-in duration-700">
+        <ProfileForm initialData={profile} />
       </div>
-    </div>
+    </main>
   );
 }

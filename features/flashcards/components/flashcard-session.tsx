@@ -244,19 +244,17 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         onToggleReveal={handleFlip}
       />
 
-      <div className="w-full">
-        {isRevealed ? (
-          <SRSControls
-            onRate={handleRate}
-            disabled={isSubmitting}
-            activeKey={activeKey}
-          />
-        ) : (
-          <p className="text-center text-sm text-muted-foreground">
-            Nhấn Space hoặc chạm vào thẻ để xem đáp án.
-          </p>
-        )}
-      </div>
+      {isRevealed ? (
+        <SRSControls
+          onRate={handleRate}
+          disabled={isSubmitting}
+          activeKey={activeKey}
+        />
+      ) : (
+        <p className="text-center text-sm text-muted-foreground">
+          Nhấn Space hoặc chạm vào thẻ để xem đáp án.
+        </p>
+      )}
     </div>
   );
 }

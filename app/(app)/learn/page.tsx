@@ -12,10 +12,10 @@ import { PageHeader } from "@/components/shared/page-header";
 
 export default function LearnPage() {
   return (
-    <div className="flex flex-1 flex-col">
+    <main className="min-h-screen flex flex-col px-4 py-4 md:px-8 md:py-8">
       <PageHeader icon={Map} title="Lộ trình học" />
 
-      <div className="flex flex-1 items-center justify-center p-4 md:p-8">
+      <section className="flex flex-1 items-center justify-center">
         <Empty>
           <EmptyMedia>
             <Map className="size-12 text-primary-300" />
@@ -30,7 +30,7 @@ export default function LearnPage() {
             <Link href="/dashboard">Trở về trang chủ</Link>
           </Button>
         </Empty>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

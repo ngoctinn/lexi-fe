@@ -15,23 +15,23 @@ export default async function FlashcardReviewPage() {
   const queue = await fetchPracticeQueue();
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6">
-      <div className="flex items-center justify-between gap-3">
+    <main className="min-h-screen px-4 py-4 sm:px-6 sm:py-6">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit">
           <Link href="/flashcards">
             <ChevronLeft className="size-4" />
             Về deck overview
           </Link>
         </Button>
-      </div>
 
-      {queue.length === 0 ? (
-        <FlashcardEmptyState />
-      ) : (
-        <div className="flex flex-1 items-center justify-center">
-          <FlashcardSession initialQueue={queue} />
-        </div>
-      )}
-    </div>
+        <section className="flex min-h-[calc(100vh-7rem)] items-center justify-center">
+          {queue.length === 0 ? (
+            <FlashcardEmptyState />
+          ) : (
+            <FlashcardSession initialQueue={queue} />
+          )}
+        </section>
+      </div>
+    </main>
   );
 }
