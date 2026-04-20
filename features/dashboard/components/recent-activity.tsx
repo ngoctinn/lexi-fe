@@ -37,24 +37,24 @@ export function RecentActivity() {
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">{word.term}</span>
-                        <Badge variant="secondary" className="text-[10px] h-4 px-1">{word.level}</Badge>
+                        <Badge variant="secondary" size="xs">{word.level}</Badge>
                       </div>
                       <span className="text-sm text-muted-foreground">{word.meaning}</span>
                     </div>
                   </TableCell>
                   <TableCell>
                     {word.status === "mastered" ? (
-                      <Badge variant="success" className="border-none">
+                      <Badge variant="success">
                         <CheckCircle2 data-icon="inline-start" />
                         Đã thuộc
                       </Badge>
                     ) : word.status === "needs_review" ? (
-                      <Badge variant="warning" className="border-none">
+                      <Badge variant="warning">
                         <AlertTriangle data-icon="inline-start" />
                         Cần ôn tập
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="border-none">
+                      <Badge variant="secondary">
                         <Clock data-icon="inline-start" />
                         Đang học
                       </Badge>

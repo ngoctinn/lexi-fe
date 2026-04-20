@@ -10,7 +10,7 @@ import {
  * Middleware xử lý Authentication và Route Guard
  * Ưu tiên sự tinh gọn, không gọi API heavy ở đây để tránh bottleneck
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   // 1. Kiểm tra trạng thái Authenticated qua Amplify Server Context

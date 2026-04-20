@@ -23,7 +23,7 @@ export function LandingConversationPreview() {
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] items-center">
           <div className="flex flex-col gap-6">
-            <Badge variant="default" className="w-fit rounded-full px-4 py-1">
+            <Badge variant="default" shape="pill" size="lg">
               Trải nghiệm thật
             </Badge>
 
@@ -76,7 +76,7 @@ export function LandingConversationPreview() {
                 <CardTitle className="text-base">Mẫu hội thoại AI</CardTitle>
                 <Badge
                   variant="secondary"
-                  className="rounded-full gap-1.5 px-3 py-1"
+                  shape="pill"
                 >
                   <Sparkles className="size-3.5" />
                   Phản hồi tức thì

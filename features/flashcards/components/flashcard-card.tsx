@@ -83,7 +83,7 @@ export function FlashcardCard({
               {card.word}
             </h2>
             {card.word_type && (
-              <Badge variant="soft" size="lg" className="uppercase">
+              <Badge variant="soft" size="lg">
                 {card.word_type}
               </Badge>
             )}
@@ -125,9 +125,9 @@ export function FlashcardCard({
                 {card.word}
               </h2>
               {card.word_type && (
-                <Badge variant="soft" size="lg" className="uppercase">
-                  {card.word_type}
-                </Badge>
+              <Badge variant="soft" size="lg">
+                {card.word_type}
+              </Badge>
               )}
             </div>
 

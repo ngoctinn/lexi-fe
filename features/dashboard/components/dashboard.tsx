@@ -57,7 +57,8 @@ function RecentSessionsCard({
         <CardAction>
           <Badge
             variant="secondary"
-            className="rounded-full px-2.5 py-1 text-[11px] font-semibold"
+            size="sm"
+            shape="pill"
           >
             {sessions.length} phiên
           </Badge>

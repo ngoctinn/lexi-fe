@@ -25,16 +25,13 @@ export function FlashcardProgress({
           {currentIndex + 1} / {totalCards}
         </span>
         {isRelearning ? (
-          <div className="rounded-md bg-warning/10 px-3 py-1">
-            <Badge
-              variant="warning"
-              className="uppercase"
-              data-icon="inline-start"
-            >
-              <Repeat className="size-3" aria-hidden />
-              Ôn lại
-            </Badge>
-          </div>
+          <Badge
+            variant="warning"
+            data-icon="inline-start"
+          >
+            <Repeat className="size-3" aria-hidden />
+            Ôn lại
+          </Badge>
         ) : null}
       </div>
 

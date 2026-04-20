@@ -54,7 +54,8 @@ export function RecentSessionsCard({
         <CardAction>
           <Badge
             variant="secondary"
-            className="rounded-full px-2.5 py-1 text-xs-plus font-semibold"
+            shape="pill"
+            size="sm"
           >
             {sessions.length} phiên
           </Badge>

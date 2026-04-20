@@ -63,7 +63,7 @@ export function SessionSettingsSheet({
           <p className="min-w-0 truncate text-sm font-semibold text-foreground">
             {selectedScenario.scenario_title}
           </p>
-          <Badge variant="secondary" className="shrink-0 rounded-full">
+          <Badge variant="secondary" shape="pill" className="shrink-0">
             {selectedGoals.length}/{selectedScenario.goals.length} mục tiêu
           </Badge>
         </div>

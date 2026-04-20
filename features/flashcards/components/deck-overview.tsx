@@ -81,7 +81,6 @@ function QueueRow({ card, now }: { card: Flashcard; now: number | null }) {
           </span>
           <Badge
             variant={newCard ? "warning" : "success"}
-            className="uppercase"
             data-icon="inline-start"
           >
             {newCard ? (

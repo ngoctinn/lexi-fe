@@ -71,27 +71,27 @@ export function ConversationSidebar({
         <div className="flex flex-col gap-3 px-1">
           <div className="flex flex-wrap items-center gap-2 px-1">
             <Badge
-              variant="secondary"
-              className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50 pr-3 py-1 gap-1.5 shadow-none"
+              variant="info"
+              className="shadow-none"
             >
               <UserCircle className="size-3.5 opacity-70" />
-              <span className="text-2xs uppercase font-bold tracking-wider opacity-60">
+              <span className="text-2xs opacity-60">
                 Bạn:
               </span>
-              <span className="text-xs font-bold">
+              <span className="text-xs">
                 {myRole || "Học viên"}
               </span>
             </Badge>
 
             <Badge
-              variant="secondary"
-              className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50 pr-3 py-1 gap-1.5 shadow-none"
+              variant="info"
+              className="shadow-none"
             >
               <Bot className="size-3.5 opacity-70" />
-              <span className="text-2xs uppercase font-bold tracking-wider opacity-60">
+              <span className="text-2xs opacity-60">
                 Đối phương:
               </span>
-              <span className="text-xs font-bold">
+              <span className="text-xs">
                 {partnerRole || "AI Assistant"}
               </span>
             </Badge>
@@ -116,8 +116,9 @@ export function ConversationSidebar({
             scenarioGoals.map((goal, i) => (
               <Badge
                 key={i}
-                variant="secondary"
-                className="bg-primary-50 text-primary border-primary-100 hover:bg-primary-100 font-bold text-xs-plus px-2.5 py-1.5 shadow-none"
+                variant="default"
+                size="lg"
+                className="shadow-none"
               >
                 {goal}
               </Badge>
