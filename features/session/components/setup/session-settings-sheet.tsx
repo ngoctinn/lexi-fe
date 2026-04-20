@@ -2,7 +2,6 @@
 
 import { Check, ArrowLeftRight, UserCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Toggle } from "@/components/ui/toggle";
 import {
@@ -49,24 +48,15 @@ export function SessionSettingsSheet({
   return (
     <SheetContent side="right" className="sm:w-xl! sm:max-w-none!">
       <SheetHeader>
-        <SheetTitle>Thiết lập cuộc hội thoại</SheetTitle>
+        <SheetTitle>{selectedScenario.scenario_title}</SheetTitle>
         <SheetDescription>
           Tùy chỉnh vai, mục tiêu và giọng AI trước khi bắt đầu.
         </SheetDescription>
       </SheetHeader>
 
       <div className="flex h-full min-h-0 flex-col gap-6 pb-4">
-        <div className="flex items-start justify-between gap-3 rounded-lg border bg-card px-4 py-3">
-          <p className="min-w-0 truncate text-sm font-semibold text-foreground">
-            {selectedScenario.scenario_title}
-          </p>
-          <Badge variant="secondary" shape="pill" className="shrink-0">
-            {selectedGoals.length}/{selectedScenario.goals.length} mục tiêu
-          </Badge>
-        </div>
-
         <div className="min-h-0 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          <FieldGroup className="gap-8">
+          <FieldGroup>
             {/* Vai diễn Section */}
             <Field>
               <FieldLabel className="text-foreground/80">

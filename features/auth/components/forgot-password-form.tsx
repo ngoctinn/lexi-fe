@@ -83,7 +83,7 @@ export function ForgotPasswordForm({
         <CardContent className="px-5 pt-0 sm:px-6">
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid gap-5">
-              <FieldGroup className="gap-5">
+              <FieldGroup>
                 <Field data-invalid={!!errors.email}>
                   <FieldLabel htmlFor="email" className="text-foreground/80">
                     Địa chỉ email
