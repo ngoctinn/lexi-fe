@@ -1,12 +1,8 @@
 "use client";
 
 import * as React from "react";
-import type {
-  Turn,
-  WsServerPayload,
-} from "@/features/session/types/session.types";
+import type { Turn } from "@/features/session/types/session.types";
 import {
-  WsServerEvent,
   WsClientEvent,
   TurnSpeaker,
 } from "@/features/session/types/session.types";
@@ -207,4 +203,3 @@ export function useSession({
     },
   };
 }
-

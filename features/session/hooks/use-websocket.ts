@@ -38,22 +38,30 @@ export function useWebSocket({
   onMessage,
   onConnectionChange,
 }: UseWebSocketOptions): UseWebSocketReturn {
-  const [connectionState, setConnectionState] = React.useState<WsConnectionState>("disconnected");
+  const [connectionState, setConnectionState] =
+    React.useState<WsConnectionState>("disconnected");
   const wsRef = React.useRef<WebSocket | null>(null);
   const reconnectAttemptRef = React.useRef(0);
   const reconnectTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = React.useRef(true);
   const shouldReconnectRef = React.useRef(true);
+  const connectRef = React.useRef<() => void>(() => {});
 
-  const isDevMock = React.useMemo(() => 
-    process.env.NODE_ENV === "development" && (!WS_BASE || idToken === MOCK_SESSION_TOKEN),
-  [idToken]);
+  const isDevMock = React.useMemo(
+    () =>
+      process.env.NODE_ENV === "development" &&
+      (!WS_BASE || idToken === MOCK_SESSION_TOKEN),
+    [idToken],
+  );
 
-  const setConnState = React.useCallback((state: WsConnectionState) => {
-    if (!isMountedRef.current) return;
-    setConnectionState(state);
-    onConnectionChange?.(state);
-  }, [onConnectionChange]);
+  const setConnState = React.useCallback(
+    (state: WsConnectionState) => {
+      if (!isMountedRef.current) return;
+      setConnectionState(state);
+      onConnectionChange?.(state);
+    },
+    [onConnectionChange],
+  );
 
   const connect = React.useCallback(() => {
     if (!isMountedRef.current) return;
@@ -96,12 +104,15 @@ export function useWebSocket({
         const attempt = reconnectAttemptRef.current;
         if (attempt >= RECONNECT_MAX_ATTEMPTS) return;
 
-        const delay = Math.min(RECONNECT_BASE_MS * 2 ** attempt, RECONNECT_MAX_MS);
+        const delay = Math.min(
+          RECONNECT_BASE_MS * 2 ** attempt,
+          RECONNECT_MAX_MS,
+        );
         reconnectAttemptRef.current += 1;
         setConnState("reconnecting");
 
         reconnectTimerRef.current = setTimeout(() => {
-          connect();
+          connectRef.current();
         }, delay);
       }
     };
@@ -113,6 +124,10 @@ export function useWebSocket({
     };
   }, [idToken, sessionId, setConnState, onMessage, isDevMock]);
 
+  React.useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
+
   const disconnect = React.useCallback(() => {
     shouldReconnectRef.current = false;
     if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
@@ -123,53 +138,84 @@ export function useWebSocket({
     setConnState("disconnected");
   }, [setConnState]);
 
-  const handleMockPayload = React.useCallback(async (payload: WsClientPayload) => {
-    switch (payload.action) {
-      case WsClientEvent.START_SESSION:
-        onMessage({
-          event: WsServerEvent.SESSION_READY,
-          upload_url: "https://mock-upload.com",
-        });
-        break;
-      case WsClientEvent.SEND_MESSAGE: {
-        const turns = useSessionStore.getState().turns;
-        const turnIndex = Math.max(0, turns.length - 1);
-        setTimeout(() => onMessage({ event: WsServerEvent.TURN_SAVED, turn_index: turnIndex }), 200);
-        setTimeout(() => onMessage({ 
-          event: WsServerEvent.AI_TEXT_CHUNK, 
-          chunk: `Mock AI: trả lời "${payload.text}"`, 
-          done: true 
-        }), 600);
-        break;
+  const handleMockPayload = React.useCallback(
+    async (payload: WsClientPayload) => {
+      switch (payload.action) {
+        case WsClientEvent.START_SESSION:
+          onMessage({
+            event: WsServerEvent.SESSION_READY,
+            upload_url: "https://mock-upload.com",
+          });
+          break;
+        case WsClientEvent.SEND_MESSAGE: {
+          const turns = useSessionStore.getState().turns;
+          const turnIndex = Math.max(0, turns.length - 1);
+          setTimeout(
+            () =>
+              onMessage({
+                event: WsServerEvent.TURN_SAVED,
+                turn_index: turnIndex,
+              }),
+            200,
+          );
+          setTimeout(
+            () =>
+              onMessage({
+                event: WsServerEvent.AI_TEXT_CHUNK,
+                chunk: `Mock AI: trả lời "${payload.text}"`,
+                done: true,
+              }),
+            600,
+          );
+          break;
+        }
+        case WsClientEvent.AUDIO_UPLOADED: {
+          const turns = useSessionStore.getState().turns;
+          const turnIndex = Math.max(0, turns.length - 1);
+          setTimeout(
+            () =>
+              onMessage({
+                event: WsServerEvent.TURN_SAVED,
+                turn_index: turnIndex,
+              }),
+            300,
+          );
+          break;
+        }
+        case WsClientEvent.USE_HINT:
+          const hint = await mockSessionApi.getHint(sessionId);
+          onMessage({ event: WsServerEvent.HINT_TEXT, hint });
+          break;
+        case WsClientEvent.END_SESSION:
+          setTimeout(
+            () =>
+              onMessage({
+                event: WsServerEvent.SCORING_COMPLETE,
+                session_id: sessionId,
+              }),
+            200,
+          );
+          break;
       }
-      case WsClientEvent.AUDIO_UPLOADED: {
-        const turns = useSessionStore.getState().turns;
-        const turnIndex = Math.max(0, turns.length - 1);
-        setTimeout(() => onMessage({ event: WsServerEvent.TURN_SAVED, turn_index: turnIndex }), 300);
-        break;
+    },
+    [onMessage, sessionId],
+  );
+
+  const send = React.useCallback(
+    (payload: WsClientPayload) => {
+      if (isDevMock) {
+        handleMockPayload(payload);
+        return;
       }
-      case WsClientEvent.USE_HINT:
-        const hint = await mockSessionApi.getHint(sessionId);
-        onMessage({ event: WsServerEvent.HINT_TEXT, hint });
-        break;
-      case WsClientEvent.END_SESSION:
-        setTimeout(() => onMessage({ event: WsServerEvent.SCORING_COMPLETE, session_id: sessionId }), 200);
-        break;
-    }
-  }, [onMessage, sessionId]);
 
-  const send = React.useCallback((payload: WsClientPayload) => {
-    if (isDevMock) {
-      handleMockPayload(payload);
-      return;
-    }
-
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(payload));
-    } else {
-      console.warn("[WS] Cannot send — not connected", payload);
-    }
-  }, [isDevMock, handleMockPayload]);
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify(payload));
+      } else {
+        console.warn("[WS] Cannot send — not connected", payload);
+      }
+    },
+    [isDevMock, handleMockPayload],
+  );
 
   React.useEffect(() => {
     isMountedRef.current = true;

@@ -38,13 +38,13 @@ export function LandingHeader() {
         <div className="flex items-center justify-self-end gap-2">
           <Button
             variant="secondary"
-            size="sm"
+            size="lg"
             className="hidden sm:inline-flex"
             asChild
           >
             <Link href="/login">Đăng nhập</Link>
           </Button>
-          <Button size="sm" asChild>
+          <Button size="lg" asChild>
             <Link href="/learn">Tham gia miễn phí ngay</Link>
           </Button>
         </div>

@@ -25,7 +25,6 @@ import {
   ROW_HEIGHT,
   CONTAINER_WIDTH,
   CENTER_X,
-  SIDE_GAP,
   RIGHT_X,
   LEFT_X,
   getPathD,
@@ -47,6 +46,23 @@ const UNLOCKED_IDS = new Set(["s1", "s2", "s3", "s4"]);
 const COMPLETED_IDS = new Set(["s1"]);
 
 type NodeStatus = "completed" | "unlocked" | "locked";
+type PathType = Parameters<typeof getPathD>[0];
+type LevelConfig = (typeof LEVEL_CONFIG)[keyof typeof LEVEL_CONFIG];
+
+interface RenderNode {
+  type: "node";
+  scenario: Scenario;
+  config: LevelConfig;
+  x: number;
+  y: number;
+  localIdx: number;
+}
+
+interface RenderHeader {
+  type: "header";
+  config: LevelConfig;
+  y: number;
+}
 
 function getNodeStatus(scenarioId: string): NodeStatus {
   if (COMPLETED_IDS.has(scenarioId)) return "completed";
@@ -60,11 +76,15 @@ interface LearningPathProps {
   onSelect: (scenarioId: string) => void;
 }
 
-export function LearningPath({ scenarios, value, onSelect }: LearningPathProps) {
+export function LearningPath({
+  scenarios,
+  value,
+  onSelect,
+}: LearningPathProps) {
   const layout = React.useMemo(() => {
-    const orderLevels: Array<keyof typeof LEVEL_CONFIG> = ["A1", "A2", "B1", "B2", "C1", "C2"];
-    const nodesToRender: any[] = [];
-    const headersToRender: any[] = [];
+    const orderLevels = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+    const nodesToRender: RenderNode[] = [];
+    const headersToRender: RenderHeader[] = [];
     let accumulatedY = 0;
 
     orderLevels.forEach((level) => {
@@ -134,7 +154,7 @@ export function LearningPath({ scenarios, value, onSelect }: LearningPathProps) 
 
             const fromPos = fromNode.localIdx % 3;
             const toPos = toNode.localIdx % 3;
-            let pathType: any = "right-to-left";
+            let pathType: PathType = "right-to-left";
 
             if (fromPos === 0 && toPos === 1) pathType = "center-to-right";
             else if (fromPos === 1 && toPos === 2) pathType = "right-to-left";
@@ -142,8 +162,15 @@ export function LearningPath({ scenarios, value, onSelect }: LearningPathProps) 
             else if (fromPos === 0 && toPos === 0) pathType = "right-to-center";
             else if (fromPos === 1 && toPos === 0) pathType = "right-to-center";
 
-            const d = getPathD(pathType, fromNode.x, fromNode.y, toNode.x, toNode.y);
-            const isLocked = getNodeStatus(toNode.scenario.scenario_id) === "locked";
+            const d = getPathD(
+              pathType,
+              fromNode.x,
+              fromNode.y,
+              toNode.x,
+              toNode.y,
+            );
+            const isLocked =
+              getNodeStatus(toNode.scenario.scenario_id) === "locked";
 
             return (
               <path
@@ -206,8 +233,12 @@ export function LearningPath({ scenarios, value, onSelect }: LearningPathProps) 
                   isSelected && !isLocked ? "-translate-y-1" : "",
                 )}
                 style={{
-                  boxShadow: isSelected && !isLocked ? `0 0 0 6px var(--color-level-ring)` : `0 0 0 4px var(--color-muted)`,
-                  borderColor: isSelected && !isLocked ? config.ringColor : undefined,
+                  boxShadow:
+                    isSelected && !isLocked
+                      ? `0 0 0 6px var(--color-level-ring)`
+                      : `0 0 0 4px var(--color-muted)`,
+                  borderColor:
+                    isSelected && !isLocked ? config.ringColor : undefined,
                   backgroundColor: config.pathColor,
                 }}
               >
@@ -234,7 +265,9 @@ export function LearningPath({ scenarios, value, onSelect }: LearningPathProps) 
               <p
                 className={cn(
                   "mt-2 w-44 text-center text-sm font-bold leading-tight line-clamp-2",
-                  isSelected && !isLocked ? "text-foreground" : "text-muted-foreground/80",
+                  isSelected && !isLocked
+                    ? "text-foreground"
+                    : "text-muted-foreground/80",
                 )}
                 style={{ opacity: isLocked ? 0.45 : 1 }}
               >

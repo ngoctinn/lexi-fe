@@ -162,7 +162,7 @@ export default async function AdminPage() {
           >
             <CardContent className="flex flex-col gap-6 py-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-4">
-                <Badge variant="soft" size="sm">
+                <Badge variant="default" size="sm">
                   Admin Console
                 </Badge>
                 <div className="space-y-2">

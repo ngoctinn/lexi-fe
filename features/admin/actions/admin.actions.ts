@@ -34,11 +34,6 @@ function normalizeList(values: string[]) {
   return Array.from(new Set(values.map((item) => item.trim()).filter(Boolean)));
 }
 
-function findOverlappingRoles(left: string[], right: string[]) {
-  const rightSet = new Set(right);
-  return left.filter((item) => rightSet.has(item));
-}
-
 function createUserId(displayName: string) {
   const base = displayName
     .normalize("NFD")

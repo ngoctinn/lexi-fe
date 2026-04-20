@@ -1,8 +1,6 @@
 "use client";
 
-import * as React from "react";
 import { Check, ArrowLeftRight, UserCircle, Bot } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
@@ -48,10 +46,6 @@ export function SessionSettingsSheet({
   onAiGenderChange,
   isPending,
 }: SessionSettingsSheetProps) {
-  const allRoles = React.useMemo(() =>
-    Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles])),
-    [selectedScenario]);
-
   return (
     <SheetContent side="right" className="sm:w-xl! sm:max-w-none!">
       <SheetHeader>
@@ -75,7 +69,9 @@ export function SessionSettingsSheet({
           <FieldGroup className="gap-8">
             {/* Vai diễn Section */}
             <Field>
-              <FieldLabel className="text-foreground/80">Vai diễn hội thoại</FieldLabel>
+              <FieldLabel className="text-foreground/80">
+                Vai diễn hội thoại
+              </FieldLabel>
 
               <div className="relative mt-2 flex flex-col gap-1.5 rounded-2xl border border-border/40 bg-muted/10 p-1.5">
                 {/* Bạn là */}
@@ -84,8 +80,12 @@ export function SessionSettingsSheet({
                     <UserCircle className="size-5" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none mb-1">Bạn là</span>
-                    <span className="text-sm font-bold truncate leading-tight">{selectedUserRole}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none mb-1">
+                      Bạn là
+                    </span>
+                    <span className="text-sm font-bold truncate leading-tight">
+                      {selectedUserRole}
+                    </span>
                   </div>
                 </div>
 
@@ -112,17 +112,22 @@ export function SessionSettingsSheet({
                     <Bot className="size-5" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none mb-1">AI là</span>
-                    <span className="text-sm font-bold truncate leading-tight">{selectedAiRole}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none mb-1">
+                      AI là
+                    </span>
+                    <span className="text-sm font-bold truncate leading-tight">
+                      {selectedAiRole}
+                    </span>
                   </div>
                 </div>
               </div>
-
             </Field>
 
             <Field>
               <div className="flex items-center justify-between mb-1">
-                <FieldLabel className="text-foreground/80">Mục tiêu luyện tập</FieldLabel>
+                <FieldLabel className="text-foreground/80">
+                  Mục tiêu luyện tập
+                </FieldLabel>
                 <span className="text-2xs font-medium text-muted-foreground/50">
                   {selectedGoals.length}/{selectedScenario.goals.length}
                 </span>
@@ -152,12 +157,23 @@ export function SessionSettingsSheet({
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="ai-gender" className="mb-1 text-foreground/80">Giọng nói AI</FieldLabel>
+              <FieldLabel
+                htmlFor="ai-gender"
+                className="mb-1 text-foreground/80"
+              >
+                Giọng nói AI
+              </FieldLabel>
               <Select
                 value={formData.ai_gender}
-                onValueChange={(value) => onAiGenderChange(value as "male" | "female")}
+                onValueChange={(value) =>
+                  onAiGenderChange(value as "male" | "female")
+                }
               >
-                <SelectTrigger id="ai-gender" size="xl" className="rounded-xl border-border/40">
+                <SelectTrigger
+                  id="ai-gender"
+                  size="xl"
+                  className="rounded-xl border-border/40"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -170,11 +186,7 @@ export function SessionSettingsSheet({
         </div>
 
         <SheetFooter className="shrink-0 border-t border-border/60 pt-4">
-          <Button
-            type="submit"
-            size="xl"
-            disabled={isPending}
-          >
+          <Button type="submit" size="xl" disabled={isPending}>
             {isPending ? "Đang khởi tạo..." : "Bắt đầu hội thoại"}
           </Button>
         </SheetFooter>
