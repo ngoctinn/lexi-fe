@@ -75,10 +75,10 @@ export function ConversationSidebar({
               className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50 pr-3 py-1 gap-1.5 shadow-none"
             >
               <UserCircle className="size-3.5 opacity-70" />
-              <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+              <span className="text-2xs uppercase font-bold tracking-wider opacity-60">
                 Bạn:
               </span>
-              <span className="text-[12px] font-bold">
+              <span className="text-xs font-bold">
                 {myRole || "Học viên"}
               </span>
             </Badge>
@@ -88,10 +88,10 @@ export function ConversationSidebar({
               className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50 pr-3 py-1 gap-1.5 shadow-none"
             >
               <Bot className="size-3.5 opacity-70" />
-              <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">
+              <span className="text-2xs uppercase font-bold tracking-wider opacity-60">
                 Đối phương:
               </span>
-              <span className="text-[12px] font-bold">
+              <span className="text-xs font-bold">
                 {partnerRole || "AI Assistant"}
               </span>
             </Badge>
@@ -117,13 +117,13 @@ export function ConversationSidebar({
               <Badge
                 key={i}
                 variant="secondary"
-                className="bg-primary-50 text-primary border-primary-100 hover:bg-primary-100 font-bold text-[11px] px-2.5 py-1.5 shadow-none"
+                className="bg-primary-50 text-primary border-primary-100 hover:bg-primary-100 font-bold text-xs-plus px-2.5 py-1.5 shadow-none"
               >
                 {goal}
               </Badge>
             ))
           ) : (
-            <p className="text-[11px] text-muted-foreground italic col-span-2">
+            <p className="text-xs-plus text-muted-foreground italic col-span-2">
               Cùng bắt đầu hội thoại nào!
             </p>
           )}
@@ -147,7 +147,7 @@ export function ConversationSidebar({
             size="sm"
             onClick={onGetHint}
             disabled={disabled || isAiStreaming || !!currentHint}
-            className="h-8 text-[11px] font-bold"
+            className="h-8 text-xs-plus font-bold"
           >
             Lấy gợi ý
           </Button>
@@ -157,7 +157,7 @@ export function ConversationSidebar({
           {currentHint ? (
             <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="flex flex-col gap-4">
-                <div className="prose prose-sm dark:prose-invert max-w-none text-[16px]/relaxed font-medium text-foreground tracking-tight">
+                <div className="prose prose-sm dark:prose-invert max-w-none text-base/relaxed font-medium text-foreground tracking-tight">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
@@ -167,12 +167,12 @@ export function ConversationSidebar({
                         </span>
                       ),
                       code: ({ children }) => (
-                        <code className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-[13px] font-bold text-foreground border border-border/50">
+                        <code className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-sm font-bold text-foreground border border-border/50">
                           {children}
                         </code>
                       ),
                       pre: ({ children }) => (
-                        <pre className="p-4 rounded-2xl bg-muted/50 border border-border/70 my-4 last:mb-0 whitespace-pre-wrap break-words text-foreground font-mono text-[14px] leading-relaxed">
+                        <pre className="p-4 rounded-2xl bg-muted/50 border border-border/70 my-4 last:mb-0 whitespace-pre-wrap break-words text-foreground font-mono text-sm leading-relaxed">
                           {children}
                         </pre>
                       ),
@@ -186,7 +186,7 @@ export function ConversationSidebar({
                   <Button
                     variant="ghost"
                     size="xs"
-                    className="h-7 text-[10px] font-bold text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors"
+                    className="h-7 text-2xs font-bold text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors"
                     onClick={handleCopy}
                   >
                     {copied ? "Đã sao chép" : "Sao chép gợi ý"}

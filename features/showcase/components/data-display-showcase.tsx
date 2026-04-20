@@ -127,7 +127,7 @@ export function DataDisplayShowcase() {
                       </div>
 
                       <div className="flex items-baseline justify-between mt-auto pt-4 border-t border-primary-50">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/40">
+                        <span className="text-2xs font-bold uppercase tracking-[0.1em] text-muted-foreground/40">
                           Vocabulary
                         </span>
                         <span className="text-sm font-bold text-primary italic">

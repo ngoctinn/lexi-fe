@@ -126,7 +126,7 @@ export function ConversationScreen({
               ui.recorderState === "uploading") && (
               <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
                 {ui.wsState !== "connected" && (
-                  <span className="text-[10px] text-muted-foreground font-medium animate-pulse">
+                  <span className="text-2xs text-muted-foreground font-medium animate-pulse">
                     {ui.wsState === "connecting"
                       ? "Đang kết nối..."
                       : "Mất kết nối máy chủ"}

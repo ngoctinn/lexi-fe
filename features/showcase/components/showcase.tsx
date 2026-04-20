@@ -19,7 +19,7 @@ export function Showcase({ dashboard }: { dashboard?: React.ReactNode }) {
     <div className="container mx-auto py-16 px-4 max-w-7xl animate-in fade-in duration-700">
       <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="max-w-2xl">
-          <h1 className="text-5xl font-black tracking-tight text-foreground uppercase italic ring-offset-4">
+          <h1 className="text-display-lg font-black tracking-tight text-foreground uppercase italic ring-offset-4">
             Lexi<span className="text-primary italic">.</span>UI
           </h1>
           <p className="text-xl text-muted-foreground mt-4 leading-relaxed font-medium">
@@ -28,7 +28,7 @@ export function Showcase({ dashboard }: { dashboard?: React.ReactNode }) {
           </p>
         </div>
         <div className="flex gap-4">
-          <div className="px-5 py-2.5 bg-background shadow-flashcard-solid rounded-2xl border border-primary-100 text-primary-600 text-[10px] font-black uppercase tracking-[0.2em]">
+          <div className="px-5 py-2.5 bg-background shadow-flashcard-solid rounded-2xl border border-primary-100 text-primary-600 text-2xs font-black uppercase tracking-[0.2em]">
             v2.0 Beta
           </div>
         </div>

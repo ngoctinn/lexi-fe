@@ -69,9 +69,9 @@ export function TranscriptPanel({
                 src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
                 alt={aiName}
               />
-              <AvatarFallback className="text-[10px]">AI</AvatarFallback>
+              <AvatarFallback className="text-2xs">AI</AvatarFallback>
             </Avatar>
-            <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-[15px] leading-relaxed max-w-[80%] shadow-sm">
+            <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-sm leading-relaxed max-w-[80%] shadow-sm">
               <div className="flex flex-col gap-2">
                 {aiStreamingText}
                 {isAiStreaming && (

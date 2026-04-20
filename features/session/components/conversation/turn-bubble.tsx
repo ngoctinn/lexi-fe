@@ -48,7 +48,7 @@ export function TurnBubble({
             src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
             alt={aiName}
           />
-          <AvatarFallback className="text-[10px]">AI</AvatarFallback>
+          <AvatarFallback className="text-2xs">AI</AvatarFallback>
         </Avatar>
       )}
 
@@ -60,7 +60,7 @@ export function TurnBubble({
       >
         <div
           className={cn(
-            "group relative rounded-2xl px-4 py-3 text-[15px] leading-relaxed transition-all",
+            "group relative rounded-2xl px-4 py-3 text-sm leading-relaxed transition-all",
             isUser
               ? "rounded-tr-sm bg-primary-50 text-primary border border-primary-100 shadow-sm"
               : "rounded-tl-sm bg-muted text-foreground ring-1 ring-border shadow-sm",
@@ -128,7 +128,7 @@ export function TurnBubble({
             <Badge
               variant="warning"
               size="xs"
-              className="text-[9px] font-bold uppercase tracking-widest"
+              className="text-2xs font-bold uppercase tracking-widest"
             >
               Dùng gợi ý
             </Badge>

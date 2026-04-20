@@ -38,62 +38,27 @@ export function useWebSocket({
   onMessage,
   onConnectionChange,
 }: UseWebSocketOptions): UseWebSocketReturn {
+  const [connectionState, setConnectionState] = React.useState<WsConnectionState>("disconnected");
   const wsRef = React.useRef<WebSocket | null>(null);
   const reconnectAttemptRef = React.useRef(0);
-  const reconnectTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const pendingTimeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
+  const reconnectTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = React.useRef(true);
   const shouldReconnectRef = React.useRef(true);
-  const connectRef = React.useRef<(() => void) | null>(null);
-  const scheduleReconnectRef = React.useRef<(() => void) | null>(null);
-  const onMessageRef = React.useRef(onMessage);
-  const onConnectionChangeRef = React.useRef(onConnectionChange);
 
-  const [connectionState, setConnectionState] =
-    React.useState<WsConnectionState>("disconnected");
-
-  React.useEffect(() => {
-    onMessageRef.current = onMessage;
-    onConnectionChangeRef.current = onConnectionChange;
-  }, [onConnectionChange, onMessage]);
+  const isDevMock = React.useMemo(() => 
+    process.env.NODE_ENV === "development" && (!WS_BASE || idToken === MOCK_SESSION_TOKEN),
+  [idToken]);
 
   const setConnState = React.useCallback((state: WsConnectionState) => {
+    if (!isMountedRef.current) return;
     setConnectionState(state);
-    onConnectionChangeRef.current?.(state);
-  }, []);
-
-  const emitServerMessage = React.useCallback((message: WsServerPayload) => {
-    onMessageRef.current?.(message);
-  }, []);
-
-  const clearPendingTimeouts = React.useCallback(() => {
-    pendingTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
-    pendingTimeoutsRef.current = [];
-  }, []);
-
-  const scheduleMockTimeout = React.useCallback(
-    (callback: () => void, delay: number) => {
-      const timeoutId = setTimeout(() => {
-        pendingTimeoutsRef.current = pendingTimeoutsRef.current.filter(
-          (item) => item !== timeoutId,
-        );
-        callback();
-      }, delay);
-
-      pendingTimeoutsRef.current.push(timeoutId);
-    },
-    [],
-  );
+    onConnectionChange?.(state);
+  }, [onConnectionChange]);
 
   const connect = React.useCallback(() => {
     if (!isMountedRef.current) return;
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    const isDevMock =
-      process.env.NODE_ENV === "development" &&
-      (!WS_BASE || idToken === MOCK_SESSION_TOKEN);
     if (isDevMock) {
       reconnectAttemptRef.current = 0;
       setConnState("connected");
@@ -118,7 +83,7 @@ export function useWebSocket({
       if (!isMountedRef.current) return;
       try {
         const payload = JSON.parse(ev.data as string) as WsServerPayload;
-        onMessageRef.current(payload);
+        onMessage(payload);
       } catch {
         console.error("[WS] Failed to parse message", ev.data);
       }
@@ -128,7 +93,16 @@ export function useWebSocket({
       if (!isMountedRef.current) return;
       setConnState("disconnected");
       if (shouldReconnectRef.current) {
-        scheduleReconnectRef.current?.();
+        const attempt = reconnectAttemptRef.current;
+        if (attempt >= RECONNECT_MAX_ATTEMPTS) return;
+
+        const delay = Math.min(RECONNECT_BASE_MS * 2 ** attempt, RECONNECT_MAX_MS);
+        reconnectAttemptRef.current += 1;
+        setConnState("reconnecting");
+
+        reconnectTimerRef.current = setTimeout(() => {
+          connect();
+        }, delay);
       }
     };
 
@@ -137,132 +111,75 @@ export function useWebSocket({
       setConnState("error");
       ws.close();
     };
-  }, [idToken, sessionId, setConnState]);
+  }, [idToken, sessionId, setConnState, onMessage, isDevMock]);
 
-  const scheduleReconnect = React.useCallback(() => {
-    const attempt = reconnectAttemptRef.current;
-    if (attempt >= RECONNECT_MAX_ATTEMPTS || !isMountedRef.current) return;
-
-    const delay = Math.min(RECONNECT_BASE_MS * 2 ** attempt, RECONNECT_MAX_MS);
-    reconnectAttemptRef.current += 1;
-    setConnState("reconnecting");
-
-    reconnectTimerRef.current = setTimeout(() => {
-      if (isMountedRef.current) connectRef.current?.();
-    }, delay);
+  const disconnect = React.useCallback(() => {
+    shouldReconnectRef.current = false;
+    if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    setConnState("disconnected");
   }, [setConnState]);
 
-  React.useEffect(() => {
-    connectRef.current = connect;
-    scheduleReconnectRef.current = scheduleReconnect;
-  }, [connect, scheduleReconnect]);
-
-  function disconnect() {
-    const isDevMock =
-      process.env.NODE_ENV === "development" &&
-      (!WS_BASE || idToken === MOCK_SESSION_TOKEN);
-    shouldReconnectRef.current = false;
-    isMountedRef.current = false;
-    if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
-    clearPendingTimeouts();
-    if (isDevMock) {
-      setConnectionState("disconnected");
-      onConnectionChangeRef.current?.("disconnected");
-      return;
-    }
-    wsRef.current?.close();
-  }
-
-  function send(payload: WsClientPayload) {
-    const isDevMock =
-      process.env.NODE_ENV === "development" &&
-      (!WS_BASE || idToken === MOCK_SESSION_TOKEN);
-    if (isDevMock) {
-      try {
-        switch (payload.action) {
-          case WsClientEvent.START_SESSION:
-            emitServerMessage({
-              event: WsServerEvent.SESSION_READY,
-              upload_url: "https://mock-upload.com",
-            });
-            break;
-          case WsClientEvent.SEND_MESSAGE: {
-            const turns = useSessionStore.getState().turns;
-            const turnIndex = Math.max(0, turns.length - 1);
-            scheduleMockTimeout(() => {
-              emitServerMessage({
-                event: WsServerEvent.TURN_SAVED,
-                turn_index: turnIndex,
-              });
-            }, 200);
-
-            scheduleMockTimeout(() => {
-              emitServerMessage({
-                event: WsServerEvent.AI_TEXT_CHUNK,
-                chunk: `Mock AI: trả lời "${payload.text}"`,
-                done: true,
-              });
-            }, 600);
-            break;
-          }
-          case WsClientEvent.AUDIO_UPLOADED: {
-            const turns = useSessionStore.getState().turns;
-            const turnIndex = Math.max(0, turns.length - 1);
-            scheduleMockTimeout(() => {
-              emitServerMessage({
-                event: WsServerEvent.TURN_SAVED,
-                turn_index: turnIndex,
-              });
-            }, 300);
-            break;
-          }
-          case WsClientEvent.USE_HINT:
-            scheduleMockTimeout(async () => {
-              const hint = await mockSessionApi.getHint(sessionId);
-              emitServerMessage({
-                event: WsServerEvent.HINT_TEXT,
-                hint: hint,
-              });
-            }, 150);
-            break;
-          case WsClientEvent.END_SESSION:
-            setTimeout(() => {
-              emitServerMessage({
-                event: WsServerEvent.SCORING_COMPLETE,
-                session_id: sessionId,
-              });
-            }, 200);
-            break;
-          default:
-            break;
-        }
-      } catch (err) {
-        console.warn("[WS mock] failed to handle payload", payload, err);
+  const handleMockPayload = React.useCallback(async (payload: WsClientPayload) => {
+    switch (payload.action) {
+      case WsClientEvent.START_SESSION:
+        onMessage({
+          event: WsServerEvent.SESSION_READY,
+          upload_url: "https://mock-upload.com",
+        });
+        break;
+      case WsClientEvent.SEND_MESSAGE: {
+        const turns = useSessionStore.getState().turns;
+        const turnIndex = Math.max(0, turns.length - 1);
+        setTimeout(() => onMessage({ event: WsServerEvent.TURN_SAVED, turn_index: turnIndex }), 200);
+        setTimeout(() => onMessage({ 
+          event: WsServerEvent.AI_TEXT_CHUNK, 
+          chunk: `Mock AI: trả lời "${payload.text}"`, 
+          done: true 
+        }), 600);
+        break;
       }
+      case WsClientEvent.AUDIO_UPLOADED: {
+        const turns = useSessionStore.getState().turns;
+        const turnIndex = Math.max(0, turns.length - 1);
+        setTimeout(() => onMessage({ event: WsServerEvent.TURN_SAVED, turn_index: turnIndex }), 300);
+        break;
+      }
+      case WsClientEvent.USE_HINT:
+        const hint = await mockSessionApi.getHint(sessionId);
+        onMessage({ event: WsServerEvent.HINT_TEXT, hint });
+        break;
+      case WsClientEvent.END_SESSION:
+        setTimeout(() => onMessage({ event: WsServerEvent.SCORING_COMPLETE, session_id: sessionId }), 200);
+        break;
+    }
+  }, [onMessage, sessionId]);
+
+  const send = React.useCallback((payload: WsClientPayload) => {
+    if (isDevMock) {
+      handleMockPayload(payload);
       return;
     }
 
-    const ws = wsRef.current;
-    if (ws?.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(payload));
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(payload));
     } else {
       console.warn("[WS] Cannot send — not connected", payload);
     }
-  }
+  }, [isDevMock, handleMockPayload]);
 
   React.useEffect(() => {
-    shouldReconnectRef.current = true;
     isMountedRef.current = true;
+    shouldReconnectRef.current = true;
     connect();
-
     return () => {
       isMountedRef.current = false;
-      shouldReconnectRef.current = false;
-      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
-      clearPendingTimeouts();
-      wsRef.current?.close();
+      disconnect();
     };
-  }, [clearPendingTimeouts, connect]);
+  }, [connect, disconnect]);
 
   return { connectionState, send, disconnect };
 }

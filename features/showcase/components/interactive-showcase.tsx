@@ -44,7 +44,7 @@ export function InteractiveShowcase() {
             <span>{progress}%</span>
           </div>
           <Progress value={progress} />
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+          <p className="text-2xs text-muted-foreground uppercase tracking-widest font-bold">
             Updated 2 minutes ago
           </p>
         </div>

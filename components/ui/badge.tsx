@@ -5,7 +5,7 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-md border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest leading-none whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&>svg]:pointer-events-none [&>svg]:size-3! hover:scale-[1.02] active:scale-95",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-md border px-3 py-1.5 text-2xs font-bold uppercase tracking-widest leading-none whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&>svg]:pointer-events-none [&>svg]:size-3! hover:scale-[1.02] active:scale-95",
   {
     variants: {
       variant: {
@@ -26,11 +26,11 @@ const badgeVariants = cva(
         soft: "bg-primary-50 text-primary border-primary-100 [a]:hover:bg-primary-100",
       },
       size: {
-        xs: "px-1.5 py-0.5 text-[9px] gap-1 [&>svg]:size-2.5!",
-        sm: "px-2 py-1 text-[10px] gap-1 [&>svg]:size-3!",
-        md: "px-3 py-1.5 text-[10px] gap-1.5 [&>svg]:size-3!",
-        default: "px-3 py-1.5 text-[10px] gap-1.5 [&>svg]:size-3!",
-        lg: "px-4 py-2 text-[11px] gap-2 [&>svg]:size-3.5!",
+        xs: "px-1.5 py-0.5 text-2xs gap-1 [&>svg]:size-2.5!",
+        sm: "px-2 py-1 text-2xs gap-1 [&>svg]:size-3!",
+        md: "px-3 py-1.5 text-2xs gap-1.5 [&>svg]:size-3!",
+        default: "px-3 py-1.5 text-2xs gap-1.5 [&>svg]:size-3!",
+        lg: "px-4 py-2 text-xs-plus gap-2 [&>svg]:size-3.5!",
       },
     },
     defaultVariants: {

@@ -77,7 +77,7 @@ export function FlashcardShowcase() {
 
                     {/* Technique 3: Baseline alignment */}
                     <div className="flex items-baseline justify-between mt-auto pt-6 border-t border-primary-50">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+                      <span className="text-2xs font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
                         {card.type}
                       </span>
                       <span className="text-sm font-black text-primary tracking-tighter opacity-80">

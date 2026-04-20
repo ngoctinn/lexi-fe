@@ -116,6 +116,28 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* --- Hand-crafted Type Scale (px-based) --- */
+  --font-size-2xs: 0.625rem; /* 10px */
+  --font-size-xs-plus: 0.6875rem; /* 11px */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+
+  /* --- Semantic Level Colors --- */
+  --color-level-a1: var(--level-a1);
+  --color-level-a2: var(--level-a2);
+  --color-level-b1: var(--level-b1);
+  --color-level-b2: var(--level-b2);
+  --color-level-c1: var(--level-c1);
+  --color-level-c2: var(--level-c2);
+  --color-level-ring: var(--level-ring);
+
   /* Semantic Control Colors */
   --color-control-bg: var(--control-bg);
   --color-control-bg-subtle: var(--control-bg-subtle);
@@ -259,6 +281,15 @@
   --control-hover: oklch(0.95 0 0);
   --control-border: oklch(0.922 0 0);
   --control-border-subtle: oklch(0.922 0 0 / 50%);
+
+  /* --- Level Color System (Hand-picked) --- */
+  --level-a1: oklch(0.62 0.17 155); /* Emerald */
+  --level-a2: oklch(0.65 0.18 200); /* Cyan */
+  --level-b1: oklch(0.6 0.2 250); /* Blue */
+  --level-b2: oklch(0.55 0.2 265); /* Indigo */
+  --level-c1: oklch(0.6 0.2 300); /* Purple */
+  --level-c2: oklch(0.6 0.2 20); /* Rose */
+  --level-ring: oklch(0.145 0 0 / 10%);
 }
 
 @layer base {
@@ -325,86 +356,129 @@
    rules win in the cascade. ─────────────────────────────────────────────── */
 @layer sonner-overrides {
   [data-sonner-toast][data-styled="true"] {
-    padding: 1rem 1.25rem !important;
-    border-radius: 1.25rem !important;
-    box-shadow: 0 15px 30px -5px rgb(0 0 0 / 0.05) !important;
-    width: min(420px, calc(100vw - 2rem)) !important;
+    padding: 0.875rem !important; /* Reduced from 1.25rem */
+    border-radius: 1.25rem !important; /* Slightly reduced radius for smaller size */
+    box-shadow: 0 15px 30px -10px rgb(0 0 0 / 0.06) !important;
+    width: min(400px, calc(100vw - 2rem)) !important;
     border: 1px solid var(--border) !important;
+    align-items: flex-start !important;
   }
 
   [data-sonner-toast] [data-icon] {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 2.25rem !important;
-    height: 2.25rem !important;
-    border-radius: 0.75rem !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 9999px !important;
     flex-shrink: 0 !important;
+    margin-top: 0.25rem !important;
   }
+
+  [data-sonner-toast] [data-content] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.125rem !important;
+  }
+
+  /* Automatic Headers based on toast type */
+  [data-sonner-toast] [data-content]::before {
+    display: block !important;
+    font-weight: 800 !important;
+    font-size: 0.875rem !important; /* 14px */
+    margin-bottom: 0.125rem !important;
+    line-height: 1.2 !important;
+  }
+
+  [data-sonner-toast][data-type="success"] [data-content]::before { content: "Thành công!" !important; color: var(--success-900) !important; }
+  [data-sonner-toast][data-type="error"] [data-content]::before { content: "Lỗi!" !important; color: var(--destructive-900) !important; }
+  [data-sonner-toast][data-type="warning"] [data-content]::before { content: "Cảnh báo!" !important; color: var(--warning-900) !important; }
+  [data-sonner-toast][data-type="info"] [data-content]::before { content: "Thông tin!" !important; color: var(--info-900) !important; }
 
   [data-sonner-toast][data-type="error"] [data-icon] {
     background-color: var(--destructive-100) !important;
+    color: var(--destructive-600) !important;
   }
   [data-sonner-toast][data-type="success"] [data-icon] {
     background-color: var(--success-100) !important;
+    color: var(--success-600) !important;
   }
   [data-sonner-toast][data-type="warning"] [data-icon] {
     background-color: var(--warning-100) !important;
+    color: var(--warning-600) !important;
   }
   [data-sonner-toast][data-type="info"] [data-icon] {
     background-color: var(--info-100) !important;
+    color: var(--info-600) !important;
   }
 
   [data-sonner-toast][data-styled="true"] [data-title] {
     color: var(--foreground) !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important; /* 14px */
+    line-height: 1.4 !important;
   }
 
   [data-sonner-toast][data-styled="true"] [data-description] {
     color: var(--muted-foreground) !important;
+    font-size: 0.8125rem !important; /* 13px */
+    opacity: 0.9 !important;
   }
 
-  [data-sonner-toast][data-styled="true"][data-type="error"] [data-title],
-  [data-sonner-toast][data-styled="true"][data-type="error"] [data-description] {
-    color: var(--destructive-foreground) !important;
-  }
-
-  [data-sonner-toast][data-styled="true"][data-type="success"] [data-title],
-  [data-sonner-toast][data-styled="true"][data-type="success"] [data-description] {
-    color: var(--success-foreground) !important;
-  }
-
-  [data-sonner-toast][data-styled="true"][data-type="warning"] [data-title],
-  [data-sonner-toast][data-styled="true"][data-type="warning"] [data-description] {
-    color: var(--warning-foreground) !important;
-  }
-
-  [data-sonner-toast][data-styled="true"][data-type="info"] [data-title],
-  [data-sonner-toast][data-styled="true"][data-type="info"] [data-description] {
-    color: var(--info-foreground) !important;
+  /* When both Title and Description are present, Title should be slightly bolder */
+  [data-sonner-toast]:has([data-description]) [data-title] {
+    font-weight: 600 !important;
+    color: var(--foreground) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="error"] {
     background-color: var(--destructive-50) !important;
-    color: var(--destructive-foreground) !important;
     border: 1px solid var(--destructive-200) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="success"] {
     background-color: var(--success-50) !important;
-    color: var(--success-foreground) !important;
     border: 1px solid var(--success-200) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="warning"] {
     background-color: var(--warning-50) !important;
-    color: var(--warning-foreground) !important;
     border: 1px solid var(--warning-200) !important;
   }
 
   [data-sonner-toast][data-styled="true"][data-type="info"] {
     background-color: var(--info-50) !important;
-    color: var(--info-foreground) !important;
     border: 1px solid var(--info-200) !important;
+  }
+
+
+
+  /* 
+     GIẢI PHÁP CĂN GIỮA TOASTER CHUYÊN NGHIỆP:
+     1. Ép container chiếm 100% chiều ngang để dễ dàng quản lý vùng nội dung.
+     2. Sử dụng padding-left để chừa khoảng trống cho Sidebar (nếu có).
+     3. Dùng justify-content: center để căn giữa toast trong vùng còn lại.
+  */
+  [data-sonner-toaster][data-x-position="center"] {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    transform: none !important;
+    transition: padding-left 0.2s ease-linear !important;
+  }
+
+  @media (min-width: 768px) {
+    /* Khi Sidebar mở */
+    :root:has([data-slot="sidebar-wrapper"][data-state="expanded"]) [data-sonner-toaster][data-x-position="center"] {
+      padding-left: 18rem !important;
+    }
+
+    /* Khi Sidebar thu nhỏ */
+    :root:has([data-slot="sidebar-wrapper"][data-state="collapsed"]) [data-sonner-toaster][data-x-position="center"] {
+      padding-left: 4rem !important;
+    }
   }
 }
 

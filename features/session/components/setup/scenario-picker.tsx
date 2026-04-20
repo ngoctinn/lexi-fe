@@ -71,10 +71,10 @@ export function ScenarioPicker({
               >
                 {scenario.scenario_title}
               </span>
-              <span className="text-[10px] text-muted-foreground line-clamp-2 md:line-clamp-3 leading-relaxed">
+              <span className="text-2xs text-muted-foreground line-clamp-2 md:line-clamp-3 leading-relaxed">
                 {scenario.my_character} · {scenario.ai_character}
               </span>
-              <span className="text-[10px] text-muted-foreground/80 uppercase tracking-wider">
+              <span className="text-2xs text-muted-foreground/80 uppercase tracking-wider">
                 {scenario.goals.length} mục tiêu
               </span>
             </div>

@@ -3,6 +3,7 @@ import type {
   GetSessionResult,
   Scenario,
   Session,
+  Turn,
 } from "../types/session.types";
 import { TurnSpeaker } from "../types/session.types";
 

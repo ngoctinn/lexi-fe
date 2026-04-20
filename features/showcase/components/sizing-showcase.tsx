@@ -83,20 +83,20 @@ export function SizingShowcase() {
             Badge Sizes
           </p>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-              XS
+            <Badge variant="secondary" size="xs">
+              2XS (10px)
             </Badge>
-            <Badge variant="secondary" className="text-[11px] h-5 px-2">
-              Small
+            <Badge variant="secondary" size="sm">
+              XS+ (11px)
             </Badge>
-            <Badge variant="secondary" className="text-[12px] h-6 px-2.5">
-              Default
+            <Badge variant="secondary" size="md">
+              XS (12px)
             </Badge>
-            <Badge variant="secondary" className="text-[13px] h-7 px-3">
-              Large
+            <Badge variant="secondary" size="lg">
+              SM (14px)
             </Badge>
-            <Badge variant="secondary" className="text-[14px] h-8 px-3.5">
-              Extra Large
+            <Badge variant="secondary" size="lg" className="text-base">
+              BASE (16px)
             </Badge>
           </div>
         </div>
