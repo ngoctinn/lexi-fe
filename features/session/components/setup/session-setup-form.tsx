@@ -28,13 +28,18 @@ export function SessionSetupForm({
       className={cn("flex h-full w-full", className)}
       {...props}
     >
-      <Sheet open={state.isSettingsOpen} onOpenChange={actions.setIsSettingsOpen}>
+      <Sheet
+        open={state.isSettingsOpen}
+        onOpenChange={actions.setIsSettingsOpen}
+      >
         <div className="grid h-full w-full gap-6 pb-28 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)] lg:pb-0">
           <section className="flex min-h-0 flex-col overflow-y-auto pr-2 custom-scrollbar">
             <div className="flex flex-col items-center justify-start py-6">
               <div className="mb-8 flex w-full flex-col gap-4 text-left">
                 <div className="max-w-xs">
-                  <h2 className="text-lg font-bold tracking-tight">Lộ trình luyện nói</h2>
+                  <h2 className="text-lg font-bold tracking-tight">
+                    Lộ trình luyện nói
+                  </h2>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Chọn tình huống phù hợp để bắt đầu
                   </p>
@@ -76,8 +81,10 @@ export function SessionSetupForm({
             formData={state.formData}
             onUserRoleChange={actions.setSelectedUserRole}
             onAiRoleChange={actions.setSelectedAiRole}
-            onGoalsToggle={actions.toggleGoal}
-            onAiGenderChange={(value) => actions.updateFormData("ai_gender", value)}
+            onGoalsChange={actions.setSelectedGoals}
+            onAiGenderChange={(value) =>
+              actions.updateFormData("ai_gender", value)
+            }
             isPending={state.isPending}
           />
         )}

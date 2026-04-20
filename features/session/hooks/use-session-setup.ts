@@ -4,7 +4,10 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createSession } from "@/features/session/actions/create-session";
-import type { Scenario, CreateSessionDto } from "@/features/session/types/session.types";
+import type {
+  Scenario,
+  CreateSessionDto,
+} from "@/features/session/types/session.types";
 
 interface UseSessionSetupProps {
   scenarios: Scenario[];
@@ -35,36 +38,36 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     [scenarios],
   );
 
-  const updateFormData = React.useCallback(<K extends keyof CreateSessionDto>(
-    key: K,
-    value: CreateSessionDto[K],
-  ) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
-  const toggleGoal = React.useCallback((goal: string) => {
-    setSelectedGoals((current) => {
-      const next = current.includes(goal)
-        ? current.filter((item) => item !== goal)
-        : Array.from(new Set([...current, goal]));
-      return next.length > 0 ? next : current;
-    });
-  }, []);
+  const updateFormData = React.useCallback(
+    <K extends keyof CreateSessionDto>(key: K, value: CreateSessionDto[K]) => {
+      setFormData((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
 
   React.useEffect(() => {
     if (!selectedScenario) return;
 
-    const allRoles = Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]));
-    
+    const allRoles = Array.from(
+      new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]),
+    );
+
     // Khởi tạo vai mặc định nếu chưa có hoặc kịch bản thay đổi
     const defaultUserRole = allRoles[0] ?? "";
-    const defaultAiRole = allRoles.find((r) => r !== defaultUserRole) ?? defaultUserRole;
+    const defaultAiRole =
+      allRoles.find((r) => r !== defaultUserRole) ?? defaultUserRole;
 
-    setSelectedUserRole((current) => (allRoles.includes(current) && current !== "" ? current : defaultUserRole));
-    setSelectedAiRole((current) => (allRoles.includes(current) && current !== "" ? current : defaultAiRole));
+    setSelectedUserRole((current) =>
+      allRoles.includes(current) && current !== "" ? current : defaultUserRole,
+    );
+    setSelectedAiRole((current) =>
+      allRoles.includes(current) && current !== "" ? current : defaultAiRole,
+    );
 
     setSelectedGoals((current) => {
-      const visible = selectedScenario.goals.filter((goal) => current.includes(goal));
+      const visible = selectedScenario.goals.filter((goal) =>
+        current.includes(goal),
+      );
       return visible.length > 0 ? visible : selectedScenario.goals;
     });
   }, [selectedScenario]);
@@ -73,8 +76,10 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
   // Nhưng không ép buộc nếu danh sách chỉ có 1 vai
   React.useEffect(() => {
     if (!selectedScenario || !selectedUserRole) return;
-    const allRoles = Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]));
-    
+    const allRoles = Array.from(
+      new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]),
+    );
+
     if (selectedUserRole === selectedAiRole && allRoles.length > 1) {
       const nextAiRole = allRoles.find((r) => r !== selectedUserRole);
       if (nextAiRole) setSelectedAiRole(nextAiRole);
@@ -84,7 +89,8 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
   const buildPromptSnapshot = React.useCallback(() => {
     if (!selectedScenario) return "";
 
-    const goals = selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
+    const goals =
+      selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
 
     return [
       `Scenario: ${selectedScenario.scenario_title}`,
@@ -94,7 +100,13 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
       `AI gender: ${formData.ai_gender}`,
       `Level: ${formData.level}`,
     ].join("\n");
-  }, [formData, selectedAiRole, selectedScenario, selectedGoals, selectedUserRole]);
+  }, [
+    formData,
+    selectedAiRole,
+    selectedScenario,
+    selectedGoals,
+    selectedUserRole,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,7 +154,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
       setIsSettingsOpen,
       setSelectedUserRole,
       setSelectedAiRole,
-      toggleGoal,
+      setSelectedGoals,
       updateFormData,
       handleSubmit,
     },

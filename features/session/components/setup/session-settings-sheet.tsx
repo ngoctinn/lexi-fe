@@ -1,9 +1,9 @@
 "use client";
 
-import { Check, ArrowLeftRight, UserCircle, Bot } from "lucide-react";
+import { ArrowLeftRight, UserCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
-import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Select,
   SelectContent,
@@ -28,7 +28,7 @@ interface SessionSettingsSheetProps {
   formData: CreateSessionDto;
   onUserRoleChange: (value: string) => void;
   onAiRoleChange: (value: string) => void;
-  onGoalsToggle: (goal: string) => void;
+  onGoalsChange: (goals: string[]) => void;
   onAiGenderChange: (value: "male" | "female") => void;
   isPending: boolean;
 }
@@ -41,7 +41,7 @@ export function SessionSettingsSheet({
   formData,
   onUserRoleChange,
   onAiRoleChange,
-  onGoalsToggle,
+  onGoalsChange,
   onAiGenderChange,
   isPending,
 }: SessionSettingsSheetProps) {
@@ -122,28 +122,31 @@ export function SessionSettingsSheet({
                   {selectedGoals.length}/{selectedScenario.goals.length}
                 </span>
               </div>
-              <div className="flex flex-wrap justify-start gap-3 mt-2">
+              <ToggleGroup
+                type="multiple"
+                value={selectedGoals}
+                onValueChange={(value) => {
+                  onGoalsChange(
+                    value.length > 0 ? value : selectedScenario.goals,
+                  );
+                }}
+                spacing={3}
+                className="w-full! flex-wrap justify-start mt-2"
+              >
                 {selectedScenario.goals.map((goal) => {
-                  const isSelected = selectedGoals.includes(goal);
                   return (
-                    <Toggle
+                    <ToggleGroupItem
                       key={goal}
+                      value={goal}
                       variant="soft"
                       size="xl"
-                      pressed={isSelected}
-                      onPressedChange={() => onGoalsToggle(goal)}
-                      className="relative"
+                      className="justify-start px-4 text-left"
                     >
-                      {isSelected && (
-                        <div className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in duration-200">
-                          <Check className="size-3.5 stroke-3" />
-                        </div>
-                      )}
-                      {goal}
-                    </Toggle>
+                      <span className="min-w-0 truncate">{goal}</span>
+                    </ToggleGroupItem>
                   );
                 })}
-              </div>
+              </ToggleGroup>
             </Field>
 
             <Field>

@@ -58,10 +58,10 @@ const SCENARIO_STATUS_TABS: Array<{
   value: "all" | "active" | "inactive";
   label: string;
 }> = [
-    { value: "all", label: "Tất cả" },
-    { value: "active", label: "Đang mở" },
-    { value: "inactive", label: "Đã ẩn" },
-  ];
+  { value: "all", label: "Tất cả" },
+  { value: "active", label: "Đang mở" },
+  { value: "inactive", label: "Đã ẩn" },
+];
 
 function normalizeSearch(value: string) {
   return value
@@ -252,13 +252,18 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
     setIsSaving(true);
 
     try {
-      const finalRoles = draft.user_roles.map((role) => role.trim()).filter(Boolean);
+      const finalRoles = draft.user_roles
+        .map((role) => role.trim())
+        .filter(Boolean);
 
       const result = await upsertAdminScenario({
         ...draft,
         scenario_title: draft.scenario_title.trim(),
         my_character: finalRoles[0] ?? "Học viên",
-        ai_character: finalRoles.length > 1 ? finalRoles[1] : (finalRoles[0] ?? "AI Assistant"),
+        ai_character:
+          finalRoles.length > 1
+            ? finalRoles[1]
+            : (finalRoles[0] ?? "AI Assistant"),
         goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
         user_roles: finalRoles,
         ai_roles: finalRoles,
@@ -402,7 +407,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
             }
             className="w-full"
           >
-            <TabsList variant="line" className="w-full flex-wrap justify-start">
+            <TabsList className="w-full flex-wrap justify-start">
               {SCENARIO_STATUS_TABS.map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value}>
                   {tab.label}
@@ -455,7 +460,15 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                               {scenario.goals.length} mục tiêu
                             </p>
                             <p className="text-muted-foreground">
-                              {Array.from(new Set([...scenario.user_roles, ...scenario.ai_roles])).length} nhân vật
+                              {
+                                Array.from(
+                                  new Set([
+                                    ...scenario.user_roles,
+                                    ...scenario.ai_roles,
+                                  ]),
+                                ).length
+                              }{" "}
+                              nhân vật
                             </p>
                           </div>
                         </TableCell>
@@ -475,7 +488,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                           </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {isMounted ? formatDateTime(scenario.updated_at) : "..."}
+                          {isMounted
+                            ? formatDateTime(scenario.updated_at)
+                            : "..."}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
@@ -552,7 +567,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 </FieldContent>
               </Field>
 
-
               <Field>
                 <FieldLabel htmlFor="scenario-level">Level</FieldLabel>
                 <FieldContent>
@@ -623,8 +637,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
               </Field>
             </FieldGroup>
 
-
-
             <FieldGroup className="grid gap-4 md:grid-cols-2">
               <Field className="md:col-span-2">
                 <FieldLabel htmlFor="scenario-goals">
@@ -661,13 +673,14 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                     className="min-h-28"
                   />
                 </FieldContent>
-                <FieldDescription>Hệ thống sẽ tự động phân vai AI dựa trên lựa chọn của học viên.</FieldDescription>
+                <FieldDescription>
+                  Hệ thống sẽ tự động phân vai AI dựa trên lựa chọn của học
+                  viên.
+                </FieldDescription>
               </Field>
 
               <Field className="md:col-span-2">
-                <FieldLabel htmlFor="scenario-notes">
-                  Ghi chú nội bộ
-                </FieldLabel>
+                <FieldLabel htmlFor="scenario-notes">Ghi chú nội bộ</FieldLabel>
                 <FieldContent>
                   <Textarea
                     id="scenario-notes"

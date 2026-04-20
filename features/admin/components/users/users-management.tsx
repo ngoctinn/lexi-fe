@@ -69,12 +69,12 @@ const USER_FILTER_TABS: Array<{
   value: "all" | AdminUserStatus;
   label: string;
 }> = [
-    { value: "all", label: "Tất cả" },
-    { value: "active", label: "Hoạt động" },
-    { value: "invited", label: "Mới mời" },
-    { value: "paused", label: "Tạm dừng" },
-    { value: "review", label: "Cần hỗ trợ" },
-  ];
+  { value: "all", label: "Tất cả" },
+  { value: "active", label: "Hoạt động" },
+  { value: "invited", label: "Mới mời" },
+  { value: "paused", label: "Tạm dừng" },
+  { value: "review", label: "Cần hỗ trợ" },
+];
 
 function normalizeSearch(value: string) {
   return value
@@ -353,7 +353,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
             }
             className="w-full"
           >
-            <TabsList variant="line" className="w-full flex-wrap justify-start">
+            <TabsList className="w-full flex-wrap justify-start">
               {USER_FILTER_TABS.map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value}>
                   {tab.label}
@@ -424,7 +424,9 @@ export function UsersManagement({ users }: UsersManagementProps) {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {isMounted ? formatDateTime(user.last_active_at) : "..."}
+                          {isMounted
+                            ? formatDateTime(user.last_active_at)
+                            : "..."}
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1 text-sm">
@@ -564,7 +566,6 @@ export function UsersManagement({ users }: UsersManagementProps) {
               </Field>
             </FieldGroup>
 
-
             <FieldGroup className="grid gap-4 md:grid-cols-2">
               <Field className="md:col-span-2">
                 <FieldLabel htmlFor="user-learning-goal">
@@ -625,7 +626,6 @@ export function UsersManagement({ users }: UsersManagementProps) {
               </Field>
             </FieldGroup>
 
-
             <FieldGroup className="grid gap-4">
               <Field>
                 <FieldLabel htmlFor="user-notes">Ghi chú</FieldLabel>
@@ -643,7 +643,6 @@ export function UsersManagement({ users }: UsersManagementProps) {
                 <FieldDescription>Chỉ admin thấy.</FieldDescription>
               </Field>
             </FieldGroup>
-
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
               <SheetClose asChild>
