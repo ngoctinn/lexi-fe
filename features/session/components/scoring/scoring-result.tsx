@@ -70,7 +70,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
   return (
     <div className="flex w-full flex-col gap-8 animate-in fade-in zoom-in-95 duration-500">
       <div className="flex flex-col items-center justify-center text-center pb-6">
-        <Badge variant="soft" className="mb-4">
+        <Badge className="mb-4">
           Báo cáo phiên học
         </Badge>
         

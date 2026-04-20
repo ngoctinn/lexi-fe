@@ -23,7 +23,7 @@ export function LandingConversationPreview() {
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] items-center">
           <div className="flex flex-col gap-6">
-            <Badge variant="default" shape="pill" size="lg">
+            <Badge variant="default" shape="pill">
               Trải nghiệm thật
             </Badge>
 

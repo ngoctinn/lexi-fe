@@ -64,7 +64,7 @@ export function TranscriptPanel({
 
         {(isAiStreaming || aiStreamingText) && (
           <div className="flex w-full items-end gap-2 px-4 py-2 justify-start slide-in-bottom">
-            <Avatar className="size-8 shrink-0 mb-1 border shadow-sm">
+            <Avatar size="sm" className="shrink-0 mb-1 border shadow-sm">
               <AvatarImage
                 src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
                 alt={aiName}

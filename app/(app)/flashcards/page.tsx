@@ -20,11 +20,9 @@ export default async function FlashcardOverviewPage() {
       {queue.length === 0 ? (
         <FlashcardEmptyState />
       ) : (
-        <div className="mx-auto w-full max-w-6xl p-4 sm:p-6">
-          <div className="flex-1">
-            <FlashcardDeckOverview queue={queue} />
-          </div>
-        </div>
+        <main className="mx-auto w-full max-w-6xl p-4 sm:p-6 flex-1">
+          <FlashcardDeckOverview queue={queue} />
+        </main>
       )}
     </div>
   );

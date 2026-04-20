@@ -101,7 +101,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   return (
     <form onSubmit={handleSave} className="space-y-10">
       <div className="flex items-center gap-x-8">
-        <Avatar className="h-28 w-28 border shadow-sm">
+        <Avatar size="2xl" className="border shadow-sm">
           <AvatarImage src={formData.avatar_url} alt={formData.display_name} />
           <AvatarFallback className="text-3xl bg-primary text-primary-foreground font-semibold">
             {formData.display_name.substring(0, 2).toUpperCase()}

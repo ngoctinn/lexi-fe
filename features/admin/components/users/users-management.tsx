@@ -69,12 +69,12 @@ const USER_FILTER_TABS: Array<{
   value: "all" | AdminUserStatus;
   label: string;
 }> = [
-  { value: "all", label: "Tất cả" },
-  { value: "active", label: "Hoạt động" },
-  { value: "invited", label: "Mới mời" },
-  { value: "paused", label: "Tạm dừng" },
-  { value: "review", label: "Cần hỗ trợ" },
-];
+    { value: "all", label: "Tất cả" },
+    { value: "active", label: "Hoạt động" },
+    { value: "invited", label: "Mới mời" },
+    { value: "paused", label: "Tạm dừng" },
+    { value: "review", label: "Cần hỗ trợ" },
+  ];
 
 function normalizeSearch(value: string) {
   return value
@@ -480,169 +480,169 @@ export function UsersManagement({ users }: UsersManagementProps) {
           </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
-              <FieldGroup className="grid gap-4 md:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor="user-display-name">
-                    Tên hiển thị
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="user-display-name"
-                      value={draft.display_name}
-                      onChange={(event) =>
-                        updateDraft("display_name", event.target.value)
-                      }
-                      placeholder="Ví dụ: Nguyễn Minh Anh"
-                    />
-                  </FieldContent>
-                </Field>
+            <FieldGroup className="grid gap-4 md:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="user-display-name">
+                  Tên hiển thị
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="user-display-name"
+                    value={draft.display_name}
+                    onChange={(event) =>
+                      updateDraft("display_name", event.target.value)
+                    }
+                    placeholder="Ví dụ: Nguyễn Minh Anh"
+                  />
+                </FieldContent>
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="user-email">Email</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="user-email"
-                      type="email"
-                      value={draft.email}
-                      onChange={(event) =>
-                        updateDraft("email", event.target.value)
-                      }
-                      placeholder="example@lexi.app"
-                    />
-                  </FieldContent>
-                </Field>
+              <Field>
+                <FieldLabel htmlFor="user-email">Email</FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="user-email"
+                    type="email"
+                    value={draft.email}
+                    onChange={(event) =>
+                      updateDraft("email", event.target.value)
+                    }
+                    placeholder="example@lexi.app"
+                  />
+                </FieldContent>
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="user-level">Cấp độ</FieldLabel>
-                  <FieldContent>
-                    <Select
-                      value={draft.current_level}
-                      onValueChange={(value) =>
-                        updateDraft(
-                          "current_level",
-                          value as AdminUser["current_level"],
-                        )
-                      }
-                    >
-                      <SelectTrigger id="user-level" className="w-full">
-                        <SelectValue placeholder="Chọn cấp độ" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LEVEL_OPTIONS.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-                </Field>
+              <Field>
+                <FieldLabel htmlFor="user-level">Cấp độ</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={draft.current_level}
+                    onValueChange={(value) =>
+                      updateDraft(
+                        "current_level",
+                        value as AdminUser["current_level"],
+                      )
+                    }
+                  >
+                    <SelectTrigger id="user-level" className="w-full">
+                      <SelectValue placeholder="Chọn cấp độ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LEVEL_OPTIONS.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {level}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="user-status">Trạng thái</FieldLabel>
-                  <FieldContent>
-                    <Select
-                      value={draft.status}
-                      onValueChange={(value) =>
-                        updateDraft("status", value as AdminUserStatus)
-                      }
-                    >
-                      <SelectTrigger id="user-status" className="w-full">
-                        <SelectValue placeholder="Chọn trạng thái" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {USER_FILTER_TABS.filter(
-                          (tab) => tab.value !== "all",
-                        ).map((tab) => (
-                          <SelectItem key={tab.value} value={tab.value}>
-                            {tab.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
-
-
-              <FieldGroup className="grid gap-4 md:grid-cols-2">
-                <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="user-learning-goal">
-                    Mục tiêu học tập
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="user-learning-goal"
-                      value={draft.learning_goal}
-                      onChange={(event) =>
-                        updateDraft("learning_goal", event.target.value)
-                      }
-                      placeholder="Ví dụ: Du lịch tự tin"
-                    />
-                  </FieldContent>
-                </Field>
-
-                <Field>
-                  <FieldLabel htmlFor="user-sessions-completed">
-                    Số buổi đã học
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="user-sessions-completed"
-                      type="number"
-                      min={0}
-                      value={draft.sessions_completed}
-                      onChange={(event) =>
-                        updateDraft(
-                          "sessions_completed",
-                          Number.isNaN(event.target.valueAsNumber)
-                            ? 0
-                            : event.target.valueAsNumber,
-                        )
-                      }
-                    />
-                  </FieldContent>
-                </Field>
-
-                <Field>
-                  <FieldLabel htmlFor="user-streak">Streak hiện tại</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="user-streak"
-                      type="number"
-                      min={0}
-                      value={draft.streak}
-                      onChange={(event) =>
-                        updateDraft(
-                          "streak",
-                          Number.isNaN(event.target.valueAsNumber)
-                            ? 0
-                            : event.target.valueAsNumber,
-                        )
-                      }
-                    />
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="user-status">Trạng thái</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={draft.status}
+                    onValueChange={(value) =>
+                      updateDraft("status", value as AdminUserStatus)
+                    }
+                  >
+                    <SelectTrigger id="user-status" className="w-full">
+                      <SelectValue placeholder="Chọn trạng thái" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {USER_FILTER_TABS.filter(
+                        (tab) => tab.value !== "all",
+                      ).map((tab) => (
+                        <SelectItem key={tab.value} value={tab.value}>
+                          {tab.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+            </FieldGroup>
 
 
-              <FieldGroup className="grid gap-4">
-                <Field>
-                  <FieldLabel htmlFor="user-notes">Ghi chú</FieldLabel>
-                  <FieldContent>
-                    <Textarea
-                      id="user-notes"
-                      value={draft.notes}
-                      onChange={(event) =>
-                        updateDraft("notes", event.target.value)
-                      }
-                      placeholder="Ví dụ: cần thêm bài tập phản xạ, ưu tiên hội thoại ngắn..."
-                      className="min-h-28"
-                    />
-                  </FieldContent>
-                  <FieldDescription>Chỉ admin thấy.</FieldDescription>
-                </Field>
-              </FieldGroup>
+            <FieldGroup className="grid gap-4 md:grid-cols-2">
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="user-learning-goal">
+                  Mục tiêu học tập
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="user-learning-goal"
+                    value={draft.learning_goal}
+                    onChange={(event) =>
+                      updateDraft("learning_goal", event.target.value)
+                    }
+                    placeholder="Ví dụ: Du lịch tự tin"
+                  />
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="user-sessions-completed">
+                  Số buổi đã học
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="user-sessions-completed"
+                    type="number"
+                    min={0}
+                    value={draft.sessions_completed}
+                    onChange={(event) =>
+                      updateDraft(
+                        "sessions_completed",
+                        Number.isNaN(event.target.valueAsNumber)
+                          ? 0
+                          : event.target.valueAsNumber,
+                      )
+                    }
+                  />
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="user-streak">Streak hiện tại</FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="user-streak"
+                    type="number"
+                    min={0}
+                    value={draft.streak}
+                    onChange={(event) =>
+                      updateDraft(
+                        "streak",
+                        Number.isNaN(event.target.valueAsNumber)
+                          ? 0
+                          : event.target.valueAsNumber,
+                      )
+                    }
+                  />
+                </FieldContent>
+              </Field>
+            </FieldGroup>
+
+
+            <FieldGroup className="grid gap-4">
+              <Field>
+                <FieldLabel htmlFor="user-notes">Ghi chú</FieldLabel>
+                <FieldContent>
+                  <Textarea
+                    id="user-notes"
+                    value={draft.notes}
+                    onChange={(event) =>
+                      updateDraft("notes", event.target.value)
+                    }
+                    placeholder="Ví dụ: cần thêm bài tập phản xạ, ưu tiên hội thoại ngắn..."
+                    className="min-h-28"
+                  />
+                </FieldContent>
+                <FieldDescription>Chỉ admin thấy.</FieldDescription>
+              </Field>
+            </FieldGroup>
 
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">

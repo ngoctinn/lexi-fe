@@ -5,34 +5,33 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-md border px-3 py-1.5 text-2xs font-bold uppercase tracking-widest leading-none whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&>svg]:pointer-events-none [&>svg]:size-3! hover:scale-[1.02] active:scale-95",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-md border font-bold leading-none whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3 hover:scale-[1.02] active:scale-95",
   {
     variants: {
       variant: {
         default:
-          "bg-primary-50 text-primary border-primary-100 [a]:hover:bg-primary-100",
+          "bg-primary-50 text-primary-600 border-primary-200 [a]:hover:bg-primary-100",
         secondary:
           "bg-secondary/10 text-secondary-foreground border-border [a]:hover:bg-secondary/20",
         destructive:
-          "bg-destructive/5 text-destructive-dark border-destructive/20 focus-visible:ring-destructive/20 [a]:hover:bg-destructive/10",
+          "bg-destructive-50 text-destructive-600 border-destructive-200 focus-visible:ring-destructive/20 [a]:hover:bg-destructive-100",
         success:
-          "bg-success/5 text-success border-success/20 focus-visible:ring-success/20 [a]:hover:bg-success/10",
+          "bg-success-50 text-success-600 border-success-200 focus-visible:ring-success/20 [a]:hover:bg-success-100",
         warning:
-          "bg-warning/5 text-warning border-warning/20 focus-visible:ring-warning/20 [a]:hover:bg-warning/10",
+          "bg-warning-50 text-warning-600 border-warning-200 focus-visible:ring-warning/20 [a]:hover:bg-warning-100",
         info:
-          "bg-info-50 text-info border-info-100 focus-visible:ring-info/20 [a]:hover:bg-info-100",
+          "bg-info-50 text-info-600 border-info-200 focus-visible:ring-info/20 [a]:hover:bg-info-100",
         outline:
           "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost: "hover:bg-muted hover:text-foreground border-transparent",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
-        soft: "bg-primary-50 text-primary border-primary-100 [a]:hover:bg-primary-100",
       },
       size: {
-        xs: "px-1.5 py-0.5 text-2xs gap-1 [&>svg]:size-2.5!",
-        sm: "px-2 py-1 text-2xs gap-1 [&>svg]:size-3!",
-        md: "px-3 py-1.5 text-2xs gap-1.5 [&>svg]:size-3!",
-        default: "px-3 py-1.5 text-2xs gap-1.5 [&>svg]:size-3!",
-        lg: "px-4 py-2 text-xs-plus gap-2 [&>svg]:size-3.5!",
+        xs: "px-1.5 py-0.5 text-[10px] leading-tight",
+        sm: "px-2 py-0.5 text-[12px] leading-tight",
+        md: "px-3 py-1 text-[14px] leading-tight",
+        default: "px-2 py-0.5 text-[12px] leading-tight",
+        lg: "px-4 py-1.5 text-[16px] leading-tight",
       },
       shape: {
         default: "rounded-md",
@@ -41,7 +40,7 @@ const badgeVariants = cva(
     },
     defaultVariants: {
       variant: "default",
-      size: "md",
+      size: "sm",
       shape: "default",
     },
   },

@@ -56,7 +56,7 @@ export function Showcase({ dashboard }: { dashboard?: React.ReactNode }) {
                <h2 className="text-2xl font-bold tracking-tight text-foreground">Dashboard Preview</h2>
                <p className="text-muted-foreground text-sm">Cái nhìn tổng quan về trung tâm điều khiển của học viên.</p>
              </div>
-             <Badge variant="outline" className="border-primary-200 text-primary-600">Khu vực riêng tư</Badge>
+             <Badge>Khu vực riêng tư</Badge>
            </div>
            {dashboard}
         </div>

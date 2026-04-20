@@ -14,6 +14,7 @@ const avatarVariants = cva(
         default: "size-10", // 40px
         lg: "size-12", // 48px
         xl: "size-16", // 64px
+        "2xl": "size-28", // 112px
       },
     },
     defaultVariants: {

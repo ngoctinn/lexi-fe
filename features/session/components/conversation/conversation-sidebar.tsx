@@ -72,6 +72,7 @@ export function ConversationSidebar({
           <div className="flex flex-wrap items-center gap-2 px-1">
             <Badge
               variant="info"
+              size="md"
               className="shadow-none"
             >
               <UserCircle className="size-3.5 opacity-70" />
@@ -85,6 +86,7 @@ export function ConversationSidebar({
 
             <Badge
               variant="info"
+              size="md"
               className="shadow-none"
             >
               <Bot className="size-3.5 opacity-70" />
@@ -117,10 +119,9 @@ export function ConversationSidebar({
               <Badge
                 key={i}
                 variant="default"
-                size="lg"
+                size="md"
                 className="shadow-none"
-              >
-                {goal}
+              >                {goal}
               </Badge>
             ))
           ) : (

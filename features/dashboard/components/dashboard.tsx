@@ -55,13 +55,7 @@ function RecentSessionsCard({
         </CardTitle>
         <CardDescription>Ba phiên hội thoại gần nhất của bạn.</CardDescription>
         <CardAction>
-          <Badge
-            variant="secondary"
-            size="sm"
-            shape="pill"
-          >
-            {sessions.length} phiên
-          </Badge>
+          <Badge size="sm" variant="outline">{sessions.length} phiên</Badge>
         </CardAction>
       </CardHeader>
 
@@ -85,7 +79,7 @@ function RecentSessionsCard({
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge
-                      variant={isCompleted ? "secondary" : "default"}
+                      variant={isCompleted ? "success" : "default"}
                       className="shrink-0"
                     >
                       {isCompleted ? "Hoàn thành" : "Đang học"}

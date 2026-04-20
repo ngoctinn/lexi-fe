@@ -81,7 +81,7 @@ export function RecentSessionsCard({
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge
-                      variant={isCompleted ? "secondary" : "default"}
+                      variant={isCompleted ? "success" : "default"}
                       className="shrink-0"
                     >
                       {isCompleted ? "Hoàn thành" : "Đang học"}

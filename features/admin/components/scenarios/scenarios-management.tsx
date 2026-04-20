@@ -58,10 +58,10 @@ const SCENARIO_STATUS_TABS: Array<{
   value: "all" | "active" | "inactive";
   label: string;
 }> = [
-  { value: "all", label: "Tất cả" },
-  { value: "active", label: "Đang mở" },
-  { value: "inactive", label: "Đã ẩn" },
-];
+    { value: "all", label: "Tất cả" },
+    { value: "active", label: "Đang mở" },
+    { value: "inactive", label: "Đã ẩn" },
+  ];
 
 function normalizeSearch(value: string) {
   return value
@@ -253,7 +253,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
 
     try {
       const finalRoles = draft.user_roles.map((role) => role.trim()).filter(Boolean);
-      
+
       const result = await upsertAdminScenario({
         ...draft,
         scenario_title: draft.scenario_title.trim(),
@@ -535,152 +535,152 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
           </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
-              <FieldGroup className="grid gap-4 md:grid-cols-2">
-                <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-title">
-                    Tiêu đề kịch bản
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="scenario-title"
-                      value={draft.scenario_title}
-                      onChange={(event) =>
-                        updateDraft("scenario_title", event.target.value)
-                      }
-                      placeholder="Ví dụ: Mua vé xem phim"
-                    />
-                  </FieldContent>
-                </Field>
+            <FieldGroup className="grid gap-4 md:grid-cols-2">
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="scenario-title">
+                  Tiêu đề kịch bản
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="scenario-title"
+                    value={draft.scenario_title}
+                    onChange={(event) =>
+                      updateDraft("scenario_title", event.target.value)
+                    }
+                    placeholder="Ví dụ: Mua vé xem phim"
+                  />
+                </FieldContent>
+              </Field>
 
 
-                <Field>
-                  <FieldLabel htmlFor="scenario-level">Level</FieldLabel>
-                  <FieldContent>
-                    <Select
-                      value={draft.difficulty_level ?? "A2"}
-                      onValueChange={(value) =>
-                        updateDraft(
-                          "difficulty_level",
-                          value as AdminScenario["difficulty_level"],
-                        )
-                      }
-                    >
-                      <SelectTrigger id="scenario-level" className="w-full">
-                        <SelectValue placeholder="Chọn level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LEVEL_OPTIONS.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-                </Field>
+              <Field>
+                <FieldLabel htmlFor="scenario-level">Level</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={draft.difficulty_level ?? "A2"}
+                    onValueChange={(value) =>
+                      updateDraft(
+                        "difficulty_level",
+                        value as AdminScenario["difficulty_level"],
+                      )
+                    }
+                  >
+                    <SelectTrigger id="scenario-level" className="w-full">
+                      <SelectValue placeholder="Chọn level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LEVEL_OPTIONS.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {level}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="scenario-order">
-                    Thứ tự hiển thị
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="scenario-order"
-                      type="number"
-                      min={1}
-                      value={draft.order ?? ""}
-                      onChange={(event) =>
-                        updateDraft(
-                          "order",
-                          Number.isNaN(event.target.valueAsNumber)
-                            ? undefined
-                            : event.target.valueAsNumber,
-                        )
-                      }
-                    />
-                  </FieldContent>
-                  <FieldDescription>Số nhỏ hiển thị trước.</FieldDescription>
-                </Field>
+              <Field>
+                <FieldLabel htmlFor="scenario-order">
+                  Thứ tự hiển thị
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="scenario-order"
+                    type="number"
+                    min={1}
+                    value={draft.order ?? ""}
+                    onChange={(event) =>
+                      updateDraft(
+                        "order",
+                        Number.isNaN(event.target.valueAsNumber)
+                          ? undefined
+                          : event.target.valueAsNumber,
+                      )
+                    }
+                  />
+                </FieldContent>
+                <FieldDescription>Số nhỏ hiển thị trước.</FieldDescription>
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="scenario-active">Trạng thái</FieldLabel>
-                  <FieldContent>
-                    <Select
-                      value={draft.is_active ? "active" : "inactive"}
-                      onValueChange={(value) =>
-                        updateDraft("is_active", value === "active")
-                      }
-                    >
-                      <SelectTrigger id="scenario-active" className="w-full">
-                        <SelectValue placeholder="Chọn trạng thái" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Đang mở</SelectItem>
-                        <SelectItem value="inactive">Đã ẩn</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="scenario-active">Trạng thái</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={draft.is_active ? "active" : "inactive"}
+                    onValueChange={(value) =>
+                      updateDraft("is_active", value === "active")
+                    }
+                  >
+                    <SelectTrigger id="scenario-active" className="w-full">
+                      <SelectValue placeholder="Chọn trạng thái" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Đang mở</SelectItem>
+                      <SelectItem value="inactive">Đã ẩn</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+            </FieldGroup>
 
 
 
-              <FieldGroup className="grid gap-4 md:grid-cols-2">
-                <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-goals">
-                    Mục tiêu luyện tập
-                  </FieldLabel>
-                  <FieldContent>
-                    <Textarea
-                      id="scenario-goals"
-                      value={draft.goals.join("\n")}
-                      onChange={(event) =>
-                        updateDraft("goals", splitLines(event.target.value))
-                      }
-                      placeholder="Mỗi dòng là một mục tiêu"
-                      className="min-h-32"
-                    />
-                  </FieldContent>
-                  <FieldDescription>Mỗi dòng là một mục tiêu.</FieldDescription>
-                </Field>
+            <FieldGroup className="grid gap-4 md:grid-cols-2">
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="scenario-goals">
+                  Mục tiêu luyện tập
+                </FieldLabel>
+                <FieldContent>
+                  <Textarea
+                    id="scenario-goals"
+                    value={draft.goals.join("\n")}
+                    onChange={(event) =>
+                      updateDraft("goals", splitLines(event.target.value))
+                    }
+                    placeholder="Mỗi dòng là một mục tiêu"
+                    className="min-h-32"
+                  />
+                </FieldContent>
+                <FieldDescription>Mỗi dòng là một mục tiêu.</FieldDescription>
+              </Field>
 
-                <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-roles">
-                    Các vai trò trong kịch bản
-                  </FieldLabel>
-                  <FieldContent>
-                    <Textarea
-                      id="scenario-roles"
-                      value={draft.user_roles.join("\n")}
-                      onChange={(event) => {
-                        const roles = splitLines(event.target.value);
-                        updateDraft("user_roles", roles);
-                        updateDraft("ai_roles", roles);
-                      }}
-                      placeholder="Mỗi dòng là một vai trò (ví dụ: Khách hàng, Nhân viên)"
-                      className="min-h-28"
-                    />
-                  </FieldContent>
-                  <FieldDescription>Hệ thống sẽ tự động phân vai AI dựa trên lựa chọn của học viên.</FieldDescription>
-                </Field>
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="scenario-roles">
+                  Các vai trò trong kịch bản
+                </FieldLabel>
+                <FieldContent>
+                  <Textarea
+                    id="scenario-roles"
+                    value={draft.user_roles.join("\n")}
+                    onChange={(event) => {
+                      const roles = splitLines(event.target.value);
+                      updateDraft("user_roles", roles);
+                      updateDraft("ai_roles", roles);
+                    }}
+                    placeholder="Mỗi dòng là một vai trò (ví dụ: Khách hàng, Nhân viên)"
+                    className="min-h-28"
+                  />
+                </FieldContent>
+                <FieldDescription>Hệ thống sẽ tự động phân vai AI dựa trên lựa chọn của học viên.</FieldDescription>
+              </Field>
 
-                <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="scenario-notes">
-                    Ghi chú nội bộ
-                  </FieldLabel>
-                  <FieldContent>
-                    <Textarea
-                      id="scenario-notes"
-                      value={draft.notes}
-                      onChange={(event) =>
-                        updateDraft("notes", event.target.value)
-                      }
-                      placeholder="Ví dụ: ưu tiên dùng cho học viên A2 và B1..."
-                      className="min-h-28"
-                    />
-                  </FieldContent>
-                </Field>
-              </FieldGroup>
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="scenario-notes">
+                  Ghi chú nội bộ
+                </FieldLabel>
+                <FieldContent>
+                  <Textarea
+                    id="scenario-notes"
+                    value={draft.notes}
+                    onChange={(event) =>
+                      updateDraft("notes", event.target.value)
+                    }
+                    placeholder="Ví dụ: ưu tiên dùng cho học viên A2 và B1..."
+                    className="min-h-28"
+                  />
+                </FieldContent>
+              </Field>
+            </FieldGroup>
 
             <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
               <SheetClose asChild>

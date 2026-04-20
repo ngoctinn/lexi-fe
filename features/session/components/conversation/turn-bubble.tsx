@@ -43,7 +43,7 @@ export function TurnBubble({
       )}
     >
       {!isUser && (
-        <Avatar className="size-8 shrink-0 mb-1 border shadow-sm">
+        <Avatar size="sm" className="shrink-0 mb-1 border shadow-sm">
           <AvatarImage
             src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
             alt={aiName}

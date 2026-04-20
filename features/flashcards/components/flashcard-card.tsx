@@ -69,10 +69,11 @@ export function FlashcardCard({
           : `Xem đáp án của ${card.word}`
       }
     >
-      <CardContent className="relative flex flex-1 flex-col gap-4 px-5 py-4 text-left sm:px-6 sm:py-5">
+      <CardContent className="relative flex flex-1 flex-col">
+        {/* Mặt trước: Ẩn đáp án */}
         <div
           className={cn(
-            "absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-300 ease-out motion-reduce:transition-none",
+            "absolute inset-0 flex flex-col items-center justify-center text-center p-5 sm:p-6 transition-all duration-300 ease-out motion-reduce:transition-none",
             isRevealed
               ? "pointer-events-none translate-y-1 scale-[0.98] opacity-0"
               : "translate-y-0 scale-100 opacity-100",
@@ -83,7 +84,7 @@ export function FlashcardCard({
               {card.word}
             </h2>
             {card.word_type && (
-              <Badge variant="soft" size="lg">
+              <Badge>
                 {card.word_type}
               </Badge>
             )}
@@ -111,21 +112,22 @@ export function FlashcardCard({
           </p>
         </div>
 
+        {/* Mặt sau: Hiện đáp án */}
         <div
           className={cn(
-            "absolute inset-0 flex flex-col justify-start text-left transition-all duration-300 ease-out motion-reduce:transition-none",
+            "absolute inset-0 flex flex-col justify-start text-left p-5 sm:p-6 transition-all duration-300 ease-out motion-reduce:transition-none",
             isRevealed
               ? "translate-y-0 opacity-100"
               : "pointer-events-none translate-y-1 opacity-0",
           )}
         >
-          <div className="space-y-3 px-5 pt-5 sm:px-6 sm:pt-6">
+          <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {card.word}
               </h2>
               {card.word_type && (
-              <Badge variant="soft" size="lg">
+              <Badge>
                 {card.word_type}
               </Badge>
               )}
@@ -149,11 +151,9 @@ export function FlashcardCard({
             </div>
           </div>
 
-          <div className="px-5 py-4 sm:px-6 sm:py-5">
-            <Separator />
-          </div>
+          <Separator className="my-4 sm:my-5" />
 
-          <div className="space-y-5 px-5 pb-5 text-left sm:px-6 sm:pb-6">
+          <div className="space-y-5">
             <section className="space-y-2">
               <p className="text-sm font-bold text-foreground">Định nghĩa</p>
               <p className="max-w-2xl text-base leading-relaxed text-foreground/90">

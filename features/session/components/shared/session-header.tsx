@@ -69,7 +69,7 @@ export function SessionHeader({
           <ArrowLeft data-icon="inline-start" />
         </Button>
 
-        <Avatar className="size-9 rounded-md border">
+        <Avatar size="sm" className="rounded-md border">
           <AvatarImage
             src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiCharacter}`}
             alt={aiCharacter}
