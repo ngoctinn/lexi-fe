@@ -1,24 +1,12 @@
 "use client";
 
 import * as React from "react";
-import {
-  BookOpen,
-  Briefcase,
-  Globe2,
-  Lock,
-  MessageCircle,
-  Plane,
-  ShoppingCart,
-  Utensils,
-  CheckCircle2,
-  Coffee,
-  HeartHandshake,
-  Phone,
-} from "lucide-react";
+import { BookOpen, Lock, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { Scenario } from "@/features/session/types/session.types";
 import { cn } from "@/lib/utils";
+import { SCENARIO_CONTEXT_ICON_MAP } from "@/features/session/constants/scenario-contexts";
 import {
   LEVEL_CONFIG,
   NODE_SIZE,
@@ -29,18 +17,6 @@ import {
   LEFT_X,
   getPathD,
 } from "./learning-path-utils";
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  work: Briefcase,
-  daily_life: ShoppingCart,
-  travel: Plane,
-  social: MessageCircle,
-  world: Globe2,
-  food: Utensils,
-  coffee: Coffee,
-  health: HeartHandshake,
-  phone: Phone,
-};
 
 const UNLOCKED_IDS = new Set(["s1", "s2", "s3", "s4"]);
 const COMPLETED_IDS = new Set(["s1"]);
@@ -215,7 +191,7 @@ export function LearningPath({
           const isSelected = scenario.scenario_id === value;
           const isLocked = status === "locked";
           const isCompleted = status === "completed";
-          const Icon = ICON_MAP[scenario.context] ?? BookOpen;
+          const Icon = SCENARIO_CONTEXT_ICON_MAP[scenario.context] ?? BookOpen;
 
           return (
             <div

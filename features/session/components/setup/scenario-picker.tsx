@@ -1,25 +1,11 @@
 "use client";
 
 import * as React from "react";
-import {
-  BookOpen,
-  Briefcase,
-  Globe2,
-  MessageCircle,
-  Plane,
-  ShoppingCart,
-} from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { Scenario } from "@/features/session/types/session.types";
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  work: Briefcase,
-  daily_life: ShoppingCart,
-  travel: Plane,
-  social: MessageCircle,
-  world: Globe2,
-};
+import { SCENARIO_CONTEXT_ICON_MAP } from "@/features/session/constants/scenario-contexts";
 
 interface ScenarioPickerProps {
   scenarios: Scenario[];
@@ -36,7 +22,7 @@ export function ScenarioPicker({
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {scenarios.map((scenario) => {
         const isSelected = scenario.scenario_id === value;
-        const Icon = ICON_MAP[scenario.context] ?? BookOpen;
+        const Icon = SCENARIO_CONTEXT_ICON_MAP[scenario.context] ?? BookOpen;
 
         return (
           <button

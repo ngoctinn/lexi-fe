@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import type { AdminScenario, AdminUser } from "@/features/admin/types";
+import { DEFAULT_SCENARIO_CONTEXT } from "@/features/session/constants/scenario-contexts";
 
 const HOUR_IN_MS = 60 * 60 * 1000;
 const DAY_IN_MS = 24 * HOUR_IN_MS;
@@ -223,6 +224,8 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
   const goals = normalizeList(scenario.goals);
   const userRoles = normalizeList(scenario.user_roles);
   const aiRoles = normalizeList(scenario.ai_roles);
+  const primaryUserRole = userRoles[0] ?? myCharacter;
+  const primaryAiRole = aiRoles[0] ?? aiCharacter;
   const normalizedScenario: AdminScenario = {
     ...scenario,
     scenario_id: normalizeText(
@@ -230,12 +233,12 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
       createScenarioId(scenario.scenario_title),
     ),
     scenario_title: normalizeText(scenario.scenario_title, "Kịch bản mới"),
-    context: normalizeText(scenario.context, "Chủ đề mới"),
-    my_character: userRoles[0] ?? myCharacter,
-    ai_character: aiRoles[1] ?? aiRoles[0] ?? aiCharacter,
+    context: normalizeText(scenario.context, DEFAULT_SCENARIO_CONTEXT),
+    my_character: primaryUserRole,
+    ai_character: primaryAiRole,
     goals,
-    user_roles: userRoles,
-    ai_roles: aiRoles,
+    user_roles: [primaryUserRole],
+    ai_roles: [primaryAiRole],
     usage_count: Number.isFinite(scenario.usage_count)
       ? Math.max(0, Math.trunc(scenario.usage_count))
       : 0,

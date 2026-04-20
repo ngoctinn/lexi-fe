@@ -15,6 +15,10 @@ import { toast } from "sonner";
 
 import { upsertAdminScenario } from "@/features/admin/actions/admin.actions";
 import type { AdminScenario } from "@/features/admin/types";
+import {
+  DEFAULT_SCENARIO_CONTEXT,
+  SCENARIO_CONTEXT_OPTIONS,
+} from "@/features/session/constants/scenario-contexts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -90,12 +94,12 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
   return {
     scenario_id: "",
     scenario_title: "",
-    context: "",
+    context: DEFAULT_SCENARIO_CONTEXT,
     my_character: "Học viên",
     ai_character: "AI Assistant",
     goals: [],
-    user_roles: [],
-    ai_roles: [],
+    user_roles: ["Học viên"],
+    ai_roles: ["AI Assistant"],
     is_active: true,
     usage_count: 0,
     difficulty_level: "A2",
@@ -184,6 +188,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         return normalizeSearch(
           [
             scenario.scenario_title,
+            scenario.context,
             scenario.my_character,
             scenario.ai_character,
             scenario.notes,
@@ -232,7 +237,16 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
   };
 
   const handleOpenEdit = (scenario: AdminScenario) => {
-    setDraft({ ...scenario });
+    setDraft({
+      ...scenario,
+      context: scenario.context || DEFAULT_SCENARIO_CONTEXT,
+      user_roles: [
+        scenario.my_character || scenario.user_roles[0] || "Học viên",
+      ],
+      ai_roles: [
+        scenario.ai_character || scenario.ai_roles[0] || "AI Assistant",
+      ],
+    });
     setIsDialogOpen(true);
   };
 
@@ -249,24 +263,36 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
       return;
     }
 
+    if (!draft.context.trim()) {
+      toast.error("Vui lòng chọn chủ đề cho kịch bản.");
+      return;
+    }
+
+    const userRole = draft.my_character.trim();
+    const aiRole = draft.ai_character.trim();
+
+    if (!userRole || !aiRole) {
+      toast.error("Vui lòng nhập đủ vai trò cho học viên và AI.");
+      return;
+    }
+
+    if (userRole === aiRole) {
+      toast.error("Vai trò học viên và AI phải khác nhau.");
+      return;
+    }
+
     setIsSaving(true);
 
     try {
-      const finalRoles = draft.user_roles
-        .map((role) => role.trim())
-        .filter(Boolean);
-
       const result = await upsertAdminScenario({
         ...draft,
         scenario_title: draft.scenario_title.trim(),
-        my_character: finalRoles[0] ?? "Học viên",
-        ai_character:
-          finalRoles.length > 1
-            ? finalRoles[1]
-            : (finalRoles[0] ?? "AI Assistant"),
+        context: draft.context.trim(),
+        my_character: userRole,
+        ai_character: aiRole,
         goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
-        user_roles: finalRoles,
-        ai_roles: finalRoles,
+        user_roles: [userRole],
+        ai_roles: [aiRole],
         notes: draft.notes.trim(),
       });
 
@@ -567,6 +593,30 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 </FieldContent>
               </Field>
 
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="scenario-context">Chủ đề</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={draft.context || DEFAULT_SCENARIO_CONTEXT}
+                    onValueChange={(value) => updateDraft("context", value)}
+                  >
+                    <SelectTrigger id="scenario-context" className="w-full">
+                      <SelectValue placeholder="Chọn chủ đề" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SCENARIO_CONTEXT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+                <FieldDescription>
+                  Chủ đề này quyết định icon trên lộ trình học.
+                </FieldDescription>
+              </Field>
+
               <Field>
                 <FieldLabel htmlFor="scenario-level">Level</FieldLabel>
                 <FieldContent>
@@ -656,26 +706,49 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 <FieldDescription>Mỗi dòng là một mục tiêu.</FieldDescription>
               </Field>
 
-              <Field className="md:col-span-2">
-                <FieldLabel htmlFor="scenario-roles">
-                  Các vai trò trong kịch bản
+              <Field>
+                <FieldLabel htmlFor="scenario-user-role">
+                  Vai người dùng
                 </FieldLabel>
                 <FieldContent>
-                  <Textarea
-                    id="scenario-roles"
-                    value={draft.user_roles.join("\n")}
+                  <Input
+                    id="scenario-user-role"
+                    value={draft.my_character}
                     onChange={(event) => {
-                      const roles = splitLines(event.target.value);
-                      updateDraft("user_roles", roles);
-                      updateDraft("ai_roles", roles);
+                      const value = event.target.value;
+                      updateDraft("my_character", value);
+                      updateDraft(
+                        "user_roles",
+                        value.trim() ? [value.trim()] : [],
+                      );
                     }}
-                    placeholder="Mỗi dòng là một vai trò (ví dụ: Khách hàng, Nhân viên)"
-                    className="min-h-28"
+                    placeholder="Ví dụ: Khách hàng"
                   />
                 </FieldContent>
                 <FieldDescription>
-                  Hệ thống sẽ tự động phân vai AI dựa trên lựa chọn của học
-                  viên.
+                  Chỉ nhập một vai trò cho học viên.
+                </FieldDescription>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="scenario-ai-role">Vai AI</FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="scenario-ai-role"
+                    value={draft.ai_character}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      updateDraft("ai_character", value);
+                      updateDraft(
+                        "ai_roles",
+                        value.trim() ? [value.trim()] : [],
+                      );
+                    }}
+                    placeholder="Ví dụ: Nhân viên bán hàng"
+                  />
+                </FieldContent>
+                <FieldDescription>
+                  Chỉ nhập một vai trò cho AI.
                 </FieldDescription>
               </Field>
 
