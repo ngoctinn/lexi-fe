@@ -6,7 +6,6 @@ export { getScenarios } from "./actions/get-scenarios";
 
 export { ConversationScreen } from "./components/conversation/conversation-screen";
 export { SessionSetupForm } from "./components/setup/session-setup-form";
-export { ScoringResult } from "./components/scoring/scoring-result";
 
 export { useSession } from "./hooks/use-session";
 
