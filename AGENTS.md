@@ -152,7 +152,7 @@ State:
 
 ---
 
-# 9. Comment Rules
+# 9. Comment Rules IMPORTANT!!!
 
 - Viết tiếng Việt
 - Giải thích **tại sao**, không chỉ **làm gì**
