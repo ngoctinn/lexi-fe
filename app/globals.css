@@ -161,6 +161,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
+  --pattern-foreground: oklch(0.556 0 0 / 0.07); /* Subtle gray for grid patterns */
   /* --- Primary Color System --- */
   /* Tối ưu hóa dải màu Primary theo chuẩn OKLCH: Độ sáng (L) mượt mà hơn, Chroma (C) rực rỡ và Hue (H) ổn định */
   --primary-50: oklch(0.98 0.025 26);

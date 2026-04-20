@@ -84,8 +84,8 @@ function splitLines(value: string) {
     .filter(Boolean);
 }
 
-function createEmptyScenario(order: number): AdminScenario {
-  const now = new Date().toISOString();
+function createEmptyScenario(order: number, now?: string): AdminScenario {
+  const finalNow = now || new Date(0).toISOString();
 
   return {
     scenario_id: "",
@@ -100,7 +100,7 @@ function createEmptyScenario(order: number): AdminScenario {
     usage_count: 0,
     difficulty_level: "A2",
     order,
-    updated_at: now,
+    updated_at: finalNow,
     notes: "",
   };
 }
@@ -147,6 +147,7 @@ interface ScenariosManagementProps {
 }
 
 export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
+  const [isMounted, setIsMounted] = React.useState(false);
   const [records, setRecords] = React.useState(scenarios);
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<
@@ -159,6 +160,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
   const [isSaving, setIsSaving] = React.useState(false);
 
   React.useEffect(() => {
+    setIsMounted(true);
     setRecords(scenarios);
   }, [scenarios]);
 
@@ -223,8 +225,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
 
   const handleOpenCreate = () => {
     const nextOrder = records.length + 1;
+    const now = new Date().toISOString();
 
-    setDraft(createEmptyScenario(nextOrder));
+    setDraft(createEmptyScenario(nextOrder, now));
     setIsDialogOpen(true);
   };
 
@@ -472,7 +475,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                           </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {formatDateTime(scenario.updated_at)}
+                          {isMounted ? formatDateTime(scenario.updated_at) : "..."}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">

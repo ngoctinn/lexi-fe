@@ -105,8 +105,8 @@ function getInitials(value: string) {
     .slice(0, 2);
 }
 
-function createEmptyUser(): AdminUser {
-  const now = new Date().toISOString();
+function createEmptyUser(now?: string): AdminUser {
+  const finalNow = now || new Date(0).toISOString();
 
   return {
     id: "",
@@ -117,8 +117,8 @@ function createEmptyUser(): AdminUser {
     status: "active",
     sessions_completed: 0,
     streak: 0,
-    last_active_at: now,
-    updated_at: now,
+    last_active_at: finalNow,
+    updated_at: finalNow,
     notes: "",
   };
 }
@@ -163,6 +163,7 @@ interface UsersManagementProps {
 }
 
 export function UsersManagement({ users }: UsersManagementProps) {
+  const [isMounted, setIsMounted] = React.useState(false);
   const [records, setRecords] = React.useState(users);
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<
@@ -173,6 +174,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
   const [isSaving, setIsSaving] = React.useState(false);
 
   React.useEffect(() => {
+    setIsMounted(true);
     setRecords(users);
   }, [users]);
 
@@ -224,7 +226,8 @@ export function UsersManagement({ users }: UsersManagementProps) {
   };
 
   const handleOpenCreate = () => {
-    setDraft(createEmptyUser());
+    const now = new Date().toISOString();
+    setDraft(createEmptyUser(now));
     setIsDialogOpen(true);
   };
 
@@ -257,16 +260,18 @@ export function UsersManagement({ users }: UsersManagementProps) {
         return;
       }
 
+      const savedUser = result.user;
+
       setRecords((current) => {
-        const exists = current.some((item) => item.id === result.user?.id);
+        const exists = current.some((item) => item.id === savedUser.id);
 
         if (exists) {
           return current.map((item) =>
-            item.id === result.user?.id ? result.user : item,
+            item.id === savedUser.id ? savedUser : item,
           );
         }
 
-        return [result.user, ...current];
+        return [savedUser, ...current];
       });
 
       setIsDialogOpen(false);
@@ -419,7 +424,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {formatDateTime(user.last_active_at)}
+                          {isMounted ? formatDateTime(user.last_active_at) : "..."}
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1 text-sm">

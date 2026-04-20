@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, PlusCircle, Volume2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,9 +17,13 @@ function isNewCard(card: Flashcard) {
   return card.review_count === 0;
 }
 
-function formatNextReview(card: Flashcard) {
+function formatNextReview(card: Flashcard, now: number | null) {
   if (isNewCard(card)) {
     return "Chưa học";
+  }
+
+  if (!now) {
+    return "...";
   }
 
   const nextReviewDate = new Date(card.next_review_at);
@@ -27,7 +32,7 @@ function formatNextReview(card: Flashcard) {
   }
 
   const diffDays = Math.round(
-    (nextReviewDate.getTime() - Date.now()) / 86400000,
+    (nextReviewDate.getTime() - now) / 86400000,
   );
   if (diffDays <= 0) {
     return "Ôn hôm nay";
@@ -55,7 +60,7 @@ function playPronunciation(card: Flashcard) {
   }
 }
 
-function QueueRow({ card }: { card: Flashcard }) {
+function QueueRow({ card, now }: { card: Flashcard; now: number | null }) {
   const newCard = isNewCard(card);
 
   return (
@@ -101,7 +106,7 @@ function QueueRow({ card }: { card: Flashcard }) {
 
       <div className="shrink-0 text-right">
         <p className="text-xs font-medium text-muted-foreground">
-          {formatNextReview(card)}
+          {formatNextReview(card, now)}
         </p>
         <p className="text-xs text-muted-foreground">
           {newCard ? "Mới" : `SRS ${card.review_count}`}
@@ -115,10 +120,12 @@ function QueueSection({
   title,
   cards,
   emptyText,
+  now,
 }: {
   title: string;
   cards: Flashcard[];
   emptyText: string;
+  now: number | null;
 }) {
   return (
     <div className="space-y-3">
@@ -130,7 +137,7 @@ function QueueSection({
       {cards.length > 0 ? (
         <div className="max-h-112 overflow-y-auto rounded-2xl border border-border/60 bg-muted/15 pr-1">
           {cards.map((card) => (
-            <QueueRow key={card.flashcard_id} card={card} />
+            <QueueRow key={card.flashcard_id} card={card} now={now} />
           ))}
         </div>
       ) : (
@@ -220,7 +227,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
   );
 }
 
-function QueueCard({ queue }: { queue: Flashcard[] }) {
+function QueueCard({ queue, now }: { queue: Flashcard[]; now: number | null }) {
   const studiedCards = [...queue]
     .filter((card) => !isNewCard(card))
     .sort(
@@ -253,6 +260,7 @@ function QueueCard({ queue }: { queue: Flashcard[] }) {
                 title="Thẻ đã học"
                 cards={studiedCards}
                 emptyText="Chưa có thẻ đã học."
+                now={now}
               />
             </div>
           </TabsContent>
@@ -263,6 +271,7 @@ function QueueCard({ queue }: { queue: Flashcard[] }) {
                 title="Thẻ chưa học"
                 cards={newCards}
                 emptyText="Chưa có thẻ mới nào."
+                now={now}
               />
             </div>
           </TabsContent>
@@ -273,10 +282,16 @@ function QueueCard({ queue }: { queue: Flashcard[] }) {
 }
 
 export function FlashcardDeckOverview({ queue }: FlashcardDeckOverviewProps) {
+  const [now, setNow] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    setNow(Date.now());
+  }, []);
+
   return (
     <div className="grid w-full max-w-6xl items-start gap-4 lg:grid-cols-[4fr_6fr]">
       <ProgressCard queue={queue} />
-      <QueueCard queue={queue} />
+      <QueueCard queue={queue} now={now} />
     </div>
   );
 }

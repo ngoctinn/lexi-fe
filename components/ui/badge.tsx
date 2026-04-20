@@ -32,10 +32,15 @@ const badgeVariants = cva(
         default: "px-3 py-1.5 text-2xs gap-1.5 [&>svg]:size-3!",
         lg: "px-4 py-2 text-xs-plus gap-2 [&>svg]:size-3.5!",
       },
+      shape: {
+        default: "rounded-md",
+        pill: "rounded-full",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "md",
+      shape: "default",
     },
   },
 );
@@ -44,6 +49,7 @@ function Badge({
   className,
   variant = "default",
   size = "md",
+  shape = "default",
   asChild = false,
   ...props
 }: React.ComponentProps<"span"> &
@@ -55,7 +61,8 @@ function Badge({
       data-slot="badge"
       data-variant={variant}
       data-size={size}
-      className={cn(badgeVariants({ variant, size }), className)}
+      data-shape={shape}
+      className={cn(badgeVariants({ variant, size, shape }), className)}
       {...props}
     />
   );
