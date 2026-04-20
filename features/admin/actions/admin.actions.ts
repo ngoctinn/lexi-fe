@@ -228,26 +228,6 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
   const goals = normalizeList(scenario.goals);
   const userRoles = normalizeList(scenario.user_roles);
   const aiRoles = normalizeList(scenario.ai_roles);
-  const conflictingRoles = findOverlappingRoles(userRoles, aiRoles);
-  const primaryUserRole = userRoles[0] ?? myCharacter;
-  const primaryAiRole = aiRoles[0] ?? aiCharacter;
-
-  if (primaryUserRole === primaryAiRole) {
-    return {
-      success: false,
-      error: "Vai trò học viên và vai trò AI phải khác nhau.",
-    };
-  }
-
-  if (conflictingRoles.length > 0) {
-    return {
-      success: false,
-      error: `Vai trò học viên và vai trò AI không được trùng nhau: ${conflictingRoles.join(
-        ", ",
-      )}.`,
-    };
-  }
-
   const normalizedScenario: AdminScenario = {
     ...scenario,
     scenario_id: normalizeText(
@@ -256,8 +236,8 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
     ),
     scenario_title: normalizeText(scenario.scenario_title, "Kịch bản mới"),
     context: normalizeText(scenario.context, "Chủ đề mới"),
-    my_character: primaryUserRole,
-    ai_character: primaryAiRole,
+    my_character: userRoles[0] ?? myCharacter,
+    ai_character: aiRoles[1] ?? aiRoles[0] ?? aiCharacter,
     goals,
     user_roles: userRoles,
     ai_roles: aiRoles,

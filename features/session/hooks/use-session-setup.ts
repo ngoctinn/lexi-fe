@@ -55,21 +55,31 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     if (!selectedScenario) return;
 
     const allRoles = Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]));
-    const defaultUserRole = allRoles[0] ?? selectedScenario.my_character ?? "";
+    
+    // Khởi tạo vai mặc định nếu chưa có hoặc kịch bản thay đổi
+    const defaultUserRole = allRoles[0] ?? "";
+    const defaultAiRole = allRoles.find((r) => r !== defaultUserRole) ?? defaultUserRole;
 
-    setSelectedUserRole((current) => allRoles.includes(current) ? current : defaultUserRole);
+    setSelectedUserRole((current) => (allRoles.includes(current) && current !== "" ? current : defaultUserRole));
+    setSelectedAiRole((current) => (allRoles.includes(current) && current !== "" ? current : defaultAiRole));
+
     setSelectedGoals((current) => {
       const visible = selectedScenario.goals.filter((goal) => current.includes(goal));
       return visible.length > 0 ? visible : selectedScenario.goals;
     });
   }, [selectedScenario]);
 
+  // Tự động điều chỉnh vai AI nếu trùng với vai User khi User thay đổi
+  // Nhưng không ép buộc nếu danh sách chỉ có 1 vai
   React.useEffect(() => {
     if (!selectedScenario || !selectedUserRole) return;
     const allRoles = Array.from(new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]));
-    const nextAiRole = allRoles.find((r) => r !== selectedUserRole) ?? selectedUserRole;
-    setSelectedAiRole(nextAiRole);
-  }, [selectedUserRole, selectedScenario]);
+    
+    if (selectedUserRole === selectedAiRole && allRoles.length > 1) {
+      const nextAiRole = allRoles.find((r) => r !== selectedUserRole);
+      if (nextAiRole) setSelectedAiRole(nextAiRole);
+    }
+  }, [selectedUserRole, selectedScenario, selectedAiRole]);
 
   const buildPromptSnapshot = React.useCallback(() => {
     if (!selectedScenario) return "";
@@ -80,8 +90,6 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
       `Scenario: ${selectedScenario.scenario_title}`,
       `User role: ${selectedUserRole}`,
       `AI role: ${selectedAiRole}`,
-      `My character: ${selectedScenario.my_character}`,
-      `AI character: ${selectedScenario.ai_character}`,
       `Goals: ${goals.join(" | ")}`,
       `AI gender: ${formData.ai_gender}`,
       `Level: ${formData.level}`,
@@ -133,6 +141,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     actions: {
       setIsSettingsOpen,
       setSelectedUserRole,
+      setSelectedAiRole,
       toggleGoal,
       updateFormData,
       handleSubmit,

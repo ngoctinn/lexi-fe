@@ -63,7 +63,7 @@ export function OnboardingForm() {
   return (
     <Card
       size="lg"
-      className="overflow-visible shadow-lg animate-in fade-in zoom-in-95 duration-500 max-w-md mx-auto w-full"
+      className="overflow-visible animate-in fade-in zoom-in-95 duration-500 max-w-md mx-auto w-full"
     >
       <CardHeader className="text-center pb-2 pt-8">
         <div className="flex flex-col items-center gap-4">
@@ -87,7 +87,7 @@ export function OnboardingForm() {
         </div>
       </CardHeader>
 
-      <CardContent className="pt-6 pb-6 px-10 flex flex-col justify-center overflow-hidden">
+      <CardContent className="flex flex-col justify-center overflow-hidden">
         <div
           key={step}
           className="animate-in fade-in slide-in-from-right-4 duration-400"

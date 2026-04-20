@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -20,22 +21,23 @@ export function DashboardTile({
 }: DashboardTileProps) {
   return (
     <Card
+      size="sm"
       className={cn(
-        "group border-b-0 p-0 py-0 shadow-sm ring-1 ring-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+        "group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         featured && "md:col-span-2",
       )}
     >
       <Link
         href={href}
         className={cn(
-          "flex h-full min-h-36 flex-col gap-4 p-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-300",
+          "flex h-full min-h-36 flex-col gap-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-300",
           featured && "min-h-44 md:min-h-48",
         )}
       >
-        <div className="flex items-start justify-between gap-3">
-          <span className="rounded-full bg-muted/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+        <div className="flex items-start justify-between gap-3 pt-1 px-4">
+          <Badge variant="secondary" className="font-medium">
             {label ?? "Mở nhanh"}
-          </span>
+          </Badge>
 
           <span className="text-sm font-bold text-muted-foreground transition-transform group-hover:translate-x-0.5">
             →

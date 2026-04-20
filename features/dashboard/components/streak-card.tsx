@@ -29,7 +29,7 @@ export function StreakCard({
   activeDaysThisWeek,
 }: StreakCardProps) {
   return (
-    <Card className="h-full border-b-0 shadow-sm ring-1 ring-border/60">
+    <Card size="sm" className="h-full">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
@@ -86,7 +86,7 @@ export function StreakCard({
                 <span className="text-base leading-none">
                   {day.active ? "🔥" : "⚪"}
                 </span>
-                <span className="text-[10px] font-semibold text-muted-foreground">
+                <span className="text-2xs font-semibold text-muted-foreground">
                   {day.label}
                 </span>
               </div>

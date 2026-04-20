@@ -1,5 +1,7 @@
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+
 interface DashboardMetricCardProps {
   title: string;
   value: string;
@@ -22,21 +24,21 @@ export function DashboardMetricCard({
   footerValue,
 }: DashboardMetricCardProps) {
   return (
-    <Card className="border-b-0 shadow-sm ring-1 ring-border/60 hover:shadow-md">
-      <CardContent className="flex flex-col gap-4 p-5">
-        <div className="flex items-start justify-between gap-3">
+    <Card size="sm" className="hover:shadow-md transition-shadow">
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex items-start justify-between gap-3 pt-1">
           <div className="space-y-1">
-            <span className="text-[13px] font-semibold text-foreground/80">
+            <span className="text-sm font-semibold text-foreground/80">
               {title}
             </span>
-            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {progressLabel}
             </div>
           </div>
 
-          <span className="rounded-full bg-muted/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+          <Badge variant="secondary" size="sm" className="font-medium">
             {progress}%
-          </span>
+          </Badge>
         </div>
 
         <div className="flex items-end gap-2">
@@ -54,7 +56,7 @@ export function DashboardMetricCard({
 
         <Progress value={progress} className="h-1.5 bg-muted/60" />
 
-        <div className="flex items-center justify-between rounded-2xl bg-muted/40 px-3 py-2 text-sm">
+        <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2 text-sm">
           <span className="text-muted-foreground">{footerLabel}</span>
           <span className="font-semibold text-foreground">{footerValue}</span>
         </div>

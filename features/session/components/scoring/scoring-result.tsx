@@ -98,8 +98,8 @@ export function ScoringResult({ session }: ScoringResultProps) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {skills.map((skill) => (
-          <Card key={skill.key} className="overflow-hidden border-border/50 hover:border-border/80 transition-all shadow-sm">
-            <CardHeader className="p-5 pb-2">
+          <Card key={skill.key} size="sm" className="overflow-hidden border-border/50 hover:border-border/80 transition-all">
+            <CardHeader className="pb-2">
               <div className="flex items-center justify-between mb-2">
                 <div className="p-2 rounded-lg bg-muted/50">
                   <skill.icon className="size-5 text-muted-foreground" />
@@ -112,7 +112,7 @@ export function ScoringResult({ session }: ScoringResultProps) {
                 {skill.label}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-5 pt-0">
+            <CardContent className="pt-0">
               <Progress
                 value={skill.score}
                 className="h-2 w-full bg-muted mt-2"
@@ -124,14 +124,14 @@ export function ScoringResult({ session }: ScoringResultProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Card className="flex flex-col items-center p-6 bg-muted/30 border-none shadow-none">
+        <Card size="sm" className="flex flex-col items-center bg-muted/30 border-none shadow-none">
           <span className="text-4xl font-black text-foreground">{totalTurns}</span>
           <span className="text-sm text-muted-foreground font-bold uppercase tracking-wider mt-1">
             Lượt nói
           </span>
         </Card>
 
-        <Card className="flex flex-col items-center p-6 bg-warning-50/50 border-none shadow-none">
+        <Card size="sm" className="flex flex-col items-center bg-warning-50/50 border-none shadow-none">
           <span className="text-4xl font-black text-warning-600">
             {session.hint_used_count || 0}
           </span>

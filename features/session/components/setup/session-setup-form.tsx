@@ -75,6 +75,7 @@ export function SessionSetupForm({
             selectedGoals={state.selectedGoals}
             formData={state.formData}
             onUserRoleChange={actions.setSelectedUserRole}
+            onAiRoleChange={actions.setSelectedAiRole}
             onGoalsToggle={actions.toggleGoal}
             onAiGenderChange={(value) => actions.updateFormData("ai_gender", value)}
             isPending={state.isPending}

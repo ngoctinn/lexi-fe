@@ -124,7 +124,7 @@ function MetricCard({
 }) {
   return (
     <Card size="sm">
-      <CardContent className="flex items-start justify-between gap-4 py-4">
+      <CardContent className="flex items-start justify-between gap-4">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             {label}
@@ -361,7 +361,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
       </div>
 
       <Card size="lg" className="border-border/60">
-        <CardContent className="space-y-5 py-5">
+        <CardContent className="space-y-5">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">

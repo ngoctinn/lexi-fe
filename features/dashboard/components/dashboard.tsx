@@ -48,14 +48,14 @@ function RecentSessionsCard({
   const hasSessions = recentSessions.length > 0;
 
   return (
-    <Card size="sm" className="border-b-0 shadow-sm ring-1 ring-border/60">
+    <Card size="sm">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-bold tracking-tight">
           Lịch sử gần đây
         </CardTitle>
         <CardDescription>Ba phiên hội thoại gần nhất của bạn.</CardDescription>
         <CardAction>
-          <Badge size="sm" variant="outline">{sessions.length} phiên</Badge>
+          <Badge variant="outline">{sessions.length} phiên</Badge>
         </CardAction>
       </CardHeader>
 
@@ -74,27 +74,29 @@ function RecentSessionsCard({
               <Link
                 key={session.session_id}
                 href={href}
-                className="group flex items-start justify-between gap-4 rounded-2xl border border-border/60 bg-muted/20 p-3 transition-colors hover:bg-muted/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-300"
+                className="group block rounded-2xl border border-border/60 bg-muted/20 p-3 transition-colors hover:bg-muted/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-300"
               >
-                <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge
-                      variant={isCompleted ? "success" : "default"}
-                      className="shrink-0"
-                    >
-                      {isCompleted ? "Hoàn thành" : "Đang học"}
-                    </Badge>
-                    <span className="truncate text-sm font-semibold text-foreground">
-                      {scenarioTitle}
-                    </span>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant={isCompleted ? "success" : "default"}
+                        className="shrink-0"
+                      >
+                        {isCompleted ? "Hoàn thành" : "Đang học"}
+                      </Badge>
+                      <span className="truncate text-sm font-semibold text-foreground">
+                        {scenarioTitle}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {formatSessionDate(session.created_at)} · Level{" "}
+                      {session.level}
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatSessionDate(session.created_at)} · Level{" "}
-                    {session.level}
-                  </p>
-                </div>
 
-                <ArrowRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </div>
               </Link>
             );
           })
