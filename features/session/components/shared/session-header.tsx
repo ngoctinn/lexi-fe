@@ -19,14 +19,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { endSession } from "@/features/session/actions/end-session";
+import { getSession } from "@/features/session/actions/get-session";
 import { toast } from "sonner";
+import type { SessionScoreSummary } from "@/features/session/types/session.types";
 
 interface SessionHeaderProps {
   sessionId: string;
   scenarioTitle: string;
   aiCharacter: string;
   className?: string;
-  onEnd?: () => void;
+  onEnd?: (summary: SessionScoreSummary | null) => void;
+  isCompleted?: boolean;
 }
 
 export function SessionHeader({
@@ -35,21 +38,44 @@ export function SessionHeader({
   aiCharacter,
   className,
   onEnd,
+  isCompleted = false,
 }: SessionHeaderProps) {
   const router = useRouter();
   const [isPending, setIsPending] = React.useState(false);
 
   const handleEnd = async () => {
+    if (isCompleted) {
+      return;
+    }
+
     setIsPending(true);
     const res = await endSession(sessionId);
-    setIsPending(false);
+
     if (res.success) {
-      toast.success("Đã nộp bài. Đang tính điểm...");
-      onEnd?.();
-      router.push(`/session/${sessionId}/results`);
+      const sessionResult = await getSession(sessionId);
+      const summary =
+        sessionResult.success && sessionResult.session?.scoring
+          ? {
+              scoring: sessionResult.session.scoring,
+              totalTurns:
+                sessionResult.session.total_turns ||
+                sessionResult.session.turns?.length ||
+                0,
+              hintUsedCount: sessionResult.session.hint_used_count || 0,
+            }
+          : null;
+
+      toast.success(
+        summary
+          ? "Đã nộp bài. Kết quả đã hiển thị ở sidebar."
+          : "Đã nộp bài. Hệ thống đang tổng kết điểm.",
+      );
+      onEnd?.(summary);
     } else {
       toast.error(res.error ?? "Không thể nộp bài.");
     }
+
+    setIsPending(false);
   };
 
   return (
@@ -87,33 +113,43 @@ export function SessionHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="default" size="sm" disabled={isPending}>
-              <Square
-                data-icon="inline-start"
-                className="size-3.5 fill-current"
-              />
-              <span className="hidden sm:inline">Nộp &amp; chấm điểm</span>
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Nộp bài và chấm điểm?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Nút micro chỉ dừng lượt ghi âm hiện tại. Nút này sẽ chốt phiên
-                luyện nói, ngừng ghi âm và bắt đầu chấm điểm phần thực hành của
-                bạn.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Hủy</AlertDialogCancel>
-              <AlertDialogAction onClick={handleEnd}>
-                Nộp &amp; chấm điểm
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        {isCompleted ? (
+          <Button variant="secondary" size="sm" disabled>
+            <Square
+              data-icon="inline-start"
+              className="size-3.5 fill-current"
+            />
+            <span className="hidden sm:inline">Đã nộp bài</span>
+          </Button>
+        ) : (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="default" size="sm" disabled={isPending}>
+                <Square
+                  data-icon="inline-start"
+                  className="size-3.5 fill-current"
+                />
+                <span className="hidden sm:inline">Nộp &amp; chấm điểm</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Nộp bài và chấm điểm?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Nút micro chỉ dừng lượt ghi âm hiện tại. Nút này sẽ chốt phiên
+                  luyện nói, ngừng ghi âm và bắt đầu chấm điểm phần thực hành
+                  của bạn.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Hủy</AlertDialogCancel>
+                <AlertDialogAction onClick={handleEnd}>
+                  Nộp &amp; chấm điểm
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
     </div>
   );

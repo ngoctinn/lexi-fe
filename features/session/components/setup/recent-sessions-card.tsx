@@ -52,11 +52,7 @@ export function RecentSessionsCard({
           Mở lại phiên gần nhất ngay trong lộ trình luyện nói này.
         </CardDescription>
         <CardAction>
-          <Badge
-            variant="secondary"
-            shape="pill"
-            size="sm"
-          >
+          <Badge variant="secondary" shape="pill" size="sm">
             {sessions.length} phiên
           </Badge>
         </CardAction>
@@ -67,10 +63,9 @@ export function RecentSessionsCard({
           recentSessions.map((session) => {
             const isCompleted = Boolean(session.scoring);
             const scenario = scenarioMap.get(session.scenario_id);
-            const scenarioTitle = scenario?.scenario_title ?? session.scenario_id;
-            const href = isCompleted
-              ? `/session/${session.session_id}/results`
-              : `/session/${session.session_id}`;
+            const scenarioTitle =
+              scenario?.scenario_title ?? session.scenario_id;
+            const href = `/session/${session.session_id}`;
 
             return (
               <Link
@@ -91,7 +86,8 @@ export function RecentSessionsCard({
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {formatSessionDate(session.created_at)} · Level {session.level}
+                    {formatSessionDate(session.created_at)} · Level{" "}
+                    {session.level}
                   </p>
                 </div>
                 <ArrowRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
@@ -100,7 +96,8 @@ export function RecentSessionsCard({
           })
         ) : (
           <div className="rounded-lg border border-dashed bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
-            Chưa có lịch sử hội thoại. Bắt đầu một phiên mới để phần này xuất hiện.
+            Chưa có lịch sử hội thoại. Bắt đầu một phiên mới để phần này xuất
+            hiện.
           </div>
         )}
       </CardContent>

@@ -85,6 +85,12 @@ export interface Session {
   updated_at?: string;
 }
 
+export interface SessionScoreSummary {
+  scoring: NonNullable<Session["scoring"]>;
+  totalTurns: number;
+  hintUsedCount: number;
+}
+
 export interface WsStartSessionPayload {
   action: WsClientEvent.START_SESSION;
   session_id: string;

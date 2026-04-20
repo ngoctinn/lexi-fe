@@ -66,9 +66,7 @@ function RecentSessionsCard({
             const scenario = scenarioMap.get(session.scenario_id);
             const scenarioTitle =
               scenario?.scenario_title ?? session.scenario_id;
-            const href = isCompleted
-              ? `/session/${session.session_id}/results`
-              : `/session/${session.session_id}`;
+            const href = `/session/${session.session_id}`;
 
             return (
               <Link

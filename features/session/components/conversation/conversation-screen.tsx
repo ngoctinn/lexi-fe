@@ -9,6 +9,7 @@ import { type Turn } from "@/features/session/types/session.types";
 import { MessageInput } from "./message-input";
 import { ConversationSidebar } from "./conversation-sidebar";
 import { AiAudioPlayer } from "./ai-audio-player";
+import type { SessionScoreSummary } from "@/features/session/types/session.types";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -28,6 +29,7 @@ interface ConversationScreenProps {
   scenarioGoals?: string[];
   myRole?: string;
   partnerRole?: string;
+  initialSummary?: SessionScoreSummary | null;
 }
 
 export function ConversationScreen({
@@ -39,6 +41,7 @@ export function ConversationScreen({
   scenarioGoals = [],
   myRole,
   partnerRole,
+  initialSummary = null,
 }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({
     sessionId,
@@ -46,6 +49,11 @@ export function ConversationScreen({
     initialTurns,
   });
   const [inputValue, setInputValue] = React.useState("");
+  const [sessionSummary, setSessionSummary] =
+    React.useState<SessionScoreSummary | null>(initialSummary);
+  const [isSessionCompleted, setIsSessionCompleted] = React.useState(
+    Boolean(initialSummary),
+  );
   const hasStartedRef = React.useRef(false);
   const {
     startSession,
@@ -54,14 +62,28 @@ export function ConversationScreen({
     translateTurn,
     sendMessage,
     setCurrentAudioUrl,
+    endSession: endConversationSession,
   } = actions;
 
   React.useEffect(() => {
+    if (isSessionCompleted) {
+      return;
+    }
+
     if (ui.wsState === "connected" && !hasStartedRef.current) {
       hasStartedRef.current = true;
       startSession();
     }
-  }, [ui.wsState, startSession]);
+  }, [ui.wsState, startSession, isSessionCompleted]);
+
+  const handleSessionEnded = React.useCallback(
+    (summary: SessionScoreSummary | null) => {
+      endConversationSession();
+      setSessionSummary(summary);
+      setIsSessionCompleted(true);
+    },
+    [endConversationSession],
+  );
 
   return (
     <div className="flex w-full flex-col h-full bg-background relative overflow-hidden">
@@ -71,6 +93,8 @@ export function ConversationScreen({
           scenarioTitle={scenarioTitle}
           aiCharacter={aiCharacter}
           className="flex-1 border-none bg-transparent h-auto p-0"
+          isCompleted={isSessionCompleted}
+          onEnd={handleSessionEnded}
         />
 
         <div className="lg:hidden">
@@ -93,7 +117,9 @@ export function ConversationScreen({
                 partnerRole={partnerRole}
                 onGetHint={requestHint}
                 isAiStreaming={ui.isAiStreaming}
-                disabled={ui.isControlsDisabled}
+                disabled={ui.isControlsDisabled || isSessionCompleted}
+                isSessionCompleted={isSessionCompleted}
+                sessionSummary={sessionSummary}
                 className="border-none w-full h-full"
               />
             </SheetContent>
@@ -119,29 +145,30 @@ export function ConversationScreen({
               onSendMessage={sendMessage}
               onToggleMic={toggleMic}
               recorderState={ui.recorderState}
-              disabled={ui.isControlsDisabled}
+              disabled={ui.isControlsDisabled || isSessionCompleted}
             />
 
-            {(ui.wsState !== "connected" ||
-              ui.recorderState === "uploading") && (
-              <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
-                {ui.wsState !== "connected" && (
-                  <span className="text-2xs text-muted-foreground font-medium animate-pulse">
-                    {ui.wsState === "connecting"
-                      ? "Đang kết nối..."
-                      : "Mất kết nối máy chủ"}
-                  </span>
-                )}
-                {ui.recorderState === "uploading" && (
-                  <div className="w-full max-w-12.5 h-1 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
+            {!isSessionCompleted &&
+              (ui.wsState !== "connected" ||
+                ui.recorderState === "uploading") && (
+                <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
+                  {ui.wsState !== "connected" && (
+                    <span className="text-2xs text-muted-foreground font-medium animate-pulse">
+                      {ui.wsState === "connecting"
+                        ? "Đang kết nối..."
+                        : "Mất kết nối máy chủ"}
+                    </span>
+                  )}
+                  {ui.recorderState === "uploading" && (
+                    <div className="w-full max-w-12.5 h-1 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
           </div>
         </main>
 
@@ -152,7 +179,9 @@ export function ConversationScreen({
           partnerRole={partnerRole}
           onGetHint={requestHint}
           isAiStreaming={ui.isAiStreaming}
-          disabled={ui.isControlsDisabled}
+          disabled={ui.isControlsDisabled || isSessionCompleted}
+          isSessionCompleted={isSessionCompleted}
+          sessionSummary={sessionSummary}
           className="hidden lg:flex flex-2"
         />
       </div>

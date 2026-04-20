@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/features/session/actions/get-session";
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
+import type { SessionScoreSummary } from "@/features/session/types/session.types";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
 import {
   MOCK_AUTH_COOKIE_NAME,
@@ -88,11 +89,20 @@ export default async function SessionPage({ params }: SessionPageProps) {
     (item) => item.scenario_id === session.scenario_id,
   );
 
+  const initialSummary: SessionScoreSummary | null = session.scoring
+    ? {
+        scoring: session.scoring,
+        totalTurns: session.total_turns || session.turns?.length || 0,
+        hintUsedCount: session.hint_used_count || 0,
+      }
+    : null;
+
   return (
     <ConversationScreen
       sessionId={session.session_id}
       idToken={idToken ?? ""}
       initialTurns={session.turns ?? []}
+      initialSummary={initialSummary}
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}
       aiCharacter={scenario?.ai_character ?? "AI Assistant"}
       scenarioGoals={scenario?.goals ?? []}
