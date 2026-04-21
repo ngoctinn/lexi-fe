@@ -14,6 +14,8 @@ export interface ProfileData {
   display_name?: string;
   email?: string;
   current_level?: string;
+  target_level?: string;
+  learning_goal_text?: string;
   learning_goal?: string;
   avatar_url?: string;
   is_new_user?: boolean;
@@ -61,6 +63,8 @@ export async function getProfile(): Promise<ProfileData | null> {
 export async function updateProfile(data: {
   display_name?: string;
   current_level?: string;
+  target_level?: string;
+  learning_goal_text?: string;
   learning_goal?: string;
   is_new_user?: boolean;
   avatar_url?: string;

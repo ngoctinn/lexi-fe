@@ -7,16 +7,32 @@ import type {
 } from "../types/session.types";
 import { TurnSpeaker } from "../types/session.types";
 
+function resolveScenarioRoles(scenario: Scenario): string[] {
+  return Array.from(new Set(scenario.roles.map((role) => role.trim())))
+    .filter(Boolean)
+    .slice(0, 2);
+}
+
 function buildPromptSnapshot(
   scenario: Scenario,
-  dto: Pick<CreateSessionDto, "ai_gender" | "level">,
+  dto: Pick<
+    CreateSessionDto,
+    "ai_gender" | "level" | "learner_role_id" | "ai_role_id" | "selected_goals"
+  >,
 ): string {
+  const [defaultLearnerRole, defaultAiRole] = resolveScenarioRoles(scenario);
+  const learnerRole = dto.learner_role_id || defaultLearnerRole || "Learner";
+  const aiRole = dto.ai_role_id || defaultAiRole || "AI Assistant";
+  const goals = dto.selected_goals?.length
+    ? dto.selected_goals
+    : scenario.goals;
+
   return [
     `Scenario: ${scenario.scenario_title}`,
     `Context: ${scenario.context}`,
-    `My character: ${scenario.my_character}`,
-    `AI character: ${scenario.ai_character}`,
-    `Goals: ${scenario.goals.join(" | ")}`,
+    `Learner role: ${learnerRole}`,
+    `AI role: ${aiRole}`,
+    `Goals: ${goals.join(" | ")}`,
     `AI gender: ${dto.ai_gender}`,
     `Level: ${dto.level}`,
   ].join("\n");
@@ -55,11 +71,12 @@ function cloneSession(session: Session): Session {
 }
 
 function cloneScenario(scenario: Scenario): Scenario {
+  const roles = resolveScenarioRoles(scenario);
+
   return {
     ...scenario,
+    roles,
     goals: [...scenario.goals],
-    user_roles: [...scenario.user_roles],
-    ai_roles: [...scenario.ai_roles],
   };
 }
 
@@ -68,11 +85,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1",
     scenario_title: "Chào hỏi cơ bản",
     context: "Giao tiếp xã hội",
-    my_character: "Người mới",
-    ai_character: "Bạn mới quen",
+    roles: ["Người mới", "Bạn mới quen"],
     goals: ["Giới thiệu tên", "Hỏi thăm", "Tạm biệt lịch sự"],
-    user_roles: ["Người mới", "Bạn mới quen"],
-    ai_roles: ["Người mới", "Bạn mới quen"],
     is_active: true,
     usage_count: 210,
     difficulty_level: "A1",
@@ -82,11 +96,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1_2",
     scenario_title: "Gọi cà phê",
     context: "Tại quán cà phê",
-    my_character: "Khách hàng",
-    ai_character: "Barista",
+    roles: ["Khách hàng", "Barista"],
     goals: ["Chọn đồ uống", "Chọn size", "Hỏi về giá"],
-    user_roles: ["Khách hàng", "Barista"],
-    ai_roles: ["Khách hàng", "Barista"],
     is_active: true,
     usage_count: 150,
     difficulty_level: "A1",
@@ -96,11 +107,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1_3",
     scenario_title: "Hỏi đường",
     context: "Đi lại & Hỏi đường",
-    my_character: "Du khách",
-    ai_character: "Người dân địa phương",
+    roles: ["Du khách", "Người dân địa phương"],
     goals: ["Hỏi vị trí", "Hỏi phương tiện", "Cảm ơn"],
-    user_roles: ["Du khách", "Người dân địa phương"],
-    ai_roles: ["Du khách", "Người dân địa phương"],
     is_active: true,
     usage_count: 95,
     difficulty_level: "A1",
@@ -110,11 +118,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1_4",
     scenario_title: "Tại hiệu thuốc",
     context: "Sức khỏe & Y tế",
-    my_character: "Bệnh nhân",
-    ai_character: "Dược sĩ",
+    roles: ["Bệnh nhân", "Dược sĩ"],
     goals: ["Mô tả triệu chứng", "Hỏi liều dùng", "Thanh toán"],
-    user_roles: ["Bệnh nhân", "Dược sĩ"],
-    ai_roles: ["Bệnh nhân", "Dược sĩ"],
     is_active: true,
     usage_count: 40,
     difficulty_level: "A1",
@@ -124,11 +129,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1_5",
     scenario_title: "Check-in khách sạn",
     context: "Du lịch & Khách sạn",
-    my_character: "Khách du lịch",
-    ai_character: "Lễ tân",
+    roles: ["Khách du lịch", "Lễ tân"],
     goals: ["Cung cấp thông tin đặt phòng", "Hỏi giờ ăn sáng", "Nhận phòng"],
-    user_roles: ["Khách du lịch", "Lễ tân"],
-    ai_roles: ["Khách du lịch", "Lễ tân"],
     is_active: true,
     usage_count: 120,
     difficulty_level: "A1",
@@ -138,11 +140,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1_6",
     scenario_title: "Mua vé xem phim",
     context: "Đời sống hàng ngày",
-    my_character: "Người xem",
-    ai_character: "Nhân viên quầy vé",
+    roles: ["Người xem", "Nhân viên quầy vé"],
     goals: ["Chọn phim", "Chọn chỗ ngồi", "Thanh toán"],
-    user_roles: ["Người xem", "Nhân viên quầy vé"],
-    ai_roles: ["Người xem", "Nhân viên quầy vé"],
     is_active: true,
     usage_count: 80,
     difficulty_level: "A1",
@@ -152,11 +151,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s1_7",
     scenario_title: "Đổi tiền ngoại tệ",
     context: "Tài chính & Ngân hàng",
-    my_character: "Khách hàng",
-    ai_character: "Giao dịch viên",
+    roles: ["Khách hàng", "Giao dịch viên"],
     goals: ["Hỏi tỷ giá", "Yêu cầu đổi tiền", "Xác nhận số tiền"],
-    user_roles: ["Khách hàng", "Giao dịch viên"],
-    ai_roles: ["Khách hàng", "Giao dịch viên"],
     is_active: true,
     usage_count: 30,
     difficulty_level: "A1",
@@ -166,11 +162,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s2",
     scenario_title: "Mua sắm ở cửa hàng",
     context: "Mua sắm",
-    my_character: "Khách hàng",
-    ai_character: "Nhân viên bán hàng",
+    roles: ["Khách hàng", "Nhân viên bán hàng"],
     goals: ["Hỏi giá sản phẩm", "Nhờ tư vấn kích cỡ", "Thanh toán lịch sự"],
-    user_roles: ["Khách hàng", "Nhân viên bán hàng"],
-    ai_roles: ["Khách hàng", "Nhân viên bán hàng"],
     is_active: true,
     usage_count: 45,
     difficulty_level: "A2",
@@ -180,11 +173,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s3",
     scenario_title: "Đặt món ăn",
     context: "Ẩm thực & Nhà hàng",
-    my_character: "Thực khách",
-    ai_character: "Nhân viên phục vụ",
+    roles: ["Thực khách", "Nhân viên phục vụ"],
     goals: ["Gọi món từ menu", "Hỏi về nguyên liệu", "Thanh toán và tip"],
-    user_roles: ["Thực khách", "Nhân viên phục vụ"],
-    ai_roles: ["Thực khách", "Nhân viên phục vụ"],
     is_active: true,
     usage_count: 133,
     difficulty_level: "A2",
@@ -194,15 +184,12 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s4",
     scenario_title: "Làm thủ tục sân bay",
     context: "Du lịch & Hàng không",
-    my_character: "Hành khách",
-    ai_character: "Nhân viên check-in",
+    roles: ["Hành khách", "Nhân viên check-in"],
     goals: [
       "Check-in chuyến bay",
       "Hỏi hành lý",
       "Trao đổi về cổng lên máy bay",
     ],
-    user_roles: ["Hành khách", "Nhân viên check-in"],
-    ai_roles: ["Hành khách", "Nhân viên check-in"],
     is_active: true,
     usage_count: 89,
     difficulty_level: "B1",
@@ -212,15 +199,12 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s5",
     scenario_title: "Phỏng vấn xin việc",
     context: "Công việc & Sự nghiệp",
-    my_character: "Ứng viên",
-    ai_character: "Nhà tuyển dụng",
+    roles: ["Ứng viên", "Nhà tuyển dụng"],
     goals: [
       "Giới thiệu bản thân",
       "Nêu kinh nghiệm làm việc",
       "Trả lời câu hỏi tình huống",
     ],
-    user_roles: ["Ứng viên", "Nhà tuyển dụng"],
-    ai_roles: ["Ứng viên", "Nhà tuyển dụng"],
     is_active: true,
     usage_count: 124,
     difficulty_level: "B1",
@@ -230,11 +214,8 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s6",
     scenario_title: "Họp nhóm công việc",
     context: "Công sở & Hội họp",
-    my_character: "Thành viên nhóm",
-    ai_character: "Trưởng nhóm",
+    roles: ["Thành viên nhóm", "Trưởng nhóm"],
     goals: ["Báo cáo tiến độ", "Đề xuất ý kiến", "Phản hồi feedback lịch sự"],
-    user_roles: ["Thành viên nhóm", "Trưởng nhóm"],
-    ai_roles: ["Thành viên nhóm", "Trưởng nhóm"],
     is_active: true,
     usage_count: 77,
     difficulty_level: "B2",
@@ -244,15 +225,12 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s7",
     scenario_title: "Thuyết trình sản phẩm",
     context: "Kinh doanh & Thuyết trình",
-    my_character: "Người thuyết trình",
-    ai_character: "Nhà đầu tư",
+    roles: ["Người thuyết trình", "Nhà đầu tư"],
     goals: [
       "Trình bày vấn đề & giải pháp",
       "Demo tính năng chính",
       "Trả lời câu hỏi khó",
     ],
-    user_roles: ["Người thuyết trình", "Nhà đầu tư"],
-    ai_roles: ["Người thuyết trình", "Nhà đầu tư"],
     is_active: true,
     usage_count: 55,
     difficulty_level: "C1",
@@ -262,22 +240,18 @@ const mockScenarios: Scenario[] = [
     scenario_id: "s8",
     scenario_title: "Thảo luận tin tức thời sự",
     context: "Xã hội & Thế giới",
-    my_character: "Người tham gia",
-    ai_character: "Chuyên gia bình luận",
+    roles: ["Người tham gia", "Chuyên gia bình luận"],
     goals: [
       "Nêu quan điểm rõ ràng",
       "Phân tích vấn đề đa chiều",
       "Phản biện lịch sự",
     ],
-    user_roles: ["Người tham gia", "Chuyên gia bình luận"],
-    ai_roles: ["Người tham gia", "Chuyên gia bình luận"],
     is_active: true,
     usage_count: 38,
     difficulty_level: "C2",
     order: 14,
   },
 ];
-
 
 let mockSessionSequence = 9;
 
@@ -505,11 +479,19 @@ export const mockSessionApi = {
         session_id: sessionId,
         user_id: "u1",
         scenario_id: fallbackScenario.scenario_id,
+        learner_role_id: resolveScenarioRoles(fallbackScenario)[0] || "Learner",
+        ai_role_id: resolveScenarioRoles(fallbackScenario)[1] || "AI Assistant",
         ai_gender: "female",
         level: "B1",
+        selected_goals: fallbackScenario.goals,
         prompt_snapshot: buildPromptSnapshot(fallbackScenario, {
           ai_gender: "female",
           level: "B1",
+          learner_role_id:
+            resolveScenarioRoles(fallbackScenario)[0] || "Learner",
+          ai_role_id:
+            resolveScenarioRoles(fallbackScenario)[1] || "AI Assistant",
+          selected_goals: fallbackScenario.goals,
         }),
         total_turns: 1,
         user_turns: 0,
@@ -537,14 +519,25 @@ export const mockSessionApi = {
       mockScenarios.find(
         (scenario) => scenario.scenario_id === dto.scenario_id,
       ) ?? mockScenarios[0];
+    const [defaultLearnerRole, defaultAiRole] =
+      resolveScenarioRoles(matchedScenario);
+    const learnerRole = dto.learner_role_id || defaultLearnerRole || "Learner";
+    const aiRole = dto.ai_role_id || defaultAiRole || "AI Assistant";
+    const selectedGoals =
+      dto.selected_goals && dto.selected_goals.length > 0
+        ? dto.selected_goals
+        : matchedScenario.goals;
 
     mockSessions = [
       {
         session_id: sessionId,
         user_id: "u1",
         scenario_id: dto.scenario_id,
+        learner_role_id: learnerRole,
+        ai_role_id: aiRole,
         ai_gender: dto.ai_gender,
         level: dto.level,
+        selected_goals: selectedGoals,
         prompt_snapshot:
           dto.prompt_snapshot || buildPromptSnapshot(matchedScenario, dto),
         total_turns: 0,

@@ -38,11 +38,8 @@ export interface Scenario {
   scenario_id: string;
   scenario_title: string;
   context: string;
-  my_character: string;
-  ai_character: string;
+  roles: string[];
   goals: string[];
-  user_roles: string[];
-  ai_roles: string[];
   is_active: boolean;
   usage_count: number;
   difficulty_level?: SessionLevel;
@@ -56,6 +53,7 @@ export interface Turn {
   translated_content?: string | null;
   audio_url?: string | null;
   is_hint_used: boolean;
+  is_saved_to_flashcard?: boolean;
   is_pending?: boolean;
 }
 
@@ -72,9 +70,12 @@ export interface Session {
   session_id: string;
   user_id: string;
   scenario_id: string;
+  learner_role_id?: string;
+  ai_role_id?: string;
   ai_gender: AIGender;
   level: SessionLevel;
   prompt_snapshot: string;
+  selected_goals?: string[];
   total_turns: number;
   user_turns: number;
   hint_used_count: number;
@@ -216,8 +217,11 @@ export interface SessionUiState {
 
 export interface CreateSessionDto {
   scenario_id: string;
+  learner_role_id?: string;
+  ai_role_id?: string;
   ai_gender: AIGender;
   level: SessionLevel;
+  selected_goals?: string[];
   prompt_snapshot: string;
 }
 

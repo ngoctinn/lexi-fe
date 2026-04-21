@@ -1,9 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { Flashcard, ReviewDifficulty } from "../types";
 
 // Dữ liệu giả để hiển thị luồng ban đầu trong lúc backend chưa sẵn sàng.
-const MOCK_FLASHCARDS: Flashcard[] = [
+let mockFlashcards: Flashcard[] = [
   {
     flashcard_id: "01HGWY0Z57N3F0H19ZK2B7V2M1",
     user_id: "user_123",
@@ -66,11 +67,87 @@ const MOCK_FLASHCARDS: Flashcard[] = [
   },
 ];
 
+interface SaveFlashcardFromSessionInput {
+  session_id: string;
+  turn_index: number;
+  source_text: string;
+  translated_text: string;
+}
+
+function normalizeText(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function createFlashcardId() {
+  return `mock-fc-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function toFlashcardWord(value: string) {
+  const normalized = normalizeText(value);
+  if (normalized.length <= 64) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, 61).trimEnd()}...`;
+}
+
 export async function fetchPracticeQueue(): Promise<Flashcard[]> {
   // Giả lập độ trễ của API.
   await new Promise((resolve) => setTimeout(resolve, 800));
 
-  return MOCK_FLASHCARDS;
+  return [...mockFlashcards];
+}
+
+export async function saveFlashcardFromSession(
+  input: SaveFlashcardFromSessionInput,
+): Promise<{ success: boolean; message: string }> {
+  const sourceText = normalizeText(input.source_text);
+  const translatedText = normalizeText(input.translated_text);
+
+  if (!sourceText || !translatedText) {
+    return {
+      success: false,
+      message: "Không đủ dữ liệu để tạo flashcard.",
+    };
+  }
+
+  const duplicatedCard = mockFlashcards.find(
+    (card) =>
+      card.source_session_id === input.session_id &&
+      card.source_turn_index === input.turn_index,
+  );
+
+  if (duplicatedCard) {
+    return {
+      success: true,
+      message: "Nội dung này đã được lưu trước đó.",
+    };
+  }
+
+  const newCard: Flashcard = {
+    flashcard_id: createFlashcardId(),
+    user_id: "user_123",
+    word: toFlashcardWord(sourceText),
+    definition_vi: translatedText,
+    example_sentence: sourceText,
+    review_count: 0,
+    interval_days: 1,
+    difficulty: 0,
+    last_reviewed_at: null,
+    next_review_at: new Date().toISOString(),
+    source_session_id: input.session_id,
+    source_turn_index: input.turn_index,
+  };
+
+  mockFlashcards = [newCard, ...mockFlashcards];
+
+  revalidatePath("/flashcards");
+  revalidatePath("/flashcards/review");
+
+  return {
+    success: true,
+    message: "Đã lưu vào flashcard.",
+  };
 }
 
 export async function updateFlashcardSRS(

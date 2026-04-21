@@ -88,6 +88,13 @@ function splitLines(value: string) {
     .filter(Boolean);
 }
 
+function getScenarioRoles(scenario: AdminScenario) {
+  return scenario.roles
+    .map((role) => role.trim())
+    .filter(Boolean)
+    .slice(0, 2);
+}
+
 function createEmptyScenario(order: number, now?: string): AdminScenario {
   const finalNow = now || new Date(0).toISOString();
 
@@ -95,11 +102,8 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
     scenario_id: "",
     scenario_title: "",
     context: DEFAULT_SCENARIO_CONTEXT,
-    my_character: "Học viên",
-    ai_character: "AI Assistant",
+    roles: [],
     goals: [],
-    user_roles: ["Học viên"],
-    ai_roles: ["AI Assistant"],
     is_active: true,
     usage_count: 0,
     difficulty_level: "A2",
@@ -189,12 +193,9 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
           [
             scenario.scenario_title,
             scenario.context,
-            scenario.my_character,
-            scenario.ai_character,
             scenario.notes,
             scenario.goals.join(" "),
-            scenario.user_roles.join(" "),
-            scenario.ai_roles.join(" "),
+            scenario.roles.join(" "),
           ].join(" "),
         ).includes(normalizedQuery);
       })
@@ -237,15 +238,12 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
   };
 
   const handleOpenEdit = (scenario: AdminScenario) => {
+    const roles = getScenarioRoles(scenario);
+
     setDraft({
       ...scenario,
       context: scenario.context || DEFAULT_SCENARIO_CONTEXT,
-      user_roles: [
-        scenario.my_character || scenario.user_roles[0] || "Học viên",
-      ],
-      ai_roles: [
-        scenario.ai_character || scenario.ai_roles[0] || "AI Assistant",
-      ],
+      roles,
     });
     setIsDialogOpen(true);
   };
@@ -268,16 +266,10 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
       return;
     }
 
-    const userRole = draft.my_character.trim();
-    const aiRole = draft.ai_character.trim();
+    const roles = getScenarioRoles(draft);
 
-    if (!userRole || !aiRole) {
-      toast.error("Vui lòng nhập đủ vai trò cho học viên và AI.");
-      return;
-    }
-
-    if (userRole === aiRole) {
-      toast.error("Vai trò học viên và AI phải khác nhau.");
+    if (roles.length !== 2) {
+      toast.error("Vui lòng nhập đúng 2 vai trò.");
       return;
     }
 
@@ -288,11 +280,8 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         ...draft,
         scenario_title: draft.scenario_title.trim(),
         context: draft.context.trim(),
-        my_character: userRole,
-        ai_character: aiRole,
+        roles,
         goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
-        user_roles: [userRole],
-        ai_roles: [aiRole],
         notes: draft.notes.trim(),
       });
 
@@ -483,18 +472,10 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                         <TableCell className="whitespace-normal">
                           <div className="space-y-2 text-sm">
                             <p className="font-medium text-foreground">
-                              {scenario.goals.length} mục tiêu
+                              {getScenarioRoles(scenario).join(" · ")}
                             </p>
                             <p className="text-muted-foreground">
-                              {
-                                Array.from(
-                                  new Set([
-                                    ...scenario.user_roles,
-                                    ...scenario.ai_roles,
-                                  ]),
-                                ).length
-                              }{" "}
-                              nhân vật
+                              {scenario.goals.length} mục tiêu
                             </p>
                           </div>
                         </TableCell>
@@ -706,49 +687,21 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
                 <FieldDescription>Mỗi dòng là một mục tiêu.</FieldDescription>
               </Field>
 
-              <Field>
-                <FieldLabel htmlFor="scenario-user-role">
-                  Vai người dùng
-                </FieldLabel>
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="scenario-roles">Vai trò</FieldLabel>
                 <FieldContent>
-                  <Input
-                    id="scenario-user-role"
-                    value={draft.my_character}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      updateDraft("my_character", value);
-                      updateDraft(
-                        "user_roles",
-                        value.trim() ? [value.trim()] : [],
-                      );
-                    }}
-                    placeholder="Ví dụ: Khách hàng"
+                  <Textarea
+                    id="scenario-roles"
+                    value={draft.roles.join("\n")}
+                    onChange={(event) =>
+                      updateDraft("roles", splitLines(event.target.value))
+                    }
+                    placeholder="Khách hàng\nNhân viên bán hàng"
+                    className="min-h-28"
                   />
                 </FieldContent>
                 <FieldDescription>
-                  Chỉ nhập một vai trò cho học viên.
-                </FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="scenario-ai-role">Vai AI</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="scenario-ai-role"
-                    value={draft.ai_character}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      updateDraft("ai_character", value);
-                      updateDraft(
-                        "ai_roles",
-                        value.trim() ? [value.trim()] : [],
-                      );
-                    }}
-                    placeholder="Ví dụ: Nhân viên bán hàng"
-                  />
-                </FieldContent>
-                <FieldDescription>
-                  Chỉ nhập một vai trò cho AI.
+                  Nhập đúng 2 dòng, mỗi dòng là một vai trung tính.
                 </FieldDescription>
               </Field>
 

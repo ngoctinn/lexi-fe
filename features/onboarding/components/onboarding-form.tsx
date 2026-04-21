@@ -45,7 +45,8 @@ export function OnboardingForm() {
   const [data, setData] = useState({
     display_name: "",
     current_level: "A1",
-    learning_goal: "B1",
+    target_level: "B1",
+    learning_goal_text: "",
   });
 
   const nextStep = () =>
@@ -60,11 +61,9 @@ export function OnboardingForm() {
       message,
     }),
   );
-  const learningGoalErrors = formState.errors?.learning_goal?.map(
-    (message) => ({
-      message,
-    }),
-  );
+  const learningGoalErrors = formState.errors?.target_level?.map((message) => ({
+    message,
+  }));
 
   return (
     <Card
@@ -100,10 +99,11 @@ export function OnboardingForm() {
             name="current_level"
             value={data.current_level}
           />
+          <input type="hidden" name="target_level" value={data.target_level} />
           <input
             type="hidden"
-            name="learning_goal"
-            value={data.learning_goal}
+            name="learning_goal_text"
+            value={data.learning_goal_text}
           />
 
           <div
@@ -191,9 +191,9 @@ export function OnboardingForm() {
             {step === 2 && (
               <Field className="w-full gap-3">
                 <RadioGroup
-                  value={data.learning_goal}
+                  value={data.target_level}
                   onValueChange={(value) =>
-                    setData({ ...data, learning_goal: value })
+                    setData({ ...data, target_level: value })
                   }
                   className="flex w-full flex-col gap-2"
                 >
@@ -204,7 +204,7 @@ export function OnboardingForm() {
                       className={cn(
                         "flex cursor-pointer items-center rounded-xl border px-4 py-3 ring-offset-background transition-all",
                         "hover:bg-accent/50",
-                        data.learning_goal === level.id
+                        data.target_level === level.id
                           ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
                           : "bg-card/50",
                       )}
@@ -217,7 +217,7 @@ export function OnboardingForm() {
                       <span
                         className={cn(
                           "text-sm font-semibold",
-                          data.learning_goal === level.id
+                          data.target_level === level.id
                             ? "text-primary"
                             : "text-foreground",
                         )}

@@ -12,6 +12,8 @@ interface TranscriptPanelProps {
   aiStreamingText: string;
   aiName: string;
   onTranslate?: (turnIndex: number) => void;
+  onSaveFlashcard?: (turnIndex: number) => void;
+  savingTurnIndexes?: number[];
   className?: string;
 }
 
@@ -21,6 +23,8 @@ export function TranscriptPanel({
   aiStreamingText,
   aiName,
   onTranslate,
+  onSaveFlashcard,
+  savingTurnIndexes = [],
   className,
 }: TranscriptPanelProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -59,6 +63,8 @@ export function TranscriptPanel({
             turn={turn}
             aiName={aiName}
             onTranslate={onTranslate}
+            onSaveFlashcard={onSaveFlashcard}
+            isSavingFlashcard={savingTurnIndexes.includes(turn.turn_index)}
           />
         ))}
 

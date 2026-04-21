@@ -113,7 +113,8 @@ function createEmptyUser(now?: string): AdminUser {
     display_name: "",
     email: "",
     current_level: "A2",
-    learning_goal: "",
+    target_level: "B1",
+    learning_goal_text: "",
     status: "active",
     sessions_completed: 0,
     streak: 0,
@@ -195,9 +196,10 @@ export function UsersManagement({ users }: UsersManagementProps) {
           [
             user.display_name,
             user.email,
-            user.learning_goal,
+            user.learning_goal_text,
             user.notes,
             user.current_level,
+            user.target_level,
           ].join(" "),
         ).includes(normalizedQuery);
       })
@@ -251,7 +253,8 @@ export function UsersManagement({ users }: UsersManagementProps) {
         ...draft,
         display_name: draft.display_name.trim(),
         email: draft.email.trim(),
-        learning_goal: draft.learning_goal.trim(),
+        learning_goal_text: draft.learning_goal_text.trim(),
+        learning_goal: draft.target_level,
         notes: draft.notes.trim(),
       });
 
@@ -411,7 +414,11 @@ export function UsersManagement({ users }: UsersManagementProps) {
                         <TableCell className="max-w-[18rem] whitespace-normal">
                           <div className="space-y-1">
                             <p className="font-medium leading-snug text-foreground">
-                              {user.learning_goal}
+                              Mục tiêu: {user.target_level}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {user.learning_goal_text ||
+                                "Chưa có mục tiêu mô tả."}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {user.notes || "Không có ghi chú bổ sung."}
@@ -482,7 +489,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
           </SheetHeader>
 
           <form className="space-y-6" onSubmit={handleSave}>
-            <FieldGroup className="grid gap-4 md:grid-cols-2">
+            <FieldGroup className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <Field>
                 <FieldLabel htmlFor="user-display-name">
                   Tên hiển thị
@@ -564,6 +571,34 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   </Select>
                 </FieldContent>
               </Field>
+
+              <Field>
+                <FieldLabel htmlFor="user-target-level">
+                  Trình độ mục tiêu
+                </FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={draft.target_level}
+                    onValueChange={(value) =>
+                      updateDraft(
+                        "target_level",
+                        value as AdminUser["target_level"],
+                      )
+                    }
+                  >
+                    <SelectTrigger id="user-target-level" className="w-full">
+                      <SelectValue placeholder="Chọn cấp độ mục tiêu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LEVEL_OPTIONS.map((level) => (
+                        <SelectItem key={`target-${level}`} value={level}>
+                          {level}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
             </FieldGroup>
 
             <FieldGroup className="grid gap-4 md:grid-cols-2">
@@ -574,9 +609,9 @@ export function UsersManagement({ users }: UsersManagementProps) {
                 <FieldContent>
                   <Input
                     id="user-learning-goal"
-                    value={draft.learning_goal}
+                    value={draft.learning_goal_text}
                     onChange={(event) =>
-                      updateDraft("learning_goal", event.target.value)
+                      updateDraft("learning_goal_text", event.target.value)
                     }
                     placeholder="Ví dụ: Du lịch tự tin"
                   />

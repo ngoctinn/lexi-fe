@@ -58,7 +58,7 @@ export function ScenarioPicker({
                 {scenario.scenario_title}
               </span>
               <span className="text-2xs text-muted-foreground line-clamp-2 md:line-clamp-3 leading-relaxed">
-                {scenario.my_character} · {scenario.ai_character}
+                {scenario.roles.join(" · ")}
               </span>
               <span className="text-2xs text-muted-foreground/80 uppercase tracking-wider">
                 {scenario.goals.length} mục tiêu

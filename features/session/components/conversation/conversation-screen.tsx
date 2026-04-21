@@ -60,6 +60,7 @@ export function ConversationScreen({
     toggleMic,
     requestHint,
     translateTurn,
+    saveTurnToFlashcard,
     sendMessage,
     setCurrentAudioUrl,
     endSession: endConversationSession,
@@ -136,6 +137,8 @@ export function ConversationScreen({
             className="flex-1"
             aria-live="polite"
             onTranslate={translateTurn}
+            onSaveFlashcard={saveTurnToFlashcard}
+            savingTurnIndexes={ui.savingFlashcardTurnIndexes}
           />
 
           <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-6">

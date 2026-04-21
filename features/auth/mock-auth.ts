@@ -11,7 +11,9 @@ export const MOCK_ADMIN_PROFILE = {
   display_name: "Lexi Admin",
   email: "admin@lexi.app",
   current_level: "B2",
-  learning_goal: "Quản trị hệ thống",
+  target_level: "C1",
+  learning_goal_text: "Quản trị hệ thống",
+  learning_goal: "C1",
   avatar_url: "https://api.dicebear.com/9.x/lorelei/svg?seed=LexiAdmin",
   is_new_user: false,
 };

@@ -10,13 +10,14 @@ import { onboardingSchema, type OnboardingActionState } from "../types/schema";
  */
 export async function saveOnboardingAction(
   prevState: OnboardingActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<OnboardingActionState> {
   // 1. Chuyển đổi và Validate dữ liệu form
   const rawData = {
     display_name: formData.get("display_name"),
     current_level: formData.get("current_level"),
-    learning_goal: formData.get("learning_goal"),
+    target_level: formData.get("target_level"),
+    learning_goal_text: formData.get("learning_goal_text"),
   };
 
   const validated = onboardingSchema.safeParse(rawData);
@@ -34,18 +35,21 @@ export async function saveOnboardingAction(
     // Truyền thêm is_new_user: false để đánh dấu hoàn thành onboarding
     const result = await updateProfile({
       ...validated.data,
+      learning_goal: validated.data.target_level,
       is_new_user: false,
     });
 
     if (!result.success) {
       throw new Error(result.message);
     }
-    
   } catch (error) {
     console.error("Onboarding failed:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Đã có lỗi xảy ra khi lưu thiết lập.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Đã có lỗi xảy ra khi lưu thiết lập.",
     };
   }
 

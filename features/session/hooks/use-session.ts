@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { toast } from "sonner";
 import type { Turn } from "@/features/session/types/session.types";
 import {
   WsClientEvent,
@@ -26,6 +27,9 @@ export function useSession({
   idToken,
   initialTurns = [],
 }: UseSessionOptions) {
+  const [savingFlashcardTurnIndexes, setSavingFlashcardTurnIndexes] =
+    React.useState<number[]>([]);
+
   const turns = useSessionStore((s) => s.turns);
   const uploadUrl = useSessionStore((s) => s.uploadUrl);
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
@@ -172,6 +176,73 @@ export function useSession({
     setHintPanelOpen(!hintPanelOpen);
   }, [setHintPanelOpen, hintPanelOpen]);
 
+  const saveTurnToFlashcard = React.useCallback(
+    async (turnIndex: number) => {
+      const targetTurn = useSessionStore
+        .getState()
+        .turns.find((turn) => turn.turn_index === turnIndex);
+
+      if (!targetTurn) {
+        return;
+      }
+
+      if (targetTurn.is_saved_to_flashcard) {
+        toast.success("Nội dung này đã được lưu trước đó.");
+        return;
+      }
+
+      const translatedContent = targetTurn.translated_content?.trim();
+      if (
+        !translatedContent ||
+        translatedContent === "Đang yêu cầu bản dịch..."
+      ) {
+        SessionService.handleError(
+          "Hãy dịch nội dung trước khi lưu flashcard.",
+          "Flashcard",
+        );
+        return;
+      }
+
+      setSavingFlashcardTurnIndexes((previous) =>
+        previous.includes(turnIndex) ? previous : [...previous, turnIndex],
+      );
+
+      try {
+        const result = await SessionService.saveTurnToFlashcard({
+          sessionId,
+          turnIndex,
+          sourceText: targetTurn.content,
+          translatedText: translatedContent,
+        });
+
+        if (!result.success) {
+          SessionService.handleError(result.message, "Flashcard");
+          return;
+        }
+
+        setTurns((prev: Turn[]) =>
+          prev.map((turn) =>
+            turn.turn_index === turnIndex
+              ? { ...turn, is_saved_to_flashcard: true }
+              : turn,
+          ),
+        );
+
+        toast.success(result.message);
+      } catch (err) {
+        SessionService.handleError(
+          err instanceof Error ? err.message : "Không thể lưu flashcard.",
+          "Flashcard",
+        );
+      } finally {
+        setSavingFlashcardTurnIndexes((previous) =>
+          previous.filter((value) => value !== turnIndex),
+        );
+      }
+    },
+    [sessionId, setTurns],
+  );
+
   return {
     ui: {
       turns,
@@ -184,6 +255,7 @@ export function useSession({
       wsState: connectionState,
       currentAudioUrl,
       uploadUrl: uploadUrl,
+      savingFlashcardTurnIndexes,
       isControlsDisabled: SessionDomain.isControlsDisabled(
         connectionState,
         recorderState,
@@ -198,6 +270,7 @@ export function useSession({
       endSession,
       toggleHintPanel,
       translateTurn,
+      saveTurnToFlashcard,
       sendMessage,
       setCurrentAudioUrl,
     },

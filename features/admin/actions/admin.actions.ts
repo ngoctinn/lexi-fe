@@ -8,17 +8,19 @@ import { DEFAULT_SCENARIO_CONTEXT } from "@/features/session/constants/scenario-
 
 const HOUR_IN_MS = 60 * 60 * 1000;
 const DAY_IN_MS = 24 * HOUR_IN_MS;
+const LEVEL_OPTIONS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 
 function cloneUser(user: AdminUser): AdminUser {
   return { ...user };
 }
 
 function cloneScenario(scenario: AdminScenario): AdminScenario {
+  const roles = normalizeList(scenario.roles).slice(0, 2);
+
   return {
     ...scenario,
+    roles: [...roles],
     goals: [...scenario.goals],
-    user_roles: [...scenario.user_roles],
-    ai_roles: [...scenario.ai_roles],
   };
 }
 
@@ -33,6 +35,20 @@ function normalizeText(value: string, fallback: string) {
 
 function normalizeList(values: string[]) {
   return Array.from(new Set(values.map((item) => item.trim()).filter(Boolean)));
+}
+
+function normalizeLevel(
+  value: string | undefined,
+  fallback: (typeof LEVEL_OPTIONS)[number],
+): (typeof LEVEL_OPTIONS)[number] {
+  if (
+    value &&
+    LEVEL_OPTIONS.includes(value as (typeof LEVEL_OPTIONS)[number])
+  ) {
+    return value as (typeof LEVEL_OPTIONS)[number];
+  }
+
+  return fallback;
 }
 
 function createUserId(displayName: string) {
@@ -64,7 +80,8 @@ function buildSeedUsers(): AdminUser[] {
       display_name: "Nguyễn Minh Anh",
       email: "minhanh@lexi.app",
       current_level: "A2",
-      learning_goal: "Du lịch tự tin",
+      target_level: "B1",
+      learning_goal_text: "Du lịch tự tin",
       status: "active",
       sessions_completed: 18,
       streak: 9,
@@ -77,7 +94,8 @@ function buildSeedUsers(): AdminUser[] {
       display_name: "Trần Quốc Huy",
       email: "quochuy@lexi.app",
       current_level: "B1",
-      learning_goal: "Phỏng vấn việc làm",
+      target_level: "B2",
+      learning_goal_text: "Phỏng vấn việc làm",
       status: "review",
       sessions_completed: 12,
       streak: 4,
@@ -90,7 +108,8 @@ function buildSeedUsers(): AdminUser[] {
       display_name: "Lê Thu Hà",
       email: "thuha@lexi.app",
       current_level: "A1",
-      learning_goal: "Giao tiếp cơ bản",
+      target_level: "A2",
+      learning_goal_text: "Giao tiếp cơ bản",
       status: "invited",
       sessions_completed: 0,
       streak: 0,
@@ -103,7 +122,8 @@ function buildSeedUsers(): AdminUser[] {
       display_name: "Phạm Gia Bảo",
       email: "giabao@lexi.app",
       current_level: "B2",
-      learning_goal: "Họp nhóm công việc",
+      target_level: "C1",
+      learning_goal_text: "Họp nhóm công việc",
       status: "active",
       sessions_completed: 27,
       streak: 16,
@@ -116,7 +136,8 @@ function buildSeedUsers(): AdminUser[] {
       display_name: "Vũ Ngọc Linh",
       email: "ngoclinh@lexi.app",
       current_level: "A2",
-      learning_goal: "Đặt món và mua sắm",
+      target_level: "B1",
+      learning_goal_text: "Đặt món và mua sắm",
       status: "paused",
       sessions_completed: 9,
       streak: 2,
@@ -129,7 +150,8 @@ function buildSeedUsers(): AdminUser[] {
       display_name: "Bùi Hải Yến",
       email: "haiyen@lexi.app",
       current_level: "C1",
-      learning_goal: "Thuyết trình sản phẩm",
+      target_level: "C2",
+      learning_goal_text: "Thuyết trình sản phẩm",
       status: "active",
       sessions_completed: 34,
       streak: 22,
@@ -178,12 +200,29 @@ export async function upsertAdminUser(user: AdminUser): Promise<{
   const now = new Date().toISOString();
   const displayName = normalizeText(user.display_name, "Người dùng mới");
   const email = normalizeText(user.email, "new-user@lexi.app");
+  const currentLevel = normalizeLevel(user.current_level, "A2");
+  const targetLevel = normalizeLevel(
+    user.target_level ?? user.learning_goal,
+    currentLevel,
+  );
+  const legacyGoalText = normalizeText(user.learning_goal ?? "", "");
+  const learningGoalText = normalizeText(
+    user.learning_goal_text ??
+      (LEVEL_OPTIONS.includes(legacyGoalText as (typeof LEVEL_OPTIONS)[number])
+        ? ""
+        : legacyGoalText),
+    "Chưa xác định",
+  );
+
   const normalizedUser: AdminUser = {
     ...user,
     id: normalizeText(user.id, createUserId(displayName)),
     display_name: displayName,
     email,
-    learning_goal: normalizeText(user.learning_goal, "Chưa xác định"),
+    current_level: currentLevel,
+    target_level: targetLevel,
+    learning_goal_text: learningGoalText,
+    learning_goal: targetLevel,
     sessions_completed: Number.isFinite(user.sessions_completed)
       ? Math.max(0, Math.trunc(user.sessions_completed))
       : 0,
@@ -219,13 +258,8 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
 }> {
   const scenarios = await ensureAdminScenarios();
   const now = new Date().toISOString();
-  const myCharacter = normalizeText(scenario.my_character, "Học viên");
-  const aiCharacter = normalizeText(scenario.ai_character, "AI Assistant");
+  const roles = normalizeList(scenario.roles).slice(0, 2);
   const goals = normalizeList(scenario.goals);
-  const userRoles = normalizeList(scenario.user_roles);
-  const aiRoles = normalizeList(scenario.ai_roles);
-  const primaryUserRole = userRoles[0] ?? myCharacter;
-  const primaryAiRole = aiRoles[0] ?? aiCharacter;
   const normalizedScenario: AdminScenario = {
     ...scenario,
     scenario_id: normalizeText(
@@ -234,11 +268,8 @@ export async function upsertAdminScenario(scenario: AdminScenario): Promise<{
     ),
     scenario_title: normalizeText(scenario.scenario_title, "Kịch bản mới"),
     context: normalizeText(scenario.context, DEFAULT_SCENARIO_CONTEXT),
-    my_character: primaryUserRole,
-    ai_character: primaryAiRole,
+    roles,
     goals,
-    user_roles: [primaryUserRole],
-    ai_roles: [primaryAiRole],
     usage_count: Number.isFinite(scenario.usage_count)
       ? Math.max(0, Math.trunc(scenario.usage_count))
       : 0,

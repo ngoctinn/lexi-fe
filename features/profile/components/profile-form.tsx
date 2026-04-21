@@ -28,6 +28,8 @@ interface ProfileFormProps {
     display_name?: string;
     email?: string;
     current_level?: string;
+    target_level?: string;
+    learning_goal_text?: string;
     learning_goal?: string;
     avatar_url?: string;
   };
@@ -51,10 +53,19 @@ const AVATAR_PRESETS = [
 export function ProfileForm({ initialData }: ProfileFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
+  const levelValues = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+  const legacyGoal = (initialData.learning_goal || "").trim();
+  const isLegacyGoalLevel = levelValues.includes(
+    legacyGoal as (typeof levelValues)[number],
+  );
+
   const [formData, setFormData] = React.useState({
     display_name: initialData.display_name || "",
     current_level: initialData.current_level || "A1",
-    learning_goal: initialData.learning_goal || "B1",
+    target_level:
+      initialData.target_level || (isLegacyGoalLevel ? legacyGoal : "B1"),
+    learning_goal_text:
+      initialData.learning_goal_text || (isLegacyGoalLevel ? "" : legacyGoal),
     avatar_url: initialData.avatar_url || DEFAULT_AVATAR,
   });
 
@@ -199,7 +210,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         </div>
 
         <div className="md:col-span-2 space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
             <Field>
               <FieldLabel htmlFor="current_level">Trình độ hiện tại</FieldLabel>
               <Select
@@ -222,16 +233,14 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="learning_goal">
-                Mục tiêu mong muốn
-              </FieldLabel>
+              <FieldLabel htmlFor="target_level">Trình độ mục tiêu</FieldLabel>
               <Select
-                value={formData.learning_goal}
+                value={formData.target_level}
                 onValueChange={(val) =>
-                  setFormData({ ...formData, learning_goal: val })
+                  setFormData({ ...formData, target_level: val })
                 }
               >
-                <SelectTrigger id="learning_goal" size="xl">
+                <SelectTrigger id="target_level" size="xl">
                   <SelectValue placeholder="Chọn mục tiêu" />
                 </SelectTrigger>
                 <SelectContent>
@@ -242,6 +251,24 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </Field>
+
+            <Field className="sm:col-span-2 lg:col-span-1">
+              <FieldLabel htmlFor="learning_goal_text">
+                Mục tiêu học tập cụ thể
+              </FieldLabel>
+              <Input
+                id="learning_goal_text"
+                value={formData.learning_goal_text}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    learning_goal_text: event.target.value,
+                  })
+                }
+                size="xl"
+                placeholder="Ví dụ: Tự tin phỏng vấn tiếng Anh"
+              />
             </Field>
           </div>
         </div>

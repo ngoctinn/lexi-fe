@@ -38,6 +38,12 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     [scenarios],
   );
 
+  const resolveScenarioRoles = React.useCallback((scenario: Scenario) => {
+    return Array.from(new Set(scenario.roles.map((role) => role.trim())))
+      .filter(Boolean)
+      .slice(0, 2);
+  }, []);
+
   const updateFormData = React.useCallback(
     <K extends keyof CreateSessionDto>(key: K, value: CreateSessionDto[K]) => {
       setFormData((prev) => ({ ...prev, [key]: value }));
@@ -48,9 +54,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
   React.useEffect(() => {
     if (!selectedScenario) return;
 
-    const allRoles = Array.from(
-      new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]),
-    );
+    const allRoles = resolveScenarioRoles(selectedScenario);
 
     // Khởi tạo vai mặc định nếu chưa có hoặc kịch bản thay đổi
     const defaultUserRole = allRoles[0] ?? "";
@@ -70,21 +74,24 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
       );
       return visible.length > 0 ? visible : selectedScenario.goals;
     });
-  }, [selectedScenario]);
+  }, [selectedScenario, resolveScenarioRoles]);
 
   // Tự động điều chỉnh vai AI nếu trùng với vai User khi User thay đổi
   // Nhưng không ép buộc nếu danh sách chỉ có 1 vai
   React.useEffect(() => {
     if (!selectedScenario || !selectedUserRole) return;
-    const allRoles = Array.from(
-      new Set([...selectedScenario.user_roles, ...selectedScenario.ai_roles]),
-    );
+    const allRoles = resolveScenarioRoles(selectedScenario);
 
     if (selectedUserRole === selectedAiRole && allRoles.length > 1) {
       const nextAiRole = allRoles.find((r) => r !== selectedUserRole);
       if (nextAiRole) setSelectedAiRole(nextAiRole);
     }
-  }, [selectedUserRole, selectedScenario, selectedAiRole]);
+  }, [
+    selectedUserRole,
+    selectedScenario,
+    selectedAiRole,
+    resolveScenarioRoles,
+  ]);
 
   const buildPromptSnapshot = React.useCallback(() => {
     if (!selectedScenario) return "";
@@ -94,7 +101,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
 
     return [
       `Scenario: ${selectedScenario.scenario_title}`,
-      `User role: ${selectedUserRole}`,
+      `Learner role: ${selectedUserRole}`,
       `AI role: ${selectedAiRole}`,
       `Goals: ${goals.join(" | ")}`,
       `AI gender: ${formData.ai_gender}`,
@@ -122,8 +129,14 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
 
     setIsPending(true);
     try {
+      const selectedScenarioGoals =
+        selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
+
       const result = await createSession({
         ...formData,
+        learner_role_id: selectedUserRole,
+        ai_role_id: selectedAiRole,
+        selected_goals: selectedScenarioGoals,
         prompt_snapshot: buildPromptSnapshot(),
       });
 

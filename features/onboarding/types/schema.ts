@@ -24,7 +24,7 @@ export const onboardingSchema = z.object({
         message: "Vui lòng chọn trình độ hiện tại của bạn",
       },
     ),
-  learning_goal: z
+  target_level: z
     .string()
     .refine(
       (val) =>
@@ -32,9 +32,10 @@ export const onboardingSchema = z.object({
           val as (typeof ONBOARDING_LEVEL_OPTIONS)[number],
         ),
       {
-        message: "Vui lòng chọn mục tiêu của bạn",
+        message: "Vui lòng chọn trình độ mục tiêu của bạn",
       },
     ),
+  learning_goal_text: z.string().trim().max(120).optional().default(""),
 });
 
 export type OnboardingData = z.infer<typeof onboardingSchema>;

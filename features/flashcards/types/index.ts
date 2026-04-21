@@ -2,6 +2,8 @@ export interface Flashcard {
   flashcard_id: string; // ULID
   user_id: string;
   word: string;
+  source_session_id?: string;
+  source_turn_index?: number;
 
   // SRS Data
   review_count: number;

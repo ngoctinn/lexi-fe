@@ -10,7 +10,9 @@ export interface AdminUser {
   display_name: string;
   email: string;
   current_level: SessionLevel;
-  learning_goal: string;
+  target_level: SessionLevel;
+  learning_goal_text: string;
+  learning_goal?: string;
   status: AdminUserStatus;
   sessions_completed: number;
   streak: number;

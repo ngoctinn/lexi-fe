@@ -1,20 +1,31 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, Languages } from "lucide-react";
+import { Volume2, Languages, BookmarkPlus, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import type { Turn } from "@/features/session/types/session.types";
 import { TurnSpeaker } from "@/features/session/types/session.types";
+
+function splitTurnContent(content: string) {
+  return content.match(/\s+|[^\s]+/g) ?? [content];
+}
 
 interface TurnBubbleProps {
   turn: Turn;
   aiName?: string;
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
+  onSaveFlashcard?: (turnIndex: number) => void;
+  isSavingFlashcard?: boolean;
   isPlaying?: boolean;
 }
 
@@ -23,16 +34,37 @@ export function TurnBubble({
   aiName = "AI",
   onPlayAudio,
   onTranslate,
+  onSaveFlashcard,
+  isSavingFlashcard = false,
   isPlaying,
 }: TurnBubbleProps) {
   const isUser = turn.speaker === TurnSpeaker.USER;
   const [showTranslation, setShowTranslation] = React.useState(false);
+  const [activeWordIndex, setActiveWordIndex] = React.useState<number | null>(
+    null,
+  );
+  const contentTokens = React.useMemo(
+    () => splitTurnContent(turn.content),
+    [turn.content],
+  );
+  const hasTranslation =
+    Boolean(turn.translated_content) &&
+    turn.translated_content !== "Đang yêu cầu bản dịch...";
 
   const toggleTranslate = () => {
     if (!turn.translated_content) {
       onTranslate?.(turn.turn_index);
     }
     setShowTranslation((v) => !v);
+  };
+
+  const handleWordClick = (tokenIndex: number) => {
+    setActiveWordIndex(tokenIndex);
+    setShowTranslation(true);
+
+    if (!turn.translated_content) {
+      onTranslate?.(turn.turn_index);
+    }
   };
 
   return (
@@ -68,9 +100,95 @@ export function TurnBubble({
           )}
         >
           <div className="flex flex-col gap-2">
-            <span>{turn.content}</span>
+            <div className="whitespace-pre-wrap wrap-break-word">
+              {contentTokens.map((token, tokenIndex) => {
+                if (/^\s+$/.test(token)) {
+                  return (
+                    <span key={`${turn.turn_index}-${tokenIndex}`}>
+                      {token}
+                    </span>
+                  );
+                }
 
-            {showTranslation && turn.translated_content && (
+                const isActiveWord = activeWordIndex === tokenIndex;
+
+                return (
+                  <Popover
+                    key={`${turn.turn_index}-${tokenIndex}`}
+                    open={isActiveWord}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setActiveWordIndex(null);
+                      }
+                    }}
+                  >
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => handleWordClick(tokenIndex)}
+                        className={cn(
+                          "inline rounded px-0.5 py-0.5 text-inherit transition-colors hover:bg-primary-100 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          isActiveWord && "bg-primary-100 text-primary",
+                        )}
+                      >
+                        {token}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align={isUser ? "end" : "start"}
+                      side="top"
+                      sideOffset={10}
+                      className="w-72 space-y-3"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                          Từ vừa chọn
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {token}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-sm text-foreground">
+                        {hasTranslation
+                          ? turn.translated_content
+                          : "Đang yêu cầu bản dịch..."}
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Button
+                          variant={
+                            turn.is_saved_to_flashcard
+                              ? "soft-success"
+                              : "outline"
+                          }
+                          size="xs"
+                          onClick={() => onSaveFlashcard?.(turn.turn_index)}
+                          disabled={
+                            isSavingFlashcard ||
+                            turn.is_saved_to_flashcard ||
+                            !hasTranslation
+                          }
+                        >
+                          {turn.is_saved_to_flashcard ? (
+                            <Check className="size-3" />
+                          ) : (
+                            <BookmarkPlus className="size-3" />
+                          )}
+                          {turn.is_saved_to_flashcard
+                            ? "Đã lưu"
+                            : isSavingFlashcard
+                              ? "Đang lưu..."
+                              : "Lưu flashcard"}
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                );
+              })}
+            </div>
+
+            {showTranslation && (
               <div
                 className={cn(
                   "text-sm border-t pt-2 mt-1",
@@ -80,8 +198,36 @@ export function TurnBubble({
                 )}
               >
                 <span className="italic font-medium">
-                  {turn.translated_content}
+                  {hasTranslation
+                    ? turn.translated_content
+                    : "Đang yêu cầu bản dịch..."}
                 </span>
+
+                <div className="mt-2 flex justify-end">
+                  <Button
+                    variant={
+                      turn.is_saved_to_flashcard ? "soft-success" : "outline"
+                    }
+                    size="xs"
+                    onClick={() => onSaveFlashcard?.(turn.turn_index)}
+                    disabled={
+                      isSavingFlashcard ||
+                      turn.is_saved_to_flashcard ||
+                      !hasTranslation
+                    }
+                  >
+                    {turn.is_saved_to_flashcard ? (
+                      <Check className="size-3" />
+                    ) : (
+                      <BookmarkPlus className="size-3" />
+                    )}
+                    {turn.is_saved_to_flashcard
+                      ? "Đã lưu"
+                      : isSavingFlashcard
+                        ? "Đang lưu..."
+                        : "Lưu flashcard"}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
