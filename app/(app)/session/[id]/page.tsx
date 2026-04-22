@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { cache } from "react";
 import { Button } from "@/components/ui/button";
+import { connection } from "next/server";
 import { getSession } from "@/features/session/actions/get-session";
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { ConversationScreen } from "@/features/session/components/conversation/conversation-screen";
@@ -166,6 +167,7 @@ export async function generateMetadata({
 }
 
 export default async function SessionPage({ params, searchParams }: SessionPageProps) {
+  await connection();
   const { id } = await params;
   const { new: newParam } = await searchParams;
   const isNewSession = newParam === "1";

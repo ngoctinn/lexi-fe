@@ -12,6 +12,7 @@ interface TranscriptPanelProps {
   aiStreamingText: string;
   aiName: string;
   onTranslate?: (turnIndex: number) => void;
+  onTranslateWord?: (word: string) => Promise<string>;
   onSaveFlashcard?: (turnIndex: number) => void;
   savingTurnIndexes?: number[];
   className?: string;
@@ -23,6 +24,7 @@ export function TranscriptPanel({
   aiStreamingText,
   aiName,
   onTranslate,
+  onTranslateWord,
   onSaveFlashcard,
   savingTurnIndexes = [],
   className,
@@ -63,6 +65,7 @@ export function TranscriptPanel({
             turn={turn}
             aiName={aiName}
             onTranslate={onTranslate}
+            onTranslateWord={onTranslateWord}
             onSaveFlashcard={onSaveFlashcard}
             isSavingFlashcard={savingTurnIndexes.includes(turn.turn_index)}
           />

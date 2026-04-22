@@ -117,16 +117,10 @@ export function useSession({
     send({ action: WsClientEvent.START_SESSION, session_id: sessionId });
   }, [send, sessionId]);
 
-  const requestHint = React.useCallback(async () => {
+  const requestHint = React.useCallback(() => {
     setHint(null);
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
-
-    if (process.env.NODE_ENV === "development") {
-      const hint = await SessionService.getHint(sessionId);
-      setHint(hint);
-      setHintPanelOpen(true);
-    }
-  }, [send, sessionId, setHint, setHintPanelOpen]);
+  }, [send, sessionId, setHint]);
 
   const toggleMic = React.useCallback(async () => {
     if (recorderState === "recording") {
@@ -184,6 +178,10 @@ export function useSession({
     },
     [sessionId, setTurns],
   );
+
+  const translateWord = React.useCallback(async (word: string) => {
+    return await SessionService.translateWord(word);
+  }, []);
 
   const toggleHintPanel = React.useCallback(() => {
     setHintPanelOpen(!hintPanelOpen);
@@ -283,6 +281,7 @@ export function useSession({
       endSession,
       toggleHintPanel,
       translateTurn,
+      translateWord,
       saveTurnToFlashcard,
       sendMessage,
       setCurrentAudioUrl,

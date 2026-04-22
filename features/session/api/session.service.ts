@@ -4,6 +4,7 @@ import {
   analyzeTurnText,
   type AnalyzedSentenceItem,
 } from "@/features/session/actions/analyze-turn";
+import { translateWordAction } from "@/features/session/actions/translate-word";
 
 interface SaveTurnToFlashcardInput {
   sessionId: string;
@@ -25,23 +26,21 @@ function buildTranslatedText(
   sourceText: string,
   analysisItems: AnalyzedSentenceItem[],
 ) {
+  // Lấy các cụm từ (phrasal verbs, idioms) nếu có
   const phraseItems = analysisItems.filter((item) => item.type === "phrase");
-  if (phraseItems.length === 0) {
-    const splitWords = analysisItems
-      .filter((item) => item.type === "word" && item.text.trim())
-      .map((item) => item.text)
-      .join(" · ");
-
-    return splitWords ? `Tách từ: ${splitWords}` : sourceText;
+  
+  if (phraseItems.length > 0) {
+    return phraseItems
+      .map((item) => {
+        const baseText = item.base ? ` (${item.base})` : "";
+        const meaningText = item.definition_vi ? `: ${item.definition_vi}` : "";
+        return `${item.text}${baseText}${meaningText}`;
+      })
+      .join("\n");
   }
 
-  return phraseItems
-    .map((item) => {
-      const baseText = item.base ? ` (${item.base})` : "";
-      const meaningText = item.definition_vi ? `: ${item.definition_vi}` : "";
-      return `${item.text}${baseText}${meaningText}`;
-    })
-    .join("\n");
+  // Nếu không có cụm từ, trả về null để UI tự xử lý việc hiển thị từng từ khi click
+  return null;
 }
 
 export const SessionService = {
@@ -63,9 +62,12 @@ export const SessionService = {
     }
 
     try {
+      // Gọi API analyze để tách từ/cụm từ
       const analysisItems = await analyzeTurnText(sourceText);
+      const translatedText = buildTranslatedText(sourceText, analysisItems);
+
       return {
-        translatedText: buildTranslatedText(sourceText, analysisItems),
+        translatedText: translatedText ?? "",
         analysisItems,
       };
     } catch (error) {
@@ -81,6 +83,19 @@ export const SessionService = {
         };
       }
       throw error;
+    }
+  },
+
+  async translateWord(word: string): Promise<string> {
+    if (shouldUseMockSessionApi()) {
+      return `Dịch (Mock): ${word} -> Nghĩa của từ`;
+    }
+
+    try {
+      return await translateWordAction(word);
+    } catch (error) {
+      this.handleError("Không thể dịch từ này.", "TranslateWord");
+      return "Lỗi dịch.";
     }
   },
 

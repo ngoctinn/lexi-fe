@@ -12,37 +12,15 @@ import {
 } from "@/features/session/types/session.types";
 import { useSessionStore } from "@/features/session/stores/use-session-store";
 import { mockSessionApi } from "@/features/session/api/session-mock";
-import { MOCK_SESSION_TOKEN } from "@/features/auth/mock-auth";
 
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? "";
-const RECONNECT_BASE_MS = 1000;
+const RECONNECT_BASE_MS = 2000;
 const RECONNECT_MAX_MS = 30_000;
-const RECONNECT_MAX_ATTEMPTS = 8;
+const RECONNECT_MAX_ATTEMPTS = 5;
 
 function buildWebSocketUrl(base: string, token: string, sessionId: string) {
-  let url = base || "";
-
-  // If user provided a non-ws scheme (http/https) or no scheme, normalize to ws/wss
-  const isSecurePage =
-    typeof window !== "undefined" && window.location?.protocol === "https:";
-
-  if (!/^wss?:\/\//i.test(url)) {
-    const scheme = isSecurePage ? "wss:" : "ws:";
-    if (url.startsWith("/")) {
-      url = `${scheme}//${window.location.host}${url}`;
-    } else if (url) {
-      url = `${scheme}//${url}`;
-    } else {
-      // No base provided: default to current host
-      url = `${scheme}//${window.location.host}`;
-    }
-  } else if (isSecurePage && url.startsWith("ws://")) {
-    // upgrade insecure ws to wss on secure pages
-    url = url.replace(/^ws:\/\//i, "wss://");
-  }
-
   const params = new URLSearchParams({ token, session_id: sessionId });
-  return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
+  return `${base}?${params.toString()}`;
 }
 
 interface UseWebSocketOptions {
@@ -68,190 +46,32 @@ export function useWebSocket({
 }: UseWebSocketOptions): UseWebSocketReturn {
   const [connectionState, setConnectionState] =
     React.useState<WsConnectionState>("disconnected");
+
+  // Dùng refs để tránh re-render không cần thiết và race condition
   const wsRef = React.useRef<WebSocket | null>(null);
-  const connectingRef = React.useRef(false);
+  const reconnectTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptRef = React.useRef(0);
-  const reconnectTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const initialDelayTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = React.useRef(true);
   const shouldReconnectRef = React.useRef(true);
-  const isFirstAttemptRef = React.useRef(true);
-  const connectRef = React.useRef<() => void>(() => {});
 
-  const isDevMock = React.useMemo(
-    () =>
-      process.env.NODE_ENV === "development" &&
-      (!WS_BASE || idToken === MOCK_SESSION_TOKEN),
-    [idToken],
-  );
+  // Stable ref để tránh stale closure trong callbacks
+  const onMessageRef = React.useRef(onMessage);
+  const onConnectionChangeRef = React.useRef(onConnectionChange);
+  React.useEffect(() => { onMessageRef.current = onMessage; }, [onMessage]);
+  React.useEffect(() => { onConnectionChangeRef.current = onConnectionChange; }, [onConnectionChange]);
 
-  const setConnState = React.useCallback(
-    (state: WsConnectionState) => {
-      if (!isMountedRef.current) return;
-      setConnectionState(state);
-      onConnectionChange?.(state);
-    },
-    [onConnectionChange],
-  );
+  const setConnState = React.useCallback((state: WsConnectionState) => {
+    setConnectionState(state);
+    onConnectionChangeRef.current?.(state);
+  }, []);
 
-  const connect = React.useCallback(() => {
-    if (!isMountedRef.current) return;
-    if (
-      wsRef.current?.readyState === WebSocket.OPEN ||
-      wsRef.current?.readyState === WebSocket.CONNECTING ||
-      connectingRef.current
-    )
-      return;
-
-    // Delay lần kết nối đầu tiên nếu initialDelayMs được cung cấp
-    if (isFirstAttemptRef.current && initialDelayMs && initialDelayMs > 0) {
-      isFirstAttemptRef.current = false;
-      initialDelayTimerRef.current = setTimeout(() => {
-        initialDelayTimerRef.current = null;
-        connectRef.current();
-      }, initialDelayMs);
-      return;
-    }
-    isFirstAttemptRef.current = false;
-
-    if (isDevMock) {
-      reconnectAttemptRef.current = 0;
-      setConnState("connected");
-      return;
-    }
-
-    const url = buildWebSocketUrl(WS_BASE, idToken, sessionId);
-    try {
-      connectingRef.current = true;
-      const ws = new WebSocket(url);
-      wsRef.current = ws;
-      setConnState("connecting");
-
-      ws.onopen = () => {
-        connectingRef.current = false;
-        if (!isMountedRef.current) {
-          ws.close();
-          return;
-        }
-        reconnectAttemptRef.current = 0;
-        setConnState("connected");
-      };
-    } catch (err) {
-      // If constructing the WebSocket throws (invalid URL, bad params), mark error and bail
-      console.error("[WS] failed to construct WebSocket", err);
-      connectingRef.current = false;
-      setConnState("error");
-      return;
-    }
-
-    wsRef.current!.onmessage = (ev: MessageEvent) => {
-      if (!isMountedRef.current) return;
-      try {
-        const payload = JSON.parse(ev.data as string) as WsServerPayload;
-        onMessage(payload);
-      } catch {
-        console.error("[WS] Failed to parse message", ev.data);
-      }
-    };
-    wsRef.current!.onclose = (ev: CloseEvent) => {
-      if (!isMountedRef.current) return;
-      console.warn(`[WS] closed (code=${ev.code}, reason=${ev.reason})`);
-      // ensure we don't remain in a 'connecting' state
-      connectingRef.current = false;
-      // clear current socket reference so future connects can proceed
-      wsRef.current = null;
-      setConnState("disconnected");
-
-      if (!shouldReconnectRef.current) return;
-
-      const attempt = reconnectAttemptRef.current;
-      if (attempt >= RECONNECT_MAX_ATTEMPTS) {
-        console.warn(`[WS] max reconnect attempts reached (${attempt})`);
-        return;
-      }
-
-      // clear any existing timer to avoid duplicate schedules
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-        reconnectTimerRef.current = null;
-      }
-
-      const baseDelay = Math.min(
-        RECONNECT_BASE_MS * 2 ** attempt,
-        RECONNECT_MAX_MS,
-      );
-      const jitter = Math.floor(Math.random() * 500);
-      const delay = baseDelay + jitter;
-
-      reconnectAttemptRef.current += 1;
-      setConnState("reconnecting");
-
-      reconnectTimerRef.current = setTimeout(() => {
-        // allow next connect attempts
-        connectingRef.current = false;
-        connectRef.current();
-      }, delay);
-    };
-
-    wsRef.current!.onerror = (ev: Event) => {
-      if (!isMountedRef.current) return;
-      try {
-        const errorEvent = ev instanceof ErrorEvent ? ev : null;
-        // ErrorEvent có thể có chi tiết hữu ích; Event thường không có thông tin thêm.
-        if (errorEvent) {
-          console.error(
-            "[WS] error (ErrorEvent)",
-            errorEvent.message,
-            errorEvent.error,
-          );
-        } else {
-          const url = ws.url;
-          const readyState = ws.readyState;
-          console.error("[WS] error (Event)", {
-            type: ev.type,
-            url,
-            readyState,
-            reconnectAttempt: reconnectAttemptRef.current,
-          });
-        }
-      } catch (logErr) {
-        console.error("[WS] error while logging error event", logErr);
-      }
-      // mark not connecting and null the ref so reconnect logic can proceed
-      connectingRef.current = false;
-      setConnState("error");
-      try {
-        wsRef.current?.close();
-      } catch (e) {
-        console.warn("[WS] error while closing socket", e);
-      }
-      wsRef.current = null;
-    };
-  }, [idToken, sessionId, setConnState, onMessage, isDevMock]);
-
-  React.useEffect(() => {
-    connectRef.current = connect;
-  }, [connect]);
-
-  const disconnect = React.useCallback(() => {
-    shouldReconnectRef.current = false;
-    if (initialDelayTimerRef.current) {
-      clearTimeout(initialDelayTimerRef.current);
-      initialDelayTimerRef.current = null;
-    }
-    if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
-    setConnState("disconnected");
-  }, [setConnState]);
+  // isDevMock: chỉ dùng khi không có WS_BASE (local dev không có backend)
+  const isDevMock = !WS_BASE;
 
   const handleMockPayload = React.useCallback(
     async (payload: WsClientPayload) => {
       switch (payload.action) {
         case WsClientEvent.START_SESSION:
-          onMessage({
+          onMessageRef.current({
             event: WsServerEvent.SESSION_READY,
             upload_url: "https://mock-upload.com",
           });
@@ -261,7 +81,7 @@ export function useWebSocket({
           const turnIndex = Math.max(0, turns.length - 1);
           setTimeout(
             () =>
-              onMessage({
+              onMessageRef.current({
                 event: WsServerEvent.TURN_SAVED,
                 turn_index: turnIndex,
               }),
@@ -269,7 +89,7 @@ export function useWebSocket({
           );
           setTimeout(
             () =>
-              onMessage({
+              onMessageRef.current({
                 event: WsServerEvent.AI_TEXT_CHUNK,
                 chunk: `Mock AI: trả lời "${payload.text}"`,
                 done: true,
@@ -283,7 +103,7 @@ export function useWebSocket({
           const turnIndex = Math.max(0, turns.length - 1);
           setTimeout(
             () =>
-              onMessage({
+              onMessageRef.current({
                 event: WsServerEvent.TURN_SAVED,
                 turn_index: turnIndex,
               }),
@@ -293,12 +113,12 @@ export function useWebSocket({
         }
         case WsClientEvent.USE_HINT:
           const hint = await mockSessionApi.getHint(sessionId);
-          onMessage({ event: WsServerEvent.HINT_TEXT, hint });
+          onMessageRef.current({ event: WsServerEvent.HINT_TEXT, hint });
           break;
         case WsClientEvent.END_SESSION:
           setTimeout(
             () =>
-              onMessage({
+              onMessageRef.current({
                 event: WsServerEvent.SCORING_COMPLETE,
                 session_id: sessionId,
               }),
@@ -307,7 +127,7 @@ export function useWebSocket({
           break;
       }
     },
-    [onMessage, sessionId],
+    [sessionId],
   );
 
   const send = React.useCallback(
@@ -316,25 +136,156 @@ export function useWebSocket({
         handleMockPayload(payload);
         return;
       }
-
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify(payload));
       } else {
-        console.warn("[WS] Cannot send — not connected", payload);
+        console.warn("[WS] Cannot send — not connected", payload.action);
       }
     },
     [isDevMock, handleMockPayload],
   );
 
+  const disconnect = React.useCallback(() => {
+    shouldReconnectRef.current = false;
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+    if (wsRef.current) {
+      wsRef.current.close(1000, "Client disconnect");
+      wsRef.current = null;
+    }
+    setConnState("disconnected");
+  }, [setConnState]);
+
+  // Effect chính: chỉ chạy khi sessionId hoặc idToken thay đổi thực sự
   React.useEffect(() => {
-    isMountedRef.current = true;
+    // Mock mode: không cần kết nối thật
+    if (isDevMock) {
+      reconnectAttemptRef.current = 0;
+      shouldReconnectRef.current = true;
+      setConnState("connected");
+      return () => {
+        setConnState("disconnected");
+      };
+    }
+
+    // Guard: bỏ qua nếu thiếu thông tin cần thiết
+    if (!idToken || !sessionId || !WS_BASE) {
+      console.warn("[WS] Bỏ qua kết nối: thiếu idToken, sessionId hoặc WS_BASE");
+      return;
+    }
+
     shouldReconnectRef.current = true;
-    connect();
+    reconnectAttemptRef.current = 0;
+    let currentWs: WebSocket | null = null;
+
+    function openConnection() {
+      // Đóng kết nối cũ nếu còn tồn tại
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+
+      const url = buildWebSocketUrl(WS_BASE, idToken, sessionId);
+      console.log(`[WS] Đang kết nối... session=${sessionId} attempt=${reconnectAttemptRef.current}`);
+
+      const ws = new WebSocket(url);
+      currentWs = ws;
+      wsRef.current = ws;
+      setConnState("connecting");
+
+      ws.onopen = () => {
+        if (wsRef.current !== ws) return; // Bỏ qua nếu đã bị thay thế
+        console.log("[WS] Đã kết nối");
+        reconnectAttemptRef.current = 0;
+        setConnState("connected");
+      };
+
+      ws.onmessage = (ev: MessageEvent) => {
+        if (wsRef.current !== ws) return;
+        try {
+          const payload = JSON.parse(ev.data as string) as WsServerPayload;
+          onMessageRef.current(payload);
+        } catch {
+          console.error("[WS] Không thể parse message:", ev.data);
+        }
+      };
+
+      ws.onclose = (ev: CloseEvent) => {
+        if (wsRef.current === ws) {
+          wsRef.current = null;
+        }
+        console.warn(`[WS] Đã đóng: code=${ev.code} reason="${ev.reason}" wasClean=${ev.wasClean}`);
+
+        if (!shouldReconnectRef.current) return;
+
+        // Code 1000/1001 = đóng bình thường, không reconnect
+        if (ev.code === 1000 || ev.code === 1001) return;
+
+        const attempt = reconnectAttemptRef.current;
+        if (attempt >= RECONNECT_MAX_ATTEMPTS) {
+          console.warn(`[WS] Đã đạt giới hạn reconnect (${attempt})`);
+          setConnState("error");
+          return;
+        }
+
+        const delay = Math.min(RECONNECT_BASE_MS * 2 ** attempt, RECONNECT_MAX_MS);
+        reconnectAttemptRef.current += 1;
+        setConnState("reconnecting");
+
+        console.log(`[WS] Sẽ reconnect sau ${delay}ms (attempt ${reconnectAttemptRef.current})`);
+        reconnectTimerRef.current = setTimeout(() => {
+          if (shouldReconnectRef.current) {
+            openConnection();
+          }
+        }, delay);
+      };
+
+      ws.onerror = () => {
+        // onerror luôn được theo sau bởi onclose, không cần xử lý thêm ở đây
+        // chỉ log để debug
+        if (wsRef.current === ws) {
+          const state = ws.readyState;
+          console.error(
+            `[WS] Lỗi kết nối: url=${WS_BASE} readyState=${state} attempt=${reconnectAttemptRef.current}`,
+          );
+        }
+      };
+    }
+
+    // Delay lần kết nối đầu tiên nếu được cấu hình (tránh race condition khi navigate)
+    if (initialDelayMs && initialDelayMs > 0) {
+      const delayTimer = setTimeout(openConnection, initialDelayMs);
+      return () => {
+        clearTimeout(delayTimer);
+        shouldReconnectRef.current = false;
+        if (reconnectTimerRef.current) {
+          clearTimeout(reconnectTimerRef.current);
+          reconnectTimerRef.current = null;
+        }
+        if (currentWs) {
+          currentWs.close();
+        }
+        wsRef.current = null;
+      };
+    }
+
+    openConnection();
+
     return () => {
-      isMountedRef.current = false;
-      disconnect();
+      shouldReconnectRef.current = false;
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      if (currentWs) {
+        currentWs.close();
+      }
+      wsRef.current = null;
     };
-  }, [connect, disconnect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, idToken, isDevMock, initialDelayMs]);
 
   return { connectionState, send, disconnect };
 }

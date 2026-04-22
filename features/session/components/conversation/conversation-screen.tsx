@@ -63,6 +63,7 @@ export function ConversationScreen({
     toggleMic,
     requestHint,
     translateTurn,
+    translateWord,
     saveTurnToFlashcard,
     sendMessage,
     setCurrentAudioUrl,
@@ -140,6 +141,7 @@ export function ConversationScreen({
             className="flex-1"
             aria-live="polite"
             onTranslate={translateTurn}
+            onTranslateWord={translateWord}
             onSaveFlashcard={saveTurnToFlashcard}
             savingTurnIndexes={ui.savingFlashcardTurnIndexes}
           />

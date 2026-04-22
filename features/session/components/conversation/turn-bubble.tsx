@@ -24,6 +24,7 @@ interface TurnBubbleProps {
   aiName?: string;
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
+  onTranslateWord?: (word: string) => Promise<string>;
   onSaveFlashcard?: (turnIndex: number) => void;
   isSavingFlashcard?: boolean;
   isPlaying?: boolean;
@@ -34,6 +35,7 @@ export function TurnBubble({
   aiName = "AI",
   onPlayAudio,
   onTranslate,
+  onTranslateWord,
   onSaveFlashcard,
   isSavingFlashcard = false,
   isPlaying,
@@ -43,10 +45,61 @@ export function TurnBubble({
   const [activeWordIndex, setActiveWordIndex] = React.useState<number | null>(
     null,
   );
-  const contentTokens = React.useMemo(
-    () => splitTurnContent(turn.content),
-    [turn.content],
-  );
+  const [wordTranslations, setWordTranslations] = React.useState<
+    Record<number, string>
+  >({});
+  const [isTranslatingWord, setIsTranslatingWord] = React.useState(false);
+
+  // Reconstruct tokens while preserving whitespace from original content
+  const tokens = React.useMemo(() => {
+    const content = turn.content;
+    const analysisItems = turn.analysis_items || [];
+    
+    type Token = { text: string; isToken: boolean; analysisIndex?: number };
+
+    if (analysisItems.length === 0) {
+      return splitTurnContent(content).map<Token>((text) => ({
+        text,
+        isToken: !/^\s+$/.test(text),
+      }));
+    }
+
+    const result: Token[] = [];
+    let lastIndex = 0;
+
+    analysisItems.forEach((item, idx) => {
+      const index = content.indexOf(item.text, lastIndex);
+      if (index > lastIndex) {
+        const gapText = content.substring(lastIndex, index);
+        // Split gap text into words and spaces
+        splitTurnContent(gapText).forEach((word) => {
+          result.push({
+            text: word,
+            isToken: !/^\s+$/.test(word),
+          });
+        });
+      }
+      result.push({
+        text: item.text,
+        isToken: true,
+        analysisIndex: idx,
+      });
+      lastIndex = index + item.text.length;
+    });
+
+    if (lastIndex < content.length) {
+      const remainingText = content.substring(lastIndex);
+      splitTurnContent(remainingText).forEach((word) => {
+        result.push({
+          text: word,
+          isToken: !/^\s+$/.test(word),
+        });
+      });
+    }
+
+    return result;
+  }, [turn.content, turn.analysis_items]);
+
   const hasTranslation =
     Boolean(turn.translated_content) &&
     turn.translated_content !== "Đang yêu cầu bản dịch...";
@@ -59,12 +112,36 @@ export function TurnBubble({
     setShowTranslation((v) => !v);
   };
 
-  const handleWordClick = (tokenIndex: number) => {
-    setActiveWordIndex(tokenIndex);
-    setShowTranslation(true);
+  const handleWordClick = async (tokenIndex: number) => {
+    const token = tokens[tokenIndex];
+    if (!token || !token.isToken) return;
 
-    if (!turn.translated_content) {
-      onTranslate?.(turn.turn_index);
+    setActiveWordIndex(tokenIndex);
+
+    // Nếu đã có bản dịch trong analysis_items thì dùng luôn
+    if (token.analysisIndex !== undefined) {
+      const analysis = turn.analysis_items?.[token.analysisIndex];
+      if (analysis?.definition_vi) {
+        setWordTranslations((prev) => ({
+          ...prev,
+          [tokenIndex]: analysis.definition_vi!,
+        }));
+        return;
+      }
+    }
+
+    // Nếu chưa có thì gọi API dịch từ
+    if (!wordTranslations[tokenIndex] && onTranslateWord) {
+      setIsTranslatingWord(true);
+      try {
+        const translation = await onTranslateWord(token.text);
+        setWordTranslations((prev) => ({
+          ...prev,
+          [tokenIndex]: translation,
+        }));
+      } finally {
+        setIsTranslatingWord(false);
+      }
     }
   };
 
@@ -101,21 +178,29 @@ export function TurnBubble({
           )}
         >
           <div className="flex flex-col gap-2">
-            <div className="whitespace-pre-wrap wrap-break-word">
-              {contentTokens.map((token, tokenIndex) => {
-                if (/^\s+$/.test(token)) {
+            <div className="flex flex-wrap items-center">
+              {tokens.map((token, idx) => {
+                if (!token.isToken) {
                   return (
-                    <span key={`${turn.turn_index}-${tokenIndex}`}>
-                      {token}
+                    <span
+                      key={`${turn.turn_index}-${idx}`}
+                      className="whitespace-pre"
+                    >
+                      {token.text}
                     </span>
                   );
                 }
 
-                const isActiveWord = activeWordIndex === tokenIndex;
+                const isActiveWord = activeWordIndex === idx;
+                const translation = wordTranslations[idx];
+                const analysis =
+                  token.analysisIndex !== undefined
+                    ? turn.analysis_items?.[token.analysisIndex]
+                    : null;
 
                 return (
                   <Popover
-                    key={`${turn.turn_index}-${tokenIndex}`}
+                    key={`${turn.turn_index}-${idx}`}
                     open={isActiveWord}
                     onOpenChange={(open) => {
                       if (!open) {
@@ -126,13 +211,15 @@ export function TurnBubble({
                     <PopoverTrigger asChild>
                       <button
                         type="button"
-                        onClick={() => handleWordClick(tokenIndex)}
+                        onClick={() => handleWordClick(idx)}
                         className={cn(
-                          "inline rounded px-0.5 py-0.5 text-inherit transition-colors hover:bg-primary-100 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          "inline-block rounded px-0.5 py-0.5 text-inherit transition-colors hover:bg-primary-100 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                           isActiveWord && "bg-primary-100 text-primary",
+                          analysis?.type === "phrase" &&
+                            "border-b-2 border-dotted border-primary/40",
                         )}
                       >
-                        {token}
+                        {token.text}
                       </button>
                     </PopoverTrigger>
                     <PopoverContent
@@ -143,17 +230,31 @@ export function TurnBubble({
                     >
                       <div className="space-y-1">
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                          Từ vừa chọn
+                          {analysis?.type === "phrase"
+                            ? "Cụm từ vừa chọn"
+                            : "Từ vừa chọn"}
                         </p>
                         <p className="text-sm font-semibold text-foreground">
-                          {token}
+                          {token.text}
+                          {analysis?.base && (
+                            <span className="ml-2 text-xs font-normal text-muted-foreground">
+                              ({analysis.base})
+                            </span>
+                          )}
                         </p>
                       </div>
 
                       <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-sm text-foreground">
-                        {hasTranslation
-                          ? turn.translated_content
-                          : "Đang yêu cầu bản dịch..."}
+                        {isTranslatingWord ? (
+                          <div className="flex items-center gap-2 text-muted-foreground italic">
+                            <div className="size-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                            Đang dịch...
+                          </div>
+                        ) : translation ? (
+                          translation
+                        ) : (
+                          "Không có bản dịch."
+                        )}
                       </div>
 
                       <div className="flex justify-end">
@@ -168,7 +269,7 @@ export function TurnBubble({
                           disabled={
                             isSavingFlashcard ||
                             turn.is_saved_to_flashcard ||
-                            !hasTranslation
+                            (!translation && !isTranslatingWord)
                           }
                         >
                           {turn.is_saved_to_flashcard ? (
@@ -198,35 +299,11 @@ export function TurnBubble({
                     : "border-border text-muted-foreground",
                 )}
               >
-                <span className="italic font-medium">
+                <div className="italic font-medium whitespace-pre-wrap">
                   {hasTranslation
                     ? turn.translated_content
                     : "Đang yêu cầu bản dịch..."}
-                </span>
-
-                {hasAnalysisItems && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {turn.analysis_items?.map((item, index) =>
-                      item.type === "phrase" ? (
-                        <Badge
-                          key={`${turn.turn_index}-${item.text}-${index}`}
-                          variant="info"
-                          size="xs"
-                        >
-                          {item.text}
-                          {item.base ? ` -> ${item.base}` : ""}
-                        </Badge>
-                      ) : (
-                        <span
-                          key={`${turn.turn_index}-${item.text}-${index}`}
-                          className="rounded border border-border/60 px-1.5 py-0.5 text-xs text-muted-foreground"
-                        >
-                          {item.text}
-                        </span>
-                      ),
-                    )}
-                  </div>
-                )}
+                </div>
 
                 <div className="mt-2 flex justify-end">
                   <Button
