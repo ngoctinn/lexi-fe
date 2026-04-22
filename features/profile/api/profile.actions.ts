@@ -51,7 +51,7 @@ export async function getProfile(): Promise<ProfileData | null> {
     });
     return profile;
   } catch (error) {
-    console.error("Fetch profile failed:", error);
+    console.error("[profile] fetchProfile failed:", error);
     return null;
   }
 }
@@ -92,7 +92,7 @@ export async function updateProfile(data: {
 
     return { success: true, data: result };
   } catch (error) {
-    console.error("Update profile failed:", error);
+    console.error("[profile] updateProfile failed:", error);
     return {
       success: false,
       message:

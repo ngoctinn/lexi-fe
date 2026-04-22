@@ -35,10 +35,7 @@ export async function apiFetchServer(path: string, options: RequestInit = {}) {
           headers,
         });
       } catch (err) {
-        console.error(
-          `[apiFetchServer] Network error when fetching ${requestUrl}:`,
-          err,
-        );
+        console.error(`[api-server] Network error (${requestUrl}):`, err);
         throw err;
       }
 

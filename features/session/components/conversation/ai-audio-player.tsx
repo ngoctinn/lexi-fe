@@ -14,7 +14,12 @@ export function AiAudioPlayer({ url, onEnded, onPlayStart }: AiAudioPlayerProps)
   React.useEffect(() => {
     if (url && audioRef.current) {
       audioRef.current.src = url;
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play().catch((err) => {
+        // Silent catch for autoplay restrictions, or log with prefix if needed
+        if (err.name !== "NotAllowedError") {
+          console.error("[session] AiAudioPlayer play error:", err);
+        }
+      });
     }
   }, [url]);
 

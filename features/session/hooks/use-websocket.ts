@@ -139,7 +139,7 @@ export function useWebSocket({
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify(payload));
       } else {
-        console.warn("[WS] Cannot send — not connected", payload.action);
+        console.warn("[ws] Cannot send: not connected", payload.action);
       }
     },
     [isDevMock, handleMockPayload],
@@ -172,7 +172,7 @@ export function useWebSocket({
 
     // Guard: bỏ qua nếu thiếu thông tin cần thiết
     if (!idToken || !sessionId || !WS_BASE) {
-      console.warn("[WS] Bỏ qua kết nối: thiếu idToken, sessionId hoặc WS_BASE");
+      console.warn("[ws] Skipping connection: missing idToken, sessionId or WS_BASE");
       return;
     }
 
@@ -188,7 +188,7 @@ export function useWebSocket({
       }
 
       const url = buildWebSocketUrl(WS_BASE, idToken, sessionId);
-      console.log(`[WS] Đang kết nối... session=${sessionId} attempt=${reconnectAttemptRef.current}`);
+      console.log(`[ws] Connecting... session=${sessionId} attempt=${reconnectAttemptRef.current}`);
 
       const ws = new WebSocket(url);
       currentWs = ws;
@@ -197,7 +197,7 @@ export function useWebSocket({
 
       ws.onopen = () => {
         if (wsRef.current !== ws) return; // Bỏ qua nếu đã bị thay thế
-        console.log("[WS] Đã kết nối");
+        console.log("[ws] Connected");
         reconnectAttemptRef.current = 0;
         setConnState("connected");
       };
@@ -208,7 +208,7 @@ export function useWebSocket({
           const payload = JSON.parse(ev.data as string) as WsServerPayload;
           onMessageRef.current(payload);
         } catch {
-          console.error("[WS] Không thể parse message:", ev.data);
+          console.error("[ws] Parse error:", ev.data);
         }
       };
 
@@ -216,7 +216,7 @@ export function useWebSocket({
         if (wsRef.current === ws) {
           wsRef.current = null;
         }
-        console.warn(`[WS] Đã đóng: code=${ev.code} reason="${ev.reason}" wasClean=${ev.wasClean}`);
+        console.warn(`[ws] Closed: code=${ev.code} reason="${ev.reason}" wasClean=${ev.wasClean}`);
 
         if (!shouldReconnectRef.current) return;
 
@@ -225,7 +225,7 @@ export function useWebSocket({
 
         const attempt = reconnectAttemptRef.current;
         if (attempt >= RECONNECT_MAX_ATTEMPTS) {
-          console.warn(`[WS] Đã đạt giới hạn reconnect (${attempt})`);
+          console.warn(`[ws] Max reconnection attempts reached (${attempt})`);
           setConnState("error");
           return;
         }
@@ -234,7 +234,7 @@ export function useWebSocket({
         reconnectAttemptRef.current += 1;
         setConnState("reconnecting");
 
-        console.log(`[WS] Sẽ reconnect sau ${delay}ms (attempt ${reconnectAttemptRef.current})`);
+        console.log(`[ws] Reconnecting in ${delay}ms (attempt ${reconnectAttemptRef.current})`);
         reconnectTimerRef.current = setTimeout(() => {
           if (shouldReconnectRef.current) {
             openConnection();
@@ -248,7 +248,7 @@ export function useWebSocket({
         if (wsRef.current === ws) {
           const state = ws.readyState;
           console.error(
-            `[WS] Lỗi kết nối: url=${WS_BASE} readyState=${state} attempt=${reconnectAttemptRef.current}`,
+            `[ws] Connection error: url=${WS_BASE} readyState=${state} attempt=${reconnectAttemptRef.current}`,
           );
         }
       };

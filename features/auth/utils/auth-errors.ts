@@ -53,7 +53,7 @@ export function translateCognitoError(error: unknown): string {
       return "Tài khoản của bạn đã bị vô hiệu hóa.";
 
     default:
-      console.error("Unhandled Cognito Error:", errorName, message);
+      console.error("[auth] Unhandled Cognito error:", errorName, message);
       return "Đã có lỗi xảy ra trong quá trình xác thực. Vui lòng thử lại.";
   }
 }

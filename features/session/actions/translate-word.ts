@@ -22,7 +22,7 @@ export async function translateWordAction(word: string): Promise<string> {
 
     return payload.definition_vi || "Không tìm thấy bản dịch.";
   } catch (error) {
-    console.error("Translate error:", error);
+    console.error("[translateWord] API error:", error);
     return "Lỗi khi gọi API dịch.";
   }
 }

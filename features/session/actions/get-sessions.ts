@@ -22,7 +22,7 @@ export async function getSessions(): Promise<Session[]> {
   } catch (err) {
     // Don't let a single failing API call crash the whole dashboard server render.
     // Surface the error in server logs for debugging and return an empty list.
-    console.error("[getSessions] failed to fetch sessions:", err);
+    console.error("[session] getSessions failed:", err);
     return [];
   }
 }

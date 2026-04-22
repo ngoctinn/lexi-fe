@@ -39,10 +39,7 @@ async function requestJson<T = unknown>(
       headers,
     });
   } catch (err) {
-    console.error(
-      `[apiRequest] Network error when fetching ${requestUrl}:`,
-      err,
-    );
+    console.error(`[api] Network error (${requestUrl}):`, err);
     throw err;
   }
 
@@ -58,7 +55,7 @@ async function requestJson<T = unknown>(
     const message = parsed?.message || parsed?.error || parsed?.detail;
 
     // Log details to help debug 4xx/5xx from backend (avoid logging tokens)
-    console.error(`[apiRequest] ${requestUrl} returned ${response.status}`, {
+    console.error(`[api] Request failed (${response.status}): ${requestUrl}`, {
       status: response.status,
       body: parsed ?? raw,
     });

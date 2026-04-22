@@ -131,7 +131,7 @@ export const SessionService = {
   },
 
   handleError(message: string, context?: string) {
-    console.error(`[SessionService${context ? `:${context}` : ""}]`, message);
+    console.error(`[session] SessionService${context ? `:${context}` : ""} error:`, message);
     toast.error(message);
   },
 };
