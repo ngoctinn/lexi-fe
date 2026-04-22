@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { Turn } from "@/features/session/types/session.types";
+import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { TurnBubble } from "./turn-bubble";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -12,8 +13,8 @@ interface TranscriptPanelProps {
   aiStreamingText: string;
   aiName: string;
   onTranslate?: (turnIndex: number) => void;
-  onTranslateWord?: (word: string) => Promise<string>;
-  onSaveFlashcard?: (turnIndex: number) => void;
+  onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
+  onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => void;
   savingTurnIndexes?: number[];
   className?: string;
 }

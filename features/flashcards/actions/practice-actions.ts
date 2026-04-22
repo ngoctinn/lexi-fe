@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { apiRequest } from "@/lib/api/client";
 import { Flashcard, ReviewDifficulty } from "../types";
 
 // Dữ liệu giả để hiển thị luồng ban đầu trong lúc backend chưa sẵn sàng.
@@ -72,14 +73,16 @@ interface SaveFlashcardFromSessionInput {
   turn_index: number;
   source_text: string;
   translated_text: string;
+  translation_vi?: string;
+  definition_vi?: string;
+  part_of_speech?: string;
+  phonetic?: string;
+  audio_url?: string;
+  example_sentence?: string;
 }
 
 function normalizeText(value: string) {
   return value.replace(/\s+/g, " ").trim();
-}
-
-function createFlashcardId() {
-  return `mock-fc-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function toFlashcardWord(value: string) {
@@ -111,43 +114,63 @@ export async function saveFlashcardFromSession(
     };
   }
 
-  const duplicatedCard = mockFlashcards.find(
-    (card) =>
-      card.source_session_id === input.session_id &&
-      card.source_turn_index === input.turn_index,
-  );
+  try {
+    // Gọi API backend để tạo flashcard
+    const response = await apiRequest<{
+      flashcard_id: string;
+      word: string;
+      message: string;
+    }>("/flashcards", {
+      method: "POST",
+      body: JSON.stringify({
+        vocab: sourceText,
+        vocab_type: input.part_of_speech || "phrase",
+        translation_vi: input.translation_vi || translatedText,
+        definition_vi: input.definition_vi || "",
+        phonetic: input.phonetic,
+        audio_url: input.audio_url,
+        example_sentence: input.example_sentence || sourceText,
+        source_api: "session",
+        source_session_id: input.session_id,
+        source_turn_index: input.turn_index,
+      }),
+      cache: "no-store",
+    });
 
-  if (duplicatedCard) {
+    // Thêm vào mock data để hiển thị ngay
+    const newCard: Flashcard = {
+      flashcard_id: response.flashcard_id,
+      user_id: "user_123",
+      word: toFlashcardWord(sourceText),
+      phonetic: input.phonetic,
+      definition_vi: translatedText,
+      example_sentence: input.example_sentence || sourceText,
+      review_count: 0,
+      interval_days: 1,
+      difficulty: 0,
+      last_reviewed_at: null,
+      next_review_at: new Date().toISOString(),
+      source_session_id: input.session_id,
+      source_turn_index: input.turn_index,
+    };
+
+    mockFlashcards = [newCard, ...mockFlashcards];
+
+    revalidatePath("/flashcards");
+    revalidatePath("/flashcards/review");
+
     return {
       success: true,
-      message: "Nội dung này đã được lưu trước đó.",
+      message: response.message || "Đã lưu vào flashcard.",
+    };
+  } catch (error) {
+    console.error("[saveFlashcardFromSession] Error:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Không thể lưu flashcard.",
     };
   }
-
-  const newCard: Flashcard = {
-    flashcard_id: createFlashcardId(),
-    user_id: "user_123",
-    word: toFlashcardWord(sourceText),
-    definition_vi: translatedText,
-    example_sentence: sourceText,
-    review_count: 0,
-    interval_days: 1,
-    difficulty: 0,
-    last_reviewed_at: null,
-    next_review_at: new Date().toISOString(),
-    source_session_id: input.session_id,
-    source_turn_index: input.turn_index,
-  };
-
-  mockFlashcards = [newCard, ...mockFlashcards];
-
-  revalidatePath("/flashcards");
-  revalidatePath("/flashcards/review");
-
-  return {
-    success: true,
-    message: "Đã lưu vào flashcard.",
-  };
 }
 
 export async function updateFlashcardSRS(

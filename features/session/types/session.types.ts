@@ -62,7 +62,6 @@ export interface AnalyzedSentenceItem {
   text: string;
   type: "word" | "phrase";
   base?: string | null;
-  definition_vi?: string | null;
 }
 
 export interface Scoring {

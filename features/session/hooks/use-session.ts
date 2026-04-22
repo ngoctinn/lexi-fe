@@ -7,6 +7,7 @@ import {
   WsClientEvent,
   TurnSpeaker,
 } from "@/features/session/types/session.types";
+import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { useWebSocket } from "./use-websocket";
 import { useAudioRecorder } from "./use-audio-recorder";
 import { SessionService } from "../api/session.service";
@@ -179,16 +180,16 @@ export function useSession({
     [sessionId, setTurns],
   );
 
-  const translateWord = React.useCallback(async (word: string) => {
-    return await SessionService.translateWord(word);
+  const translateWord = React.useCallback(async (word: string, context: string): Promise<TranslateWordResult> => {
+    return await SessionService.translateWord(word, context);
   }, []);
 
   const toggleHintPanel = React.useCallback(() => {
     setHintPanelOpen(!hintPanelOpen);
   }, [setHintPanelOpen, hintPanelOpen]);
 
-  const saveTurnToFlashcard = React.useCallback(
-    async (turnIndex: number) => {
+  const saveWordToFlashcard = React.useCallback(
+    async (turnIndex: number, vocabData?: TranslateWordResult) => {
       const targetTurn = useSessionStore
         .getState()
         .turns.find((turn) => turn.turn_index === turnIndex);
@@ -202,16 +203,19 @@ export function useSession({
         return;
       }
 
-      const translatedContent = targetTurn.translated_content?.trim();
-      if (
-        !translatedContent ||
-        translatedContent === "Đang yêu cầu bản dịch..."
-      ) {
-        SessionService.handleError(
-          "Hãy dịch nội dung trước khi lưu flashcard.",
-          "Flashcard",
-        );
-        return;
+      // Nếu không có vocabData (save từ translation panel), kiểm tra translated_content
+      if (!vocabData) {
+        const translatedContent = targetTurn.translated_content?.trim();
+        if (
+          !translatedContent ||
+          translatedContent === "Đang yêu cầu bản dịch..."
+        ) {
+          SessionService.handleError(
+            "Hãy dịch nội dung trước khi lưu flashcard.",
+            "Flashcard",
+          );
+          return;
+        }
       }
 
       setSavingFlashcardTurnIndexes((previous) =>
@@ -219,11 +223,12 @@ export function useSession({
       );
 
       try {
-        const result = await SessionService.saveTurnToFlashcard({
+        const result = await SessionService.saveWordToFlashcard({
           sessionId,
           turnIndex,
           sourceText: targetTurn.content,
-          translatedText: translatedContent,
+          translatedText: vocabData?.definition_vi || targetTurn.translated_content || "",
+          vocabData,
         });
 
         if (!result.success) {
@@ -282,7 +287,7 @@ export function useSession({
       toggleHintPanel,
       translateTurn,
       translateWord,
-      saveTurnToFlashcard,
+      saveTurnToFlashcard: saveWordToFlashcard,
       sendMessage,
       setCurrentAudioUrl,
     },

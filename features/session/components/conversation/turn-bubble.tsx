@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, Languages, BookmarkPlus, Check } from "lucide-react";
+import { Volume2, Languages, BookmarkPlus, Check, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
@@ -14,18 +15,15 @@ import {
 } from "@/components/ui/popover";
 import type { Turn } from "@/features/session/types/session.types";
 import { TurnSpeaker } from "@/features/session/types/session.types";
-
-function splitTurnContent(content: string) {
-  return content.match(/\s+|[^\s]+/g) ?? [content];
-}
+import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 
 interface TurnBubbleProps {
   turn: Turn;
   aiName?: string;
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
-  onTranslateWord?: (word: string) => Promise<string>;
-  onSaveFlashcard?: (turnIndex: number) => void;
+  onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
+  onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => void;
   isSavingFlashcard?: boolean;
   isPlaying?: boolean;
 }
@@ -46,64 +44,28 @@ export function TurnBubble({
     null,
   );
   const [wordTranslations, setWordTranslations] = React.useState<
-    Record<number, string>
+    Record<number, TranslateWordResult>
   >({});
   const [isTranslatingWord, setIsTranslatingWord] = React.useState(false);
 
-  // Reconstruct tokens while preserving whitespace from original content
+  // Split text into words - every word is clickable
   const tokens = React.useMemo(() => {
     const content = turn.content;
-    const analysisItems = turn.analysis_items || [];
     
-    type Token = { text: string; isToken: boolean; analysisIndex?: number };
+    type Token = { 
+      text: string;
+    };
 
-    if (analysisItems.length === 0) {
-      return splitTurnContent(content).map<Token>((text) => ({
-        text,
-        isToken: !/^\s+$/.test(text),
-      }));
-    }
-
-    const result: Token[] = [];
-    let lastIndex = 0;
-
-    analysisItems.forEach((item, idx) => {
-      const index = content.indexOf(item.text, lastIndex);
-      if (index > lastIndex) {
-        const gapText = content.substring(lastIndex, index);
-        // Split gap text into words and spaces
-        splitTurnContent(gapText).forEach((word) => {
-          result.push({
-            text: word,
-            isToken: !/^\s+$/.test(word),
-          });
-        });
-      }
-      result.push({
-        text: item.text,
-        isToken: true,
-        analysisIndex: idx,
-      });
-      lastIndex = index + item.text.length;
-    });
-
-    if (lastIndex < content.length) {
-      const remainingText = content.substring(lastIndex);
-      splitTurnContent(remainingText).forEach((word) => {
-        result.push({
-          text: word,
-          isToken: !/^\s+$/.test(word),
-        });
-      });
-    }
-
-    return result;
-  }, [turn.content, turn.analysis_items]);
+    // Split by word boundaries - mọi từ đều clickable
+    // Regex: match words (letters, numbers, apostrophes) or punctuation
+    const words = content.match(/[\w']+|[^\w\s]/g) || [];
+    
+    return words.map<Token>((word) => ({ text: word }));
+  }, [turn.content]);
 
   const hasTranslation =
     Boolean(turn.translated_content) &&
     turn.translated_content !== "Đang yêu cầu bản dịch...";
-  const hasAnalysisItems = Boolean(turn.analysis_items?.length);
 
   const toggleTranslate = () => {
     if (!turn.translated_content) {
@@ -114,30 +76,19 @@ export function TurnBubble({
 
   const handleWordClick = async (tokenIndex: number) => {
     const token = tokens[tokenIndex];
-    if (!token || !token.isToken) return;
+    if (!token) return;
 
     setActiveWordIndex(tokenIndex);
 
-    // Nếu đã có bản dịch trong analysis_items thì dùng luôn
-    if (token.analysisIndex !== undefined) {
-      const analysis = turn.analysis_items?.[token.analysisIndex];
-      if (analysis?.definition_vi) {
-        setWordTranslations((prev) => ({
-          ...prev,
-          [tokenIndex]: analysis.definition_vi!,
-        }));
-        return;
-      }
-    }
-
-    // Nếu chưa có thì gọi API dịch từ
+    // Nếu chưa có bản dịch thì gọi API với context
     if (!wordTranslations[tokenIndex] && onTranslateWord) {
       setIsTranslatingWord(true);
       try {
-        const translation = await onTranslateWord(token.text);
+        // Pass context để backend detect phrase
+        const vocabData = await onTranslateWord(token.text, turn.content);
         setWordTranslations((prev) => ({
           ...prev,
-          [tokenIndex]: translation,
+          [tokenIndex]: vocabData,
         }));
       } finally {
         setIsTranslatingWord(false);
@@ -178,25 +129,11 @@ export function TurnBubble({
           )}
         >
           <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center">
+            <div className="flex flex-wrap items-center gap-x-1 leading-relaxed">
               {tokens.map((token, idx) => {
-                if (!token.isToken) {
-                  return (
-                    <span
-                      key={`${turn.turn_index}-${idx}`}
-                      className="whitespace-pre"
-                    >
-                      {token.text}
-                    </span>
-                  );
-                }
-
                 const isActiveWord = activeWordIndex === idx;
-                const translation = wordTranslations[idx];
-                const analysis =
-                  token.analysisIndex !== undefined
-                    ? turn.analysis_items?.[token.analysisIndex]
-                    : null;
+                const vocabData = wordTranslations[idx];
+                const isPhrase = vocabData?.is_phrase || false;
 
                 return (
                   <Popover
@@ -213,10 +150,13 @@ export function TurnBubble({
                         type="button"
                         onClick={() => handleWordClick(idx)}
                         className={cn(
-                          "inline-block rounded px-0.5 py-0.5 text-inherit transition-colors hover:bg-primary-100 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                          isActiveWord && "bg-primary-100 text-primary",
-                          analysis?.type === "phrase" &&
-                            "border-b-2 border-dotted border-primary/40",
+                          "inline-block cursor-pointer transition-colors duration-100 rounded-sm px-0.5",
+                          "hover:bg-primary/8",
+                          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30",
+                          isActiveWord && "bg-primary/12",
+                          isPhrase
+                            ? "border-b border-primary/40 font-medium"
+                            : "border-b border-transparent hover:border-primary/30",
                         )}
                       >
                         {token.text}
@@ -226,64 +166,151 @@ export function TurnBubble({
                       align={isUser ? "end" : "start"}
                       side="top"
                       sideOffset={10}
-                      className="w-72 space-y-3"
+                      className="w-72 p-0 z-[100]"
                     >
-                      <div className="space-y-1">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                          {analysis?.type === "phrase"
-                            ? "Cụm từ vừa chọn"
-                            : "Từ vừa chọn"}
-                        </p>
-                        <p className="text-sm font-semibold text-foreground">
-                          {token.text}
-                          {analysis?.base && (
-                            <span className="ml-2 text-xs font-normal text-muted-foreground">
-                              ({analysis.base})
-                            </span>
-                          )}
-                        </p>
-                      </div>
-
-                      <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-sm text-foreground">
-                        {isTranslatingWord ? (
-                          <div className="flex items-center gap-2 text-muted-foreground italic">
-                            <div className="size-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                            Đang dịch...
+                      {isTranslatingWord ? (
+                        <div className="flex items-center justify-center gap-2 p-6 text-muted-foreground">
+                          <Loader2 className="size-4 animate-spin" />
+                          <span className="text-sm">Đang tra từ...</span>
+                        </div>
+                      ) : vocabData ? (
+                        <div className="space-y-0">
+                          {/* Header with word, phonetic, and audio */}
+                          <div className="p-3 pb-2.5">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                                  <h4 className="text-base font-bold text-foreground">
+                                    {token.text}
+                                  </h4>
+                                  {vocabData.detected_phrase && token.text !== vocabData.detected_phrase && (
+                                    <span className="text-xs text-muted-foreground">
+                                      → {vocabData.detected_phrase}
+                                    </span>
+                                  )}
+                                  {vocabData.part_of_speech && (
+                                    <Badge variant="secondary" className="text-2xs px-1.5 py-0 h-4">
+                                      {vocabData.part_of_speech}
+                                    </Badge>
+                                  )}
+                                </div>
+                                {vocabData.phonetic && (
+                                  <p className="text-xs text-muted-foreground font-mono mb-1.5">
+                                    {vocabData.phonetic}
+                                  </p>
+                                )}
+                                {/* Translation - prominent */}
+                                <p className="text-sm font-semibold text-primary leading-snug">
+                                  {vocabData.translation_vi}
+                                </p>
+                              </div>
+                              {vocabData.audio_url && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  className="shrink-0 h-7 w-7 rounded-full hover:bg-primary/10 hover:text-primary"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onPlayAudio?.(vocabData.audio_url!);
+                                  }}
+                                >
+                                  <Volume2 className="size-3.5" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                        ) : translation ? (
-                          translation
-                        ) : (
-                          "Không có bản dịch."
-                        )}
-                      </div>
 
-                      <div className="flex justify-end">
-                        <Button
-                          variant={
-                            turn.is_saved_to_flashcard
-                              ? "soft-success"
-                              : "outline"
-                          }
-                          size="xs"
-                          onClick={() => onSaveFlashcard?.(turn.turn_index)}
-                          disabled={
-                            isSavingFlashcard ||
-                            turn.is_saved_to_flashcard ||
-                            (!translation && !isTranslatingWord)
-                          }
-                        >
-                          {turn.is_saved_to_flashcard ? (
-                            <Check className="size-3" />
-                          ) : (
-                            <BookmarkPlus className="size-3" />
+                          {/* Definition - if different from translation */}
+                          {vocabData.definition_vi && vocabData.definition_vi !== vocabData.translation_vi && (
+                            <>
+                              <Separator />
+                              <div className="px-3 py-2.5">
+                                <p className="text-xs leading-relaxed text-muted-foreground">
+                                  {vocabData.definition_vi}
+                                </p>
+                              </div>
+                            </>
                           )}
-                          {turn.is_saved_to_flashcard
-                            ? "Đã lưu"
-                            : isSavingFlashcard
-                              ? "Đang lưu..."
-                              : "Lưu flashcard"}
-                        </Button>
-                      </div>
+
+                          {/* Example sentence */}
+                          {vocabData.example_sentence && (
+                            <>
+                              <Separator />
+                              <div className="px-3 py-2.5 bg-muted/30">
+                                <p className="text-xs leading-relaxed text-muted-foreground italic">
+                                  &ldquo;{vocabData.example_sentence}&rdquo;
+                                </p>
+                              </div>
+                            </>
+                          )}
+
+                          {/* Context: câu gốc highlight từ + câu dịch */}
+                          {turn.translated_content && (
+                            <>
+                              <Separator />
+                              <div className="px-3 py-2.5 bg-muted/20 space-y-1.5">
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                  {turn.content.split(/\b/).map((part, i) =>
+                                    part.toLowerCase() === token.text.toLowerCase() ? (
+                                      <mark key={i} className="bg-yellow-200 text-yellow-900 rounded px-0.5 not-italic font-medium">
+                                        {part}
+                                      </mark>
+                                    ) : (
+                                      <span key={i}>{part}</span>
+                                    )
+                                  )}
+                                </p>
+                                <p className="text-xs text-primary/80 font-medium leading-relaxed">
+                                  {turn.translated_content}
+                                </p>
+                              </div>
+                            </>
+                          )}
+
+                          <Separator />
+
+                          {/* Save button */}
+                          <div className="p-2">
+                            <Button
+                              variant={
+                                turn.is_saved_to_flashcard
+                                  ? "soft-success"
+                                  : "default"
+                              }
+                              size="sm"
+                              className="w-full h-8 text-xs"
+                              onClick={() => onSaveFlashcard?.(turn.turn_index, vocabData)}
+                              disabled={
+                                isSavingFlashcard ||
+                                turn.is_saved_to_flashcard
+                              }
+                            >
+                              {isSavingFlashcard ? (
+                                <>
+                                  <Loader2 className="size-3 animate-spin" />
+                                  Đang lưu...
+                                </>
+                              ) : turn.is_saved_to_flashcard ? (
+                                <>
+                                  <Check className="size-3" />
+                                  Đã lưu
+                                </>
+                              ) : (
+                                <>
+                                  <BookmarkPlus className="size-3" />
+                                  Lưu flashcard
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-6 text-center">
+                          <p className="text-sm text-muted-foreground">
+                            Không thể tra từ này.
+                          </p>
+                        </div>
+                      )}
                     </PopoverContent>
                   </Popover>
                 );

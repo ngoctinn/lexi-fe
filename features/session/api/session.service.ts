@@ -1,16 +1,15 @@
 import { toast } from "sonner";
 import { saveFlashcardFromSession } from "@/features/flashcards/actions/practice-actions";
-import {
-  analyzeTurnText,
-  type AnalyzedSentenceItem,
-} from "@/features/session/actions/analyze-turn";
-import { translateWordAction } from "@/features/session/actions/translate-word";
+import type { AnalyzedSentenceItem } from "@/features/session/actions/analyze-turn";
+import { translateWordAction, type TranslateWordResult } from "@/features/session/actions/translate-word";
+import { translateSentenceAction } from "@/features/session/actions/translate-sentence";
 
 interface SaveTurnToFlashcardInput {
   sessionId: string;
   turnIndex: number;
   sourceText: string;
   translatedText: string;
+  vocabData?: TranslateWordResult;
 }
 
 interface TranslateTurnResult {
@@ -22,27 +21,6 @@ function shouldUseMockSessionApi() {
   return process.env.NEXT_PUBLIC_USE_SESSION_MOCK === "true";
 }
 
-function buildTranslatedText(
-  sourceText: string,
-  analysisItems: AnalyzedSentenceItem[],
-) {
-  // Lấy các cụm từ (phrasal verbs, idioms) nếu có
-  const phraseItems = analysisItems.filter((item) => item.type === "phrase");
-  
-  if (phraseItems.length > 0) {
-    return phraseItems
-      .map((item) => {
-        const baseText = item.base ? ` (${item.base})` : "";
-        const meaningText = item.definition_vi ? `: ${item.definition_vi}` : "";
-        return `${item.text}${baseText}${meaningText}`;
-      })
-      .join("\n");
-  }
-
-  // Nếu không có cụm từ, trả về null để UI tự xử lý việc hiển thị từng từ khi click
-  return null;
-}
-
 export const SessionService = {
   async translateTurn(
     sessionId: string,
@@ -51,51 +29,36 @@ export const SessionService = {
   ): Promise<TranslateTurnResult> {
     if (shouldUseMockSessionApi()) {
       const { mockSessionApi } = await import("./session-mock");
-      const translatedText = await mockSessionApi.translateTurn(
-        sessionId,
-        turnIndex,
-      );
-      return {
-        translatedText,
-        analysisItems: [],
-      };
+      const translatedText = await mockSessionApi.translateTurn(sessionId, turnIndex);
+      return { translatedText, analysisItems: [] };
     }
-
     try {
-      // Gọi API analyze để tách từ/cụm từ
-      const analysisItems = await analyzeTurnText(sourceText);
-      const translatedText = buildTranslatedText(sourceText, analysisItems);
-
-      return {
-        translatedText: translatedText ?? "",
-        analysisItems,
-      };
+      // Dịch toàn bộ câu bằng AWS Translate
+      const result = await translateSentenceAction(sourceText);
+      return { translatedText: result.sentence_vi, analysisItems: [] };
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         const { mockSessionApi } = await import("./session-mock");
-        const translatedText = await mockSessionApi.translateTurn(
-          sessionId,
-          turnIndex,
-        );
-        return {
-          translatedText,
-          analysisItems: [],
-        };
+        const translatedText = await mockSessionApi.translateTurn(sessionId, turnIndex);
+        return { translatedText, analysisItems: [] };
       }
       throw error;
     }
   },
 
-  async translateWord(word: string): Promise<string> {
+  async translateWord(word: string, context: string): Promise<TranslateWordResult> {
     if (shouldUseMockSessionApi()) {
-      return `Dịch (Mock): ${word} -> Nghĩa của từ`;
+      return {
+        word,
+        translation_vi: `Nghĩa của từ ${word}`,
+        definition_vi: `Định nghĩa chi tiết của từ ${word} (Mock)`,
+      };
     }
-
     try {
-      return await translateWordAction(word);
+      return await translateWordAction(word, context);
     } catch (error) {
       this.handleError("Không thể dịch từ này.", "TranslateWord");
-      return "Lỗi dịch.";
+      return { word, translation_vi: "Lỗi dịch.", definition_vi: "" };
     }
   },
 
@@ -107,7 +70,7 @@ export const SessionService = {
     return "Tính năng gợi ý hiện chưa khả dụng.";
   },
 
-  async saveTurnToFlashcard(
+  async saveWordToFlashcard(
     input: SaveTurnToFlashcardInput,
   ): Promise<{ success: boolean; message: string }> {
     const result = await saveFlashcardFromSession({
@@ -115,19 +78,23 @@ export const SessionService = {
       turn_index: input.turnIndex,
       source_text: input.sourceText,
       translated_text: input.translatedText,
+      translation_vi: input.vocabData?.translation_vi,
+      definition_vi: input.vocabData?.definition_vi,
+      part_of_speech: input.vocabData?.part_of_speech,
+      phonetic: input.vocabData?.phonetic,
+      audio_url: input.vocabData?.audio_url,
+      example_sentence: input.vocabData?.example_sentence,
     });
-
     if (!result.success) {
-      return {
-        success: false,
-        message: result.message || "Không thể lưu flashcard.",
-      };
+      return { success: false, message: result.message || "Không thể lưu flashcard." };
     }
+    return { success: true, message: result.message || "Đã lưu vào flashcard." };
+  },
 
-    return {
-      success: true,
-      message: result.message || "Đã lưu vào flashcard.",
-    };
+  async saveTurnToFlashcard(
+    input: SaveTurnToFlashcardInput,
+  ): Promise<{ success: boolean; message: string }> {
+    return this.saveWordToFlashcard(input);
   },
 
   handleError(message: string, context?: string) {
