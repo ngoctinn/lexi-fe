@@ -50,6 +50,7 @@ export function TurnBubble({
   const hasTranslation =
     Boolean(turn.translated_content) &&
     turn.translated_content !== "Đang yêu cầu bản dịch...";
+  const hasAnalysisItems = Boolean(turn.analysis_items?.length);
 
   const toggleTranslate = () => {
     if (!turn.translated_content) {
@@ -202,6 +203,30 @@ export function TurnBubble({
                     ? turn.translated_content
                     : "Đang yêu cầu bản dịch..."}
                 </span>
+
+                {hasAnalysisItems && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {turn.analysis_items?.map((item, index) =>
+                      item.type === "phrase" ? (
+                        <Badge
+                          key={`${turn.turn_index}-${item.text}-${index}`}
+                          variant="info"
+                          size="xs"
+                        >
+                          {item.text}
+                          {item.base ? ` -> ${item.base}` : ""}
+                        </Badge>
+                      ) : (
+                        <span
+                          key={`${turn.turn_index}-${item.text}-${index}`}
+                          className="rounded border border-border/60 px-1.5 py-0.5 text-xs text-muted-foreground"
+                        >
+                          {item.text}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                )}
 
                 <div className="mt-2 flex justify-end">
                   <Button

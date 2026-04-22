@@ -28,10 +28,19 @@ export async function apiFetchServer(path: string, options: RequestInit = {}) {
         headers.set("Authorization", `Bearer ${token}`);
       }
 
-      const response = await fetch(requestUrl, {
-        ...options,
-        headers,
-      });
+      let response: Response;
+      try {
+        response = await fetch(requestUrl, {
+          ...options,
+          headers,
+        });
+      } catch (err) {
+        console.error(
+          `[apiFetchServer] Network error when fetching ${requestUrl}:`,
+          err,
+        );
+        throw err;
+      }
 
       if (!response.ok) {
         const errorData = await response

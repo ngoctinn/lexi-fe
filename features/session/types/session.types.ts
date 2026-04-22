@@ -51,10 +51,18 @@ export interface Turn {
   speaker: TurnSpeaker;
   content: string;
   translated_content?: string | null;
+  analysis_items?: AnalyzedSentenceItem[];
   audio_url?: string | null;
   is_hint_used: boolean;
   is_saved_to_flashcard?: boolean;
   is_pending?: boolean;
+}
+
+export interface AnalyzedSentenceItem {
+  text: string;
+  type: "word" | "phrase";
+  base?: string | null;
+  definition_vi?: string | null;
 }
 
 export interface Scoring {

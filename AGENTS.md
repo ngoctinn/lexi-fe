@@ -1,254 +1,217 @@
-# AGENTS.md - Lexi
+AGENTS.md - Lexi
 
-## Goal
+Goal: Build MVP web app luyện nói tiếng Anh với AI + flashcard
 
-Build MVP web app luyện nói tiếng Anh với AI + flashcard.
-
-Yêu cầu:
-
-- Code đơn giản, dễ hiểu cho beginner
-- Không over-engineering
-- Ưu tiên tốc độ build hơn hoàn hảo
+* Code đơn giản, dễ hiểu cho beginner
+* Không over-engineering
+* Ưu tiên tốc độ build hơn hoàn hảo
 
 ---
 
-# 1. Thinking Rules (Bắt buộc trước khi code)
+1. Thinking Rules
+   Không giả định khi chưa rõ. Trước khi code:
 
-Không được giả định khi chưa rõ.
-
-Trước khi implement:
-
-- Liệt kê **assumptions**
-- Nếu có ambiguity → đưa ra các cách hiểu
-- Nếu thiếu thông tin → hỏi lại trước khi code
-- Nếu có cách đơn giản hơn → đề xuất rõ ràng
-
-Nếu không chắc:
-→ dừng lại và hỏi
+* Liệt kê assumptions
+* Ambiguity → đưa ra cách hiểu
+* Thiếu info → hỏi lại
+* Có cách đơn giản hơn → đề xuất
+* Không chắc → dừng và hỏi
 
 ---
 
-# 2. Simplicity First
+2. Simplicity First
+   Luôn chọn cách đơn giản nhất. Không:
 
-Luôn chọn cách đơn giản nhất có thể.
-
-Không:
-
-- thêm feature ngoài yêu cầu
-- abstraction cho code dùng 1 lần
-- config hoặc flexibility không cần thiết
-- xử lý edge case không tồn tại
-
-Rule:
-
-> Nếu có thể làm trong 50 dòng, không viết 200 dòng
-
-Checklist:
-
-- Code có thể ngắn hơn không?
-- Có thể bỏ abstraction không?
-- Có đang "future-proof" không cần thiết?
+* thêm feature ngoài yêu cầu
+* abstraction cho code dùng 1 lần
+* config/flexibility không cần
+* xử lý edge case không tồn tại
+  Rule: làm được trong 50 dòng → không viết 200 dòng
 
 ---
 
-# 3. Controlled Changes
+3. Controlled Changes
+   Chỉ thay đổi đúng scope:
 
-Chỉ thay đổi những gì cần thiết.
-
-Khi sửa:
-
-- Không refactor ngoài scope
-- Không đổi format/style có sẵn
-- Không "clean code" toàn file
-
-Được phép:
-
-- Xóa code do mình tạo ra nhưng không dùng
-
-Không được:
-
-- Xóa code cũ không liên quan (chỉ mention)
+* Không refactor ngoài scope
+* Không đổi format/style có sẵn
+* Không clean toàn file
+* Được xóa code do mình tạo nhưng không dùng
 
 ---
 
-# 4. Execution Flow
+4. Execution Flow
+   Plan: step nhỏ → verify → tiếp
 
-Mỗi task phải có tiêu chí rõ ràng.
+Mapping:
 
-## Plan
+* Bug → reproduce → fix → verify
+* Feature → UI + logic chạy được
+* Refactor → không đổi behavior
 
-1. Step nhỏ → verify
-2. Step nhỏ → verify
-3. Step nhỏ → verify
-
-## Mapping task
-
-- Bug → reproduce → fix → verify
-- Feature → UI + logic chạy được
-- Refactor → behavior không đổi
-
-Nếu không define được success criteria → hỏi lại
+Không define được success → hỏi
 
 ---
 
-# 5. MCP Workflow (Quan trọng)
+5. MCP Workflow
 
-## Vai trò từng MCP
+Tools:
+Filesystem MCP (mcp_filesystem_*) → đọc/ghi lexi-be + lexi-fe
 
-- nextjs MCP → docs + debug
-- filesystem MCP → đọc/ghi code
-- shadcn MCP → UI component
+* read_text_file, read_multiple_files
+* write_file, edit_file
+* list_directory, directory_tree, search_files
+* get_file_info, create_directory, move_file
 
-## Flow chuẩn
+AWS Docs MCP (mcp_AWS_Documentation_MCP_Server_*)
 
-```text
-1. nextjs_docs (nếu liên quan Next.js)
-2. shadcn MCP (nếu cần UI)
-3. filesystem MCP (code)
-4. nextjs_call (debug)
-```
+* search_documentation, read_documentation
+* read_sections, recommend
 
-## Rules
+Upstash Context7 (mcp_iogithubupstashcontext7_*)
 
-- Next.js → luôn docs first
-- Không đoán API
-- Không debug bằng suy luận
+* resolve_library_id, get_library_docs
+
+Next.js MCP (mcp_next_devtools_*)
+
+* init, nextjs_docs, nextjs_index
+* nextjs_call, browser_eval
+* upgrade_nextjs_16, enable_cache_components
+
+shadcn MCP (mcp_shadcn_*)
+
+* get_project_registries, list/search/view items
+* get_item_examples, get_add_command, audit_checklist
+
+shadcn-ui MCP (mcp_shadcn_ui_*)
+
+* list/get component, demo, metadata
+* list/get block
+* list/get/apply theme
+
+Suggested Flow:
+Next.js → docs nếu cần
+UI → shadcn
+Code → filesystem
+Debug → nextjs
+
+Rules:
+
+* Không đoán API
+* Không kết luận khi chưa verify bằng code/log
 
 ---
 
-# 6. Next.js Rules
+6. Next.js Rules
 
-- Server Components mặc định
-- Chỉ dùng "use client" khi cần
-- Fetch ở server
-- Ưu tiên cache
-
-Không:
-
-- fetch client nếu không cần
-- lạm dụng "use client"
-- dùng API route khi Server Actions đủ
+* Server Components mặc định, chỉ "use client" khi cần
+* Fetch ở server, ưu tiên cache
+* Ưu tiên Server Actions
+* API route khi: public endpoint / webhook / external integration
 
 ---
 
-# 7. Code Rules
+7. Code Rules
 
-- Component nhỏ, rõ ràng
-- Không nested sâu
-- TypeScript phải rõ type
+* Component nhỏ, rõ ràng, không nested sâu
+* TypeScript rõ type
+
+Naming:
+
+* Component → PascalCase
+* Function → camelCase
+* Tên rõ nghĩa
 
 State:
 
-- Global → Zustand
-- Server → React Query
+* Mặc định: React state + server fetch
+* Phức tạp: Global → Zustand, Server cache → React Query
 
 ---
 
-# 8. UI Rules
+8. UI Rules
 
-- UI rõ ràng, dễ dùng
-- Ưu tiên shadcn/ui
-- Không dùng UI placeholder kém
-
----
-
-# 9. Comment Rules IMPORTANT!!!
-
-- Viết tiếng Việt
-- Giải thích **tại sao**, không chỉ **làm gì**
+* UI rõ ràng, dễ dùng
+* Ưu tiên shadcn/ui
+* Không dùng placeholder kém
 
 ---
 
-# 10. File Editing Rules (Filesystem MCP)
+9. Comment Rules
 
-Trước khi sửa:
-
-```text
-view_file → hiểu code
-```
-
-Khi sửa:
-
-```text
-edit_file (dryRun=true) → check → apply
-```
-
-Không:
-
-- sửa khi chưa đọc file
-- sửa nhiều file cùng lúc nếu không cần
+* Viết tiếng Việt
+* Giải thích tại sao, không giải thích làm gì
 
 ---
 
-# 11. Definition of Done
+10. File Editing
+    Trước khi sửa: view_file → hiểu code
+    Khi sửa: edit_file (dryRun) → check → apply
 
-- Logic đúng
-- Không lỗi build / lint
-- UI chạy trên mobile + desktop
-- Code đơn giản, dễ hiểu
+Được sửa nhiều file khi:
 
----
-
-# 12. Anti-patterns
-
-Không được:
-
-- over-engineering
-- tự suy đoán requirement
-- refactor ngoài scope
-- thêm feature không yêu cầu
-- viết abstraction sớm
+* feature liên quan nhiều module
+* hoặc bắt buộc để code chạy
 
 ---
 
-# 13. Mental Model
+11. Definition of Done
 
-```text
-Simplicity > Clean code
-Working > Perfect
-Explicit > Magic
-```
-
----
-
-# 14. Preferred Style
-
-- Trực tiếp, không vòng vo
-- Nếu code chưa tối ưu → nói rõ
-- Nếu approach sai → phản biện
-- Không "chiều user" khi user sai
+* Logic đúng
+* Không build/lint error
+* Không runtime error
+* UI chạy mobile + desktop
+* Code đơn giản, dễ hiểu
 
 ---
 
-# 15. When to Ask
+12. Anti-patterns
+    Không:
 
-Phải hỏi khi:
-
-- requirement không rõ
-- nhiều cách implement khác nhau
-- có trade-off đáng kể
-- thiếu context
-
----
-
-# 16. Example Good Behavior
-
-```text
-User: "build login"
-
-Agent:
-- assumption: dùng email/password?
-- hỏi lại nếu chưa rõ
-- đề xuất dùng shadcn form
-- implement minimal version
-```
+* over-engineering
+* đoán requirement
+* refactor ngoài scope
+* thêm feature không yêu cầu
+* abstraction sớm
 
 ---
 
-# Summary
+13. Mental Model
+    Simplicity > Clean code
+    Working > Perfect
+    Explicit > Magic
 
-```text
+---
+
+14. Preferred Style
+
+* Trực tiếp, không vòng vo
+* Code chưa tối ưu → nói rõ
+* Approach sai → phản biện
+
+---
+
+15. When to Ask
+
+* requirement không rõ
+* nhiều cách implement
+* có trade-off
+* thiếu context
+
+→ không chắc thì hỏi
+
+---
+
+16. Example
+    User: build login
+    Agent:
+
+* assumption (email/password?)
+* hỏi nếu chưa rõ
+* đề xuất đơn giản
+* implement minimal
+
+---
+
+Summary
 Think → Simplify → Scope → Implement → Verify
-```
-
----

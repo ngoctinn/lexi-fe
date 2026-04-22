@@ -31,6 +31,7 @@ interface SessionSettingsSheetProps {
   onGoalsChange: (goals: string[]) => void;
   onAiGenderChange: (value: "male" | "female") => void;
   isPending: boolean;
+  formId?: string;
 }
 
 export function SessionSettingsSheet({
@@ -44,6 +45,7 @@ export function SessionSettingsSheet({
   onGoalsChange,
   onAiGenderChange,
   isPending,
+  formId,
 }: SessionSettingsSheetProps) {
   return (
     <SheetContent side="right" className="sm:w-xl! sm:max-w-none!">
@@ -142,7 +144,7 @@ export function SessionSettingsSheet({
         </div>
 
         <SheetFooter className="shrink-0 border-t border-border/60 pt-4">
-          <Button type="submit" size="xl" disabled={isPending}>
+          <Button type="submit" size="xl" disabled={isPending} form={formId}>
             {isPending ? "Đang khởi tạo..." : "Bắt đầu hội thoại"}
           </Button>
         </SheetFooter>

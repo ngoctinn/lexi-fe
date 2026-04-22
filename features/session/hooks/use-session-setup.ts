@@ -141,7 +141,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
       });
 
       if (result.success && result.session_id) {
-        router.push(`/session/${result.session_id}`);
+        router.push(`/session/${result.session_id}?new=1`);
         return;
       }
       toast.error(result.error ?? "Không thể tạo phiên học. Vui lòng thử lại.");

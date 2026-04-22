@@ -20,12 +20,14 @@ interface UseSessionOptions {
   sessionId: string;
   idToken: string;
   initialTurns?: Turn[];
+  isNewSession?: boolean;
 }
 
 export function useSession({
   sessionId,
   idToken,
   initialTurns = [],
+  isNewSession,
 }: UseSessionOptions) {
   const [savingFlashcardTurnIndexes, setSavingFlashcardTurnIndexes] =
     React.useState<number[]>([]);
@@ -66,6 +68,7 @@ export function useSession({
     onMessage: handleWsMessage,
     onConnectionChange: (wsState) =>
       useSessionStore.getState().setWsState(wsState),
+    initialDelayMs: isNewSession ? 1500 : undefined,
   });
 
   const {
@@ -151,14 +154,24 @@ export function useSession({
       );
 
       try {
-        const translation = await SessionService.translateTurn(
+        const sourceText =
+          useSessionStore
+            .getState()
+            .turns.find((turn) => turn.turn_index === turnIndex)?.content || "";
+
+        const translationResult = await SessionService.translateTurn(
           sessionId,
           turnIndex,
+          sourceText,
         );
         setTurns((prev: Turn[]) =>
           prev.map((t: Turn) =>
             t.turn_index === turnIndex
-              ? { ...t, translated_content: translation }
+              ? {
+                  ...t,
+                  translated_content: translationResult.translatedText,
+                  analysis_items: translationResult.analysisItems,
+                }
               : t,
           ),
         );

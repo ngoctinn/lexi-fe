@@ -13,20 +13,40 @@ export async function saveOnboardingAction(
   formData: FormData,
 ): Promise<OnboardingActionState> {
   // 1. Chuyển đổi và Validate dữ liệu form
+  console.log("FormData received:", formData);
+  console.log("FormData is FormData?", formData instanceof FormData);
+  
+  const display_name = formData.get("display_name");
+  const current_level = formData.get("current_level");
+  const target_level = formData.get("target_level");
+  const learning_goal_text = formData.get("learning_goal_text");
+  
+  console.log("FormData entries:");
+  for (const [key, value] of formData.entries()) {
+    console.log(`  ${key}:`, value, `(type: ${typeof value})`);
+  }
+  
   const rawData = {
-    display_name: formData.get("display_name"),
-    current_level: formData.get("current_level"),
-    target_level: formData.get("target_level"),
-    learning_goal_text: formData.get("learning_goal_text"),
+    display_name,
+    current_level,
+    target_level,
+    learning_goal_text,
   };
+
+  console.log("Onboarding raw data:", rawData);
 
   const validated = onboardingSchema.safeParse(rawData);
 
   if (!validated.success) {
+    const fieldErrors = validated.error.flatten().fieldErrors;
+    console.log("Onboarding validation errors:", fieldErrors);
+    console.log("display_name error type:", typeof fieldErrors.display_name);
+    console.log("display_name error value:", fieldErrors.display_name);
+    console.log("Is array?", Array.isArray(fieldErrors.display_name));
     return {
       success: false,
       message: "Vui lòng kiểm tra lại thông tin.",
-      errors: validated.error.flatten().fieldErrors,
+      errors: fieldErrors,
     };
   }
 

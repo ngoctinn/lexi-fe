@@ -1,5 +1,9 @@
 import { toast } from "sonner";
 import { saveFlashcardFromSession } from "@/features/flashcards/actions/practice-actions";
+import {
+  analyzeTurnText,
+  type AnalyzedSentenceItem,
+} from "@/features/session/actions/analyze-turn";
 
 interface SaveTurnToFlashcardInput {
   sessionId: string;
@@ -8,14 +12,76 @@ interface SaveTurnToFlashcardInput {
   translatedText: string;
 }
 
+interface TranslateTurnResult {
+  translatedText: string;
+  analysisItems: AnalyzedSentenceItem[];
+}
+
+function shouldUseMockSessionApi() {
+  return process.env.NEXT_PUBLIC_USE_SESSION_MOCK === "true";
+}
+
+function buildTranslatedText(
+  sourceText: string,
+  analysisItems: AnalyzedSentenceItem[],
+) {
+  const phraseItems = analysisItems.filter((item) => item.type === "phrase");
+  if (phraseItems.length === 0) {
+    const splitWords = analysisItems
+      .filter((item) => item.type === "word" && item.text.trim())
+      .map((item) => item.text)
+      .join(" · ");
+
+    return splitWords ? `Tách từ: ${splitWords}` : sourceText;
+  }
+
+  return phraseItems
+    .map((item) => {
+      const baseText = item.base ? ` (${item.base})` : "";
+      const meaningText = item.definition_vi ? `: ${item.definition_vi}` : "";
+      return `${item.text}${baseText}${meaningText}`;
+    })
+    .join("\n");
+}
+
 export const SessionService = {
-  async translateTurn(sessionId: string, turnIndex: number): Promise<string> {
-    if (process.env.NODE_ENV === "development") {
+  async translateTurn(
+    sessionId: string,
+    turnIndex: number,
+    sourceText: string,
+  ): Promise<TranslateTurnResult> {
+    if (shouldUseMockSessionApi()) {
       const { mockSessionApi } = await import("./session-mock");
-      return mockSessionApi.translateTurn(sessionId, turnIndex);
+      const translatedText = await mockSessionApi.translateTurn(
+        sessionId,
+        turnIndex,
+      );
+      return {
+        translatedText,
+        analysisItems: [],
+      };
     }
 
-    return "Tính năng dịch chưa sẵn dùng trong sản phẩm.";
+    try {
+      const analysisItems = await analyzeTurnText(sourceText);
+      return {
+        translatedText: buildTranslatedText(sourceText, analysisItems),
+        analysisItems,
+      };
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        const { mockSessionApi } = await import("./session-mock");
+        const translatedText = await mockSessionApi.translateTurn(
+          sessionId,
+          turnIndex,
+        );
+        return {
+          translatedText,
+          analysisItems: [],
+        };
+      }
+      throw error;
+    }
   },
 
   async getHint(sessionId: string): Promise<string> {

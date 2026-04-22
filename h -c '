@@ -1,0 +1,5 @@
+{
+    "BucketArn": "arn:aws:s3:::lexi-be-deploy-533590176362-ap-southeast-1",
+    "BucketRegion": "ap-southeast-1",
+    "AccessPointAlias": false
+}

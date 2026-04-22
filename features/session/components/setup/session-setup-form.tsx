@@ -21,9 +21,11 @@ export function SessionSetupForm({
   ...props
 }: SessionSetupFormProps) {
   const { state, actions } = useSessionSetup({ scenarios });
+  const formId = "session-setup-form";
 
   return (
     <form
+      id={formId}
       onSubmit={actions.handleSubmit}
       className={cn("flex h-full w-full", className)}
       {...props}
@@ -86,6 +88,7 @@ export function SessionSetupForm({
               actions.updateFormData("ai_gender", value)
             }
             isPending={state.isPending}
+            formId={formId}
           />
         )}
       </Sheet>

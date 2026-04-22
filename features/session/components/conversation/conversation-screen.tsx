@@ -30,6 +30,7 @@ interface ConversationScreenProps {
   myRole?: string;
   partnerRole?: string;
   initialSummary?: SessionScoreSummary | null;
+  isNewSession?: boolean;
 }
 
 export function ConversationScreen({
@@ -42,11 +43,13 @@ export function ConversationScreen({
   myRole,
   partnerRole,
   initialSummary = null,
+  isNewSession,
 }: ConversationScreenProps) {
   const { ui, uploadProgress, actions } = useSession({
     sessionId,
     idToken,
     initialTurns,
+    isNewSession,
   });
   const [inputValue, setInputValue] = React.useState("");
   const [sessionSummary, setSessionSummary] =

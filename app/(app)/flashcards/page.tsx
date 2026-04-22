@@ -1,6 +1,5 @@
 import { fetchPracticeQueue } from "@/features/flashcards/actions/practice-actions";
 import { FlashcardDeckOverview } from "@/features/flashcards/components/deck-overview";
-import { FlashcardEmptyState } from "@/features/flashcards/components/flashcard-empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { BookOpen } from "lucide-react";
 import { Metadata } from "next";

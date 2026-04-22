@@ -105,6 +105,11 @@ export function OnboardingForm() {
             name="learning_goal_text"
             value={data.learning_goal_text}
           />
+          <input
+            type="hidden"
+            name="display_name"
+            value={data.display_name}
+          />
 
           <div
             key={step}
@@ -115,7 +120,6 @@ export function OnboardingForm() {
                 <InputGroup size="xl">
                   <InputGroupInput
                     id="display_name"
-                    name="display_name"
                     value={data.display_name}
                     onChange={(event) =>
                       setData({ ...data, display_name: event.target.value })
