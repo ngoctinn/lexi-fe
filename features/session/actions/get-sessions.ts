@@ -2,14 +2,8 @@
 
 import { apiRequest } from "@/lib/api/client";
 import type { Session } from "@/features/session/types/session.types";
-import { isMockAuthSession } from "../api/session-auth";
-import { mockSessionApi } from "../api/session-mock";
 
 export async function getSessions(): Promise<Session[]> {
-  if (await isMockAuthSession()) {
-    return mockSessionApi.getSessions();
-  }
-
   try {
     const response = await apiRequest<{
       success: boolean;

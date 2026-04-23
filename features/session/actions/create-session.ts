@@ -5,16 +5,10 @@ import type {
   CreateSessionDto,
   CreateSessionResult,
 } from "@/features/session/types/session.types";
-import { isMockAuthSession } from "../api/session-auth";
-import { mockSessionApi } from "../api/session-mock";
 
 export async function createSession(
   dto: CreateSessionDto,
 ): Promise<CreateSessionResult> {
-  if (await isMockAuthSession()) {
-    return mockSessionApi.createSession(dto);
-  }
-
   try {
     const result = await apiRequest<CreateSessionResult>("/sessions", {
       method: "POST",

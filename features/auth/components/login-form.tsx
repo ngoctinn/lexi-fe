@@ -29,8 +29,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { translateCognitoError } from "../utils/auth-errors";
 import { loginSchema, type LoginSchema } from "../schemas";
 import { PasswordInput } from "./password-input";
-import { signInMockSession } from "../actions/mock-auth.actions";
-import { isMockAdminCredentials, isMockAuthEnabled } from "../mock-auth";
 
 type LoginFormProps = React.ComponentProps<"div">;
 
@@ -38,7 +36,6 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
-  const [isMockSigningIn, setIsMockSigningIn] = React.useState(false);
 
   const {
     register,
@@ -60,35 +57,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     [callbackUrl],
   );
 
-  const handleMockLogin = React.useCallback(
-    async (defaultPath = "/admin") => {
-      setIsMockSigningIn(true);
-
-      try {
-        const result = await signInMockSession();
-
-        if (!result.success) {
-          toast.error(result.error ?? "Không thể mở mock admin.");
-          return;
-        }
-
-        toast.success("Đã mở mock admin.");
-        router.push(getRedirectTarget(defaultPath));
-        router.refresh();
-      } catch {
-        toast.error("Không thể mở mock admin.");
-      } finally {
-        setIsMockSigningIn(false);
-      }
-    },
-    [getRedirectTarget, router],
-  );
-
   const onSubmit = async (data: LoginSchema) => {
-    if (isMockAdminCredentials(data.email, data.password)) {
-      await handleMockLogin();
-      return;
-    }
 
     try {
       const { isSignedIn, nextStep } = await signIn({
@@ -176,23 +145,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 type="submit"
                 size="xl"
                 className="w-full text-base"
-                disabled={isSubmitting || isMockSigningIn}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? "Đang tiếp tục..." : "Tiếp tục"}
               </Button>
-
-              {isMockAuthEnabled ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="xl"
-                  className="w-full text-base"
-                  disabled={isSubmitting || isMockSigningIn}
-                  onClick={() => void handleMockLogin()}
-                >
-                  {isMockSigningIn ? "Đang mở mock..." : "Dùng mock admin"}
-                </Button>
-              ) : null}
             </FieldGroup>
           </form>
         </CardContent>

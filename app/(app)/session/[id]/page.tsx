@@ -15,11 +15,6 @@ import type {
   SessionScoreSummary,
 } from "@/features/session/types/session.types";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
-import {
-  MOCK_AUTH_COOKIE_NAME,
-  MOCK_AUTH_COOKIE_VALUE,
-  MOCK_SESSION_TOKEN,
-} from "@/features/auth/mock-auth";
 
 interface SessionPageProps {
   params: Promise<{ id: string }>;

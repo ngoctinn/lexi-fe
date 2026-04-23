@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAuthSession } from "aws-amplify/auth/server";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
-import {
-  MOCK_AUTH_COOKIE_NAME,
-  MOCK_AUTH_COOKIE_VALUE,
-} from "@/features/auth/mock-auth";
 
 /**
  * Proxy xử lý Authentication và Route Guard
@@ -37,26 +33,19 @@ export async function proxy(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  const isMockAuthenticated =
-    request.cookies.get(MOCK_AUTH_COOKIE_NAME)?.value ===
-    MOCK_AUTH_COOKIE_VALUE;
 
   let authenticated = false;
-  if (isMockAuthenticated) {
-    authenticated = true;
-  } else {
-    authenticated = await runWithAmplifyServerContext({
-      nextServerContext: { request, response },
-      operation: async (contextSpec) => {
-        try {
-          const session = await fetchAuthSession(contextSpec);
-          return session.tokens !== undefined;
-        } catch {
-          return false;
-        }
-      },
-    });
-  }
+  authenticated = await runWithAmplifyServerContext({
+    nextServerContext: { request, response },
+    operation: async (contextSpec) => {
+      try {
+        const session = await fetchAuthSession(contextSpec);
+        return session.tokens !== undefined;
+      } catch {
+        return false;
+      }
+    },
+  });
 
   if (isProtectedRoute && !authenticated) {
     const loginUrl = new URL("/login", request.url);

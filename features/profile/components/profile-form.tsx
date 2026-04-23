@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
 import { updateProfile } from "../api/profile.actions";
 import { signOut } from "aws-amplify/auth";
 import { useRouter } from "next/navigation";
-import { clearMockAuthSession } from "@/features/auth/actions/mock-auth.actions";
 
 interface ProfileFormProps {
   initialData: {
@@ -78,7 +77,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   };
 
   const handleLogout = async () => {
-    await Promise.allSettled([signOut(), clearMockAuthSession()]);
+    await signOut();
     router.replace("/login");
   };
 

@@ -17,43 +17,22 @@ interface TranslateTurnResult {
   analysisItems: AnalyzedSentenceItem[];
 }
 
-function shouldUseMockSessionApi() {
-  return process.env.NEXT_PUBLIC_USE_SESSION_MOCK === "true";
-}
-
 export const SessionService = {
   async translateTurn(
     sessionId: string,
     turnIndex: number,
     sourceText: string,
   ): Promise<TranslateTurnResult> {
-    if (shouldUseMockSessionApi()) {
-      const { mockSessionApi } = await import("./session-mock");
-      const translatedText = await mockSessionApi.translateTurn(sessionId, turnIndex);
-      return { translatedText, analysisItems: [] };
-    }
     try {
       // Dịch toàn bộ câu bằng AWS Translate
       const result = await translateSentenceAction(sourceText);
       return { translatedText: result.sentence_vi, analysisItems: [] };
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        const { mockSessionApi } = await import("./session-mock");
-        const translatedText = await mockSessionApi.translateTurn(sessionId, turnIndex);
-        return { translatedText, analysisItems: [] };
-      }
       throw error;
     }
   },
 
   async translateWord(word: string, context: string): Promise<TranslateWordResult> {
-    if (shouldUseMockSessionApi()) {
-      return {
-        word,
-        translation_vi: `Nghĩa của từ ${word}`,
-        definition_vi: `Định nghĩa chi tiết của từ ${word} (Mock)`,
-      };
-    }
     try {
       return await translateWordAction(word, context);
     } catch (error) {
@@ -63,10 +42,6 @@ export const SessionService = {
   },
 
   async getHint(sessionId: string): Promise<string> {
-    if (process.env.NODE_ENV === "development") {
-      const { mockSessionApi } = await import("./session-mock");
-      return mockSessionApi.getHint(sessionId);
-    }
     return "Tính năng gợi ý hiện chưa khả dụng.";
   },
 

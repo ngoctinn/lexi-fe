@@ -11,7 +11,6 @@ import {
   WsServerEvent,
 } from "@/features/session/types/session.types";
 import { useSessionStore } from "@/features/session/stores/use-session-store";
-import { mockSessionApi } from "@/features/session/api/session-mock";
 
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? "";
 const RECONNECT_BASE_MS = 2000;
@@ -112,8 +111,10 @@ export function useWebSocket({
           break;
         }
         case WsClientEvent.USE_HINT:
-          const hint = await mockSessionApi.getHint(sessionId);
-          onMessageRef.current({ event: WsServerEvent.HINT_TEXT, hint });
+          onMessageRef.current({
+            event: WsServerEvent.HINT_TEXT,
+            hint: "Tính năng gợi ý hiện chưa khả dụng.",
+          });
           break;
         case WsClientEvent.END_SESSION:
           setTimeout(
