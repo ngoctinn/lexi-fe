@@ -17,7 +17,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useWebSocket } from "../use-websocket";
-import { MOCK_SESSION_TOKEN } from "@/features/auth/mock-auth";
 
 // ─── Mock WebSocket ───────────────────────────────────────────────────────────
 
@@ -145,14 +144,14 @@ describe("Prop 2a: Existing session — connect immediately, no extra delay", ()
 // isDevMock = NODE_ENV === 'development' && (!WS_BASE || idToken === MOCK_SESSION_TOKEN)
 
 describe("Prop 2b: Dev mock mode — no new WebSocket() called", () => {
-  it("should NOT call new WebSocket() when using MOCK_SESSION_TOKEN in development", () => {
+  it("should NOT call new WebSocket() when using a mock token in development", () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("NEXT_PUBLIC_WS_URL", "");
 
     const { result } = renderHook(() =>
       useWebSocket({
         sessionId: "mock-session-123",
-        idToken: MOCK_SESSION_TOKEN,
+        idToken: "mock-id-token",
         onMessage: vi.fn(),
         onConnectionChange: vi.fn(),
       }),

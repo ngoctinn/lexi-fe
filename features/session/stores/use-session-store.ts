@@ -17,7 +17,7 @@ interface SessionStoreState extends SessionUiState {
   ) => void;
   setHint: (hint: string | null) => void;
   setHintPanelOpen: (open: boolean) => void;
-  setUploadUrls: (uploadUrl: string | null) => void;
+  setUploadUrls: (uploadUrl: string | null, s3Key?: string | null) => void;
   setCurrentAudioUrl: (currentAudioUrl: string | null) => void;
   reset: () => void;
 }
@@ -33,6 +33,7 @@ const initialState: SessionUiState = {
   wsState: "disconnected",
   currentAudioUrl: null,
   uploadUrl: null,
+  s3Key: null,
 };
 
 export const useSessionStore = create<SessionStoreState>((set) => ({
@@ -65,7 +66,7 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
 
   setHintPanelOpen: (hintPanelOpen) => set({ hintPanelOpen }),
 
-  setUploadUrls: (uploadUrl) => set({ uploadUrl }),
+  setUploadUrls: (uploadUrl, s3Key) => set({ uploadUrl, s3Key: s3Key ?? null }),
 
   setCurrentAudioUrl: (currentAudioUrl) => set({ currentAudioUrl }),
 

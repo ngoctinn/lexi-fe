@@ -50,26 +50,26 @@ This implementation plan breaks down the migration from mock data and mock authe
 
 ### Phase 2: Remove Mock Session Data
 
-- [-] 2.1 Delete session-mock.ts file
+- [x] 2.1 Delete session-mock.ts file
   - Remove `features/session/api/session-mock.ts` entirely
   - Verify no other files import from this module
   - _Requirements: 2.6_
 
-- [ ] 2.2 Update get-sessions.ts to use real API only
+- [x] 2.2 Update get-sessions.ts to use real API only
   - Remove `isMockAuthSession()` conditional check
   - Remove mock data fallback
   - Keep only `apiRequest('/sessions')` call
   - Add error handling with user-friendly message
   - _Requirements: 2.1, 2.8_
 
-- [ ] 2.3 Update get-session.ts to use real API only
+- [x] 2.3 Update get-session.ts to use real API only
   - Remove `isMockAuthSession()` conditional check
   - Remove mock data fallback
   - Keep only `apiRequest('/sessions/{sessionId}')` call
   - Add error handling with user-friendly message
   - _Requirements: 2.2, 2.8_
 
-- [ ] 2.4 Update create-session.ts to use real API only
+- [x] 2.4 Update create-session.ts to use real API only
   - Remove `isMockAuthSession()` conditional check
   - Remove mock data fallback
   - Keep only `apiRequest('/sessions', { method: 'POST', body: ... })` call
@@ -77,14 +77,14 @@ This implementation plan breaks down the migration from mock data and mock authe
   - Add error handling with user-friendly message
   - _Requirements: 2.3, 2.8_
 
-- [ ] 2.5 Update end-session.ts to use real API only
+- [x] 2.5 Update end-session.ts to use real API only
   - Remove `isMockAuthSession()` conditional check
   - Remove mock data fallback
   - Keep only `apiRequest('/sessions/{sessionId}/complete', { method: 'POST' })` call
   - Add error handling with user-friendly message
   - _Requirements: 2.5, 2.8_
 
-- [ ] 2.6 Implement submit-turn.ts (NEW - POST /sessions/{id}/turns)
+- [x] 2.6 Implement submit-turn.ts (NEW - POST /sessions/{id}/turns)
   - Create new file `features/session/actions/submit-turn.ts`
   - Implement function that calls `POST /sessions/{sessionId}/turns`
   - Request body: { text, is_hint_used, audio_url (optional) }
@@ -109,7 +109,7 @@ This implementation plan breaks down the migration from mock data and mock authe
   - Verify nested Turn objects have required fields
   - _Requirements: 12.1_
 
-- [ ] 2.9 Checkpoint - Verify session flow works end-to-end
+- [x] 2.9 Checkpoint - Verify session flow works end-to-end
   - Create session → Submit turn → Complete session
   - Verify scoring is saved to backend
   - Verify no mock data is used
@@ -119,34 +119,34 @@ This implementation plan breaks down the migration from mock data and mock authe
 
 ### Phase 3: Remove Mock Flashcard Data
 
-- [ ] 3.1 Remove mock flashcards array from practice-actions.ts
+- [x] 3.1 Remove mock flashcards array from practice-actions.ts
   - Search for hardcoded mock flashcards array
   - Remove entire array definition
   - Verify no other code references the mock array
   - _Requirements: 3.6, 11.3_
 
-- [ ] 3.2 Implement fetchFlashcards() (GET /flashcards)
+- [x] 3.2 Implement fetchFlashcards() (GET /flashcards)
   - Create function that calls `GET /flashcards` with pagination params
   - Support limit and lastKey parameters
   - Response: { cards: Flashcard[], nextKey?: string }
   - Add error handling with user-friendly message
   - _Requirements: 3.1_
 
-- [ ] 3.3 Implement fetchPracticeQueue() (GET /flashcards/due)
+- [x] 3.3 Implement fetchPracticeQueue() (GET /flashcards/due)
   - Create function that calls `GET /flashcards/due`
   - Returns flashcards scheduled for today
   - Response: { cards: Flashcard[] }
   - Add error handling with user-friendly message
   - _Requirements: 3.2, 6.1_
 
-- [ ] 3.4 Implement getFlashcard() (GET /flashcards/{id})
+- [x] 3.4 Implement getFlashcard() (GET /flashcards/{id})
   - Create function that calls `GET /flashcards/{flashcardId}`
   - Returns full flashcard details
   - Response: Flashcard object with all fields
   - Add error handling with user-friendly message
   - _Requirements: 3.3, 6.2_
 
-- [ ] 3.5 Update updateFlashcardSRS() to use real API
+- [x] 3.5 Update updateFlashcardSRS() to use real API
   - Update existing function to call `POST /flashcards/{flashcardId}/review`
   - Request body: { rating: 'forgot' | 'hard' | 'good' | 'easy' }
   - Response: { interval_days, review_count, next_review_at }
@@ -176,7 +176,7 @@ This implementation plan breaks down the migration from mock data and mock authe
   - Review flashcard with different ratings, verify backend-calculated values are returned
   - _Requirements: 3.5_
 
-- [ ] 3.9 Checkpoint - Verify flashcard flow works end-to-end
+- [x] 3.9 Checkpoint - Verify flashcard flow works end-to-end
   - Fetch due flashcards → Review flashcard → Verify SRS updated
   - Verify no mock data is used
   - Ask the user if questions arise.
@@ -185,20 +185,20 @@ This implementation plan breaks down the migration from mock data and mock authe
 
 ### Phase 4: Remove Mock Profile Data
 
-- [ ] 4.1 Remove MOCK_ADMIN_PROFILE from codebase
+- [x] 4.1 Remove MOCK_ADMIN_PROFILE from codebase
   - Search for `MOCK_ADMIN_PROFILE` constant
   - Remove entire constant definition
   - Verify no other code references the mock profile
   - _Requirements: 4.3, 11.4_
 
-- [ ] 4.2 Update getProfile() to use real API only
+- [x] 4.2 Update getProfile() to use real API only
   - Remove `isMockAuthSession()` conditional check
   - Remove mock data fallback
   - Keep only `apiRequest('/profile')` call
   - Add error handling with user-friendly message
   - _Requirements: 4.1_
 
-- [ ] 4.3 Update updateProfile() to use real API only
+- [x] 4.3 Update updateProfile() to use real API only
   - Remove `isMockAuthSession()` conditional check
   - Remove mock data fallback
   - Keep only `apiRequest('/profile', { method: 'PATCH', body: ... })` call
@@ -227,7 +227,7 @@ This implementation plan breaks down the migration from mock data and mock authe
   - Update current_level, fetch profile, verify value matches
   - _Requirements: 10.4_
 
-- [ ] 4.7 Checkpoint - Verify profile flow works end-to-end
+- [x] 4.7 Checkpoint - Verify profile flow works end-to-end
   - Fetch profile → Update profile → Verify changes persisted
   - Verify no mock data is used
   - Ask the user if questions arise.

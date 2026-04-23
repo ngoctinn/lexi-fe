@@ -136,6 +136,7 @@ export type WsClientPayload =
 export interface WsSessionReadyEvent {
   event: WsServerEvent.SESSION_READY;
   upload_url: string;
+  s3_key: string;
 }
 
 export interface WsSttResultEvent {
@@ -219,6 +220,7 @@ export interface SessionUiState {
   wsState: WsConnectionState;
   currentAudioUrl: string | null;
   uploadUrl: string | null;
+  s3Key: string | null;
   isControlsDisabled?: boolean;
 }
 

@@ -21,7 +21,7 @@ export function useSessionWsHandler() {
     (event: WsServerPayload) => {
       switch (event.event) {
         case WsServerEvent.SESSION_READY:
-          setUploadUrls(event.upload_url);
+          setUploadUrls(event.upload_url, event.s3_key);
           break;
 
         case WsServerEvent.STT_RESULT:

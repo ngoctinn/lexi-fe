@@ -118,14 +118,6 @@ function SessionUnavailableState({
 }
 
 async function getSessionToken() {
-  const cookieStore = await cookies();
-
-  if (
-    cookieStore.get(MOCK_AUTH_COOKIE_NAME)?.value === MOCK_AUTH_COOKIE_VALUE
-  ) {
-    return MOCK_SESSION_TOKEN;
-  }
-
   return runWithAmplifyServerContext({
     nextServerContext: { cookies },
     operation: async (contextSpec) => {

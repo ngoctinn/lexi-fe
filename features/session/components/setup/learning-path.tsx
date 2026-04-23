@@ -18,9 +18,6 @@ import {
   getPathD,
 } from "./learning-path-utils";
 
-const UNLOCKED_IDS = new Set(["s1", "s2", "s3", "s4"]);
-const COMPLETED_IDS = new Set(["s1"]);
-
 type NodeStatus = "completed" | "unlocked" | "locked";
 type PathType = Parameters<typeof getPathD>[0];
 type LevelConfig = (typeof LEVEL_CONFIG)[keyof typeof LEVEL_CONFIG];
@@ -40,9 +37,9 @@ interface RenderHeader {
   y: number;
 }
 
-function getNodeStatus(scenarioId: string): NodeStatus {
-  if (COMPLETED_IDS.has(scenarioId)) return "completed";
-  if (UNLOCKED_IDS.has(scenarioId)) return "unlocked";
+function getNodeStatus(scenarioId: string, unlockedIds: Set<string>, completedIds: Set<string>): NodeStatus {
+  if (completedIds.has(scenarioId)) return "completed";
+  if (unlockedIds.has(scenarioId)) return "unlocked";
   return "locked";
 }
 
@@ -57,6 +54,15 @@ export function LearningPath({
   value,
   onSelect,
 }: LearningPathProps) {
+  // Mở khoá tất cả kịch bản từ backend (không hardcode)
+  const unlockedIds = React.useMemo(() => {
+    return new Set(scenarios.map(s => s.scenario_id));
+  }, [scenarios]);
+
+  // Không có kịch bản hoàn thành (có thể lấy từ backend sau)
+  const completedIds = React.useMemo(() => {
+    return new Set<string>();
+  }, []);
   const layout = React.useMemo(() => {
     const orderLevels = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
     const nodesToRender: RenderNode[] = [];
@@ -146,7 +152,7 @@ export function LearningPath({
               toNode.y,
             );
             const isLocked =
-              getNodeStatus(toNode.scenario.scenario_id) === "locked";
+              getNodeStatus(toNode.scenario.scenario_id, unlockedIds, completedIds) === "locked";
 
             return (
               <path
@@ -187,7 +193,7 @@ export function LearningPath({
 
         {nodesToRender.map((node) => {
           const { scenario, config, x, y } = node;
-          const status = getNodeStatus(scenario.scenario_id);
+          const status = getNodeStatus(scenario.scenario_id, unlockedIds, completedIds);
           const isSelected = scenario.scenario_id === value;
           const isLocked = status === "locked";
           const isCompleted = status === "completed";

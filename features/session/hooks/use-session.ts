@@ -35,6 +35,7 @@ export function useSession({
 
   const turns = useSessionStore((s) => s.turns);
   const uploadUrl = useSessionStore((s) => s.uploadUrl);
+  const s3Key = useSessionStore((s) => s.s3Key);
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
 
@@ -127,11 +128,13 @@ export function useSession({
     if (recorderState === "recording") {
       stopRecording();
     } else {
+      // Use s3Key from backend (SESSION_READY event) instead of generating our own
+      // This ensures the key matches the actual file uploaded to S3
       const targetUrl = uploadUrl || "https://mock-upload.com";
-      const s3Key = `sessions/${sessionId}/${Date.now()}.webm`;
-      startRecording(targetUrl, s3Key);
+      const targetS3Key = s3Key || `sessions/${sessionId}/${Date.now()}.webm`;
+      startRecording(targetUrl, targetS3Key);
     }
-  }, [recorderState, stopRecording, startRecording, uploadUrl, sessionId]);
+  }, [recorderState, stopRecording, startRecording, uploadUrl, s3Key, sessionId]);
 
   const endSession = React.useCallback(() => {
     send({ action: WsClientEvent.END_SESSION, session_id: sessionId });
