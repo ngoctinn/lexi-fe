@@ -49,6 +49,15 @@ const AVATAR_PRESETS = [
   "Ruby",
 ].map((seed) => `https://api.dicebear.com/9.x/lorelei/svg?seed=${seed}`);
 
+function isValidAvatarUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === "https:" && urlObj.hostname === "api.dicebear.com";
+  } catch {
+    return false;
+  }
+}
+
 export function ProfileForm({ initialData }: ProfileFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
@@ -65,11 +74,15 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       initialData.target_level || (isLegacyGoalLevel ? legacyGoal : "B1"),
     learning_goal_text:
       initialData.learning_goal_text || (isLegacyGoalLevel ? "" : legacyGoal),
-    avatar_url: initialData.avatar_url || DEFAULT_AVATAR,
+    avatar_url: isValidAvatarUrl(initialData.avatar_url || "") 
+      ? initialData.avatar_url 
+      : DEFAULT_AVATAR,
   });
 
   const selectAvatar = (url: string) => {
-    setFormData((prev) => ({ ...prev, avatar_url: url }));
+    if (isValidAvatarUrl(url)) {
+      setFormData((prev) => ({ ...prev, avatar_url: url }));
+    }
   };
 
   const handleRemoveAvatar = () => {

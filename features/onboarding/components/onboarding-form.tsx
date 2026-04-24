@@ -55,15 +55,20 @@ export function OnboardingForm() {
 
   const displayNameErrors = formState.errors?.display_name?.map((message) => ({
     message,
-  }));
+  })) || [];
   const currentLevelErrors = formState.errors?.current_level?.map(
     (message) => ({
       message,
     }),
-  );
+  ) || [];
   const learningGoalErrors = formState.errors?.target_level?.map((message) => ({
     message,
-  }));
+  })) || [];
+
+  const isStep0Valid = data.display_name.trim().length > 0;
+  const isStep1Valid = data.current_level !== "";
+  const isStep2Valid = data.target_level !== "";
+  const canProceed = step === 0 ? isStep0Valid : step === 1 ? isStep1Valid : isStep2Valid;
 
   return (
     <Card
@@ -261,7 +266,7 @@ export function OnboardingForm() {
                 size="xl"
                 className="flex-1"
                 onClick={nextStep}
-                disabled={!data.display_name.trim() && step === 0}
+                disabled={!canProceed}
               >
                 Tiếp theo
               </Button>
