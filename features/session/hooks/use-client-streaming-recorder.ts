@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import type { RecorderState } from "@/features/session/types/session.types";
-import { WsClientEvent } from "@/features/session/types/session.types";
+import { WsClientEvent, TurnSpeaker, type Turn } from "@/features/session/types/session.types";
 import type { useWebSocket } from "./use-websocket";
 import { useTranscribeStreaming, TranscriptResult } from "./use-transcribe-streaming";
 import { processAudioForTranscribe, supportsAudioWorklet } from "../utils/audio-converter";
+import { useSessionStore } from "../stores/use-session-store";
 
 const SAMPLE_RATE = 16_000;
 
@@ -37,16 +38,26 @@ export function useClientStreamingRecorder({
   const streamRef = React.useRef<MediaStream | null>(null);
   const finalTranscriptRef = React.useRef<string>("");
   const finalConfidenceRef = React.useRef<number>(0);
+  const accumulatedTranscriptRef = React.useRef<string>("");
   const isStartingRef = React.useRef<boolean>(false);
 
   const handleTranscript = React.useCallback(
     (result: TranscriptResult) => {
+      console.log("[Recorder] Transcript received:", result);
       if (result.isPartial) {
+        // Accumulate partial transcripts as backup
+        if (result.text.trim()) {
+          accumulatedTranscriptRef.current = result.text;
+        }
         onPartialTranscript(result.text, result.confidence);
       } else {
         // Store final transcript
         finalTranscriptRef.current = result.text;
         finalConfidenceRef.current = result.confidence;
+        // Also update accumulated transcript with final version
+        if (result.text.trim()) {
+          accumulatedTranscriptRef.current = result.text;
+        }
         onFinalTranscript(result.text, result.confidence);
       }
     },
@@ -87,10 +98,11 @@ export function useClientStreamingRecorder({
     };
   }, [transcribe]);
 
-  const stopRecording = React.useCallback(() => {
+  const stopRecording = React.useCallback(async () => {
     console.log("[Recorder] Stopping recording...");
+    console.log("[Recorder] Current transcripts - Final:", finalTranscriptRef.current, "Accumulated:", accumulatedTranscriptRef.current);
     
-    // Stop audio worklet
+    // Stop audio worklet first
     if (audioWorkletNodeRef.current) {
       audioWorkletNodeRef.current.disconnect();
       audioWorkletNodeRef.current = null;
@@ -108,22 +120,55 @@ export function useClientStreamingRecorder({
       streamRef.current = null;
     }
 
+    // Wait 500ms for final transcript to arrive from AWS before closing stream
+    console.log("[Recorder] Waiting 500ms for final transcript...");
+    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log("[Recorder] After wait - Final:", finalTranscriptRef.current, "Accumulated:", accumulatedTranscriptRef.current);
+
     // Close Transcribe stream
     transcribeMethodsRef.current.closeStream();
 
-    // Submit final transcript to backend via WebSocket
-    if (finalTranscriptRef.current) {
+    // Determine which transcript to use (prefer final, fallback to accumulated)
+    const transcriptToSend = finalTranscriptRef.current.trim() || accumulatedTranscriptRef.current.trim();
+    const confidenceToSend = finalTranscriptRef.current.trim() ? finalConfidenceRef.current : 0.8;
+
+    if (transcriptToSend) {
+      console.log("[Recorder] Sending transcript:", transcriptToSend);
+      const nextTurnIndex = useSessionStore.getState().turns.length;
+      const newTurn: Turn = {
+        turn_index: nextTurnIndex,
+        speaker: TurnSpeaker.USER,
+        content: transcriptToSend,
+        is_hint_used: false,
+        is_pending: true,
+      };
+      
+      // Add pending turn to UI immediately
+      useSessionStore.getState().setTurns((prev: Turn[]) => [...prev, newTurn]);
+      
+      // Set AI streaming to show typing indicator
+      useSessionStore.getState().setAiStreaming(true, "");
+      
+      // Submit transcript to backend via WebSocket
       ws.send({
         action: WsClientEvent.SUBMIT_TRANSCRIPT,
         session_id: sessionId,
-        text: finalTranscriptRef.current,
-        confidence: finalConfidenceRef.current,
+        text: transcriptToSend,
+        confidence: confidenceToSend,
       });
+    } else {
+      console.warn("[Recorder] No transcript available after stop");
+      onError("Không nhận được văn bản. Vui lòng thử lại.");
     }
+
+    // Reset refs
+    finalTranscriptRef.current = "";
+    finalConfidenceRef.current = 0;
+    accumulatedTranscriptRef.current = "";
 
     setState("idle");
     isStartingRef.current = false;
-  }, [ws, sessionId]);
+  }, [ws, sessionId, onError]);
 
   const startRecording = React.useCallback(async () => {
     // Prevent multiple simultaneous recordings
@@ -156,9 +201,10 @@ export function useClientStreamingRecorder({
     }
 
     try {
-      // Reset final transcript
+      // Reset all transcript refs
       finalTranscriptRef.current = "";
       finalConfidenceRef.current = 0;
+      accumulatedTranscriptRef.current = "";
 
       // Request microphone access
       console.log("[Recorder] Requesting microphone access...");
@@ -287,6 +333,9 @@ export function useClientStreamingRecorder({
       }
       transcribeMethodsRef.current.closeStream();
       isStartingRef.current = false;
+      finalTranscriptRef.current = "";
+      finalConfidenceRef.current = 0;
+      accumulatedTranscriptRef.current = "";
     };
   }, []);
 

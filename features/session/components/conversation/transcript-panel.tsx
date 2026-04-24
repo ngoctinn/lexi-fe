@@ -4,7 +4,7 @@ import * as React from "react";
 import type { Turn } from "@/features/session/types/session.types";
 import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { TurnBubble } from "./turn-bubble";
-import { TranscriptDisplay } from "../transcript-display";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -58,9 +58,6 @@ export function TranscriptPanel({
           </div>
         )}
 
-        {/* Real-time streaming transcript display */}
-        <TranscriptDisplay />
-
         {turns.map((turn, idx) => (
           <TurnBubble
             key={`${turn.turn_index}-${idx}`}
@@ -83,25 +80,42 @@ export function TranscriptPanel({
               <AvatarFallback className="text-2xs">AI</AvatarFallback>
             </Avatar>
             <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-sm leading-relaxed max-w-[80%] shadow-sm">
-              <div className="flex flex-col gap-2">
-                {aiStreamingText}
-                {isAiStreaming && (
-                  <div className="flex items-center gap-1 h-5 ml-1">
-                    <span
-                      className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                      style={{ animationDelay: "0s" }}
-                    />
-                    <span
-                      className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    />
-                    <span
-                      className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                      style={{ animationDelay: "0.4s" }}
-                    />
-                  </div>
-                )}
-              </div>
+              {aiStreamingText ? (
+                <div className="flex flex-col gap-2">
+                  {aiStreamingText}
+                  {isAiStreaming && (
+                    <div className="flex items-center gap-1 h-5 ml-1">
+                      <span
+                        className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                        style={{ animationDelay: "0s" }}
+                      />
+                      <span
+                        className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
+                      />
+                      <span
+                        className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                        style={{ animationDelay: "0.4s" }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 h-5">
+                  <span
+                    className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                    style={{ animationDelay: "0s" }}
+                  />
+                  <span
+                    className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  />
+                  <span
+                    className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                    style={{ animationDelay: "0.4s" }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

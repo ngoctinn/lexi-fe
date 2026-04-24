@@ -105,6 +105,7 @@ export function useSession({
     ws: { send, connectionState, disconnect },
     sessionId,
     onPartialTranscript: (text) => {
+      console.log("[Session] Partial transcript:", text);
       useSessionStore.getState().setStreamingTranscript(
         useSessionStore.getState().streamingTranscript?.finalText || "",
         text,
@@ -112,6 +113,7 @@ export function useSession({
       );
     },
     onFinalTranscript: (text, confidence) => {
+      console.log("[Session] Final transcript:", text, confidence);
       useSessionStore.getState().setStreamingTranscript(text, "", false);
       useSessionStore.getState().setLastSttResult({ text, confidence });
     },

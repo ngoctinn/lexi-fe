@@ -256,15 +256,27 @@ export function ConversationSidebar({
                 variant="soft-warning"
                 size="sm"
                 onClick={onGetHint}
-                disabled={disabled || isAiStreaming || !!currentHint}
+                disabled={disabled || isAiStreaming}
                 className="text-sm"
               >
-                Lấy gợi ý
+                {currentHint ? "Gợi ý mới" : "Lấy gợi ý"}
               </Button>
             </div>
 
             <div className="flex-1 overflow-y-auto min-h-0 -mx-1 px-1">
-              {currentHint ? (
+              {isAiStreaming && !currentHint ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-4 animate-in fade-in duration-500">
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-amber-200/50 animate-ping" />
+                    <div className="relative size-12 rounded-full bg-amber-100 flex items-center justify-center">
+                      <Lightbulb className="size-6 text-amber-600 animate-pulse" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-medium">
+                    AI đang phân tích...
+                  </p>
+                </div>
+              ) : currentHint ? (
                 <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-500">
                   <div className="flex flex-col gap-4">
                     <div className="prose prose-sm dark:prose-invert max-w-none text-base/relaxed font-medium text-foreground tracking-tight">
