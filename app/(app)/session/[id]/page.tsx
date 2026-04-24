@@ -201,6 +201,10 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
       }
     : null;
 
+  if (!idToken && !isDevMockSession) {
+    redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }
+
   return (
     <ConversationScreen
       sessionId={session.session_id}

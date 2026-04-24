@@ -20,6 +20,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
   const [selectedUserRole, setSelectedUserRole] = React.useState("");
   const [selectedAiRole, setSelectedAiRole] = React.useState("");
   const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
+  const [prevScenarioId, setPrevScenarioId] = React.useState<string>("");
 
   const [formData, setFormData] = React.useState<CreateSessionDto>({
     scenario_id: scenarios[0]?.scenario_id ?? "",
@@ -52,48 +53,63 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
       .slice(0, 2);
   }, []);
 
-  // Khởi tạo và đồng bộ vai/mục tiêu khi kịch bản thay đổi
-  React.useEffect(() => {
-    if (!selectedScenario) return;
-
-    const allRoles = getRoles(selectedScenario);
-    const defaultUserRole = allRoles[0] ?? "";
-    const defaultAiRole = allRoles[1] ?? defaultUserRole;
-
-    setSelectedUserRole((prev) =>
-      allRoles.includes(prev) && prev !== "" ? prev : defaultUserRole,
-    );
-    setSelectedAiRole((prev) =>
-      allRoles.includes(prev) && prev !== "" ? prev : defaultAiRole,
-    );
-
-    setSelectedGoals((prev) => {
-      const validCurrent = prev.filter((g) =>
-        selectedScenario.goals.includes(g),
-      );
-      return validCurrent.length > 0 ? validCurrent : selectedScenario.goals;
-    });
+  // Derive roles từ selectedScenario
+  const allRoles = React.useMemo(() => {
+    if (!selectedScenario) return [];
+    return getRoles(selectedScenario);
   }, [selectedScenario, getRoles]);
 
-  // Tự động đổi vai AI nếu trùng vai User (khi danh sách có > 1 vai)
-  React.useEffect(() => {
-    if (!selectedScenario || !selectedUserRole) return;
-    const allRoles = getRoles(selectedScenario);
+  // Derive default roles
+  const defaultUserRole = React.useMemo(() => allRoles[0] ?? "", [allRoles]);
+  const defaultAiRole = React.useMemo(
+    () => allRoles[1] ?? defaultUserRole,
+    [allRoles, defaultUserRole],
+  );
 
-    if (selectedUserRole === selectedAiRole && allRoles.length > 1) {
-      const nextAiRole = allRoles.find((r) => r !== selectedUserRole);
-      if (nextAiRole) setSelectedAiRole(nextAiRole);
+  // Adjust state during render when scenario changes (React best practice)
+  // This avoids setState in effect and cascading renders
+  if (selectedScenario && selectedScenario.scenario_id !== prevScenarioId) {
+    setPrevScenarioId(selectedScenario.scenario_id);
+    setSelectedUserRole(defaultUserRole);
+    setSelectedAiRole(defaultAiRole);
+    setSelectedGoals(selectedScenario.goals);
+  }
+
+  // Derive valid roles (auto-switch if same)
+  const validUserRole = allRoles.includes(selectedUserRole)
+    ? selectedUserRole
+    : defaultUserRole;
+
+  const validAiRole = React.useMemo(() => {
+    let aiRole = allRoles.includes(selectedAiRole)
+      ? selectedAiRole
+      : defaultAiRole;
+
+    // Auto-switch nếu trùng user role
+    if (aiRole === validUserRole && allRoles.length > 1) {
+      aiRole = allRoles.find((r) => r !== validUserRole) ?? aiRole;
     }
-  }, [selectedUserRole, selectedScenario, selectedAiRole, getRoles]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    return aiRole;
+  }, [selectedAiRole, allRoles, defaultAiRole, validUserRole]);
+
+  // Derive valid goals
+  const validGoals = React.useMemo(() => {
+    if (!selectedScenario) return [];
+    const validCurrent = selectedGoals.filter((g) =>
+      selectedScenario.goals.includes(g),
+    );
+    return validCurrent.length > 0 ? validCurrent : selectedScenario.goals;
+  }, [selectedGoals, selectedScenario]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedScenario) {
       toast.error("Vui lòng chọn một kịch bản hợp lệ.");
       return;
     }
 
-    if (selectedUserRole === selectedAiRole) {
+    if (validUserRole === validAiRole) {
       toast.error("Vai trò học viên và vai trò AI phải khác nhau.");
       return;
     }
@@ -101,13 +117,13 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     setIsPending(true);
     try {
       const goals =
-        selectedGoals.length > 0 ? selectedGoals : selectedScenario.goals;
+        validGoals.length > 0 ? validGoals : selectedScenario.goals;
 
       // Tạo snapshot cho prompt
       const promptSnapshot = [
         `Scenario: ${selectedScenario.scenario_title}`,
-        `Learner role: ${selectedUserRole}`,
-        `AI role: ${selectedAiRole}`,
+        `Learner role: ${validUserRole}`,
+        `AI role: ${validAiRole}`,
         `Goals: ${goals.join(" | ")}`,
         `AI gender: ${formData.ai_gender}`,
         `Level: ${formData.level}`,
@@ -115,8 +131,8 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
 
       const result = await createSession({
         ...formData,
-        learner_role_id: selectedUserRole,
-        ai_role_id: selectedAiRole,
+        learner_role_id: validUserRole,
+        ai_role_id: validAiRole,
         selected_goals: goals,
         prompt_snapshot: promptSnapshot,
       });
@@ -137,9 +153,9 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     state: {
       isPending,
       isSettingsOpen,
-      selectedUserRole,
-      selectedAiRole,
-      selectedGoals,
+      selectedUserRole: validUserRole,
+      selectedAiRole: validAiRole,
+      selectedGoals: validGoals,
       formData,
       selectedScenario,
       scenarioMap,

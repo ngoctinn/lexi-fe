@@ -59,17 +59,18 @@ export interface Turn {
   speaker: TurnSpeaker;
   content: string;
   translated_content?: string | null;
-  analysis_items?: AnalyzedSentenceItem[];
   audio_url?: string | null;
   is_hint_used: boolean;
   is_saved_to_flashcard?: boolean;
   is_pending?: boolean;
-}
-
-export interface AnalyzedSentenceItem {
-  text: string;
-  type: "word" | "phrase";
-  base?: string | null;
+  // Phase 5: Performance & Quality Metrics
+  ttft_ms?: number | null;
+  latency_ms?: number | null;
+  input_tokens?: number;
+  output_tokens?: number;
+  cost_usd?: number;
+  delivery_cue?: string;
+  quality_score?: number;
 }
 
 export interface Scoring {
@@ -304,6 +305,7 @@ export interface CreateSessionDto {
 export interface CreateSessionResult {
   success: boolean;
   session_id?: string;
+  user_id?: string;
   error?: string;
 }
 

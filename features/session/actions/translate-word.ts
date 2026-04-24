@@ -32,15 +32,25 @@ export async function translateWordAction(
   context?: string,
 ): Promise<TranslateWordResult> {
   try {
-    const payload = await apiRequest<TranslateWordApiResponse>(
-      "/vocabulary/translate",
-      {
-        method: "POST",
-        body: JSON.stringify({ word, context }),
-        cache: "no-store",
-      },
-    );
+    const response = await apiRequest<{
+      success: boolean;
+      data?: TranslateWordApiResponse;
+    }>("/vocabulary/translate", {
+      method: "POST",
+      body: JSON.stringify({ word, context }),
+      cache: "no-store",
+    });
 
+    const payload: TranslateWordApiResponse = response.data ?? { 
+      word, 
+      translation_vi: "", 
+      definition_vi: "",
+      part_of_speech: "",
+      phonetic: "",
+      audio_url: "",
+      example_sentence: "",
+      source_api: "",
+    };
     return {
       word: payload.word,
       translation_vi: payload.translation_vi || "Không có bản dịch.",

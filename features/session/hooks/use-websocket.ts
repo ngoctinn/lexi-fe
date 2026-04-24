@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fetchAuthSession } from "aws-amplify/auth";
 import type {
   WsClientPayload,
   WsServerPayload,
@@ -15,6 +16,26 @@ const RECONNECT_MAX_ATTEMPTS = 5;
 function buildWebSocketUrl(base: string, token: string, sessionId: string) {
   const params = new URLSearchParams({ token, session_id: sessionId });
   return `${base}?${params.toString()}`;
+}
+
+/**
+ * Get fresh ID token from Amplify (client-side)
+ * Automatically refreshes if expired
+ * Per AWS docs: ID tokens should be used for authentication/authorization
+ * https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
+ */
+async function getFreshIdToken(): Promise<string> {
+  try {
+    const session = await fetchAuthSession({ forceRefresh: true });
+    const idToken = session.tokens?.idToken?.toString();
+    if (!idToken) {
+      throw new Error("ID token not available from Amplify session");
+    }
+    return idToken;
+  } catch (error) {
+    console.error("[ws] Failed to get fresh ID token:", error);
+    throw error;
+  }
 }
 
 interface UseWebSocketOptions {
@@ -86,7 +107,11 @@ export function useWebSocket({
   React.useEffect(() => {
     // Guard: bỏ qua nếu thiếu thông tin cần thiết
     if (!idToken || !sessionId || !WS_BASE) {
-      console.warn("[ws] Skipping connection: missing idToken, sessionId or WS_BASE");
+      console.warn("[ws] Skipping connection: missing idToken, sessionId or WS_BASE", {
+        hasIdToken: !!idToken,
+        hasSessionId: !!sessionId,
+        hasWsBase: !!WS_BASE,
+      });
       return;
     }
 
@@ -94,14 +119,14 @@ export function useWebSocket({
     reconnectAttemptRef.current = 0;
     let currentWs: WebSocket | null = null;
 
-    function openConnection() {
+    function openConnection(token: string) {
       // Đóng kết nối cũ nếu còn tồn tại
       if (wsRef.current) {
         wsRef.current.close();
         wsRef.current = null;
       }
 
-      const url = buildWebSocketUrl(WS_BASE, idToken, sessionId);
+      const url = buildWebSocketUrl(WS_BASE, token, sessionId);
       console.log(`[ws] Connecting... session=${sessionId} attempt=${reconnectAttemptRef.current}`);
 
       const ws = new WebSocket(url);
@@ -134,8 +159,11 @@ export function useWebSocket({
 
         if (!shouldReconnectRef.current) return;
 
-        // Code 1000/1001 = đóng bình thường, không reconnect
-        if (ev.code === 1000 || ev.code === 1001) return;
+        // Code 1000/1001/1005 = đóng bình thường, không reconnect
+        // 1000 = Normal Closure
+        // 1001 = Going Away
+        // 1005 = No Status Rcvd (client-side close)
+        if (ev.code === 1000 || ev.code === 1001 || ev.code === 1005) return;
 
         const attempt = reconnectAttemptRef.current;
         if (attempt >= RECONNECT_MAX_ATTEMPTS) {
@@ -151,7 +179,13 @@ export function useWebSocket({
         console.log(`[ws] Reconnecting in ${delay}ms (attempt ${reconnectAttemptRef.current})`);
         reconnectTimerRef.current = setTimeout(() => {
           if (shouldReconnectRef.current) {
-            openConnection();
+            // Get fresh token before reconnecting
+            getFreshIdToken()
+              .then((freshToken) => openConnection(freshToken))
+              .catch((err) => {
+                console.error("[ws] Failed to get fresh token for reconnect:", err);
+                setConnState("error");
+              });
           }
         }, delay);
       };
@@ -168,24 +202,49 @@ export function useWebSocket({
       };
     }
 
-    // Delay lần kết nối đầu tiên nếu được cấu hình (tránh race condition khi navigate)
-    if (initialDelayMs && initialDelayMs > 0) {
-      const delayTimer = setTimeout(openConnection, initialDelayMs);
-      return () => {
-        clearTimeout(delayTimer);
-        shouldReconnectRef.current = false;
-        if (reconnectTimerRef.current) {
-          clearTimeout(reconnectTimerRef.current);
-          reconnectTimerRef.current = null;
-        }
-        if (currentWs) {
-          currentWs.close();
-        }
-        wsRef.current = null;
-      };
-    }
+    // Get fresh token before connecting
+    getFreshIdToken()
+      .then((freshToken) => {
+        // Delay lần kết nối đầu tiên nếu được cấu hình (tránh race condition khi navigate)
+        if (initialDelayMs && initialDelayMs > 0) {
+          const delayTimer = setTimeout(() => {
+            if (shouldReconnectRef.current) {
+              openConnection(freshToken);
+            }
+          }, initialDelayMs);
 
-    openConnection();
+          return () => {
+            clearTimeout(delayTimer);
+            shouldReconnectRef.current = false;
+            if (reconnectTimerRef.current) {
+              clearTimeout(reconnectTimerRef.current);
+              reconnectTimerRef.current = null;
+            }
+            if (currentWs) {
+              currentWs.close();
+            }
+            wsRef.current = null;
+          };
+        }
+
+        openConnection(freshToken);
+
+        return () => {
+          shouldReconnectRef.current = false;
+          if (reconnectTimerRef.current) {
+            clearTimeout(reconnectTimerRef.current);
+            reconnectTimerRef.current = null;
+          }
+          if (currentWs) {
+            currentWs.close();
+          }
+          wsRef.current = null;
+        };
+      })
+      .catch((err) => {
+        console.error("[ws] Failed to get initial token:", err);
+        setConnState("error");
+      });
 
     return () => {
       shouldReconnectRef.current = false;

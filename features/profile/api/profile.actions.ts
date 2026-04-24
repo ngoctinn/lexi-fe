@@ -21,10 +21,14 @@ export interface ProfileData {
 export async function getProfile(): Promise<ProfileData | null> {
   try {
     // Gọi API Backend: GET /profile và gắn cache tag để có thể invalidate sau khi update.
-    const profile = await apiRequest<ProfileData>("/profile", {
+    const response = await apiRequest<{
+      success: boolean;
+      message: string;
+      data: ProfileData;
+    }>("/profile", {
       next: { tags: ["profile"] },
     });
-    return profile;
+    return response.data;
   } catch (error) {
     console.error("[profile] fetchProfile failed:", error);
     return null;

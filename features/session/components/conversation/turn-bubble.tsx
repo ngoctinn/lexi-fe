@@ -16,6 +16,8 @@ import {
 import type { Turn } from "@/features/session/types/session.types";
 import { TurnSpeaker } from "@/features/session/types/session.types";
 import type { TranslateWordResult } from "@/features/session/actions/translate-word";
+import { LatencyMetrics } from "./latency-metrics";
+import { isDebugMetricsEnabled } from "@/features/session/utils/feature-flags";
 
 interface TurnBubbleProps {
   turn: Turn;
@@ -407,6 +409,24 @@ export function TurnBubble({
             >
               Dùng gợi ý
             </Badge>
+          </div>
+        )}
+
+        {!isUser && isDebugMetricsEnabled() && (turn.ttft_ms !== undefined || turn.latency_ms !== undefined) && (
+          <div
+            className={cn(
+              "flex px-1",
+              isUser ? "justify-end" : "justify-start",
+            )}
+          >
+            <LatencyMetrics
+              ttftMs={turn.ttft_ms}
+              latencyMs={turn.latency_ms}
+              inputTokens={turn.input_tokens}
+              outputTokens={turn.output_tokens}
+              costUsd={turn.cost_usd}
+              qualityScore={turn.quality_score}
+            />
           </div>
         )}
       </div>

@@ -10,16 +10,23 @@ export async function createSession(
   dto: CreateSessionDto,
 ): Promise<CreateSessionResult> {
   try {
-    const result = await apiRequest<CreateSessionResult>("/sessions", {
+    const response = await apiRequest<{
+      success: boolean;
+      data?: {
+        session_id?: string;
+        user_id?: string;
+      };
+    }>("/sessions", {
       method: "POST",
       body: JSON.stringify(dto),
       cache: "no-store",
     });
 
     return {
-      success: Boolean(result.success),
-      session_id: result.session_id,
-      error: result.success ? undefined : result.error,
+      success: Boolean(response.success),
+      session_id: response.data?.session_id,
+      user_id: response.data?.user_id,
+      error: response.success ? undefined : response.error,
     };
   } catch (error) {
     return {

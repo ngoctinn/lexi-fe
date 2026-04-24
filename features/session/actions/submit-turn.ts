@@ -26,25 +26,26 @@ export async function submitTurn(
   request: SubmitTurnRequest,
 ): Promise<SubmitTurnResponse> {
   try {
-    const response = await apiRequest<SubmitTurnResponse>(
-      `/sessions/${sessionId}/turns`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          text: request.text,
-          is_hint_used: request.is_hint_used ?? false,
-          audio_url: request.audio_url,
-        }),
-        cache: "no-store",
-      },
-    );
+    const response = await apiRequest<{
+      success: boolean;
+      data?: SubmitTurnResponse;
+    }>(`/sessions/${sessionId}/turns`, {
+      method: "POST",
+      body: JSON.stringify({
+        text: request.text,
+        is_hint_used: request.is_hint_used ?? false,
+        audio_url: request.audio_url,
+      }),
+      cache: "no-store",
+    });
 
+    const data = response.data ?? { success: true };
     return {
-      success: response.success ?? true,
-      session: response.session,
-      user_turn: response.user_turn,
-      ai_turn: response.ai_turn,
-      analysis_keywords: response.analysis_keywords,
+      success: data.success ?? true,
+      session: data.session,
+      user_turn: data.user_turn,
+      ai_turn: data.ai_turn,
+      analysis_keywords: data.analysis_keywords,
     };
   } catch (error) {
     return {

@@ -4,9 +4,11 @@ import * as React from "react";
 import type { Turn } from "@/features/session/types/session.types";
 import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { TurnBubble } from "./turn-bubble";
+import { extractDeliveryCue, getCueEmoji, getCueLabel } from "@/features/session/utils/delivery-cue";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface TranscriptPanelProps {
@@ -82,7 +84,20 @@ export function TranscriptPanel({
             <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-sm leading-relaxed max-w-[80%] shadow-sm">
               {aiStreamingText ? (
                 <div className="flex flex-col gap-2">
-                  {aiStreamingText}
+                  {(() => {
+                    const { cue, cleanText } = extractDeliveryCue(aiStreamingText);
+                    return (
+                      <>
+                        {cue && (
+                          <Badge variant="secondary" className="w-fit text-xs">
+                            <span className="mr-1">{getCueEmoji(cue)}</span>
+                            {getCueLabel(cue)}
+                          </Badge>
+                        )}
+                        {cleanText}
+                      </>
+                    );
+                  })()}
                   {isAiStreaming && (
                     <div className="flex items-center gap-1 h-5 ml-1">
                       <span

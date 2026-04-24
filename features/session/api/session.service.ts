@@ -1,8 +1,6 @@
 import { toast } from "sonner";
 import { saveFlashcardFromSession } from "@/features/flashcards/actions/practice-actions";
-import type { AnalyzedSentenceItem } from "@/features/session/actions/analyze-turn";
 import { translateWordAction, type TranslateWordResult } from "@/features/session/actions/translate-word";
-import { translateSentenceAction } from "@/features/session/actions/translate-sentence";
 
 interface SaveTurnToFlashcardInput {
   sessionId: string;
@@ -14,19 +12,29 @@ interface SaveTurnToFlashcardInput {
 
 interface TranslateTurnResult {
   translatedText: string;
-  analysisItems: AnalyzedSentenceItem[];
 }
 
 export const SessionService = {
   async translateTurn(
-    sessionId: string,
-    turnIndex: number,
     sourceText: string,
   ): Promise<TranslateTurnResult> {
     try {
-      // Dịch toàn bộ câu bằng AWS Translate
-      const result = await translateSentenceAction(sourceText);
-      return { translatedText: result.sentence_vi, analysisItems: [] };
+      // Tách câu thành từng từ và dịch từng từ
+      const words = sourceText.split(/\s+/).filter(w => w.length > 0);
+      const translations: string[] = [];
+      
+      for (const word of words) {
+        try {
+          const result = await translateWordAction(word, sourceText);
+          translations.push(result.translation_vi || word);
+        } catch {
+          // Nếu dịch từ thất bại, giữ nguyên từ gốc
+          translations.push(word);
+        }
+      }
+      
+      const translatedText = translations.join(" ");
+      return { translatedText };
     } catch (error) {
       throw error;
     }
@@ -35,13 +43,13 @@ export const SessionService = {
   async translateWord(word: string, context: string): Promise<TranslateWordResult> {
     try {
       return await translateWordAction(word, context);
-    } catch (error) {
+    } catch {
       this.handleError("Không thể dịch từ này.", "TranslateWord");
       return { word, translation_vi: "Lỗi dịch.", definition_vi: "" };
     }
   },
 
-  async getHint(sessionId: string): Promise<string> {
+  async getHint(): Promise<string> {
     return "Tính năng gợi ý hiện chưa khả dụng.";
   },
 

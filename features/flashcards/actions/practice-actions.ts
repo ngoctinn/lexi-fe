@@ -33,13 +33,17 @@ export async function fetchFlashcards(
 
   try {
     const response = await apiRequest<{
-      cards: Flashcard[];
-      next_key?: string;
+      success: boolean;
+      data?: {
+        cards?: Flashcard[];
+        next_key?: string;
+      };
     }>(`/flashcards?${params.toString()}`);
 
+    const data = response.data ?? { cards: [] };
     return {
-      cards: response.cards,
-      nextKey: response.next_key,
+      cards: data.cards ?? [],
+      nextKey: data.next_key,
     };
   } catch (error) {
     console.error("[fetchFlashcards] Error:", error);
@@ -49,10 +53,11 @@ export async function fetchFlashcards(
 
 export async function fetchPracticeQueue(): Promise<Flashcard[]> {
   try {
-    const response = await apiRequest<{ cards: Flashcard[] }>(
-      "/flashcards/due",
-    );
-    return response.cards;
+    const response = await apiRequest<{
+      success: boolean;
+      data?: { cards: Flashcard[] };
+    }>("/flashcards/due");
+    return response.data?.cards ?? [];
   } catch (error) {
     console.error("[fetchPracticeQueue] Error:", error);
     throw error;
@@ -61,10 +66,11 @@ export async function fetchPracticeQueue(): Promise<Flashcard[]> {
 
 export async function getFlashcard(flashcardId: string): Promise<Flashcard> {
   try {
-    const response = await apiRequest<Flashcard>(
-      `/flashcards/${flashcardId}`,
-    );
-    return response;
+    const response = await apiRequest<{
+      success: boolean;
+      data?: Flashcard;
+    }>(`/flashcards/${flashcardId}`);
+    return response.data ?? ({} as Flashcard);
   } catch (error) {
     console.error("[getFlashcard] Error:", error);
     throw error;
@@ -87,9 +93,12 @@ export async function saveFlashcardFromSession(
   try {
     // Gọi API backend để tạo flashcard
     const response = await apiRequest<{
-      flashcard_id: string;
-      word: string;
-      message: string;
+      success: boolean;
+      data?: {
+        flashcard_id?: string;
+        word?: string;
+        message?: string;
+      };
     }>("/flashcards", {
       method: "POST",
       body: JSON.stringify({
@@ -107,12 +116,13 @@ export async function saveFlashcardFromSession(
       cache: "no-store",
     });
 
+    const data = response.data ?? { message: "" };
     revalidatePath("/flashcards");
     revalidatePath("/flashcards/review");
 
     return {
       success: true,
-      message: response.message || "Đã lưu vào flashcard.",
+      message: data.message || "Đã lưu vào flashcard.",
     };
   } catch (error) {
     console.error("[saveFlashcardFromSession] Error:", error);
@@ -140,21 +150,25 @@ export async function updateFlashcardSRS(
 
   try {
     const response = await apiRequest<{
-      interval_days: number;
-      review_count: number;
-      next_review_at: string;
+      success: boolean;
+      data?: {
+        interval_days?: number;
+        review_count?: number;
+        next_review_at?: string;
+      };
     }>(`/flashcards/${flashcardId}/review`, {
       method: "POST",
       body: JSON.stringify({ rating }),
     });
 
+    const data = response.data ?? {};
     revalidatePath("/flashcards/review");
 
     return {
       success: true,
-      intervalDays: response.interval_days,
-      reviewCount: response.review_count,
-      nextReviewAt: response.next_review_at,
+      intervalDays: data.interval_days,
+      reviewCount: data.review_count,
+      nextReviewAt: data.next_review_at,
     };
   } catch (error) {
     console.error("[updateFlashcardSRS] Error:", error);

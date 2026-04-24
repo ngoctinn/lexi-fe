@@ -228,8 +228,6 @@ export function useSession({
             .turns.find((turn) => turn.turn_index === turnIndex)?.content || "";
 
         const translationResult = await SessionService.translateTurn(
-          sessionId,
-          turnIndex,
           sourceText,
         );
         setTurns((prev: Turn[]) =>
@@ -238,7 +236,6 @@ export function useSession({
               ? {
                   ...t,
                   translated_content: translationResult.translatedText,
-                  analysis_items: translationResult.analysisItems,
                 }
               : t,
           ),
@@ -250,7 +247,7 @@ export function useSession({
         );
       }
     },
-    [sessionId, setTurns],
+    [setTurns],
   );
 
   const translateWord = React.useCallback(async (word: string, context: string): Promise<TranslateWordResult> => {
