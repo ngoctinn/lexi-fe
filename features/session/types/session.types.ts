@@ -20,6 +20,10 @@ export enum WsClientEvent {
   SKIP_TURN = "SKIP_TURN",
   END_SESSION = "END_SESSION",
   SEND_MESSAGE = "SEND_MESSAGE",
+  START_STREAMING = "START_STREAMING",
+  AUDIO_CHUNK = "AUDIO_CHUNK",
+  END_STREAMING = "END_STREAMING",
+  SUBMIT_TRANSCRIPT = "SUBMIT_TRANSCRIPT",
 }
 
 export enum WsServerEvent {
@@ -32,6 +36,10 @@ export enum WsServerEvent {
   HINT_TEXT = "HINT_TEXT",
   SCORING_COMPLETE = "SCORING_COMPLETE",
   ERROR = "ERROR",
+  STREAMING_READY = "STREAMING_READY",
+  PARTIAL_TRANSCRIPT = "PARTIAL_TRANSCRIPT",
+  FINAL_TRANSCRIPT = "FINAL_TRANSCRIPT",
+  STT_ERROR = "STT_ERROR",
 }
 
 export interface Scenario {
@@ -126,12 +134,39 @@ export interface WsSendMessagePayload {
   text: string;
 }
 
+export interface WsStartStreamingPayload {
+  action: WsClientEvent.START_STREAMING;
+  session_id: string;
+}
+
+export interface WsAudioChunkPayload {
+  action: WsClientEvent.AUDIO_CHUNK;
+  session_id: string;
+  data: number[];
+}
+
+export interface WsEndStreamingPayload {
+  action: WsClientEvent.END_STREAMING;
+  session_id: string;
+}
+
+export interface WsSubmitTranscriptPayload {
+  action: WsClientEvent.SUBMIT_TRANSCRIPT;
+  session_id: string;
+  text: string;
+  confidence: number;
+}
+
 export type WsClientPayload =
   | WsStartSessionPayload
   | WsAudioUploadedPayload
   | WsUseHintPayload
   | WsEndSessionPayload
-  | WsSendMessagePayload;
+  | WsSendMessagePayload
+  | WsStartStreamingPayload
+  | WsAudioChunkPayload
+  | WsEndStreamingPayload
+  | WsSubmitTranscriptPayload;
 
 export interface WsSessionReadyEvent {
   event: WsServerEvent.SESSION_READY;
@@ -183,6 +218,28 @@ export interface WsErrorEvent {
   code?: string;
 }
 
+export interface WsStreamingReadyEvent {
+  event: WsServerEvent.STREAMING_READY;
+  session_id: string;
+}
+
+export interface WsPartialTranscriptEvent {
+  event: WsServerEvent.PARTIAL_TRANSCRIPT;
+  text: string;
+  confidence: number;
+}
+
+export interface WsFinalTranscriptEvent {
+  event: WsServerEvent.FINAL_TRANSCRIPT;
+  text: string;
+  confidence: number;
+}
+
+export interface WsSttErrorEvent {
+  event: WsServerEvent.STT_ERROR;
+  message: string;
+}
+
 export type WsServerPayload =
   | WsSessionReadyEvent
   | WsSttResultEvent
@@ -192,7 +249,11 @@ export type WsServerPayload =
   | WsTurnSavedEvent
   | WsHintTextEvent
   | WsScoringCompleteEvent
-  | WsErrorEvent;
+  | WsErrorEvent
+  | WsStreamingReadyEvent
+  | WsPartialTranscriptEvent
+  | WsFinalTranscriptEvent
+  | WsSttErrorEvent;
 
 export type RecorderState =
   | "idle"
@@ -222,6 +283,12 @@ export interface SessionUiState {
   uploadUrl: string | null;
   s3Key: string | null;
   isControlsDisabled?: boolean;
+  streamingTranscript?: {
+    finalText: string;
+    partialText: string;
+    isStreaming: boolean;
+  };
+  streamingError?: string | null;
 }
 
 export interface CreateSessionDto {

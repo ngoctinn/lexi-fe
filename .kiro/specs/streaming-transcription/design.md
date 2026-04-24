@@ -2,21 +2,29 @@
 
 ## Overview
 
-This design migrates the speaking practice pipeline from batch Amazon Transcribe (with 30-second polling timeouts) to streaming Amazon Transcribe for real-time audio transcription. The current implementation uploads complete audio files to S3, then polls batch Transcribe jobs which timeout while Lambda has a 29-second limit. The new implementation streams audio chunks in real-time via WebSocket, eliminating polling and providing immediate partial transcripts as the user speaks.
+This design migrates the speaking practice pipeline from batch Amazon Transcribe (with 30-second polling timeouts) to **client-side streaming** Amazon Transcribe for real-time audio transcription. The current implementation uploads complete audio files to S3, then polls batch Transcribe jobs which timeout while Lambda has a 29-second limit.
+
+**CRITICAL ARCHITECTURAL FINDING**: After thorough AWS documentation research, Lambda WebSocket handlers **CANNOT** maintain persistent Transcribe streams because:
+1. Each WebSocket message triggers a **separate Lambda invocation** (stateless)
+2. Transcribe Streaming requires a **persistent bidirectional connection**
+3. Lambda execution contexts are not shared across WebSocket messages
+
+**Solution**: Frontend connects **directly** to Amazon Transcribe Streaming API, bypassing Lambda for the streaming phase. Lambda only processes the final transcript after recording completes.
 
 ### Key Benefits
 
 - **Real-time feedback**: Users see transcription as they speak (like Google Meet captions)
 - **No polling timeouts**: Streaming eliminates the batch job polling pattern
-- **Faster pipeline**: Transcription starts immediately, not after upload completes
+- **No Lambda streaming complexity**: Client handles streaming directly
 - **Better UX**: Partial transcripts provide immediate visual feedback
+- **Simpler architecture**: No need for persistent connections in Lambda
 
 ### Constraints
 
-- AWS SDK for Python (Boto3) does NOT support Transcribe Streaming
-- Must use `amazon-transcribe-streaming-sdk` (async Python SDK)
-- Lambda timeout remains 29 seconds (WebSocket connection limit)
+- Frontend must implement AWS Signature Version 4 authentication for Transcribe API
 - Audio format must be PCM or Opus (16kHz, mono)
+- Transcribe Streaming has 4-hour maximum duration limit
+- Requires CORS configuration for direct browser-to-Transcribe communication
 
 ## Architecture
 
@@ -64,48 +72,59 @@ sequenceDiagram
 - Batch job overhead (job creation, polling, cleanup)
 
 
-### New Architecture (Streaming Transcribe)
+### New Architecture (Client-Side Streaming)
+
+**CRITICAL**: Lambda WebSocket handlers are **stateless** - each message is a separate invocation. They **CANNOT** maintain persistent Transcribe streams.
+
+**AWS Documentation Sources:**
+- [Lambda execution environment lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html): "Each phase starts with an event... Lambda freezes the execution environment when the runtime and each extension have completed"
+- [API Gateway WebSocket overview](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html): Each WebSocket message triggers a separate Lambda invocation
+- [Transcribe Streaming docs](https://docs.aws.amazon.com/transcribe/latest/dg/streaming.html): "Streaming content is delivered as a series of sequential data packets... Amazon Transcribe transcribes instantaneously"
 
 ```mermaid
 sequenceDiagram
     participant User
     participant Frontend
+    participant Transcribe
     participant WebSocket
     participant Lambda
-    participant Transcribe
     participant LLM
 
     User->>Frontend: Start recording
-    Frontend->>WebSocket: START_STREAMING
-    WebSocket->>Lambda: Initialize
-    Lambda->>Transcribe: StartStreamTranscription
-    Note over Lambda,Transcribe: Persistent bidirectional stream
+    Frontend->>Frontend: Get AWS credentials from Cognito
+    Frontend->>Transcribe: StartStreamTranscription (HTTP/2 + SigV4)
+    Note over Frontend,Transcribe: Direct persistent connection
     
     loop Every 250ms while recording
         User->>Frontend: Speak
         Frontend->>Frontend: Capture audio chunk
-        Frontend->>WebSocket: AUDIO_CHUNK {data}
-        WebSocket->>Lambda: Forward chunk
-        Lambda->>Transcribe: Stream audio chunk
-        Transcribe-->>Lambda: Partial transcript
-        Lambda-->>Frontend: PARTIAL_TRANSCRIPT (gray text)
+        Frontend->>Transcribe: Stream audio chunk (HTTP/2)
+        Transcribe-->>Frontend: Partial transcript
+        Frontend->>Frontend: Display partial (gray text)
     end
     
     User->>Frontend: Stop recording
-    Frontend->>WebSocket: END_STREAMING
-    Lambda->>Transcribe: Close stream
-    Transcribe-->>Lambda: Final transcript
-    Lambda-->>Frontend: FINAL_TRANSCRIPT (black text)
+    Frontend->>Transcribe: Close stream
+    Transcribe-->>Frontend: Final transcript
+    Frontend->>Frontend: Display final (black text)
     
+    Frontend->>WebSocket: SUBMIT_TRANSCRIPT {text}
+    WebSocket->>Lambda: Process transcript
     Lambda->>LLM: Generate AI response
     Lambda-->>Frontend: TURN_SAVED, AI_TEXT_CHUNK, AI_AUDIO_URL
 ```
 
-**Improvements:**
-- No polling - streaming is bidirectional
-- Real-time partial transcripts (immediate feedback)
-- No S3 upload for transcription (faster)
-- No timeout risk (streaming completes when user stops)
+**Key Architectural Changes:**
+1. **Frontend → Transcribe Direct**: Browser connects directly to Transcribe Streaming API using HTTP/2
+2. **No Lambda in streaming path**: Lambda only processes final transcript
+3. **AWS SigV4 in browser**: Frontend signs requests using temporary Cognito credentials
+4. **Persistent connection**: Single HTTP/2 connection maintained by browser, not Lambda
+
+**Why This Works:**
+- Browser maintains persistent HTTP/2 connection (not Lambda)
+- No Lambda timeout issues (streaming happens client-side)
+- Transcribe Streaming designed for direct client connections
+- AWS SDK for JavaScript supports Transcribe Streaming natively
 
 ## Components and Interfaces
 
@@ -127,7 +146,7 @@ recorder.onstop = async () => {
 
 **New Implementation:**
 ```typescript
-// Streams audio chunks in real-time
+// Streams audio chunks directly to Transcribe
 const recorder = new MediaRecorder(stream, {
   mimeType: "audio/webm;codecs=opus",
   audioBitsPerSecond: 16000
@@ -135,8 +154,8 @@ const recorder = new MediaRecorder(stream, {
 
 recorder.ondataavailable = (ev: BlobEvent) => {
   if (ev.data.size > 0) {
-    // Send chunk immediately via WebSocket
-    sendAudioChunk(ev.data);
+    // Send chunk directly to Transcribe (not WebSocket)
+    transcribeClient.sendAudioChunk(ev.data);
   }
 };
 
@@ -145,46 +164,101 @@ recorder.start(250);
 ```
 
 **Changes:**
-- Remove S3 upload logic
-- Send chunks immediately via WebSocket
+- Remove S3 upload logic entirely
+- Send chunks to Transcribe client (not WebSocket)
 - Configure 250ms chunk interval
 - Ensure 16kHz sample rate, mono channel
 
-#### 2. WebSocket Client
+#### 2. Transcribe Streaming Client (`use-transcribe-streaming.ts`)
 
-**New Events:**
+**New Component** - Handles direct connection to Transcribe API:
 
 ```typescript
-// Outgoing events
-type OutgoingEvent =
-  | { action: "START_STREAMING"; session_id: string }
-  | { action: "AUDIO_CHUNK"; session_id: string; data: ArrayBuffer }
-  | { action: "END_STREAMING"; session_id: string };
+import { TranscribeStreamingClient, StartStreamTranscriptionCommand } from "@aws-sdk/client-transcribe-streaming";
 
-// Incoming events
-type IncomingEvent =
-  | { event: "STREAMING_READY"; session_id: string }
-  | { event: "PARTIAL_TRANSCRIPT"; text: string; confidence: number }
-  | { event: "FINAL_TRANSCRIPT"; text: string; confidence: number }
-  | { event: "STT_ERROR"; message: string };
-```
-
-**Implementation:**
-```typescript
-function sendAudioChunk(blob: Blob) {
-  blob.arrayBuffer().then(buffer => {
-    ws.send(JSON.stringify({
-      action: "AUDIO_CHUNK",
-      session_id: sessionId,
-      data: Array.from(new Uint8Array(buffer)) // Serialize for JSON
-    }));
-  });
+class TranscribeStreamingService {
+  private client: TranscribeStreamingClient;
+  private stream: AsyncIterable<AudioEvent> | null = null;
+  
+  constructor(credentials: AwsCredentialIdentity, region: string) {
+    this.client = new TranscribeStreamingClient({
+      region,
+      credentials
+    });
+  }
+  
+  async startStream(
+    languageCode: string = "en-US",
+    sampleRate: number = 16000,
+    mediaEncoding: string = "ogg-opus"
+  ): Promise<void> {
+    const audioStream = this.createAudioStream();
+    
+    const command = new StartStreamTranscriptionCommand({
+      LanguageCode: languageCode,
+      MediaSampleRateHertz: sampleRate,
+      MediaEncoding: mediaEncoding,
+      AudioStream: audioStream
+    });
+    
+    const response = await this.client.send(command);
+    
+    // Process transcript events
+    for await (const event of response.TranscriptResultStream!) {
+      if (event.TranscriptEvent) {
+        const results = event.TranscriptEvent.Transcript?.Results || [];
+        for (const result of results) {
+          if (result.Alternatives && result.Alternatives.length > 0) {
+            const transcript = result.Alternatives[0].Transcript;
+            const isPartial = result.IsPartial;
+            
+            // Emit transcript event
+            this.onTranscript({
+              text: transcript || "",
+              isPartial: isPartial || false,
+              confidence: result.Alternatives[0].Items?.[0]?.Confidence || 1.0
+            });
+          }
+        }
+      }
+    }
+  }
+  
+  async sendAudioChunk(blob: Blob): Promise<void> {
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioEvent = {
+      AudioEvent: {
+        AudioChunk: new Uint8Array(arrayBuffer)
+      }
+    };
+    
+    // Add to stream (implementation depends on SDK)
+    this.audioStreamGenerator.push(audioEvent);
+  }
+  
+  async closeStream(): Promise<void> {
+    this.audioStreamGenerator.end();
+  }
+  
+  private createAudioStream(): AsyncIterable<AudioEvent> {
+    // Create async generator for audio chunks
+    this.audioStreamGenerator = new AudioStreamGenerator();
+    return this.audioStreamGenerator.stream();
+  }
+  
+  onTranscript: (transcript: TranscriptResult) => void = () => {};
 }
 ```
 
+**Key Implementation Details:**
+1. **AWS SDK for JavaScript**: Use `@aws-sdk/client-transcribe-streaming` (v3)
+2. **Credentials**: Get from Cognito Identity Pool (temporary credentials)
+3. **HTTP/2 Connection**: SDK handles persistent connection automatically
+4. **Async Iteration**: Process transcript events as they arrive
+
 #### 3. Transcript Display Component
 
-**New UI States:**
+**UI States:**
 ```typescript
 interface TranscriptState {
   finalText: string;      // Black text (confirmed)
@@ -203,94 +277,30 @@ interface TranscriptState {
 
 #### 1. WebSocket Handler (`websocket_handler.py`)
 
-**New Actions:**
+**Simplified Actions** - No streaming logic needed:
 
 ```python
-def start_streaming(self, session_id: str, connection_id: str) -> dict[str, Any]:
-    """Initialize streaming transcription session."""
+def submit_transcript(self, session_id: str, connection_id: str, body: dict[str, Any]) -> dict[str, Any]:
+    """Process final transcript from client-side streaming."""
     session = self._get_session(session_id)
     if not session:
         return _response(404, {"message": "Session không tồn tại."})
     
-    self._sync_connection(session, connection_id)
+    text = str(body.get("text") or "").strip()
+    confidence = float(body.get("confidence") or 0.0)
     
-    # Initialize Transcribe stream
-    stream_id = self.stt_service.start_stream(
-        session_id=session_id,
-        language_code="en-US",
-        sample_rate=16000,
-        media_encoding="opus"
-    )
-    
-    # Store stream_id in session
-    session.transcribe_stream_id = stream_id
-    self.session_repo.save(session)
-    
-    self.send_message({"event": "STREAMING_READY", "session_id": session_id})
-    return _response(200, {"message": "Streaming ready"})
-
-def audio_chunk(self, session_id: str, connection_id: str, body: dict[str, Any]) -> dict[str, Any]:
-    """Forward audio chunk to Transcribe stream."""
-    session = self._get_session(session_id)
-    if not session or not session.transcribe_stream_id:
-        return _response(400, {"message": "No active stream"})
-    
-    audio_data = body.get("data")  # Array of bytes
-    if not audio_data:
-        return _response(400, {"message": "Missing audio data"})
-    
-    # Forward to Transcribe
-    self.stt_service.send_audio_chunk(
-        stream_id=session.transcribe_stream_id,
-        audio_bytes=bytes(audio_data)
-    )
-    
-    # Check for transcripts (non-blocking)
-    transcripts = self.stt_service.get_transcripts(session.transcribe_stream_id)
-    for transcript in transcripts:
-        if transcript.is_partial:
-            self.send_message({
-                "event": "PARTIAL_TRANSCRIPT",
-                "text": transcript.text,
-                "confidence": transcript.confidence
-            })
-        else:
-            self.send_message({
-                "event": "FINAL_TRANSCRIPT",
-                "text": transcript.text,
-                "confidence": transcript.confidence
-            })
-    
-    return _response(200, {"message": "Chunk processed"})
-
-def end_streaming(self, session_id: str, connection_id: str) -> dict[str, Any]:
-    """Close Transcribe stream and trigger LLM pipeline."""
-    session = self._get_session(session_id)
-    if not session or not session.transcribe_stream_id:
-        return _response(400, {"message": "No active stream"})
-    
-    # Close stream and get final transcript
-    final_transcript = self.stt_service.close_stream(session.transcribe_stream_id)
-    session.transcribe_stream_id = None
-    self.session_repo.save(session)
-    
-    if not final_transcript or final_transcript.confidence < 0.5:
-        self.send_message({"event": "STT_LOW_CONFIDENCE", "confidence": final_transcript.confidence if final_transcript else 0.0})
+    if not text or confidence < 0.5:
+        self.send_message({"event": "STT_LOW_CONFIDENCE", "confidence": confidence})
         return _response(200, {"message": "Low confidence"})
     
-    # Send final transcript
-    self.send_message({
-        "event": "FINAL_TRANSCRIPT",
-        "text": final_transcript.text,
-        "confidence": final_transcript.confidence
-    })
+    self._sync_connection(session, connection_id)
     
     # Continue with existing LLM pipeline
     result = self.submit_turn_use_case.execute(
         SubmitSpeakingTurnCommand(
             user_id=session.user_id,
             session_id=session_id,
-            text=final_transcript.text,
+            text=text,
             is_hint_used=False,
             audio_url=None  # No S3 URL for streaming
         )
@@ -310,7 +320,7 @@ def end_streaming(self, session_id: str, connection_id: str) -> dict[str, Any]:
             "text": response.ai_turn.content
         })
     
-    return _response(200, {"message": "Streaming ended"})
+    return _response(200, {"message": "Transcript processed"})
 ```
 
 **Route Mapping:**
@@ -318,12 +328,8 @@ def end_streaming(self, session_id: str, connection_id: str) -> dict[str, Any]:
 def handler(event, context):
     # ... existing code ...
     
-    if action == "START_STREAMING":
-        return controller.start_streaming(str(session_id), connection_id)
-    if action == "AUDIO_CHUNK":
-        return controller.audio_chunk(str(session_id), connection_id, body)
-    if action == "END_STREAMING":
-        return controller.end_streaming(str(session_id), connection_id)
+    if action == "SUBMIT_TRANSCRIPT":
+        return controller.submit_transcript(str(session_id), connection_id, body)
     
     # Keep existing actions for backward compatibility during migration
     if action == "START_SESSION":
@@ -332,209 +338,139 @@ def handler(event, context):
         return controller.audio_uploaded(str(session_id), connection_id, body)
 ```
 
-#### 2. Streaming STT Service (`streaming_stt_service.py`)
+**Removed Components:**
+- ~~StreamingSTTService~~ (not needed - client handles streaming)
+- ~~start_streaming() handler~~ (not needed)
+- ~~audio_chunk() handler~~ (not needed)
+- ~~end_streaming() handler~~ (replaced by submit_transcript)
 
-**New Service Implementation:**
+#### 2. IAM Policy for Cognito Identity Pool
 
-```python
-from __future__ import annotations
+**New IAM Policy** - Allow authenticated users to call Transcribe Streaming:
 
-import asyncio
-from dataclasses import dataclass
-from typing import Dict, List, Optional
-from amazon_transcribe.client import TranscribeStreamingClient
-from amazon_transcribe.handlers import TranscriptResultStreamHandler
-from amazon_transcribe.model import TranscriptEvent, TranscriptResultStream
-
-@dataclass
-class TranscriptResult:
-    text: str
-    confidence: float
-    is_partial: bool
-
-class StreamingSTTService:
-    """
-    Real-time speech-to-text using Amazon Transcribe Streaming API.
-    
-    Uses amazon-transcribe-streaming-sdk (NOT boto3).
-    Docs: https://github.com/awslabs/amazon-transcribe-streaming-sdk
-    """
-    
-    def __init__(self):
-        self._active_streams: Dict[str, TranscribeStreamingClient] = {}
-        self._transcript_buffers: Dict[str, List[TranscriptResult]] = {}
-    
-    def start_stream(
-        self,
-        session_id: str,
-        language_code: str = "en-US",
-        sample_rate: int = 16000,
-        media_encoding: str = "opus"
-    ) -> str:
-        """
-        Start a new Transcribe streaming session.
-        
-        Returns stream_id for subsequent operations.
-        """
-        stream_id = f"stream-{session_id}"
-        
-        # Create streaming client
-        client = TranscribeStreamingClient(region="ap-southeast-1")
-        
-        # Start stream with event handler
-        handler = self._create_handler(stream_id)
-        stream = await client.start_stream_transcription(
-            language_code=language_code,
-            media_sample_rate_hz=sample_rate,
-            media_encoding=media_encoding,
-            transcript_result_stream_handler=handler
-        )
-        
-        self._active_streams[stream_id] = stream
-        self._transcript_buffers[stream_id] = []
-        
-        return stream_id
-    
-    def send_audio_chunk(self, stream_id: str, audio_bytes: bytes) -> None:
-        """Send audio chunk to active stream."""
-        if stream_id not in self._active_streams:
-            raise ValueError(f"No active stream: {stream_id}")
-        
-        stream = self._active_streams[stream_id]
-        # Send audio to stream (non-blocking)
-        asyncio.create_task(stream.input_stream.send_audio_event(audio_chunk=audio_bytes))
-    
-    def get_transcripts(self, stream_id: str) -> List[TranscriptResult]:
-        """Get accumulated transcripts since last call (non-blocking)."""
-        if stream_id not in self._transcript_buffers:
-            return []
-        
-        transcripts = self._transcript_buffers[stream_id]
-        self._transcript_buffers[stream_id] = []  # Clear buffer
-        return transcripts
-    
-    def close_stream(self, stream_id: str) -> Optional[TranscriptResult]:
-        """Close stream and return final transcript."""
-        if stream_id not in self._active_streams:
-            return None
-        
-        stream = self._active_streams[stream_id]
-        
-        # Signal end of audio
-        asyncio.create_task(stream.input_stream.end_stream())
-        
-        # Wait for final transcript
-        # (In practice, final transcript should already be in buffer)
-        transcripts = self._transcript_buffers.get(stream_id, [])
-        final = next((t for t in reversed(transcripts) if not t.is_partial), None)
-        
-        # Cleanup
-        del self._active_streams[stream_id]
-        del self._transcript_buffers[stream_id]
-        
-        return final
-    
-    def _create_handler(self, stream_id: str) -> TranscriptResultStreamHandler:
-        """Create event handler for transcript events."""
-        service = self
-        
-        class Handler(TranscriptResultStreamHandler):
-            async def handle_transcript_event(self, transcript_event: TranscriptEvent):
-                results = transcript_event.transcript.results
-                for result in results:
-                    if not result.alternatives:
-                        continue
-                    
-                    alternative = result.alternatives[0]
-                    transcript_text = alternative.transcript
-                    
-                    # Calculate average confidence
-                    items = alternative.items or []
-                    confidences = [item.confidence for item in items if item.confidence is not None]
-                    avg_confidence = sum(confidences) / len(confidences) if confidences else 1.0
-                    
-                    # Add to buffer
-                    service._transcript_buffers[stream_id].append(
-                        TranscriptResult(
-                            text=transcript_text,
-                            confidence=avg_confidence,
-                            is_partial=result.is_partial
-                        )
-                    )
-        
-        return Handler()
+```yaml
+TranscribeStreamingPolicy:
+  Type: AWS::IAM::Policy
+  Properties:
+    PolicyName: TranscribeStreamingAccess
+    PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Action:
+            - transcribe:StartStreamTranscription
+          Resource: '*'
+    Roles:
+      - !Ref CognitoAuthenticatedRole
 ```
 
-**Key Implementation Details:**
+**Cognito Identity Pool Configuration:**
+```yaml
+IdentityPool:
+  Type: AWS::Cognito::IdentityPool
+  Properties:
+    AllowUnauthenticatedIdentities: false
+    CognitoIdentityProviders:
+      - ClientId: !Ref UserPoolClient
+        ProviderName: !GetAtt UserPool.ProviderName
 
-1. **Async SDK**: Must use `amazon-transcribe-streaming-sdk`, not boto3
-2. **Event Handler**: Transcripts arrive via callback, not polling
-3. **Buffer Pattern**: Store transcripts in buffer, retrieve non-blocking
-4. **Stream Lifecycle**: start → send chunks → close
+AuthenticatedRole:
+  Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: authenticated
+    ManagedPolicyArns:
+      - !Ref TranscribeStreamingPolicy
+```
 
 ## Data Models
-
-### Session Entity Extension
-
-```python
-@dataclass
-class Session:
-    # ... existing fields ...
-    transcribe_stream_id: Optional[str] = None  # Active stream ID
-```
 
 ### WebSocket Message Protocol
 
 #### Client → Server
 
 ```typescript
-// Start streaming
+// Submit final transcript (after client-side streaming completes)
 {
-  "action": "START_STREAMING",
-  "session_id": "01HXXX..."
-}
-
-// Send audio chunk
-{
-  "action": "AUDIO_CHUNK",
+  "action": "SUBMIT_TRANSCRIPT",
   "session_id": "01HXXX...",
-  "data": [0, 255, 128, ...]  // Byte array
-}
-
-// End streaming
-{
-  "action": "END_STREAMING",
-  "session_id": "01HXXX..."
+  "text": "Hello how are you",
+  "confidence": 0.92
 }
 ```
 
 #### Server → Client
 
 ```typescript
-// Streaming ready
+// Turn saved
 {
-  "event": "STREAMING_READY",
-  "session_id": "01HXXX..."
+  "event": "TURN_SAVED",
+  "turn_index": 3
 }
 
-// Partial transcript (gray text)
+// AI response
 {
-  "event": "PARTIAL_TRANSCRIPT",
-  "text": "Hello how are",
-  "confidence": 0.85
+  "event": "AI_TEXT_CHUNK",
+  "chunk": "I'm doing well, thank you!",
+  "done": true
 }
 
-// Final transcript (black text)
+// AI audio
 {
-  "event": "FINAL_TRANSCRIPT",
-  "text": "Hello how are you",
-  "confidence": 0.92
+  "event": "AI_AUDIO_URL",
+  "url": "https://...",
+  "text": "I'm doing well, thank you!"
 }
 
-// Error
+// Low confidence
 {
-  "event": "STT_ERROR",
-  "message": "Stream timeout"
+  "event": "STT_LOW_CONFIDENCE",
+  "confidence": 0.42
+}
+```
+
+### Transcribe Streaming Protocol (Client-Side)
+
+**Frontend uses AWS SDK for JavaScript v3:**
+
+```typescript
+import { TranscribeStreamingClient, StartStreamTranscriptionCommand } from "@aws-sdk/client-transcribe-streaming";
+
+// Initialize client with Cognito credentials
+const client = new TranscribeStreamingClient({
+  region: "ap-southeast-1",
+  credentials: fromCognitoIdentityPool({
+    client: new CognitoIdentityClient({ region: "ap-southeast-1" }),
+    identityPoolId: "ap-southeast-1:xxxxx",
+    logins: {
+      [`cognito-idp.ap-southeast-1.amazonaws.com/${userPoolId}`]: idToken
+    }
+  })
+});
+
+// Start streaming
+const command = new StartStreamTranscriptionCommand({
+  LanguageCode: "en-US",
+  MediaSampleRateHertz: 16000,
+  MediaEncoding: "ogg-opus",
+  AudioStream: audioStreamGenerator()
+});
+
+const response = await client.send(command);
+
+// Process transcripts
+for await (const event of response.TranscriptResultStream!) {
+  // Handle partial and final transcripts
 }
 ```
 
@@ -589,60 +525,48 @@ For 250ms chunks at 16kHz PCM:
 
 | Error | Cause | Frontend Action | Backend Action |
 |-------|-------|----------------|----------------|
-| **Connection Lost** | WebSocket disconnect during streaming | Display "Connection lost. Please try again." | Close Transcribe stream, cleanup |
-| **Stream Timeout** | No audio for 15 seconds | Display "No audio detected. Please speak." | Close stream, send STT_ERROR |
-| **Transcribe Error** | API error (rate limit, invalid audio) | Display error message, allow retry | Log error, send STT_ERROR |
-| **Low Confidence** | Poor audio quality or unclear speech | Display "Could not understand. Please try again." | Send STT_LOW_CONFIDENCE |
-| **Permission Denied** | Microphone access denied | Display "Microphone access required" | N/A |
+| **Transcribe Connection Failed** | Network issue, invalid credentials | Display "Connection failed. Please try again." | N/A (client-side) |
+| **Transcribe Stream Error** | API error (rate limit, invalid audio) | Display error message, allow retry | N/A (client-side) |
+| **Low Confidence** | Poor audio quality or unclear speech | Display "Could not understand. Please try again." | Reject transcript with confidence < 0.5 |
+| **Permission Denied** | Microphone access denied | Display "Microphone access required" | N/A (client-side) |
+| **Credentials Expired** | Cognito token expired | Refresh credentials automatically | N/A (client-side) |
 
 ### Implementation
 
-```python
-class StreamingSTTService:
-    def _create_handler(self, stream_id: str) -> TranscriptResultStreamHandler:
-        service = self
-        
-        class Handler(TranscriptResultStreamHandler):
-            async def handle_transcript_event(self, transcript_event: TranscriptEvent):
-                # ... existing code ...
-            
-            async def handle_exception(self, exception: Exception):
-                """Handle stream errors."""
-                logger.error(f"Transcribe stream error: {exception}")
-                # Store error in buffer for retrieval
-                service._transcript_buffers[stream_id].append(
-                    TranscriptResult(
-                        text="",
-                        confidence=0.0,
-                        is_partial=False,
-                        error=str(exception)
-                    )
-                )
-        
-        return Handler()
-```
-
-### Timeout Handling
-
-```python
-def audio_chunk(self, session_id: str, connection_id: str, body: dict[str, Any]) -> dict[str, Any]:
-    session = self._get_session(session_id)
-    if not session or not session.transcribe_stream_id:
-        return _response(400, {"message": "No active stream"})
-    
-    # Update last activity timestamp
-    session.last_audio_timestamp = time.time()
-    self.session_repo.save(session)
-    
-    # Check for timeout (15 seconds)
-    if time.time() - session.last_audio_timestamp > 15:
-        self.stt_service.close_stream(session.transcribe_stream_id)
-        session.transcribe_stream_id = None
-        self.session_repo.save(session)
-        self.send_message({"event": "STT_ERROR", "message": "Stream timeout: no audio detected"})
-        return _response(408, {"message": "Timeout"})
-    
-    # ... rest of implementation ...
+```typescript
+class TranscribeStreamingService {
+  async startStream(): Promise<void> {
+    try {
+      const command = new StartStreamTranscriptionCommand({...});
+      const response = await this.client.send(command);
+      
+      for await (const event of response.TranscriptResultStream!) {
+        // Process transcripts
+      }
+    } catch (error) {
+      if (error.name === "ThrottlingException") {
+        this.onError("Rate limit exceeded. Please wait and try again.");
+      } else if (error.name === "BadRequestException") {
+        this.onError("Invalid audio format. Please check your microphone settings.");
+      } else if (error.name === "UnrecognizedClientException") {
+        // Refresh credentials and retry
+        await this.refreshCredentials();
+        await this.startStream();
+      } else {
+        this.onError("Transcription failed. Please try again.");
+      }
+    }
+  }
+  
+  private async refreshCredentials(): Promise<void> {
+    // Get new credentials from Cognito
+    const credentials = await fromCognitoIdentityPool({...})();
+    this.client = new TranscribeStreamingClient({
+      region: this.region,
+      credentials
+    });
+  }
+}
 ```
 
 ## Testing Strategy
@@ -695,18 +619,20 @@ def audio_chunk(self, session_id: str, connection_id: str, body: dict[str, Any])
 
 ## Migration Strategy
 
-### Phase 1: Add Streaming Support (Parallel Mode)
+### Phase 1: Add Client-Side Streaming (Parallel Mode)
 
 **Goal**: Deploy streaming without breaking existing batch flow
 
-1. **Add new WebSocket actions** (START_STREAMING, AUDIO_CHUNK, END_STREAMING)
-2. **Keep existing actions** (START_SESSION, AUDIO_UPLOADED)
-3. **Add feature flag** in frontend:
+1. **Add Cognito Identity Pool** with Transcribe Streaming permissions
+2. **Add frontend Transcribe client** with direct API connection
+3. **Add SUBMIT_TRANSCRIPT WebSocket action** (replaces END_STREAMING)
+4. **Keep existing actions** (START_SESSION, AUDIO_UPLOADED)
+5. **Add feature flag** in frontend:
    ```typescript
    const USE_STREAMING = process.env.NEXT_PUBLIC_USE_STREAMING === "true";
    ```
-4. **Deploy backend** with both implementations
-5. **Test streaming** with feature flag enabled
+6. **Deploy backend** with new SUBMIT_TRANSCRIPT handler
+7. **Test streaming** with feature flag enabled
 
 **Verification:**
 - Existing users continue using batch flow
@@ -738,7 +664,7 @@ def audio_chunk(self, session_id: str, connection_id: str, body: dict[str, Any])
 2. **Remove S3 upload** for transcription (keep for analytics if needed)
 3. **Remove START_SESSION presigned URL** generation
 4. **Remove AUDIO_UPLOADED** WebSocket action
-5. **Update IAM permissions** (remove batch Transcribe permissions)
+5. **Remove Lambda Transcribe permissions** (batch only)
 
 **Verification:**
 - All users on streaming
@@ -752,11 +678,11 @@ def audio_chunk(self, session_id: str, connection_id: str, body: dict[str, Any])
 - `START_SESSION` action (generates presigned URL)
 - `AUDIO_UPLOADED` action (batch transcription)
 - `TranscribeSTTService` class (batch implementation)
-- IAM permissions for batch Transcribe
+- Lambda IAM permissions for batch Transcribe
 
 **Remove in Phase 3:**
 - All batch-related code
-- Batch IAM permissions
+- Batch IAM permissions from Lambda
 - S3 upload logic for transcription
 
 ## IAM Permissions Update
@@ -764,6 +690,7 @@ def audio_chunk(self, session_id: str, connection_id: str, body: dict[str, Any])
 ### Current Permissions (Batch)
 
 ```yaml
+# Lambda function permissions
 Policies:
   - Statement:
       - Effect: Allow
@@ -774,15 +701,56 @@ Policies:
         Resource: "*"
 ```
 
-### New Permissions (Streaming)
+### New Permissions (Client-Side Streaming)
+
+**Lambda does NOT need Transcribe permissions** - streaming happens client-side.
+
+**Cognito Authenticated Role needs Transcribe Streaming permission:**
 
 ```yaml
-Policies:
-  - Statement:
-      - Effect: Allow
-        Action:
-          - transcribe:StartStreamTranscription
-        Resource: "*"
+# New: Cognito Identity Pool
+IdentityPool:
+  Type: AWS::Cognito::IdentityPool
+  Properties:
+    IdentityPoolName: LexiIdentityPool
+    AllowUnauthenticatedIdentities: false
+    CognitoIdentityProviders:
+      - ClientId: !Ref UserPoolClient
+        ProviderName: !GetAtt UserPool.ProviderName
+
+# New: Authenticated Role for Cognito users
+CognitoAuthenticatedRole:
+  Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: authenticated
+    Policies:
+      - PolicyName: TranscribeStreamingAccess
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - transcribe:StartStreamTranscription
+              Resource: '*'
+
+# Attach role to identity pool
+IdentityPoolRoleAttachment:
+  Type: AWS::Cognito::IdentityPoolRoleAttachment
+  Properties:
+    IdentityPoolId: !Ref IdentityPool
+    Roles:
+      authenticated: !GetAtt CognitoAuthenticatedRole.Arn
 ```
 
 ### Migration Permissions (Both)
@@ -790,6 +758,7 @@ Policies:
 During Phase 1-2, keep both:
 
 ```yaml
+# Lambda (for batch transcription - backward compatibility)
 Policies:
   - Statement:
       - Effect: Allow
@@ -797,42 +766,75 @@ Policies:
           - transcribe:StartTranscriptionJob
           - transcribe:GetTranscriptionJob
           - transcribe:DeleteTranscriptionJob
-          - transcribe:StartStreamTranscription
         Resource: "*"
+
+# Cognito (for client-side streaming)
+CognitoAuthenticatedRole:
+  Policies:
+    - PolicyName: TranscribeStreamingAccess
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - transcribe:StartStreamTranscription
+            Resource: '*'
 ```
 
 ### Final Permissions (Phase 3)
 
 ```yaml
-Policies:
-  - Statement:
-      - Effect: Allow
-        Action:
-          - transcribe:StartStreamTranscription
-        Resource: "*"
+# Lambda: NO Transcribe permissions needed
+# (Remove all transcribe:* permissions from Lambda)
+
+# Cognito: Only streaming permission
+CognitoAuthenticatedRole:
+  Policies:
+    - PolicyName: TranscribeStreamingAccess
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - transcribe:StartStreamTranscription
+            Resource: '*'
 ```
 
 ## Dependencies
 
-### New Python Package
+### New Frontend Packages
 
-Add to `requirements.txt`:
+Add to `package.json`:
 
+```json
+{
+  "dependencies": {
+    "@aws-sdk/client-transcribe-streaming": "^3.x",
+    "@aws-sdk/client-cognito-identity": "^3.x",
+    "@aws-sdk/credential-providers": "^3.x"
+  }
+}
 ```
-amazon-transcribe-streaming-sdk==0.6.2
+
+**Why these packages?**
+- `@aws-sdk/client-transcribe-streaming`: Official AWS SDK for Transcribe Streaming (supports HTTP/2)
+- `@aws-sdk/client-cognito-identity`: Get temporary credentials from Cognito Identity Pool
+- `@aws-sdk/credential-providers`: Helper to create credentials from Cognito tokens
+
+### Backend Dependencies
+
+**NO NEW BACKEND DEPENDENCIES** - Streaming logic moved to frontend.
+
+Remove from `requirements.txt` (if added):
+```
+# NOT NEEDED - streaming is client-side
+# amazon-transcribe-streaming-sdk==0.6.2
 ```
 
-**Why not boto3?**
-- Boto3 does NOT support Transcribe Streaming
-- Must use official async SDK from AWS Labs
-- GitHub: https://github.com/awslabs/amazon-transcribe-streaming-sdk
+### Infrastructure Dependencies
 
-### Frontend Dependencies
-
-No new dependencies required:
-- `MediaRecorder` API (built-in)
-- `WebSocket` API (built-in)
-- `ArrayBuffer` (built-in)
+**New CloudFormation Resources:**
+- Cognito Identity Pool
+- IAM Role for authenticated Cognito users
+- IAM Policy for Transcribe Streaming access
 
 ## Performance Considerations
 
@@ -920,23 +922,52 @@ logger.info(
 
 ## Security Considerations
 
-### WebSocket Authentication
+### AWS Credentials Management
 
-- Token passed in query parameter (existing)
-- Verified on $connect route (existing)
-- No changes needed
+**Cognito Identity Pool with Temporary Credentials:**
+- Frontend gets temporary AWS credentials from Cognito Identity Pool
+- Credentials are scoped to authenticated users only
+- Credentials expire after 1 hour (configurable)
+- Credentials are automatically refreshed by AWS SDK
 
-### Audio Data
+**Implementation:**
+```typescript
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
 
-- Audio chunks sent via WebSocket (encrypted in transit)
-- No S3 storage for transcription (reduced attack surface)
-- Optional: Save to S3 after transcription for analytics (encrypted at rest)
+const credentials = fromCognitoIdentityPool({
+  client: new CognitoIdentityClient({ region: "ap-southeast-1" }),
+  identityPoolId: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID!,
+  logins: {
+    [`cognito-idp.ap-southeast-1.amazonaws.com/${userPoolId}`]: idToken
+  }
+});
+
+const transcribeClient = new TranscribeStreamingClient({
+  region: "ap-southeast-1",
+  credentials
+});
+```
 
 ### IAM Least Privilege
 
-- Remove batch Transcribe permissions after migration
-- Streaming permission scoped to Lambda role only
-- No public access to Transcribe API
+- Cognito authenticated role has ONLY `transcribe:StartStreamTranscription` permission
+- No access to other AWS services
+- No access to other users' data
+- Scoped to specific region
+
+### Audio Data
+
+- Audio chunks sent directly to Transcribe (encrypted in transit via HTTPS)
+- No S3 storage for transcription (reduced attack surface)
+- Optional: Save to S3 after transcription for analytics (encrypted at rest)
+
+### CORS Configuration
+
+**Transcribe Streaming API requires CORS** - handled automatically by AWS SDK:
+- SDK adds required headers (Origin, Authorization)
+- Transcribe API validates origin
+- No additional CORS configuration needed
 
 ## Open Questions
 
@@ -954,7 +985,57 @@ logger.info(
    - **Recommendation**: Phase 2 feature, start with en-US only
 
 4. **Retry strategy for transient errors?**
-   - **Recommendation**: Auto-retry once, then show error to user
+   - **Recommendation**: Auto-retry once with exponential backoff, then show error to user
+
+5. **Should we implement fallback to batch transcription?**
+   - If client-side streaming fails, fall back to batch?
+   - **Recommendation**: No - adds complexity. Show error and let user retry.
+
+6. **How to handle Cognito credential refresh?**
+   - Credentials expire after 1 hour
+   - **Recommendation**: AWS SDK handles refresh automatically. Monitor for refresh failures.
+
+## Alternative Architectures Considered
+
+### Option 1: Client-Side Streaming (CHOSEN)
+
+**Pros:**
+- Simple architecture (no Lambda streaming complexity)
+- No Lambda timeout issues
+- Direct connection to Transcribe (lowest latency)
+- AWS SDK handles connection management
+
+**Cons:**
+- Exposes AWS credentials to browser (mitigated by Cognito temporary credentials)
+- Cannot process audio server-side before transcription
+- Requires Cognito Identity Pool setup
+
+### Option 2: Lambda WebSocket Streaming (REJECTED)
+
+**Why Rejected:**
+- Lambda WebSocket handlers are **stateless** - each message is a separate invocation
+- Cannot maintain persistent Transcribe stream across invocations
+- Would require complex state management (DynamoDB, Redis)
+- Architecturally impossible without workarounds
+
+**AWS Documentation Evidence:**
+- [Lambda execution environment](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html): Execution environments are frozen between invocations
+- [API Gateway WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html): Each message triggers separate Lambda invocation
+
+### Option 3: ECS Fargate Long-Running Service (REJECTED FOR MVP)
+
+**Pros:**
+- Can maintain persistent connections
+- Full control over streaming logic
+- Can process audio server-side
+
+**Cons:**
+- Much more complex (container deployment, orchestration)
+- Higher cost (always-running service)
+- Overkill for MVP
+- Longer development time
+
+**Recommendation**: Consider for Phase 2 if server-side processing is needed
 
 ## Success Criteria
 
@@ -983,5 +1064,28 @@ logger.info(
 
 - [AWS Transcribe Streaming Documentation](https://docs.aws.amazon.com/transcribe/latest/dg/streaming.html)
 - [StartStreamTranscription API Reference](https://docs.aws.amazon.com/transcribe/latest/APIReference/API_streaming_StartStreamTranscription.html)
-- [amazon-transcribe-streaming-sdk GitHub](https://github.com/awslabs/amazon-transcribe-streaming-sdk)
+- [AWS SDK for JavaScript v3 - Transcribe Streaming](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/transcribe-streaming/)
+- [Cognito Identity Pools Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html)
+- [Lambda Execution Environment Lifecycle](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
+- [API Gateway WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html)
 - [MediaRecorder API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
+
+## Key Architectural Decision
+
+**Decision**: Use client-side streaming with direct Transcribe API connection
+
+**Rationale**:
+1. **Lambda WebSocket handlers are stateless** - Each WebSocket message (START_STREAMING, AUDIO_CHUNK, END_STREAMING) triggers a **separate Lambda invocation**
+2. **Cannot maintain persistent streams** - Transcribe Streaming requires a persistent bidirectional connection that cannot be maintained across Lambda invocations
+3. **AWS Documentation confirms** - Lambda execution environments are frozen between invocations, making persistent connections impossible
+4. **Client-side streaming is simpler** - Browser maintains persistent HTTP/2 connection, no Lambda complexity
+5. **AWS SDK supports it** - `@aws-sdk/client-transcribe-streaming` is designed for browser use with Cognito credentials
+
+**Trade-offs Accepted**:
+- Exposes AWS credentials to browser (mitigated by Cognito temporary credentials with limited scope)
+- Cannot process audio server-side before transcription (not needed for MVP)
+- Requires Cognito Identity Pool setup (one-time infrastructure change)
+
+**Alternatives Rejected**:
+- Lambda WebSocket streaming: Architecturally impossible without complex workarounds
+- ECS Fargate service: Overkill for MVP, much higher complexity and cost

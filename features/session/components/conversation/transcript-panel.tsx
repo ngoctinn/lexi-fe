@@ -4,7 +4,9 @@ import * as React from "react";
 import type { Turn } from "@/features/session/types/session.types";
 import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { TurnBubble } from "./turn-bubble";
+import { TranscriptDisplay } from "../transcript-display";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface TranscriptPanelProps {
@@ -31,26 +33,22 @@ export function TranscriptPanel({
   className,
 }: TranscriptPanelProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const bottomRef = React.useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to bottom when new content arrives
   React.useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns.length, aiStreamingText, isAiStreaming]);
 
   return (
-    <div
+    <ScrollArea
+      className={cn("relative flex-1 min-h-0", className)}
       ref={scrollRef}
-      className={cn(
-        "relative flex-1 min-h-0 overflow-y-auto px-4 py-4",
-        className,
-      )}
     >
-      <div className="flex flex-col gap-6 w-full pb-8 lg:px-4">
+      <div className="flex flex-col gap-4 w-full pb-8 px-4 py-4 lg:px-8">
         {turns.length === 0 && !isAiStreaming && (
-          <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
-            <div className="size-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+          <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground animate-in fade-in duration-500">
+            <div className="size-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-4 shadow-sm">
               <span className="text-2xl">👋</span>
             </div>
             <p className="text-sm font-medium">Phiên học đã sẵn sàng.</p>
@@ -59,6 +57,9 @@ export function TranscriptPanel({
             </p>
           </div>
         )}
+
+        {/* Real-time streaming transcript display */}
+        <TranscriptDisplay />
 
         {turns.map((turn, idx) => (
           <TurnBubble
@@ -73,7 +74,7 @@ export function TranscriptPanel({
         ))}
 
         {(isAiStreaming || aiStreamingText) && (
-          <div className="flex w-full items-end gap-2 px-4 py-2 justify-start slide-in-bottom">
+          <div className="flex w-full items-end gap-2 px-4 py-2 justify-start animate-in slide-in-from-bottom-2 duration-300">
             <Avatar size="sm" className="shrink-0 mb-1 border shadow-sm">
               <AvatarImage
                 src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
@@ -87,15 +88,15 @@ export function TranscriptPanel({
                 {isAiStreaming && (
                   <div className="flex items-center gap-1 h-5 ml-1">
                     <span
-                      className="size-1.5 rounded-full bg-primary-300 animate-bounce"
+                      className="size-1.5 rounded-full bg-primary/60 animate-bounce"
                       style={{ animationDelay: "0s" }}
                     />
                     <span
-                      className="size-1.5 rounded-full bg-primary-400 animate-bounce"
+                      className="size-1.5 rounded-full bg-primary/60 animate-bounce"
                       style={{ animationDelay: "0.2s" }}
                     />
                     <span
-                      className="size-1.5 rounded-full bg-primary-500 animate-bounce"
+                      className="size-1.5 rounded-full bg-primary/60 animate-bounce"
                       style={{ animationDelay: "0.4s" }}
                     />
                   </div>
@@ -104,7 +105,10 @@ export function TranscriptPanel({
             </div>
           </div>
         )}
+
+        {/* Invisible anchor for auto-scroll */}
+        <div ref={bottomRef} />
       </div>
-    </div>
+    </ScrollArea>
   );
 }

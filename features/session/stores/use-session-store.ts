@@ -19,6 +19,8 @@ interface SessionStoreState extends SessionUiState {
   setHintPanelOpen: (open: boolean) => void;
   setUploadUrls: (uploadUrl: string | null, s3Key?: string | null) => void;
   setCurrentAudioUrl: (currentAudioUrl: string | null) => void;
+  setStreamingTranscript: (finalText: string, partialText: string, isStreaming: boolean) => void;
+  setStreamingError: (error: string | null) => void;
   reset: () => void;
 }
 
@@ -34,6 +36,12 @@ const initialState: SessionUiState = {
   currentAudioUrl: null,
   uploadUrl: null,
   s3Key: null,
+  streamingTranscript: {
+    finalText: "",
+    partialText: "",
+    isStreaming: false,
+  },
+  streamingError: null,
 };
 
 export const useSessionStore = create<SessionStoreState>((set) => ({
@@ -69,6 +77,13 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
   setUploadUrls: (uploadUrl, s3Key) => set({ uploadUrl, s3Key: s3Key ?? null }),
 
   setCurrentAudioUrl: (currentAudioUrl) => set({ currentAudioUrl }),
+
+  setStreamingTranscript: (finalText, partialText, isStreaming) =>
+    set({
+      streamingTranscript: { finalText, partialText, isStreaming },
+    }),
+
+  setStreamingError: (streamingError) => set({ streamingError }),
 
   reset: () => set(initialState),
 }));

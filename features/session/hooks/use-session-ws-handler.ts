@@ -16,6 +16,8 @@ export function useSessionWsHandler() {
   const setHint = useSessionStore((s) => s.setHint);
   const setHintPanelOpen = useSessionStore((s) => s.setHintPanelOpen);
   const setCurrentAudioUrl = useSessionStore((s) => s.setCurrentAudioUrl);
+  const setStreamingTranscript = useSessionStore((s) => s.setStreamingTranscript);
+  const setStreamingError = useSessionStore((s) => s.setStreamingError);
 
   const handleWsMessage = React.useCallback(
     (event: WsServerPayload) => {
@@ -30,6 +32,7 @@ export function useSessionWsHandler() {
 
         case WsServerEvent.STT_LOW_CONFIDENCE:
           setLastSttResult({ text: "", confidence: event.confidence });
+          setStreamingError("Không thể hiểu rõ. Vui lòng thử lại.");
           setRecorderState("idle");
           break;
 
@@ -96,6 +99,31 @@ export function useSessionWsHandler() {
           SessionService.handleError(event.message, "WebSocket");
           break;
 
+        case WsServerEvent.STREAMING_READY:
+          // Streaming session initialized successfully
+          break;
+
+        case WsServerEvent.PARTIAL_TRANSCRIPT:
+          // Update partial transcript (gray text)
+          setStreamingTranscript(
+            useSessionStore.getState().streamingTranscript?.finalText || "",
+            event.text,
+            true
+          );
+          break;
+
+        case WsServerEvent.FINAL_TRANSCRIPT:
+          // Update final transcript (black text)
+          setStreamingTranscript(event.text, "", false);
+          setLastSttResult({ text: event.text, confidence: event.confidence });
+          break;
+
+        case WsServerEvent.STT_ERROR:
+          // Handle streaming error
+          setStreamingError(event.message);
+          setRecorderState("idle");
+          break;
+
         default:
           break;
       }
@@ -110,6 +138,8 @@ export function useSessionWsHandler() {
       setHint,
       setHintPanelOpen,
       setCurrentAudioUrl,
+      setStreamingTranscript,
+      setStreamingError,
     ],
   );
 
