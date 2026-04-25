@@ -2,14 +2,24 @@ import type { ReactNode } from "react";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
+import { AdminAccessDenied } from "@/features/admin/components/admin-access-denied";
 import { getProfile } from "@/features/profile/api/profile.actions";
+import { isUserAdmin } from "@/lib/auth/admin";
 
 export default async function AdminLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const profile = await getProfile();
+  const [profile, isAdmin] = await Promise.all([
+    getProfile(),
+    isUserAdmin(),
+  ]);
+
+  // Block non-admin users from accessing admin area
+  if (!isAdmin) {
+    return <AdminAccessDenied />;
+  }
 
   return (
     <SidebarProvider className="h-full overflow-hidden bg-muted/50">

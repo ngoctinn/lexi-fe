@@ -1,24 +1,29 @@
 "use server";
 
-import { apiRequest } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/fetch";
+import type { ApiResponse, ActionResult } from "@/lib/api/types";
 
+/**
+ * End/complete speaking session
+ * Pure Next.js pattern: return errors, don't throw
+ */
 export async function endSession(
   sessionId: string,
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    await apiRequest<{ success: boolean }>(`/sessions/${sessionId}/complete`, {
+): Promise<ActionResult> {
+  const response = await apiFetch<ApiResponse<unknown>>(
+    `/sessions/${sessionId}/complete`,
+    {
       method: "POST",
       cache: "no-store",
-    });
+    }
+  );
 
-    return { success: true };
-  } catch (error) {
+  if (!response.success) {
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Không thể kết thúc phiên học.",
+      error: response.message || "Không thể kết thúc phiên học.",
     };
   }
+
+  return { success: true };
 }

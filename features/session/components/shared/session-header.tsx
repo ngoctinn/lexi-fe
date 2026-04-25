@@ -30,6 +30,9 @@ interface SessionHeaderProps {
   className?: string;
   onEnd?: (summary: SessionScoreSummary | null) => void;
   isCompleted?: boolean;
+  myRole?: string;
+  partnerRole?: string;
+  scenarioGoals?: string[];
 }
 
 export function SessionHeader({
@@ -39,6 +42,9 @@ export function SessionHeader({
   className,
   onEnd,
   isCompleted = false,
+  myRole,
+  partnerRole,
+  scenarioGoals = [],
 }: SessionHeaderProps) {
   const router = useRouter();
   const [isPending, setIsPending] = React.useState(false);
@@ -85,7 +91,7 @@ export function SessionHeader({
         className,
       )}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4 flex-1 min-w-0">
         <Button
           variant="ghost"
           size="icon"
@@ -95,20 +101,23 @@ export function SessionHeader({
           <ArrowLeft data-icon="inline-start" />
         </Button>
 
-        <Avatar size="sm" className="rounded-md border">
-          <AvatarImage
-            src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiCharacter}`}
-            alt={aiCharacter}
-          />
-          <AvatarFallback className="rounded-md">AI</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold leading-none">
-            {aiCharacter || "AI Assistant"}
-          </span>
-          <span className="text-xs text-muted-foreground mt-1 line-clamp-1">
+        <div className="flex flex-col min-w-0 flex-1">
+          <h1 className="text-lg font-bold leading-tight text-foreground truncate">
             {scenarioTitle || "Phiên luyện nói"}
-          </span>
+          </h1>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+            <span>
+              <span className="font-medium">Bạn:</span> {myRole || "Học viên"}
+            </span>
+            <span>
+              <span className="font-medium">Đối phương:</span> {partnerRole || "AI Assistant"}
+            </span>
+            {scenarioGoals && scenarioGoals.length > 0 && (
+              <span className="hidden lg:inline">
+                <span className="font-medium">Mục tiêu:</span> {scenarioGoals.join(" • ")}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

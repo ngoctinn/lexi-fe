@@ -97,6 +97,9 @@ export function ConversationScreen({
           sessionId={sessionId}
           scenarioTitle={scenarioTitle}
           aiCharacter={aiCharacter}
+          myRole={myRole}
+          partnerRole={partnerRole}
+          scenarioGoals={scenarioGoals}
           className="flex-1 border-none bg-transparent h-auto p-0"
           isCompleted={isSessionCompleted}
           onEnd={handleSessionEnded}
@@ -117,9 +120,6 @@ export function ConversationScreen({
               </SheetDescription>
               <ConversationSidebar
                 currentHint={ui.currentHint}
-                scenarioGoals={scenarioGoals}
-                myRole={myRole}
-                partnerRole={partnerRole}
                 onGetHint={requestHint}
                 isAiStreaming={ui.isAiStreaming}
                 disabled={ui.isControlsDisabled || isSessionCompleted}
@@ -142,7 +142,6 @@ export function ConversationScreen({
             aria-live="polite"
             onTranslate={translateTurn}
             onTranslateWord={translateWord}
-            onSaveFlashcard={saveTurnToFlashcard}
             savingTurnIndexes={ui.savingFlashcardTurnIndexes}
           />
 
@@ -159,26 +158,26 @@ export function ConversationScreen({
             {!isSessionCompleted &&
               (ui.wsState !== "connected" ||
                 ui.recorderState === "uploading") && (
-                <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
+                <div className="mt-3 flex items-center justify-center">
                   {ui.wsState === "connecting" && (
                     <div className="flex flex-col items-center gap-2 w-full max-w-xs">
-                      <span className="text-2xs text-muted-foreground font-medium">
+                      <span className="text-xs text-muted-foreground font-medium">
                         Đang chuẩn bị phiên học...
                       </span>
-                      <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary animate-pulse" style={{ width: "60%" }} />
+                      <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: "60%" }} />
                       </div>
                     </div>
                   )}
                   {ui.wsState === "disconnected" && (
-                    <span className="text-2xs text-muted-foreground font-medium">
+                    <span className="text-xs text-muted-foreground font-medium">
                       Mất kết nối máy chủ
                     </span>
                   )}
                   {ui.recorderState === "uploading" && (
-                    <div className="w-full max-w-12.5 h-1 bg-muted rounded-full overflow-hidden">
+                    <div className="w-full max-w-32 h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-primary transition-all duration-300"
+                        className="h-full bg-primary rounded-full transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
@@ -190,9 +189,6 @@ export function ConversationScreen({
 
         <ConversationSidebar
           currentHint={ui.currentHint}
-          scenarioGoals={scenarioGoals}
-          myRole={myRole}
-          partnerRole={partnerRole}
           onGetHint={requestHint}
           isAiStreaming={ui.isAiStreaming}
           disabled={ui.isControlsDisabled || isSessionCompleted}

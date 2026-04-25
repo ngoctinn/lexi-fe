@@ -83,11 +83,26 @@ function normalizeSearch(value: string) {
     .toLowerCase();
 }
 
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("vi-VN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
+function formatDateTime(value: string | undefined) {
+  // Handle missing or invalid dates (e.g., from mock data)
+  if (!value) {
+    return "N/A";
+  }
+  
+  try {
+    const date = new Date(value);
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return "N/A";
+    }
+    
+    return new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  } catch {
+    return "N/A";
+  }
 }
 
 function getInitials(value: string) {

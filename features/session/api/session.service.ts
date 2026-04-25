@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 import { saveFlashcardFromSession } from "@/features/flashcards/actions/practice-actions";
 import { translateWordAction, type TranslateWordResult } from "@/features/session/actions/translate-word";
+import { translateSentenceAction } from "@/features/session/actions/translate-sentence";
 
 interface SaveTurnToFlashcardInput {
   sessionId: string;
@@ -14,45 +15,42 @@ interface TranslateTurnResult {
   translatedText: string;
 }
 
+/**
+ * Session Service - Pure Next.js pattern
+ * Uses Server Actions for all API calls
+ */
 export const SessionService = {
-  async translateTurn(
-    sourceText: string,
-  ): Promise<TranslateTurnResult> {
-    try {
-      // Tách câu thành từng từ và dịch từng từ
-      const words = sourceText.split(/\s+/).filter(w => w.length > 0);
-      const translations: string[] = [];
-      
-      for (const word of words) {
-        try {
-          const result = await translateWordAction(word, sourceText);
-          translations.push(result.translation_vi || word);
-        } catch {
-          // Nếu dịch từ thất bại, giữ nguyên từ gốc
-          translations.push(word);
-        }
-      }
-      
-      const translatedText = translations.join(" ");
-      return { translatedText };
-    } catch (error) {
-      throw error;
-    }
+  /**
+   * Translate entire sentence using /vocabulary/translate-sentence endpoint
+   * Pure Next.js pattern: use Server Action
+   */
+  async translateTurn(sourceText: string): Promise<TranslateTurnResult> {
+    const result = await translateSentenceAction(sourceText);
+    return { translatedText: result.sentence_vi };
   },
 
+  /**
+   * Translate single word with context
+   */
   async translateWord(word: string, context: string): Promise<TranslateWordResult> {
-    try {
-      return await translateWordAction(word, context);
-    } catch {
+    const result = await translateWordAction(word, context);
+    if (!result.translation_vi || result.translation_vi === "Lỗi khi gọi API dịch.") {
       this.handleError("Không thể dịch từ này.", "TranslateWord");
-      return { word, translation_vi: "Lỗi dịch.", definition_vi: "" };
     }
+    return result;
   },
 
+  /**
+   * Get hint (placeholder - backend doesn't support this yet)
+   */
   async getHint(): Promise<string> {
     return "Tính năng gợi ý hiện chưa khả dụng.";
   },
 
+  /**
+   * Save word to flashcard
+   * Pure Next.js pattern: use Server Action
+   */
   async saveWordToFlashcard(
     input: SaveTurnToFlashcardInput,
   ): Promise<{ success: boolean; message: string }> {
@@ -68,10 +66,18 @@ export const SessionService = {
       audio_url: input.vocabData?.audio_url,
       example_sentence: input.vocabData?.example_sentence,
     });
+    
     if (!result.success) {
-      return { success: false, message: result.message || "Không thể lưu flashcard." };
+      return { 
+        success: false, 
+        message: result.error || "Không thể lưu flashcard." 
+      };
     }
-    return { success: true, message: result.message || "Đã lưu vào flashcard." };
+    
+    return { 
+      success: true, 
+      message: result.message || "Đã lưu vào flashcard." 
+    };
   },
 
   handleError(message: string, context?: string) {

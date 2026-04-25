@@ -18,7 +18,6 @@ interface TranscriptPanelProps {
   aiName: string;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
-  onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => void;
   savingTurnIndexes?: number[];
   className?: string;
 }
@@ -30,7 +29,6 @@ export function TranscriptPanel({
   aiName,
   onTranslate,
   onTranslateWord,
-  onSaveFlashcard,
   savingTurnIndexes = [],
   className,
 }: TranscriptPanelProps) {
@@ -64,24 +62,14 @@ export function TranscriptPanel({
           <TurnBubble
             key={`${turn.turn_index}-${idx}`}
             turn={turn}
-            aiName={aiName}
             onTranslate={onTranslate}
             onTranslateWord={onTranslateWord}
-            onSaveFlashcard={onSaveFlashcard}
-            isSavingFlashcard={savingTurnIndexes.includes(turn.turn_index)}
           />
         ))}
 
         {(isAiStreaming || aiStreamingText) && (
-          <div className="flex w-full items-end gap-2 px-4 py-2 justify-start animate-in slide-in-from-bottom-2 duration-300">
-            <Avatar size="sm" className="shrink-0 mb-1 border shadow-sm">
-              <AvatarImage
-                src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
-                alt={aiName}
-              />
-              <AvatarFallback className="text-2xs">AI</AvatarFallback>
-            </Avatar>
-            <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-sm leading-relaxed max-w-[80%] shadow-sm">
+          <div className="flex w-full items-end gap-3 px-4 py-2 justify-start">
+            <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-base leading-relaxed max-w-[80%] shadow-sm">
               {aiStreamingText ? (
                 <div className="flex flex-col gap-2">
                   {(() => {

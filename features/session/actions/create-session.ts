@@ -1,38 +1,37 @@
 "use server";
 
-import { apiRequest } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/fetch";
+import type { ApiResponse, ActionResult } from "@/lib/api/types";
 import type {
   CreateSessionDto,
   CreateSessionResult,
 } from "@/features/session/types/session.types";
 
+/**
+ * Create new speaking session
+ * Pure Next.js pattern: return errors, don't throw
+ */
 export async function createSession(
   dto: CreateSessionDto,
 ): Promise<CreateSessionResult> {
-  try {
-    const response = await apiRequest<{
-      success: boolean;
-      data?: {
-        session_id?: string;
-        user_id?: string;
-      };
-    }>("/sessions", {
-      method: "POST",
-      body: JSON.stringify(dto),
-      cache: "no-store",
-    });
+  const response = await apiFetch<
+    ApiResponse<{ session_id: string; user_id: string }>
+  >("/sessions", {
+    method: "POST",
+    body: JSON.stringify(dto),
+    cache: "no-store",
+  });
 
-    return {
-      success: Boolean(response.success),
-      session_id: response.data?.session_id,
-      user_id: response.data?.user_id,
-      error: response.success ? undefined : response.error,
-    };
-  } catch (error) {
+  if (!response.success) {
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Không thể tạo phiên học.",
+      error: response.message || "Không thể tạo phiên học.",
     };
   }
+
+  return {
+    success: true,
+    session_id: response.data?.session_id,
+    user_id: response.data?.user_id,
+  };
 }

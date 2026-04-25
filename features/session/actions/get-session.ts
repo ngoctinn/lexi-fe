@@ -1,27 +1,30 @@
 "use server";
 
-import { apiRequest } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/fetch";
+import type { ApiResponse, ActionResult } from "@/lib/api/types";
 import type { GetSessionResult, Session } from "@/features/session/types/session.types";
 
+/**
+ * Get session by ID
+ * Pure Next.js pattern: return errors, don't throw
+ */
 export async function getSession(sessionId: string): Promise<GetSessionResult> {
-  try {
-    const response = await apiRequest<{
-      success: boolean;
-      data?: Session;
-    }>(`/sessions/${sessionId}`, {
+  const response = await apiFetch<ApiResponse<Session>>(
+    `/sessions/${sessionId}`,
+    {
       cache: "no-store",
-    });
+    }
+  );
 
-    return {
-      success: response.success ?? false,
-      session: response.data,
-      error: response.success ? undefined : "Không thể tải phiên học.",
-    };
-  } catch (error) {
+  if (!response.success) {
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Không thể tải phiên học.",
+      error: response.message || "Không thể tải phiên học.",
     };
   }
+
+  return {
+    success: true,
+    session: response.data,
+  };
 }

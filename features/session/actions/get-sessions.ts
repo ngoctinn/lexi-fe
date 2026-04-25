@@ -1,24 +1,25 @@
 "use server";
 
-import { apiRequest } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/fetch";
+import type { ApiResponse } from "@/lib/api/types";
 import type { Session } from "@/features/session/types/session.types";
 
+/**
+ * Get all sessions for current user
+ * Pure Next.js pattern: fetch directly, handle errors gracefully
+ */
 export async function getSessions(): Promise<Session[]> {
-  try {
-    const response = await apiRequest<{
-      success: boolean;
-      data?: {
-        sessions?: Session[];
-      };
-    }>("/sessions", {
-      cache: "no-store",
-    });
+  const response = await apiFetch<ApiResponse<{ sessions: Session[] }>>(
+    "/sessions",
+    {
+      cache: "no-store", // Always fresh data
+    }
+  );
 
-    return response.data?.sessions ?? [];
-  } catch (err) {
-    // Don't let a single failing API call crash the whole dashboard server render.
-    // Surface the error in server logs for debugging and return an empty list.
-    console.error("[session] getSessions failed:", err);
+  if (!response.success) {
+    console.error("[session] getSessions failed:", response.message);
     return [];
   }
+
+  return response.data?.sessions ?? [];
 }

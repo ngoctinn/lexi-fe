@@ -10,6 +10,10 @@ import { useSessionStore } from "../stores/use-session-store";
 
 const SAMPLE_RATE = 16_000;
 
+// Silence detection config for learners
+const SILENCE_TIMEOUT_MS = 3000; // 3 seconds of silence before auto-stop (longer for learners)
+const MIN_SPEECH_DURATION_MS = 1000; // Minimum 1 second of speech before allowing auto-stop
+
 interface UseClientStreamingRecorderOptions {
   ws: ReturnType<typeof useWebSocket>;
   sessionId: string;
@@ -40,10 +44,21 @@ export function useClientStreamingRecorder({
   const finalConfidenceRef = React.useRef<number>(0);
   const accumulatedTranscriptRef = React.useRef<string>("");
   const isStartingRef = React.useRef<boolean>(false);
+  
+  // Silence detection refs
+  const lastTranscriptTimeRef = React.useRef<number>(0);
+  const recordingStartTimeRef = React.useRef<number>(0);
+  const silenceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const hasReceivedTranscriptRef = React.useRef<boolean>(false);
 
   const handleTranscript = React.useCallback(
     (result: TranscriptResult) => {
       console.log("[Recorder] Transcript received:", result);
+      
+      // Update last transcript time for silence detection
+      lastTranscriptTimeRef.current = Date.now();
+      hasReceivedTranscriptRef.current = true;
+      
       if (result.isPartial) {
         // Accumulate partial transcripts as backup
         if (result.text.trim()) {
@@ -101,6 +116,12 @@ export function useClientStreamingRecorder({
   const stopRecording = React.useCallback(async () => {
     console.log("[Recorder] Stopping recording...");
     console.log("[Recorder] Current transcripts - Final:", finalTranscriptRef.current, "Accumulated:", accumulatedTranscriptRef.current);
+    
+    // Clear silence detection timer
+    if (silenceTimerRef.current) {
+      clearInterval(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
     
     // Stop audio worklet first
     if (audioWorkletNodeRef.current) {
@@ -165,6 +186,9 @@ export function useClientStreamingRecorder({
     finalTranscriptRef.current = "";
     finalConfidenceRef.current = 0;
     accumulatedTranscriptRef.current = "";
+    lastTranscriptTimeRef.current = 0;
+    recordingStartTimeRef.current = 0;
+    hasReceivedTranscriptRef.current = false;
 
     setState("idle");
     isStartingRef.current = false;
@@ -205,6 +229,9 @@ export function useClientStreamingRecorder({
       finalTranscriptRef.current = "";
       finalConfidenceRef.current = 0;
       accumulatedTranscriptRef.current = "";
+      lastTranscriptTimeRef.current = Date.now();
+      recordingStartTimeRef.current = Date.now();
+      hasReceivedTranscriptRef.current = false;
 
       // Request microphone access
       console.log("[Recorder] Requesting microphone access...");
@@ -270,6 +297,28 @@ export function useClientStreamingRecorder({
       try {
         await transcribeMethodsRef.current.startStream("en-US");
         console.log("[Recorder] Transcribe stream started successfully");
+        
+        // Start silence detection timer
+        console.log("[Recorder] Starting silence detection timer...");
+        silenceTimerRef.current = setInterval(() => {
+          const now = Date.now();
+          const timeSinceLastTranscript = now - lastTranscriptTimeRef.current;
+          const recordingDuration = now - recordingStartTimeRef.current;
+          
+          // Only auto-stop if:
+          // 1. We've received at least one transcript
+          // 2. Recording duration > MIN_SPEECH_DURATION_MS
+          // 3. Silence duration > SILENCE_TIMEOUT_MS
+          if (
+            hasReceivedTranscriptRef.current &&
+            recordingDuration > MIN_SPEECH_DURATION_MS &&
+            timeSinceLastTranscript > SILENCE_TIMEOUT_MS
+          ) {
+            console.log(`[Recorder] Auto-stopping after ${timeSinceLastTranscript}ms of silence`);
+            stopRecording();
+          }
+        }, 500); // Check every 500ms
+        
       } catch (err) {
         console.error("[Recorder] Transcribe start failed:", err);
         // Cleanup
@@ -317,11 +366,15 @@ export function useClientStreamingRecorder({
     state,
     ws,
     onError,
+    stopRecording,
   ]);
 
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
+      if (silenceTimerRef.current) {
+        clearInterval(silenceTimerRef.current);
+      }
       if (audioWorkletNodeRef.current) {
         audioWorkletNodeRef.current.disconnect();
       }
@@ -336,6 +389,9 @@ export function useClientStreamingRecorder({
       finalTranscriptRef.current = "";
       finalConfidenceRef.current = 0;
       accumulatedTranscriptRef.current = "";
+      lastTranscriptTimeRef.current = 0;
+      recordingStartTimeRef.current = 0;
+      hasReceivedTranscriptRef.current = false;
     };
   }, []);
 

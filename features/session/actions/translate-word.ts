@@ -1,6 +1,7 @@
 "use server";
 
-import { apiRequest } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/fetch";
+import type { ApiResponse } from "@/lib/api/types";
 
 interface TranslateWordApiResponse {
   word: string;
@@ -11,63 +12,68 @@ interface TranslateWordApiResponse {
   audio_url: string;
   example_sentence: string;
   source_api: string;
-  detected_phrase?: string;  // Phrase được detect từ context
-  phrase_type?: string;      // "phrase" hoặc null
+  detected_phrase?: string;
+  phrase_type?: string;
 }
 
 export interface TranslateWordResult {
   word: string;
-  translation_vi: string;        // Bản dịch ngắn gọn
-  definition_vi: string;          // Định nghĩa chi tiết
-  part_of_speech?: string;        // Loại từ (noun, verb, adj...)
+  translation_vi: string;
+  definition_vi: string;
+  part_of_speech?: string;
   phonetic?: string;
   audio_url?: string;
   example_sentence?: string;
-  detected_phrase?: string;       // Phrase được detect (e.g., "look for")
-  is_phrase?: boolean;            // True nếu là phrase
+  detected_phrase?: string;
+  is_phrase?: boolean;
 }
 
+/**
+ * Translate word with context
+ * Pure Next.js pattern: return fallback on error
+ */
 export async function translateWordAction(
   word: string,
   context?: string,
 ): Promise<TranslateWordResult> {
-  try {
-    const response = await apiRequest<{
-      success: boolean;
-      data?: TranslateWordApiResponse;
-    }>("/vocabulary/translate", {
+  const response = await apiFetch<ApiResponse<TranslateWordApiResponse>>(
+    "/vocabulary/translate",
+    {
       method: "POST",
       body: JSON.stringify({ word, context }),
       cache: "no-store",
-    });
+    }
+  );
 
-    const payload: TranslateWordApiResponse = response.data ?? { 
-      word, 
-      translation_vi: "", 
-      definition_vi: "",
-      part_of_speech: "",
-      phonetic: "",
-      audio_url: "",
-      example_sentence: "",
-      source_api: "",
-    };
-    return {
-      word: payload.word,
-      translation_vi: payload.translation_vi || "Không có bản dịch.",
-      definition_vi: payload.definition_vi || "",
-      part_of_speech: payload.part_of_speech || undefined,
-      phonetic: payload.phonetic || undefined,
-      audio_url: payload.audio_url || undefined,
-      example_sentence: payload.example_sentence || undefined,
-      detected_phrase: payload.detected_phrase || undefined,
-      is_phrase: payload.phrase_type === "phrase",
-    };
-  } catch (error) {
-    console.error("[translateWord] API error:", error);
+  if (!response.success) {
+    console.error("[translateWord] API error:", response.message);
     return {
       word,
       translation_vi: "Lỗi khi gọi API dịch.",
       definition_vi: "",
     };
   }
+
+  const payload = response.data ?? {
+    word,
+    translation_vi: "",
+    definition_vi: "",
+    part_of_speech: "",
+    phonetic: "",
+    audio_url: "",
+    example_sentence: "",
+    source_api: "",
+  };
+
+  return {
+    word: payload.word,
+    translation_vi: payload.translation_vi || "Không có bản dịch.",
+    definition_vi: payload.definition_vi || "",
+    part_of_speech: payload.part_of_speech || undefined,
+    phonetic: payload.phonetic || undefined,
+    audio_url: payload.audio_url || undefined,
+    example_sentence: payload.example_sentence || undefined,
+    detected_phrase: payload.detected_phrase || undefined,
+    is_phrase: payload.phrase_type === "phrase",
+  };
 }

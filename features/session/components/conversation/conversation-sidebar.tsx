@@ -4,14 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import {
   Lightbulb,
-  Target,
-  Info,
-  UserCircle,
-  Bot,
   CheckCircle2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -33,9 +28,6 @@ interface ConversationSidebarProps {
   isAiStreaming?: boolean;
   disabled?: boolean;
   className?: string;
-  scenarioGoals?: string[];
-  myRole?: string;
-  partnerRole?: string;
   sessionSummary?: SessionScoreSummary | null;
   isSessionCompleted?: boolean;
 }
@@ -130,32 +122,9 @@ export function ConversationSidebar({
   isAiStreaming,
   disabled,
   className,
-  scenarioGoals = [],
-  myRole,
-  partnerRole,
   sessionSummary = null,
   isSessionCompleted = false,
 }: ConversationSidebarProps) {
-  const [copied, setCopied] = React.useState(false);
-
-  const handleCopy = () => {
-    if (currentHint) {
-      const codeBlockMatch = currentHint.match(
-        /```(?:[a-z]*)\n?([\s\S]*?)\n?```/,
-      );
-      const textToCopy = codeBlockMatch
-        ? codeBlockMatch[1].trim()
-        : currentHint;
-
-      navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      toast.success(
-        codeBlockMatch ? "Đã chép nội dung code" : "Đã sao chép gợi ý",
-      );
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
     <aside
       className={cn(
@@ -163,68 +132,6 @@ export function ConversationSidebar({
         className,
       )}
     >
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
-            <Info className="size-4.5" />
-          </div>
-          <h3 className="text-sm font-bold tracking-tight">
-            Bối cảnh & Vai trò
-          </h3>
-        </div>
-
-        <div className="flex flex-col gap-3 px-1">
-          <div className="flex flex-wrap items-center gap-2 px-1">
-            <Badge variant="info" size="lg" className="shadow-none">
-              <UserCircle className="size-3.5 opacity-70" />
-              <span className="text-2xs opacity-60">Bạn:</span>
-              <span className="text-xs">{myRole || "Học viên"}</span>
-            </Badge>
-
-            <Badge variant="info" size="lg" className="shadow-none">
-              <Bot className="size-3.5 opacity-70" />
-              <span className="text-2xs opacity-60">Đối phương:</span>
-              <span className="text-xs">{partnerRole || "AI Assistant"}</span>
-            </Badge>
-          </div>
-        </div>
-      </div>
-
-      <div className="h-px bg-border/40" />
-
-      <div className="flex flex-col gap-5">
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
-            <Target className="size-4.5" />
-          </div>
-          <h3 className="text-sm font-bold tracking-tight">
-            Mục tiêu bài luyện
-          </h3>
-        </div>
-
-        <div className="flex flex-wrap gap-2 px-1">
-          {scenarioGoals.length > 0 ? (
-            scenarioGoals.map((goal, i) => (
-              <Badge
-                key={i}
-                variant="default"
-                size="lg"
-                className="shadow-none"
-              >
-                {" "}
-                {goal}
-              </Badge>
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground italic col-span-2">
-              Cùng bắt đầu hội thoại nào!
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="h-px bg-border/40" />
-
       <div className="flex-1 flex flex-col gap-5 overflow-hidden">
         {isSessionCompleted ? (
           <>
@@ -278,42 +185,29 @@ export function ConversationSidebar({
                 </div>
               ) : currentHint ? (
                 <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <div className="flex flex-col gap-4">
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-base/relaxed font-medium text-foreground tracking-tight">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          p: ({ children }) => (
-                            <span className="block mb-4 last:mb-0 leading-relaxed">
-                              {children}
-                            </span>
-                          ),
-                          code: ({ children }) => (
-                            <code className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-sm font-bold text-foreground border border-border/50">
-                              {children}
-                            </code>
-                          ),
-                          pre: ({ children }) => (
-                            <pre className="p-4 rounded-2xl bg-muted/50 border border-border/70 my-4 last:mb-0 whitespace-pre-wrap wrap-break-word text-foreground font-mono text-sm leading-relaxed">
-                              {children}
-                            </pre>
-                          ),
-                        }}
-                      >
-                        {currentHint}
-                      </ReactMarkdown>
-                    </div>
-
-                    <div className="flex items-center pt-2">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={handleCopy}
-                      >
-                        {copied ? "Đã sao chép" : "Sao chép gợi ý"}
-                      </Button>
-                    </div>
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-base/relaxed font-medium text-foreground tracking-tight">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({ children }) => (
+                          <span className="block mb-4 last:mb-0 leading-relaxed">
+                            {children}
+                          </span>
+                        ),
+                        code: ({ children }) => (
+                          <code className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-sm font-bold text-foreground border border-border/50">
+                            {children}
+                          </code>
+                        ),
+                        pre: ({ children }) => (
+                          <pre className="p-4 rounded-2xl bg-muted/50 border border-border/70 my-4 last:mb-0 whitespace-pre-wrap wrap-break-word text-foreground font-mono text-sm leading-relaxed">
+                            {children}
+                          </pre>
+                        ),
+                      }}
+                    >
+                      {currentHint}
+                    </ReactMarkdown>
                   </div>
                 </div>
               ) : (

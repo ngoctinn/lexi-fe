@@ -1,13 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, Languages, BookmarkPlus, Check, Loader2 } from "lucide-react";
+import { Volume2, Languages, BookmarkPlus, Loader2, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
@@ -21,37 +19,31 @@ import { isDebugMetricsEnabled } from "@/features/session/utils/feature-flags";
 
 interface TurnBubbleProps {
   turn: Turn;
-  aiName?: string;
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
-  onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => void;
-  isSavingFlashcard?: boolean;
   isPlaying?: boolean;
 }
 
 export const TurnBubble = React.memo(function TurnBubble({
   turn,
-  aiName = "AI",
   onPlayAudio,
   onTranslate,
   onTranslateWord,
-  onSaveFlashcard,
-  isSavingFlashcard = false,
   isPlaying,
 }: TurnBubbleProps) {
   const isUser = turn.speaker === TurnSpeaker.USER;
   const [showTranslation, setShowTranslation] = React.useState(false);
-  const [activeWordIndex, setActiveWordIndex] = React.useState<number | null>(null);
+  const [activeWord, setActiveWord] = React.useState<{
+    word: string;
+    index: number;
+  } | null>(null);
   const [wordTranslations, setWordTranslations] = React.useState<
-    Record<number, TranslateWordResult>
+    Record<string, TranslateWordResult>
   >({});
   const [isTranslatingWord, setIsTranslatingWord] = React.useState(false);
-  
-  // Memoize tokens to avoid recalculation on every render
-  const tokens = React.useMemo(() => {
-    return turn.content.match(/[\w']+|[^\w\s]/g) || [];
-  }, [turn.content]);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const isSelectingRef = React.useRef(false);
 
 
 
@@ -66,45 +58,196 @@ export const TurnBubble = React.memo(function TurnBubble({
     setShowTranslation((v) => !v);
   };
 
-  const handleWordClick = React.useCallback(async (tokenIndex: number) => {
-    const token = tokens[tokenIndex];
-    if (!token) return;
+  const handleWordClick = React.useCallback(async (word: string) => {
+    // Prevent if user is selecting text
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
 
-    setActiveWordIndex(tokenIndex);
+    const cleanWord = word.trim();
+    if (!cleanWord) return;
 
-    // Nếu chưa có bản dịch thì gọi API với context
-    if (!wordTranslations[tokenIndex] && onTranslateWord) {
+    setActiveWord({
+      word: cleanWord,
+      index: Date.now(),
+    });
+
+    // Check if we already have translation for this word
+    if (!wordTranslations[cleanWord] && onTranslateWord) {
       setIsTranslatingWord(true);
       try {
-        // Pass context để backend detect phrase
-        const vocabData = await onTranslateWord(token, turn.content);
+        const vocabData = await onTranslateWord(cleanWord, turn.content);
         setWordTranslations((prev) => ({
           ...prev,
-          [tokenIndex]: vocabData,
+          [cleanWord]: vocabData,
         }));
       } finally {
         setIsTranslatingWord(false);
       }
     }
-  }, [tokens, wordTranslations, onTranslateWord, turn.content]);
+  }, [wordTranslations, onTranslateWord, turn.content]);
+
+  // Tokenize text into clickable words
+  const tokenizeText = React.useCallback((text: string) => {
+    // Split by word boundaries but keep separators
+    const tokens = text.split(/(\s+|[^\w\s]+)/);
+    
+    return tokens.map((token, index) => {
+      // Check if token is a word (contains letters/numbers)
+      const isWord = /\w/.test(token);
+      
+      if (isWord) {
+        return (
+          <Popover
+            key={index}
+            open={activeWord?.word === token && activeWord?.index !== undefined}
+            onOpenChange={(open) => {
+              if (!open) {
+                setActiveWord(null);
+              }
+            }}
+          >
+            <PopoverTrigger asChild>
+              <span
+                className="cursor-pointer inline-block mx-px rounded hover:bg-yellow-300 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleWordClick(token);
+                }}
+              >
+                {token}
+              </span>
+            </PopoverTrigger>
+            <PopoverContent 
+              className="w-96 p-0 shadow-xl overflow-hidden bg-white rounded-xl border-2 border-blue-100"
+              side="right"
+              align="center"
+            >
+              {isTranslatingWord ? (
+                <div className="flex items-center justify-center gap-2 p-6 text-muted-foreground">
+                  <Loader2 className="size-4 animate-spin" />
+                  <span className="text-sm">Đang tra từ...</span>
+                </div>
+              ) : activeWord && wordTranslations[activeWord.word] ? (
+                <>
+                  {(() => {
+                    const vocabData = wordTranslations[activeWord.word];
+                    return (
+                      <>
+                        <div className="relative">
+                          <button 
+                            className="bg-gray-200 absolute top-2 right-2 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
+                            onClick={() => setActiveWord(null)}
+                          >
+                            <XIcon className="h-4 w-4" />
+                          </button>
+                          
+                          <div className="p-3 border-b bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-blue-100">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Word</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-xl text-gray-800">{activeWord.word}</p>
+                                {vocabData.audio_url && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onPlayAudio?.(vocabData.audio_url!);
+                                    }}
+                                  >
+                                    <Volume2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                              <p className="font-medium text-blue-700">{vocabData.translation_vi}</p>
+                            </div>
+                          </div>
+
+                          <div className="p-3 border-b bg-gradient-to-r from-gray-50 to-gray-50 border-gray-100 space-y-2">
+                            <p className="text-sm leading-relaxed text-gray-700">
+                              {turn.content.split(new RegExp(`(${activeWord.word})`, 'gi')).map((part, i) =>
+                                part.toLowerCase() === activeWord.word.toLowerCase() ? (
+                                  <span key={i} className="bg-yellow-300 px-1.5 py-0.5 rounded-md font-bold text-gray-900 ring-2 ring-yellow-100/50">
+                                    {part}
+                                  </span>
+                                ) : (
+                                  <span key={i}>{part}</span>
+                                )
+                              )}
+                            </p>
+                            {turn.translated_content && (
+                              <div className="border-t border-gray-100 pt-2">
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Translation</p>
+                                <p className="text-sm text-blue-600 font-medium">{turn.translated_content}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {vocabData.example_sentence && (
+                            <div className="p-3 border-b border-gray-100">
+                              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Example</p>
+                              <p className="text-sm text-gray-700 italic">
+                                &ldquo;{vocabData.example_sentence}&rdquo;
+                              </p>
+                            </div>
+                          )}
+
+                          <div className="px-3 pt-2 pb-2">
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={() => {
+                                setActiveWord(null);
+                              }}
+                            >
+                              <BookmarkPlus className="size-4 mr-2" />
+                              Lưu flashcard
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
+              ) : activeWord ? (
+                <div className="p-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Không thể tra từ &ldquo;{activeWord.word}&rdquo;.
+                  </p>
+                </div>
+              ) : null}
+            </PopoverContent>
+          </Popover>
+        );
+      }
+      
+      // Return spaces and punctuation as-is
+      return <span key={index}>{token}</span>;
+    });
+  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations, turn.content, turn.translated_content, onPlayAudio]);
+
+  // Track text selection to prevent word lookup when selecting
+  const handleMouseDown = React.useCallback(() => {
+    isSelectingRef.current = false;
+  }, []);
+
+  const handleMouseMove = React.useCallback(() => {
+    isSelectingRef.current = true;
+  }, []);
 
   return (
     <div
       className={cn(
-        "flex w-full items-end gap-2 px-4 py-1.5",
+        "flex w-full items-end gap-3 px-4 py-2",
         isUser ? "justify-end" : "justify-start",
       )}
     >
-      {!isUser && (
-        <Avatar size="sm" className="shrink-0 mb-1 border shadow-sm">
-          <AvatarImage
-            src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${aiName}`}
-            alt={aiName}
-          />
-          <AvatarFallback className="text-2xs">AI</AvatarFallback>
-        </Avatar>
-      )}
-
       <div
         className={cn(
           "flex flex-col gap-1.5 max-w-[80%]",
@@ -113,254 +256,38 @@ export const TurnBubble = React.memo(function TurnBubble({
       >
         <div
           className={cn(
-            "group relative rounded-2xl px-4 py-3 text-sm leading-relaxed transition-all",
+            "group relative rounded-2xl px-4 py-3 text-lg leading-relaxed transition-all",
             isUser
-              ? "rounded-tr-sm bg-primary-400 text-white border border-primary-500 shadow-sm"
+              ? "rounded-tr-sm bg-primary-500 text-white border border-primary-600 shadow-sm"
               : "rounded-tl-sm bg-muted text-foreground ring-1 ring-border shadow-sm",
             turn.is_pending && "opacity-70 animate-pulse",
           )}
         >
           <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-x-0.5 leading-relaxed">
-              {tokens.map((token, idx) => {
-                const vocabData = wordTranslations[idx];
-                const isPhrase = vocabData?.is_phrase || false;
-                const isActiveWord = activeWordIndex === idx;
-
-                return (
-                  <React.Fragment key={`${turn.turn_index}-${idx}`}>
-                    <button
-                      type="button"
-                      onClick={() => handleWordClick(idx)}
-                      className={cn(
-                        "inline-block cursor-pointer transition-all duration-150 rounded px-0.5 -mx-0.5",
-                        isUser
-                          ? "hover:bg-white/20 focus-visible:bg-white/20"
-                          : "hover:bg-primary/10 focus-visible:bg-primary/10",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-                        isActiveWord && (isUser ? "bg-white/25" : "bg-primary/15"),
-                        isPhrase
-                          ? isUser
-                            ? "border-b-2 border-white/60 font-medium"
-                            : "border-b-2 border-primary/50 font-medium"
-                          : "border-b border-transparent",
-                      )}
-                    >
-                      {token}
-                    </button>
-                    
-                    {/* Lazy render: Only render Popover for active word */}
-                    {isActiveWord && (
-                      <Popover
-                        open={true}
-                        onOpenChange={(open) => {
-                          if (!open) {
-                            setActiveWordIndex(null);
-                          }
-                        }}
-                      >
-                        <PopoverTrigger asChild>
-                          <span style={{ position: "absolute", width: 0, height: 0 }} />
-                        </PopoverTrigger>
-                        <PopoverContent
-                          align={isUser ? "end" : "start"}
-                          side="top"
-                          sideOffset={10}
-                          className="w-72 p-0 z-[100]"
-                        >
-                      {isTranslatingWord ? (
-                        <div className="flex items-center justify-center gap-2 p-6 text-muted-foreground">
-                          <Loader2 className="size-4 animate-spin" />
-                          <span className="text-sm">Đang tra từ...</span>
-                        </div>
-                      ) : vocabData ? (
-                        <div className="space-y-0">
-                          {/* Header with word, phonetic, and audio */}
-                          <div className="p-3 pb-2.5">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                                  <h4 className="text-base font-bold text-foreground">
-                                    {token}
-                                  </h4>
-                                  {vocabData.detected_phrase && token !== vocabData.detected_phrase && (
-                                    <span className="text-xs text-muted-foreground">
-                                      → {vocabData.detected_phrase}
-                                    </span>
-                                  )}
-                                  {vocabData.part_of_speech && (
-                                    <Badge variant="secondary" className="text-2xs px-1.5 py-0 h-4">
-                                      {vocabData.part_of_speech}
-                                    </Badge>
-                                  )}
-                                </div>
-                                {vocabData.phonetic && (
-                                  <p className="text-xs text-muted-foreground font-mono mb-1.5">
-                                    {vocabData.phonetic}
-                                  </p>
-                                )}
-                                {/* Translation - prominent */}
-                                <p className="text-sm font-semibold text-primary leading-snug">
-                                  {vocabData.translation_vi}
-                                </p>
-                              </div>
-                              {vocabData.audio_url && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon-sm"
-                                  className="shrink-0 h-7 w-7 rounded-full hover:bg-primary/10 hover:text-primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onPlayAudio?.(vocabData.audio_url!);
-                                  }}
-                                >
-                                  <Volume2 className="size-3.5" />
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Definition - if different from translation */}
-                          {vocabData.definition_vi && vocabData.definition_vi !== vocabData.translation_vi && (
-                            <>
-                              <Separator />
-                              <div className="px-3 py-2.5">
-                                <p className="text-xs leading-relaxed text-muted-foreground">
-                                  {vocabData.definition_vi}
-                                </p>
-                              </div>
-                            </>
-                          )}
-
-                          {/* Example sentence */}
-                          {vocabData.example_sentence && (
-                            <>
-                              <Separator />
-                              <div className="px-3 py-2.5 bg-muted/30">
-                                <p className="text-xs leading-relaxed text-muted-foreground italic">
-                                  &ldquo;{vocabData.example_sentence}&rdquo;
-                                </p>
-                              </div>
-                            </>
-                          )}
-
-                          {/* Context: câu gốc highlight từ + câu dịch */}
-                          {turn.translated_content && (
-                            <>
-                              <Separator />
-                              <div className="px-3 py-2.5 bg-muted/20 space-y-1.5">
-                                <p className="text-xs text-muted-foreground leading-relaxed">
-                                  {turn.content.split(/\b/).map((part, i) =>
-                                    part.toLowerCase() === token.toLowerCase() ? (
-                                      <mark key={i} className="bg-yellow-200 text-yellow-900 rounded px-0.5 not-italic font-medium">
-                                        {part}
-                                      </mark>
-                                    ) : (
-                                      <span key={i}>{part}</span>
-                                    )
-                                  )}
-                                </p>
-                                <p className="text-xs text-primary/80 font-medium leading-relaxed">
-                                  {turn.translated_content}
-                                </p>
-                              </div>
-                            </>
-                          )}
-
-                          <Separator />
-
-                          {/* Save button */}
-                          <div className="p-2">
-                            <Button
-                              variant={
-                                turn.is_saved_to_flashcard
-                                  ? "soft-success"
-                                  : "default"
-                              }
-                              size="sm"
-                              className="w-full h-8 text-xs"
-                              onClick={() => onSaveFlashcard?.(turn.turn_index, vocabData)}
-                              disabled={
-                                isSavingFlashcard ||
-                                turn.is_saved_to_flashcard
-                              }
-                            >
-                              {isSavingFlashcard ? (
-                                <>
-                                  <Loader2 className="size-3 animate-spin" />
-                                  Đang lưu...
-                                </>
-                              ) : turn.is_saved_to_flashcard ? (
-                                <>
-                                  <Check className="size-3" />
-                                  Đã lưu
-                                </>
-                              ) : (
-                                <>
-                                  <BookmarkPlus className="size-3" />
-                                  Lưu flashcard
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="p-6 text-center">
-                          <p className="text-sm text-muted-foreground">
-                            Không thể tra từ này.
-                          </p>
-                        </div>
-                      )}
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                  </React.Fragment>
-                );
-              })}
+            <div 
+              ref={contentRef}
+              className="leading-relaxed text-lg select-text"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+            >
+              {tokenizeText(turn.content)}
             </div>
+
+            {/* Popover for word translation is now handled in tokenizeText */}
 
             {showTranslation && (
               <div
                 className={cn(
-                  "text-sm border-t pt-2 mt-1",
+                  "text-base border-t pt-2 mt-1",
                   isUser
-                    ? "border-white/20 text-white/90"
+                    ? "border-white/20 text-white/95"
                     : "border-border text-muted-foreground",
                 )}
               >
-                <div className="italic font-medium whitespace-pre-wrap">
+                <div className="italic font-medium whitespace-pre-wrap text-lg">
                   {hasTranslation
                     ? turn.translated_content
                     : "Đang yêu cầu bản dịch..."}
-                </div>
-
-                <div className="mt-2 flex justify-end">
-                  <Button
-                    variant={
-                      turn.is_saved_to_flashcard ? "soft-success" : isUser ? "secondary" : "outline"
-                    }
-                    size="xs"
-                    onClick={() => onSaveFlashcard?.(turn.turn_index)}
-                    disabled={
-                      isSavingFlashcard ||
-                      turn.is_saved_to_flashcard ||
-                      !hasTranslation
-                    }
-                    className={cn(
-                      isUser && !turn.is_saved_to_flashcard && "bg-white/20 hover:bg-white/30 text-white border-white/30"
-                    )}
-                  >
-                    {turn.is_saved_to_flashcard ? (
-                      <Check className="size-3" />
-                    ) : (
-                      <BookmarkPlus className="size-3" />
-                    )}
-                    {turn.is_saved_to_flashcard
-                      ? "Đã lưu"
-                      : isSavingFlashcard
-                        ? "Đang lưu..."
-                        : "Lưu flashcard"}
-                  </Button>
                 </div>
               </div>
             )}
