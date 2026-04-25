@@ -119,6 +119,22 @@ export function useSessionWsHandler() {
           setRecorderState("idle");
           break;
 
+        case WsServerEvent.SCORING_COMPLETE:
+          // Session completed and scoring is ready
+          // Trigger session completion flow
+          const state = useSessionStore.getState();
+          if (state.sessionId) {
+            // Fetch updated session with scoring
+            SessionService.getSession(state.sessionId).then((session) => {
+              if (session.success && session.data) {
+                useSessionStore.setState({
+                  session: session.data,
+                });
+              }
+            });
+          }
+          break;
+
         default:
           break;
       }

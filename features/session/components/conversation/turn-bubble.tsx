@@ -17,6 +17,50 @@ import type { TranslateWordResult } from "@/features/session/actions/translate-w
 import { LatencyMetrics } from "./latency-metrics";
 import { isDebugMetricsEnabled } from "@/features/session/utils/feature-flags";
 
+// Tone configuration mapping
+const TONE_CONFIG = {
+  warmly: {
+    emoji: "😊",
+    label: "Warm",
+    bgLight: "bg-primary-50",
+    bgDark: "bg-primary-100",
+    textColor: "text-primary-900",
+    borderColor: "border-primary-200",
+  },
+  encouragingly: {
+    emoji: "💪",
+    label: "Encouraging",
+    bgLight: "bg-blue-50",
+    bgDark: "bg-blue-100",
+    textColor: "text-blue-900",
+    borderColor: "border-blue-200",
+  },
+  gently: {
+    emoji: "🤝",
+    label: "Gentle",
+    bgLight: "bg-amber-50",
+    bgDark: "bg-amber-100",
+    textColor: "text-amber-900",
+    borderColor: "border-amber-200",
+  },
+  thoughtfully: {
+    emoji: "🤔",
+    label: "Thoughtful",
+    bgLight: "bg-purple-50",
+    bgDark: "bg-purple-100",
+    textColor: "text-purple-900",
+    borderColor: "border-purple-200",
+  },
+  naturally: {
+    emoji: "💬",
+    label: "Natural",
+    bgLight: "bg-gray-50",
+    bgDark: "bg-gray-100",
+    textColor: "text-gray-900",
+    borderColor: "border-gray-200",
+  },
+} as const;
+
 interface TurnBubbleProps {
   turn: Turn;
   onPlayAudio?: (url: string) => void;
@@ -44,6 +88,31 @@ export const TurnBubble = React.memo(function TurnBubble({
   const [isTranslatingWord, setIsTranslatingWord] = React.useState(false);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const isSelectingRef = React.useRef(false);
+
+  // Extract tone from delivery_cue
+  const getToneConfig = () => {
+    if (isUser) return null;
+    
+    // Try to extract tone from content first: [warmly] text...
+    const contentMatch = turn.content.match(/^\[(\w+)\]\s*/);
+    const toneFromContent = contentMatch?.[1]?.toLowerCase();
+    
+    // Fallback to delivery_cue field
+    const deliveryCue = toneFromContent || 
+      turn.delivery_cue?.replace(/[\[\]]/g, "").toLowerCase() || 
+      "naturally";
+    
+    return TONE_CONFIG[deliveryCue as keyof typeof TONE_CONFIG] || TONE_CONFIG.naturally;
+  };
+
+  const toneConfig = getToneConfig();
+
+  // Clean content by removing delivery cue prefix
+  const getCleanContent = () => {
+    return turn.content.replace(/^\[\w+\]\s*/, "");
+  };
+
+  const cleanContent = getCleanContent();
 
 
 
@@ -77,7 +146,7 @@ export const TurnBubble = React.memo(function TurnBubble({
     if (!wordTranslations[cleanWord] && onTranslateWord) {
       setIsTranslatingWord(true);
       try {
-        const vocabData = await onTranslateWord(cleanWord, turn.content);
+        const vocabData = await onTranslateWord(cleanWord, cleanContent);
         setWordTranslations((prev) => ({
           ...prev,
           [cleanWord]: vocabData,
@@ -86,7 +155,7 @@ export const TurnBubble = React.memo(function TurnBubble({
         setIsTranslatingWord(false);
       }
     }
-  }, [wordTranslations, onTranslateWord, turn.content]);
+  }, [wordTranslations, onTranslateWord, cleanContent]);
 
   // Tokenize text into clickable words
   const tokenizeText = React.useCallback((text: string) => {
@@ -120,7 +189,7 @@ export const TurnBubble = React.memo(function TurnBubble({
               </span>
             </PopoverTrigger>
             <PopoverContent 
-              className="w-96 p-0 shadow-xl overflow-hidden bg-white rounded-xl border-2 border-blue-100"
+              className="w-96 p-0 shadow-xl overflow-hidden bg-white rounded-xl border-2 border-primary-100"
               side="right"
               align="center"
             >
@@ -143,7 +212,7 @@ export const TurnBubble = React.memo(function TurnBubble({
                             <XIcon className="h-4 w-4" />
                           </button>
                           
-                          <div className="p-3 border-b bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-blue-100">
+                          <div className="p-3 border-b bg-gradient-to-r from-primary-50 via-primary-50 to-primary-50 border-primary-100">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Word</p>
@@ -154,7 +223,7 @@ export const TurnBubble = React.memo(function TurnBubble({
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-primary-600 hover:bg-primary-50"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       onPlayAudio?.(vocabData.audio_url!);
@@ -164,13 +233,13 @@ export const TurnBubble = React.memo(function TurnBubble({
                                   </Button>
                                 )}
                               </div>
-                              <p className="font-medium text-blue-700">{vocabData.translation_vi}</p>
+                              <p className="font-bold text-2xl text-primary-700">{vocabData.translation_vi}</p>
                             </div>
                           </div>
 
                           <div className="p-3 border-b bg-gradient-to-r from-gray-50 to-gray-50 border-gray-100 space-y-2">
                             <p className="text-sm leading-relaxed text-gray-700">
-                              {turn.content.split(new RegExp(`(${activeWord.word})`, 'gi')).map((part, i) =>
+                              {cleanContent.split(new RegExp(`(${activeWord.word})`, 'gi')).map((part, i) =>
                                 part.toLowerCase() === activeWord.word.toLowerCase() ? (
                                   <span key={i} className="bg-yellow-300 px-1.5 py-0.5 rounded-md font-bold text-gray-900 ring-2 ring-yellow-100/50">
                                     {part}
@@ -183,7 +252,7 @@ export const TurnBubble = React.memo(function TurnBubble({
                             {turn.translated_content && (
                               <div className="border-t border-gray-100 pt-2">
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Translation</p>
-                                <p className="text-sm text-blue-600 font-medium">{turn.translated_content}</p>
+                                <p className="text-sm text-primary-600 font-medium">{turn.translated_content}</p>
                               </div>
                             )}
                           </div>
@@ -201,7 +270,7 @@ export const TurnBubble = React.memo(function TurnBubble({
                             <Button
                               variant="default"
                               size="sm"
-                              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                              className="w-full bg-primary-600 hover:bg-primary-700 text-white"
                               onClick={() => {
                                 setActiveWord(null);
                               }}
@@ -230,7 +299,7 @@ export const TurnBubble = React.memo(function TurnBubble({
       // Return spaces and punctuation as-is
       return <span key={index}>{token}</span>;
     });
-  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations, turn.content, turn.translated_content, onPlayAudio]);
+  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations, cleanContent, turn.translated_content, onPlayAudio]);
 
   // Track text selection to prevent word lookup when selecting
   const handleMouseDown = React.useCallback(() => {
@@ -259,18 +328,33 @@ export const TurnBubble = React.memo(function TurnBubble({
             "group relative rounded-2xl px-4 py-3 text-lg leading-relaxed transition-all",
             isUser
               ? "rounded-tr-sm bg-primary-500 text-white border border-primary-600 shadow-sm"
-              : "rounded-tl-sm bg-muted text-foreground ring-1 ring-border shadow-sm",
+              : cn(
+                  "rounded-tl-sm shadow-sm",
+                  toneConfig
+                    ? `${toneConfig.bgLight} ${toneConfig.textColor} border ${toneConfig.borderColor}`
+                    : "bg-muted text-foreground ring-1 ring-border"
+                ),
             turn.is_pending && "opacity-70 animate-pulse",
           )}
         >
           <div className="flex flex-col gap-2">
+            {/* Tone badge for AI turns */}
+            {!isUser && toneConfig && (
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-lg">{toneConfig.emoji}</span>
+                <span className="text-xs font-semibold uppercase tracking-wider opacity-75">
+                  {toneConfig.label}
+                </span>
+              </div>
+            )}
+
             <div 
               ref={contentRef}
               className="leading-relaxed text-lg select-text"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
             >
-              {tokenizeText(turn.content)}
+              {tokenizeText(cleanContent)}
             </div>
 
             {/* Popover for word translation is now handled in tokenizeText */}

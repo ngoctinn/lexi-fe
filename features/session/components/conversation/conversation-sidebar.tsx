@@ -53,10 +53,10 @@ function SessionCompletionSummary({
   }
 
   const skills = [
-    { label: "Lưu loát", value: summary.scoring.fluency },
-    { label: "Phát âm", value: summary.scoring.pronunciation },
-    { label: "Ngữ pháp", value: summary.scoring.grammar },
-    { label: "Từ vựng", value: summary.scoring.vocabulary },
+    { label: "Lưu loát", value: summary.scoring.fluency_score || summary.scoring.fluency || 0 },
+    { label: "Phát âm", value: summary.scoring.pronunciation_score || summary.scoring.pronunciation || 0 },
+    { label: "Ngữ pháp", value: summary.scoring.grammar_score || summary.scoring.grammar || 0 },
+    { label: "Từ vựng", value: summary.scoring.vocabulary_score || summary.scoring.vocabulary || 0 },
   ];
 
   return (
@@ -76,7 +76,7 @@ function SessionCompletionSummary({
               Tổng điểm
             </span>
             <span className="text-2xl font-black tracking-tight text-primary">
-              {Math.round(summary.scoring.overall)}
+              {Math.round(summary.scoring.overall_score || summary.scoring.overall || 0)}
             </span>
           </div>
 

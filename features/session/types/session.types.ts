@@ -74,12 +74,18 @@ export interface Turn {
 }
 
 export interface Scoring {
-  [ScoringSkill.FLUENCY]: number;
-  [ScoringSkill.PRONUNCIATION]: number;
-  [ScoringSkill.GRAMMAR]: number;
-  [ScoringSkill.VOCABULARY]: number;
-  overall: number;
+  fluency_score: number;
+  pronunciation_score: number;
+  grammar_score: number;
+  vocabulary_score: number;
+  overall_score: number;
   feedback?: string;
+  // Legacy field names for backward compatibility
+  [ScoringSkill.FLUENCY]?: number;
+  [ScoringSkill.PRONUNCIATION]?: number;
+  [ScoringSkill.GRAMMAR]?: number;
+  [ScoringSkill.VOCABULARY]?: number;
+  overall?: number;
 }
 
 export interface Session {
@@ -100,6 +106,13 @@ export interface Session {
   connection_id?: string | null;
   created_at?: string;
   updated_at?: string;
+  completed_at?: string;
+  // Session-level metrics
+  assigned_model?: string;
+  avg_ttft_ms?: number;
+  avg_latency_ms?: number;
+  avg_output_tokens?: number;
+  total_cost_usd?: number;
 }
 
 export interface SessionScoreSummary {
