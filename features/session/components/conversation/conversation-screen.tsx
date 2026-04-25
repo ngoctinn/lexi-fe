@@ -160,11 +160,19 @@ export function ConversationScreen({
               (ui.wsState !== "connected" ||
                 ui.recorderState === "uploading") && (
                 <div className="mt-2 flex items-center justify-center animate-in fade-in slide-in-from-bottom-1">
-                  {ui.wsState !== "connected" && (
-                    <span className="text-2xs text-muted-foreground font-medium animate-pulse">
-                      {ui.wsState === "connecting"
-                        ? "Đang kết nối..."
-                        : "Mất kết nối máy chủ"}
+                  {ui.wsState === "connecting" && (
+                    <div className="flex flex-col items-center gap-2 w-full max-w-xs">
+                      <span className="text-2xs text-muted-foreground font-medium">
+                        Đang chuẩn bị phiên học...
+                      </span>
+                      <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary animate-pulse" style={{ width: "60%" }} />
+                      </div>
+                    </div>
+                  )}
+                  {ui.wsState === "disconnected" && (
+                    <span className="text-2xs text-muted-foreground font-medium">
+                      Mất kết nối máy chủ
                     </span>
                   )}
                   {ui.recorderState === "uploading" && (

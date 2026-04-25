@@ -281,8 +281,6 @@ export interface SessionUiState {
   recorderState: RecorderState;
   wsState: WsConnectionState;
   currentAudioUrl: string | null;
-  uploadUrl: string | null;
-  s3Key: string | null;
   isControlsDisabled?: boolean;
   streamingTranscript?: {
     finalText: string;

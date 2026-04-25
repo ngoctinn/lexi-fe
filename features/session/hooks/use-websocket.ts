@@ -20,18 +20,36 @@ function buildWebSocketUrl(base: string, token: string, sessionId: string) {
 
 /**
  * Get fresh ID token from Amplify (client-side)
- * Automatically refreshes if expired
+ * Automatically refreshes if expired or expiring soon
  * Per AWS docs: ID tokens should be used for authentication/authorization
  * https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
  */
 async function getFreshIdToken(): Promise<string> {
   try {
-    const session = await fetchAuthSession({ forceRefresh: true });
-    const idToken = session.tokens?.idToken?.toString();
+    // Check if token needs refresh (expires in < 5 minutes)
+    const session = await fetchAuthSession({ forceRefresh: false });
+    const idToken = session.tokens?.idToken;
+    
     if (!idToken) {
       throw new Error("ID token not available from Amplify session");
     }
-    return idToken;
+    
+    // Check expiry - refresh if < 5 minutes remaining
+    const expiresAt = idToken.payload.exp as number;
+    const now = Math.floor(Date.now() / 1000);
+    const timeUntilExpiry = expiresAt - now;
+    
+    if (timeUntilExpiry < 300) { // 5 minutes
+      console.log(`[ws] Token expires in ${timeUntilExpiry}s, refreshing...`);
+      const refreshedSession = await fetchAuthSession({ forceRefresh: true });
+      const refreshedToken = refreshedSession.tokens?.idToken?.toString();
+      if (!refreshedToken) {
+        throw new Error("Failed to refresh ID token");
+      }
+      return refreshedToken;
+    }
+    
+    return idToken.toString();
   } catch (error) {
     console.error("[ws] Failed to get fresh ID token:", error);
     throw error;

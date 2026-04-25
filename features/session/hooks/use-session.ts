@@ -9,7 +9,6 @@ import {
 } from "@/features/session/types/session.types";
 import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { useWebSocket } from "./use-websocket";
-import { useAudioRecorder } from "./use-audio-recorder";
 import { useClientStreamingRecorder } from "./use-client-streaming-recorder";
 import { SessionService } from "../api/session.service";
 import { SessionDomain } from "../domain/session.logic";
@@ -17,7 +16,6 @@ import { SessionDomain } from "../domain/session.logic";
 import { useSessionStore } from "../stores/use-session-store";
 
 import { useSessionWsHandler } from "./use-session-ws-handler";
-import { isStreamingEnabled } from "../utils/feature-flags";
 
 interface UseSessionOptions {
   sessionId: string;
@@ -36,8 +34,6 @@ export function useSession({
     React.useState<number[]>([]);
 
   const turns = useSessionStore((s) => s.turns);
-  const uploadUrl = useSessionStore((s) => s.uploadUrl);
-  const s3Key = useSessionStore((s) => s.s3Key);
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
 
@@ -75,28 +71,6 @@ export function useSession({
     initialDelayMs: isNewSession ? 1500 : undefined,
   });
 
-  // Use streaming recorder if feature flag is enabled, otherwise use batch recorder
-  const useStreaming = isStreamingEnabled();
-
-  const {
-    state: recorderState,
-    startRecording: startBatchRecording,
-    stopRecording: stopBatchRecording,
-    uploadProgress,
-  } = useAudioRecorder({
-    onRecordingComplete: (s3Key) => {
-      send({
-        action: WsClientEvent.AUDIO_UPLOADED,
-        session_id: sessionId,
-        s3_key: s3Key,
-      });
-    },
-    onError: (message) => {
-      SessionService.handleError(message, "Recorder");
-      setRecorderState("error");
-    },
-  });
-
   const {
     state: streamingRecorderState,
     startRecording: startStreamingRecording,
@@ -124,12 +98,9 @@ export function useSession({
     },
   });
 
-  // Select the appropriate recorder based on feature flag
-  const effectiveRecorderState = useStreaming ? streamingRecorderState : recorderState;
-
   React.useEffect(() => {
-    setRecorderState(effectiveRecorderState);
-  }, [effectiveRecorderState, setRecorderState]);
+    setRecorderState(streamingRecorderState);
+  }, [streamingRecorderState, setRecorderState]);
 
   const sendMessage = React.useCallback(
     (text: string) => {
@@ -162,20 +133,12 @@ export function useSession({
   const toggleMicRef = React.useRef(false);
 
   const toggleMic = React.useCallback(async () => {
-    console.log("toggleMic called, current state:", effectiveRecorderState, "streaming state:", streamingRecorderState);
-    
-    if (effectiveRecorderState === "recording") {
-      // STOP: No debounce needed, always allow stop
-      console.log("Stopping recording...");
-      if (useStreaming) {
-        stopStreamingRecording();
-      } else {
-        stopBatchRecording();
-      }
+    if (streamingRecorderState === "recording") {
+      stopStreamingRecording();
       return;
     }
     
-    // START: Debounce to prevent multiple rapid calls
+    // Debounce to prevent multiple rapid calls
     if (toggleMicRef.current) {
       console.warn("toggleMic start already in progress, ignoring");
       return;
@@ -184,27 +147,14 @@ export function useSession({
     toggleMicRef.current = true;
 
     try {
-      console.log("Starting recording...");
       // Clear previous streaming transcript when starting new recording
-      if (useStreaming) {
-        useSessionStore.getState().setStreamingTranscript("", "", false);
-        useSessionStore.getState().setStreamingError(null);
-      }
-      
-      if (useStreaming) {
-        // Streaming mode: just start recording
-        await startStreamingRecording();
-      } else {
-        // Batch mode: use S3 upload (existing behavior)
-        const targetUrl = uploadUrl || "https://mock-upload.com";
-        const targetS3Key = s3Key || `sessions/${sessionId}/${Date.now()}.webm`;
-        await startBatchRecording(targetUrl, targetS3Key);
-      }
+      useSessionStore.getState().setStreamingTranscript("", "", false);
+      useSessionStore.getState().setStreamingError(null);
+      await startStreamingRecording();
     } finally {
-      // Reset debounce flag immediately after start completes
       toggleMicRef.current = false;
     }
-  }, [effectiveRecorderState, streamingRecorderState, stopStreamingRecording, stopBatchRecording, startStreamingRecording, startBatchRecording, uploadUrl, s3Key, sessionId, useStreaming]);
+  }, [streamingRecorderState, stopStreamingRecording, startStreamingRecording]);
 
   const endSession = React.useCallback(() => {
     send({ action: WsClientEvent.END_SESSION, session_id: sessionId });
@@ -340,15 +290,13 @@ export function useSession({
       recorderState: recorderStateFromStore,
       wsState: connectionState,
       currentAudioUrl,
-      uploadUrl: uploadUrl,
       savingFlashcardTurnIndexes,
       isControlsDisabled: SessionDomain.isControlsDisabled(
         connectionState,
-        recorderState,
+        streamingRecorderState,
         isAiStreaming,
       ),
     },
-    uploadProgress,
     actions: {
       startSession,
       toggleMic,

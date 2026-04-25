@@ -30,7 +30,7 @@ interface TurnBubbleProps {
   isPlaying?: boolean;
 }
 
-export function TurnBubble({
+export const TurnBubble = React.memo(function TurnBubble({
   turn,
   aiName = "AI",
   onPlayAudio,
@@ -42,28 +42,18 @@ export function TurnBubble({
 }: TurnBubbleProps) {
   const isUser = turn.speaker === TurnSpeaker.USER;
   const [showTranslation, setShowTranslation] = React.useState(false);
-  const [activeWordIndex, setActiveWordIndex] = React.useState<number | null>(
-    null,
-  );
+  const [activeWordIndex, setActiveWordIndex] = React.useState<number | null>(null);
   const [wordTranslations, setWordTranslations] = React.useState<
     Record<number, TranslateWordResult>
   >({});
   const [isTranslatingWord, setIsTranslatingWord] = React.useState(false);
-
-  // Split text into words - every word is clickable
+  
+  // Memoize tokens to avoid recalculation on every render
   const tokens = React.useMemo(() => {
-    const content = turn.content;
-    
-    type Token = { 
-      text: string;
-    };
-
-    // Split by word boundaries - mọi từ đều clickable
-    // Regex: match words (letters, numbers, apostrophes) or punctuation
-    const words = content.match(/[\w']+|[^\w\s]/g) || [];
-    
-    return words.map<Token>((word) => ({ text: word }));
+    return turn.content.match(/[\w']+|[^\w\s]/g) || [];
   }, [turn.content]);
+
+
 
   const hasTranslation =
     Boolean(turn.translated_content) &&
@@ -76,7 +66,7 @@ export function TurnBubble({
     setShowTranslation((v) => !v);
   };
 
-  const handleWordClick = async (tokenIndex: number) => {
+  const handleWordClick = React.useCallback(async (tokenIndex: number) => {
     const token = tokens[tokenIndex];
     if (!token) return;
 
@@ -87,7 +77,7 @@ export function TurnBubble({
       setIsTranslatingWord(true);
       try {
         // Pass context để backend detect phrase
-        const vocabData = await onTranslateWord(token.text, turn.content);
+        const vocabData = await onTranslateWord(token, turn.content);
         setWordTranslations((prev) => ({
           ...prev,
           [tokenIndex]: vocabData,
@@ -96,12 +86,12 @@ export function TurnBubble({
         setIsTranslatingWord(false);
       }
     }
-  };
+  }, [tokens, wordTranslations, onTranslateWord, turn.content]);
 
   return (
     <div
       className={cn(
-        "flex w-full items-end gap-2 px-4 py-2",
+        "flex w-full items-end gap-2 px-4 py-1.5",
         isUser ? "justify-end" : "justify-start",
       )}
     >
@@ -125,51 +115,59 @@ export function TurnBubble({
           className={cn(
             "group relative rounded-2xl px-4 py-3 text-sm leading-relaxed transition-all",
             isUser
-              ? "rounded-tr-sm bg-primary-50 text-primary border border-primary-100 shadow-sm"
+              ? "rounded-tr-sm bg-primary-400 text-white border border-primary-500 shadow-sm"
               : "rounded-tl-sm bg-muted text-foreground ring-1 ring-border shadow-sm",
             turn.is_pending && "opacity-70 animate-pulse",
           )}
         >
           <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-x-1 leading-relaxed">
+            <div className="flex flex-wrap items-center gap-x-0.5 leading-relaxed">
               {tokens.map((token, idx) => {
-                const isActiveWord = activeWordIndex === idx;
                 const vocabData = wordTranslations[idx];
                 const isPhrase = vocabData?.is_phrase || false;
+                const isActiveWord = activeWordIndex === idx;
 
                 return (
-                  <Popover
-                    key={`${turn.turn_index}-${idx}`}
-                    open={isActiveWord}
-                    onOpenChange={(open) => {
-                      if (!open) {
-                        setActiveWordIndex(null);
-                      }
-                    }}
-                  >
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={() => handleWordClick(idx)}
-                        className={cn(
-                          "inline-block cursor-pointer transition-colors duration-100 rounded-sm px-0.5",
-                          "hover:bg-primary/8",
-                          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30",
-                          isActiveWord && "bg-primary/12",
-                          isPhrase
-                            ? "border-b border-primary/40 font-medium"
-                            : "border-b border-transparent hover:border-primary/30",
-                        )}
-                      >
-                        {token.text}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      align={isUser ? "end" : "start"}
-                      side="top"
-                      sideOffset={10}
-                      className="w-72 p-0 z-[100]"
+                  <React.Fragment key={`${turn.turn_index}-${idx}`}>
+                    <button
+                      type="button"
+                      onClick={() => handleWordClick(idx)}
+                      className={cn(
+                        "inline-block cursor-pointer transition-all duration-150 rounded px-0.5 -mx-0.5",
+                        isUser
+                          ? "hover:bg-white/20 focus-visible:bg-white/20"
+                          : "hover:bg-primary/10 focus-visible:bg-primary/10",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                        isActiveWord && (isUser ? "bg-white/25" : "bg-primary/15"),
+                        isPhrase
+                          ? isUser
+                            ? "border-b-2 border-white/60 font-medium"
+                            : "border-b-2 border-primary/50 font-medium"
+                          : "border-b border-transparent",
+                      )}
                     >
+                      {token}
+                    </button>
+                    
+                    {/* Lazy render: Only render Popover for active word */}
+                    {isActiveWord && (
+                      <Popover
+                        open={true}
+                        onOpenChange={(open) => {
+                          if (!open) {
+                            setActiveWordIndex(null);
+                          }
+                        }}
+                      >
+                        <PopoverTrigger asChild>
+                          <span style={{ position: "absolute", width: 0, height: 0 }} />
+                        </PopoverTrigger>
+                        <PopoverContent
+                          align={isUser ? "end" : "start"}
+                          side="top"
+                          sideOffset={10}
+                          className="w-72 p-0 z-[100]"
+                        >
                       {isTranslatingWord ? (
                         <div className="flex items-center justify-center gap-2 p-6 text-muted-foreground">
                           <Loader2 className="size-4 animate-spin" />
@@ -183,9 +181,9 @@ export function TurnBubble({
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap mb-1">
                                   <h4 className="text-base font-bold text-foreground">
-                                    {token.text}
+                                    {token}
                                   </h4>
-                                  {vocabData.detected_phrase && token.text !== vocabData.detected_phrase && (
+                                  {vocabData.detected_phrase && token !== vocabData.detected_phrase && (
                                     <span className="text-xs text-muted-foreground">
                                       → {vocabData.detected_phrase}
                                     </span>
@@ -253,7 +251,7 @@ export function TurnBubble({
                               <div className="px-3 py-2.5 bg-muted/20 space-y-1.5">
                                 <p className="text-xs text-muted-foreground leading-relaxed">
                                   {turn.content.split(/\b/).map((part, i) =>
-                                    part.toLowerCase() === token.text.toLowerCase() ? (
+                                    part.toLowerCase() === token.toLowerCase() ? (
                                       <mark key={i} className="bg-yellow-200 text-yellow-900 rounded px-0.5 not-italic font-medium">
                                         {part}
                                       </mark>
@@ -313,8 +311,10 @@ export function TurnBubble({
                           </p>
                         </div>
                       )}
-                    </PopoverContent>
-                  </Popover>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </div>
@@ -324,7 +324,7 @@ export function TurnBubble({
                 className={cn(
                   "text-sm border-t pt-2 mt-1",
                   isUser
-                    ? "border-primary-100 text-primary"
+                    ? "border-white/20 text-white/90"
                     : "border-border text-muted-foreground",
                 )}
               >
@@ -337,7 +337,7 @@ export function TurnBubble({
                 <div className="mt-2 flex justify-end">
                   <Button
                     variant={
-                      turn.is_saved_to_flashcard ? "soft-success" : "outline"
+                      turn.is_saved_to_flashcard ? "soft-success" : isUser ? "secondary" : "outline"
                     }
                     size="xs"
                     onClick={() => onSaveFlashcard?.(turn.turn_index)}
@@ -346,6 +346,9 @@ export function TurnBubble({
                       turn.is_saved_to_flashcard ||
                       !hasTranslation
                     }
+                    className={cn(
+                      isUser && !turn.is_saved_to_flashcard && "bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    )}
                   >
                     {turn.is_saved_to_flashcard ? (
                       <Check className="size-3" />
@@ -373,7 +376,7 @@ export function TurnBubble({
               <Button
                 variant="secondary"
                 size="icon-xs"
-                className="rounded-full bg-background/80 backdrop-blur shadow-sm border border-border/50"
+                className="rounded-full bg-background/90 backdrop-blur shadow-sm border border-border/50 hover:bg-background"
                 onClick={() => onPlayAudio?.(turn.audio_url!)}
               >
                 <Volume2
@@ -385,8 +388,8 @@ export function TurnBubble({
               variant="secondary"
               size="icon-xs"
               className={cn(
-                "rounded-full bg-background/80 backdrop-blur shadow-sm border border-border/50",
-                showTranslation && "text-primary",
+                "rounded-full bg-background/90 backdrop-blur shadow-sm border border-border/50 hover:bg-background",
+                showTranslation && "text-primary bg-primary/10",
               )}
               onClick={toggleTranslate}
             >
@@ -432,4 +435,4 @@ export function TurnBubble({
       </div>
     </div>
   );
-}
+});

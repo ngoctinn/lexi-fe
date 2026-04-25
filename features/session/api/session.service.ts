@@ -74,12 +74,6 @@ export const SessionService = {
     return { success: true, message: result.message || "Đã lưu vào flashcard." };
   },
 
-  async saveTurnToFlashcard(
-    input: SaveTurnToFlashcardInput,
-  ): Promise<{ success: boolean; message: string }> {
-    return this.saveWordToFlashcard(input);
-  },
-
   handleError(message: string, context?: string) {
     console.error(`[session] SessionService${context ? `:${context}` : ""} error:`, message);
     toast.error(message);

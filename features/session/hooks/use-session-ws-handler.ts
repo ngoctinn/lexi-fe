@@ -8,7 +8,6 @@ import { SessionService } from "@/features/session/api/session.service";
 
 export function useSessionWsHandler() {
   const setTurns = useSessionStore((s) => s.setTurns);
-  const setUploadUrls = useSessionStore((s) => s.setUploadUrls);
   const setLastSttResult = useSessionStore((s) => s.setLastSttResult);
   const setRecorderState = useSessionStore((s) => s.setRecorderState);
   const setAiStreamingText = useSessionStore((s) => s.setAiStreamingText);
@@ -22,10 +21,6 @@ export function useSessionWsHandler() {
   const handleWsMessage = React.useCallback(
     (event: WsServerPayload) => {
       switch (event.event) {
-        case WsServerEvent.SESSION_READY:
-          setUploadUrls(event.upload_url, event.s3_key);
-          break;
-
         case WsServerEvent.STT_RESULT:
           setLastSttResult({ text: event.text, confidence: event.confidence });
           break;
@@ -129,7 +124,6 @@ export function useSessionWsHandler() {
       }
     },
     [
-      setUploadUrls,
       setLastSttResult,
       setRecorderState,
       setAiStreamingText,
