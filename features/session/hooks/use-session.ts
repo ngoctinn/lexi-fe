@@ -135,10 +135,23 @@ export function useSession({
   );
 
   const startSession = React.useCallback(() => {
+    useSessionStore.getState().setIsStartingSession(true);
     send({ action: WsClientEvent.START_SESSION, session_id: sessionId });
   }, [send, sessionId]);
 
   const requestHint = React.useCallback(() => {
+    const state = useSessionStore.getState();
+    
+    console.log("[useSession] requestHint called - checking flag:", state.requestHintInProgress);
+    
+    // Prevent double calls
+    if (state.requestHintInProgress) {
+      console.log("[useSession] requestHint already in progress, skipping");
+      return;
+    }
+    
+    console.log("[useSession] requestHint proceeding - setting flag to true");
+    state.setRequestHintInProgress(true);
     console.log("[useSession] requestHint called", { sessionId });
     
     // Clear old hint first
@@ -157,6 +170,7 @@ export function useSession({
     // Set timeout to clear loading state if no response
     const timeoutId = setTimeout(() => {
       console.warn("[useSession] Hint request timeout");
+      state.setRequestHintInProgress(false);
       setHint({
         level: "Intermediate",
         type: "guidance",
@@ -168,8 +182,9 @@ export function useSession({
     }, 5000);
     
     // Store timeout ID in ref to clear it when response arrives
-    useSessionStore.getState().setHintTimeoutId?.(timeoutId);
+    state.setHintTimeoutId?.(timeoutId);
     
+    console.log("[useSession] Sending USE_HINT WebSocket message");
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
   }, [send, sessionId, setHint]);
 

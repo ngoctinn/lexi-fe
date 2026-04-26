@@ -28,6 +28,8 @@ interface SessionStoreState extends SessionUiState {
   setCurrentAudioUrl: (currentAudioUrl: string | null) => void;
   setStreamingTranscript: (finalText: string, partialText: string, isStreaming: boolean) => void;
   setStreamingError: (error: string | null) => void;
+  setRequestHintInProgress: (inProgress: boolean) => void;
+  setIsStartingSession: (isStarting: boolean) => void;
   reset: () => void;
 }
 
@@ -54,6 +56,8 @@ const initialState: SessionUiState = {
     isStreaming: false,
   },
   streamingError: null,
+  requestHintInProgress: false,
+  isStartingSession: false,
 };
 
 export const useSessionStore = create<SessionStoreState>((set) => ({
@@ -85,12 +89,25 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
   setHint: (currentHint) => set({ currentHint }),
 
   addHintToHistory: (markdown) =>
-    set((state) => ({
-      hintHistory: [
-        { timestamp: Date.now(), markdown },
-        ...state.hintHistory,
-      ],
-    })),
+    set((state) => {
+      // Deduplicate - check if this exact hint already exists
+      const isDuplicate = state.hintHistory.some(h => 
+        h.markdown.vi === markdown.vi && 
+        h.markdown.en === markdown.en
+      );
+      
+      if (isDuplicate) {
+        console.log("[store] Duplicate hint detected, skipping add");
+        return state;
+      }
+      
+      return {
+        hintHistory: [
+          { timestamp: Date.now(), markdown },
+          ...state.hintHistory,
+        ],
+      };
+    }),
 
   removeHintFromHistory: (timestamp) =>
     set((state) => ({
@@ -129,6 +146,10 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
     }),
 
   setStreamingError: (streamingError) => set({ streamingError }),
+
+  setRequestHintInProgress: (requestHintInProgress) => set({ requestHintInProgress }),
+
+  setIsStartingSession: (isStartingSession) => set({ isStartingSession }),
 
   reset: () => set(initialState),
 }));

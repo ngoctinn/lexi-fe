@@ -84,8 +84,8 @@ export function SessionSetupForm({
             onUserRoleChange={actions.setSelectedUserRole}
             onAiRoleChange={actions.setSelectedAiRole}
             onGoalsChange={actions.setSelectedGoals}
-            onAiGenderChange={(value) =>
-              actions.updateFormData("ai_gender", value)
+            onAiCharacterChange={(value) =>
+              actions.updateFormData("ai_character", value)
             }
             isPending={state.isPending}
             formId={formId}

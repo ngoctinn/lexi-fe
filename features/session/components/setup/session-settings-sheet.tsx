@@ -4,13 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -18,7 +11,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { RoleSwapCard } from "./role-swap-card";
-import type { Scenario, CreateSessionDto } from "../../types/session.types";
+import type { Scenario, CreateSessionDto, AICharacter } from "../../types/session.types";
+import { AI_CHARACTERS } from "../../types/session.types";
 
 interface SessionSettingsSheetProps {
   selectedScenario: Scenario;
@@ -29,7 +23,7 @@ interface SessionSettingsSheetProps {
   onUserRoleChange: (value: string) => void;
   onAiRoleChange: (value: string) => void;
   onGoalsChange: (goals: string[]) => void;
-  onAiGenderChange: (value: "male" | "female") => void;
+  onAiCharacterChange: (value: AICharacter) => void;
   isPending: boolean;
   formId?: string;
 }
@@ -43,7 +37,7 @@ export function SessionSettingsSheet({
   onUserRoleChange,
   onAiRoleChange,
   onGoalsChange,
-  onAiGenderChange,
+  onAiCharacterChange,
   isPending,
   formId,
 }: SessionSettingsSheetProps) {
@@ -110,30 +104,34 @@ export function SessionSettingsSheet({
             </Field>
 
             <Field>
-              <FieldLabel
-                htmlFor="ai-gender"
-                className="mb-1 text-foreground/80"
-              >
-                Giọng nói AI
+              <FieldLabel className="mb-1 text-foreground/80">
+                Nhân vật AI
               </FieldLabel>
-              <Select
-                value={formData.ai_gender}
-                onValueChange={(value) =>
-                  onAiGenderChange(value as "male" | "female")
-                }
+              <ToggleGroup
+                type="single"
+                value={formData.ai_character}
+                onValueChange={(value) => {
+                  if (value) {
+                    onAiCharacterChange(value as AICharacter);
+                  }
+                }}
+                spacing={3}
+                className="w-full! flex-wrap justify-start mt-2"
               >
-                <SelectTrigger
-                  id="ai-gender"
-                  size="xl"
-                  className="rounded-xl border-border/40"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  <SelectItem value="female">Nữ (Giọng chuẩn)</SelectItem>
-                  <SelectItem value="male">Nam (Giọng chuẩn)</SelectItem>
-                </SelectContent>
-              </Select>
+                {AI_CHARACTERS.map((char) => (
+                  <ToggleGroupItem
+                    key={char.name}
+                    value={char.name}
+                    variant="soft"
+                    size="xl"
+                    className="justify-start px-4 text-left"
+                  >
+                    <span className="min-w-0 truncate">
+                      {char.name} - {char.description}
+                    </span>
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             </Field>
           </FieldGroup>
         </div>

@@ -3,8 +3,16 @@ export enum TurnSpeaker {
   AI = "AI",
 }
 
-export type AIGender = "male" | "female";
+export type AICharacter = "Sarah" | "Marco" | "Emma" | "James";
 export type SessionLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+
+// Character metadata for UI
+export const AI_CHARACTERS = [
+  { name: "Sarah" as const, gender: "female", accent: "US", voice: "Joanna", description: "Friendly American" },
+  { name: "Marco" as const, gender: "male", accent: "US", voice: "Matthew", description: "Professional American" },
+  { name: "Emma" as const, gender: "female", accent: "British", voice: "Amy", description: "Elegant British" },
+  { name: "James" as const, gender: "male", accent: "British", voice: "Brian", description: "Distinguished British" },
+] as const;
 
 export enum ScoringSkill {
   FLUENCY = "fluency",
@@ -96,7 +104,7 @@ export interface Session {
   scenario_id: string;
   learner_role_id?: string;
   ai_role_id?: string;
-  ai_gender: AIGender;
+  ai_character: AICharacter;
   level: SessionLevel;
   prompt_snapshot?: string;
   selected_goal?: string;
@@ -231,13 +239,15 @@ export interface WsTurnSavedEvent {
 export interface WsHintTextEvent {
   event: WsServerEvent.HINT_TEXT;
   hint: {
-    level: string;
-    type: "vocabulary_suggestion" | "strategic_guidance" | "metacognitive_prompt";
+    level?: string;
+    type?: "vocabulary_suggestion" | "strategic_guidance" | "metacognitive_prompt";
     markdown: {
       vi: string;
       en: string;
     };
   };
+  isStreaming?: boolean;
+  isDone?: boolean;
 }
 
 export interface WsTurnAnalysisEvent {
@@ -248,6 +258,9 @@ export interface WsTurnAnalysisEvent {
       en: string;
     };
   };
+  turn_index?: number;
+  isStreaming?: boolean;
+  isDone?: boolean;
 }
 
 export interface WsScoringCompleteEvent {
@@ -370,13 +383,15 @@ export interface SessionUiState {
     isStreaming: boolean;
   };
   streamingError?: string | null;
+  requestHintInProgress?: boolean;
+  isStartingSession?: boolean;
 }
 
 export interface CreateSessionDto {
   scenario_id: string;
   learner_role_id?: string;
   ai_role_id?: string;
-  ai_gender: AIGender;
+  ai_character: AICharacter;
   level: SessionLevel;
   selected_goal?: string;
   prompt_snapshot: string;

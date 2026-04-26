@@ -141,7 +141,7 @@ export async function generateMetadata({
     (item) => item.scenario_id === session?.scenario_id,
   );
   const scenarioTitle = scenario?.scenario_title ?? "Phiên luyện nói";
-  const aiCharacter = scenario?.roles?.[1] ?? "AI Assistant";
+  const aiCharacter = session?.ai_character ?? "Sarah";
 
   return {
     title: `${scenarioTitle} với ${aiCharacter} | Lexi`,
@@ -192,6 +192,7 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
   const scenarioRoles = scenario?.roles ?? [];
   const learnerRole = session.learner_role_id ?? scenarioRoles[0] ?? "Học viên";
   const aiRole = session.ai_role_id ?? scenarioRoles[1] ?? "AI Assistant";
+  const aiCharacter = session.ai_character ?? "Sarah";
 
   const initialSummary: SessionScoreSummary | null = session.scoring
     ? {
@@ -234,7 +235,7 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
       initialTurns={session.turns ?? []}
       initialSummary={initialSummary}
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}
-      aiCharacter={aiRole}
+      aiCharacter={aiCharacter}
       scenarioGoals={scenario?.goals ?? []}
       myRole={learnerRole}
       partnerRole={aiRole}

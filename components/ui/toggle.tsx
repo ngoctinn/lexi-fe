@@ -16,6 +16,7 @@ const toggleVariants = cva(
         outline:
           "border border-input bg-transparent hover:bg-muted aria-pressed:bg-muted data-[state=on]:bg-muted",
         soft: "border border-border/40 bg-muted/30 text-muted-foreground hover:border-border/60 hover:bg-muted/80 hover:text-foreground data-[state=on]:border-primary data-[state=on]:bg-primary-50 data-[state=on]:text-primary data-[state=on]:shadow-sm",
+        warm: "border border-amber-200/40 bg-amber-50/30 text-amber-700 hover:border-amber-200/60 hover:bg-amber-50/80 hover:text-amber-900 data-[state=on]:border-amber-300 data-[state=on]:bg-amber-100 data-[state=on]:text-amber-900 data-[state=on]:shadow-sm dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:border-amber-700/60 dark:hover:bg-amber-900/50 dark:hover:text-amber-100 dark:data-[state=on]:border-amber-700 dark:data-[state=on]:bg-amber-900/70 dark:data-[state=on]:text-amber-100",
       },
       size: {
         default: "h-9 min-w-9 px-3",

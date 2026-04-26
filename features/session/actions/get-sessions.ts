@@ -12,12 +12,11 @@ export async function getSessions(): Promise<Session[]> {
   const response = await apiFetch<ApiResponse<{ sessions: Session[] }>>(
     "/sessions",
     {
-      cache: "no-store", // Always fresh data
+      cache: "no-store",
     }
   );
 
   if (!response.success) {
-    console.error("[session] getSessions failed:", response.message);
     return [];
   }
 

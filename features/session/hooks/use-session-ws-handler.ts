@@ -22,11 +22,19 @@ export function useSessionWsHandler() {
     (event: WsServerPayload) => {
       console.log("[ws-handler] Received message:", JSON.stringify(event).substring(0, 200));
       
-      const eventData = event as WsServerPayload & { [key: string]: unknown };
+      // Type guard for error messages
+      type ErrorMessage = { message?: string; event?: never };
+      type ValidEvent = WsServerPayload & { 
+        message?: string;
+        isStreaming?: boolean;
+        isDone?: boolean;
+      };
       
-      if (!eventData || !eventData.event) {
-        // Check if it's an error response from BE
-        if (eventData && eventData.message === 'Internal server error') {
+      const eventData = event as ErrorMessage | ValidEvent;
+      
+      // Check if it's an error response from BE (no event field)
+      if (!('event' in eventData) || !eventData.event) {
+        if ('message' in eventData && typeof eventData.message === 'string' && eventData.message === 'Internal server error') {
           console.error("[ws-handler] BE Internal Server Error:", eventData);
           SessionService.handleError(
             `Lỗi máy chủ: ${eventData.message}`,
@@ -58,33 +66,60 @@ export function useSessionWsHandler() {
           setRecorderState("idle");
           break;
 
-        case WsServerEvent.AI_TEXT_CHUNK:
-          console.log("[ws-handler] AI_TEXT_CHUNK:", eventData.chunk, "done:", eventData.done);
+        case WsServerEvent.AI_TEXT_CHUNK: {
+          console.log("[ws-handler] AI_TEXT_CHUNK:", {
+            chunk: eventData.chunk,
+            done: eventData.done,
+            chunkLength: eventData.chunk?.length,
+            currentStreamingText: useSessionStore.getState().aiStreamingText,
+          });
+          
           if (eventData.done) {
             const state = useSessionStore.getState();
-            const finalText = `${state.aiStreamingText}${eventData.chunk}`;
+            const fullText = `${state.aiStreamingText}${eventData.chunk}`;
             const audioUrl = state.currentAudioUrl;
 
-            if (finalText.trim().length > 0) {
-              setTurns((prev: Turn[]) => [
-                ...prev,
-                {
-                  turn_index: prev.length,
-                  speaker: TurnSpeaker.AI,
-                  content: finalText,
-                  audio_url: audioUrl,
-                  is_hint_used: false,
-                },
-              ]);
-            }
+            console.log("[ws-handler] AI_TEXT_CHUNK DONE - fullText:", fullText);
 
-            setAiStreamingText("");
-            setAiStreaming(false, "");
+            // If we already have streaming text, just finalize it
+            if (state.aiStreamingText) {
+              setAiStreaming(false, fullText);
+              // Add to turns after a short delay to ensure UI updates
+              setTimeout(() => {
+                const finalState = useSessionStore.getState();
+                if (finalState.aiStreamingText.trim().length > 0) {
+                  setTurns((prev: Turn[]) => [
+                    ...prev,
+                    {
+                      turn_index: prev.length,
+                      speaker: TurnSpeaker.AI,
+                      content: finalState.aiStreamingText,
+                      audio_url: audioUrl,
+                      is_hint_used: false,
+                    },
+                  ]);
+                  setAiStreamingText("");
+                }
+              }, 50);
+            } else {
+              // Backend sent full text in one chunk - simulate streaming
+              console.log("[ws-handler] Backend sent full text at once, simulating streaming...");
+              simulateTextStreaming(fullText, audioUrl);
+            }
           } else {
-            setAiStreamingText((prev) => prev + eventData.chunk);
-            setAiStreaming(true);
+            // Real streaming - accumulate chunk
+            const currentText = useSessionStore.getState().aiStreamingText;
+            const newText = currentText + eventData.chunk;
+            console.log("[ws-handler] AI_TEXT_CHUNK accumulating:", {
+              currentLength: currentText.length,
+              chunkLength: eventData.chunk?.length,
+              newLength: newText.length,
+            });
+            setAiStreamingText(newText);
+            setAiStreaming(true, newText);
           }
           break;
+        }
 
         case WsServerEvent.TURN_SAVED:
           console.log("[ws-handler] TURN_SAVED:", eventData.turn_index);
@@ -115,45 +150,165 @@ export function useSessionWsHandler() {
           });
           break;
 
-        case WsServerEvent.HINT_TEXT:
-          console.log("[ws-handler] HINT_TEXT:", eventData.hint);
-          // Clear timeout if exists
-          const hintState = useSessionStore.getState();
-          if (hintState.hintTimeoutId) {
-            clearTimeout(hintState.hintTimeoutId);
-            hintState.setHintTimeoutId?.(null);
-          }
+        case WsServerEvent.HINT_TEXT: {
+          console.log("[ws-handler] HINT_TEXT RAW:", JSON.stringify(eventData, null, 2));
+          console.log("[ws-handler] HINT_TEXT:", {
+            hint: eventData.hint,
+            isStreaming: eventData.isStreaming,
+            isDone: eventData.isDone,
+            hasIsStreamingFlag: 'isStreaming' in eventData,
+          });
           
-          // Handle both old format (with level/type) and new format (markdown only)
-          const hintData = eventData.hint;
-          const normalizedHint = {
-            level: hintData.level || "Intermediate",
-            type: hintData.type || "guidance",
-            markdown: hintData.markdown || {
-              vi: hintData.vi || hintData.markdown?.vi || "",
-              en: hintData.en || hintData.markdown?.en || "",
-            },
+          const hintEvent = eventData as WsServerPayload & {
+            hint: {
+              level?: string;
+              type?: string;
+              markdown: { vi: string; en: string };
+            };
+            isStreaming?: boolean;
+            isDone?: boolean;
           };
           
-          // Add to history
-          hintState.addHintToHistory(normalizedHint.markdown);
+          const hintState = useSessionStore.getState();
           
-          setHint(normalizedHint);
-          setHintPanelOpen(true);
+          // Reset request flag when we receive first hint response
+          if (hintState.requestHintInProgress) {
+            console.log("[ws-handler] First hint response received, resetting flag");
+            hintState.setRequestHintInProgress(false);
+          }
+          
+          // Duplicate detection - check if this exact hint already exists in history
+          const isDuplicate = hintState.hintHistory.some(h => 
+            h.markdown.vi === hintEvent.hint.markdown.vi && 
+            h.markdown.en === hintEvent.hint.markdown.en
+          );
+          
+          if (isDuplicate && !hintEvent.isStreaming) {
+            console.warn("[ws-handler] Duplicate hint detected, skipping");
+            break;
+          }
+          
+          // Handle streaming
+          if (hintEvent.isStreaming) {
+            console.log("[ws-handler] STREAMING CHUNK:", {
+              vi: hintEvent.hint.markdown.vi,
+              en: hintEvent.hint.markdown.en,
+              isDone: hintEvent.isDone,
+              viLength: hintEvent.hint.markdown.vi?.length,
+              enLength: hintEvent.hint.markdown.en?.length,
+            });
+            
+            const currentHint = hintState.currentHint;
+            const newMarkdown = {
+              vi: (currentHint?.markdown.vi || "") + hintEvent.hint.markdown.vi,
+              en: (currentHint?.markdown.en || "") + hintEvent.hint.markdown.en,
+            };
+            
+            console.log("[ws-handler] ACCUMULATED TEXT:", {
+              vi: newMarkdown.vi,
+              en: newMarkdown.en,
+              viLength: newMarkdown.vi.length,
+              enLength: newMarkdown.en.length,
+            });
+            
+            setHint({
+              level: hintEvent.hint.level || currentHint?.level || "Intermediate",
+              type: hintEvent.hint.type || currentHint?.type || "guidance",
+              markdown: newMarkdown,
+            });
+            
+            // If done, add to history
+            if (hintEvent.isDone) {
+              console.log("[ws-handler] STREAMING DONE, adding to history");
+              if (hintState.hintTimeoutId) {
+                clearTimeout(hintState.hintTimeoutId);
+                hintState.setHintTimeoutId?.(null);
+              }
+              hintState.addHintToHistory(newMarkdown);
+              setHintPanelOpen(true);
+            }
+          } else {
+            // Non-streaming (legacy) - simulate streaming
+            console.log("[ws-handler] NON-STREAMING HINT, simulating streaming:", hintEvent.hint.markdown);
+            
+            const normalizedHint = {
+              level: hintEvent.hint.level || "Intermediate",
+              type: hintEvent.hint.type || "guidance",
+              markdown: hintEvent.hint.markdown,
+            };
+            
+            // Simulate streaming for both VI and EN
+            simulateHintStreaming(normalizedHint, hintState);
+          }
           break;
+        }
 
-        case WsServerEvent.TURN_ANALYSIS:
-          console.log("[ws-handler] TURN_ANALYSIS");
-          // Extract turn_index from the event or use the last user turn
+        case WsServerEvent.TURN_ANALYSIS: {
+          console.log("[ws-handler] TURN_ANALYSIS", {
+            isStreaming: eventData.isStreaming,
+            isDone: eventData.isDone,
+            hasIsStreamingFlag: 'isStreaming' in eventData,
+            analysis: eventData.analysis,
+          });
+          
+          const analysisEvent = eventData as WsServerPayload & {
+            analysis: {
+              markdown: { vi: string; en: string };
+            };
+            turn_index?: number;
+            isStreaming?: boolean;
+            isDone?: boolean;
+          };
+          
           const analysisState = useSessionStore.getState();
-          const turnIndex = eventData.turn_index || 
+          const turnIndex = analysisEvent.turn_index ?? 
             (analysisState.turns.length > 0 ? analysisState.turns[analysisState.turns.length - 1].turn_index : 0);
           
-          // Add to history (this will also add to analyzedTurns set)
-          analysisState.addAnalysisToHistory(turnIndex, eventData.analysis.markdown);
-          
-          // Don't set tempAnalysis - it causes flicker
+          // Handle streaming
+          if (analysisEvent.isStreaming) {
+            console.log("[ws-handler] ANALYSIS STREAMING CHUNK:", {
+              vi: analysisEvent.analysis.markdown.vi,
+              en: analysisEvent.analysis.markdown.en,
+              isDone: analysisEvent.isDone,
+              viLength: analysisEvent.analysis.markdown.vi?.length,
+              enLength: analysisEvent.analysis.markdown.en?.length,
+            });
+            
+            const currentTemp = analysisState.tempAnalysis;
+            const newMarkdown = {
+              vi: (currentTemp?.markdown.vi || "") + analysisEvent.analysis.markdown.vi,
+              en: (currentTemp?.markdown.en || "") + analysisEvent.analysis.markdown.en,
+            };
+            
+            console.log("[ws-handler] ANALYSIS ACCUMULATED:", {
+              vi: newMarkdown.vi,
+              en: newMarkdown.en,
+              viLength: newMarkdown.vi.length,
+              enLength: newMarkdown.en.length,
+            });
+            
+            analysisState.setTempAnalysis({
+              turnIndex,
+              markdown: newMarkdown,
+            });
+            
+            // If done, move to history
+            if (analysisEvent.isDone) {
+              console.log("[ws-handler] ANALYSIS STREAMING DONE");
+              analysisState.addAnalysisToHistory(turnIndex, newMarkdown);
+              analysisState.setTempAnalysis(null);
+            }
+          } else {
+            // Non-streaming (legacy) - simulate streaming
+            console.log("[ws-handler] ANALYSIS NON-STREAMING, simulating streaming");
+            simulateAnalysisStreaming(
+              turnIndex,
+              analysisEvent.analysis.markdown,
+              analysisState
+            );
+          }
           break;
+        }
 
         case WsServerEvent.ERROR:
           console.error("[ws-handler] ERROR:", eventData.message);
@@ -201,9 +356,11 @@ export function useSessionWsHandler() {
           // Just mark completion - session data will be fetched separately
           break;
 
-        default:
-          console.warn("[ws-handler] Unknown event:", eventData.event);
+        default: {
+          const unknownEvent = eventData as { event?: string };
+          console.warn("[ws-handler] Unknown event:", unknownEvent.event);
           break;
+        }
       }
     },
     [

@@ -23,16 +23,18 @@ if (!BASE_URL) {
  * Get auth token from Amplify session
  */
 async function getAuthToken(): Promise<string | null> {
-  const session = await runWithAmplifyServerContext({
-    nextServerContext: { cookies },
-    operation: (contextSpec) => fetchAuthSession(contextSpec),
-  });
+  try {
+    const session = await runWithAmplifyServerContext({
+      nextServerContext: { cookies },
+      operation: (contextSpec) => fetchAuthSession(contextSpec),
+    });
 
-  return (
-    session.tokens?.idToken?.toString() ??
-    session.tokens?.accessToken?.toString() ??
-    null
-  );
+    // Use ID Token for API Gateway Cognito authorizer
+    return session.tokens?.idToken?.toString() ?? null;
+  } catch (error) {
+    console.error("[getAuthToken] Error:", error instanceof Error ? error.message : error);
+    return null;
+  }
 }
 
 /**
@@ -58,7 +60,7 @@ export async function apiFetch<T = unknown>(
   headers.set("Content-Type", "application/json");
   
   if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+    headers.set("Authorization", token);
   }
 
   const response = await fetch(url, {
@@ -67,11 +69,9 @@ export async function apiFetch<T = unknown>(
   });
 
   if (!response.ok) {
-    // For non-2xx responses, try to parse error message
     const errorData = await response.json().catch(() => ({}));
     const errorMessage = errorData.message || errorData.error || `HTTP ${response.status}`;
     
-    // Return error in API format (don't throw for expected errors)
     return {
       success: false,
       message: errorMessage,

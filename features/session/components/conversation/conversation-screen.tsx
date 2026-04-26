@@ -176,36 +176,6 @@ export function ConversationScreen({
               recorderState={ui.recorderState}
               disabled={ui.isControlsDisabled || isSessionCompleted}
             />
-
-            {!isSessionCompleted &&
-              (ui.wsState !== "connected" ||
-                ui.recorderState === "uploading") && (
-                <div className="mt-3 flex items-center justify-center">
-                  {ui.wsState === "connecting" && (
-                    <div className="flex flex-col items-center gap-2 w-full max-w-xs">
-                      <span className="text-xs text-muted-foreground font-medium">
-                        Đang chuẩn bị phiên học...
-                      </span>
-                      <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: "60%" }} />
-                      </div>
-                    </div>
-                  )}
-                  {ui.wsState === "disconnected" && (
-                    <span className="text-xs text-muted-foreground font-medium">
-                      Mất kết nối máy chủ
-                    </span>
-                  )}
-                  {ui.recorderState === "uploading" && (
-                    <div className="w-full max-w-32 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary rounded-full transition-all duration-300"
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
           </div>
         </main>
 

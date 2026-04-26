@@ -12,12 +12,11 @@ export async function getScenarios(): Promise<Scenario[]> {
   const response = await apiPublicFetch<ApiResponse<{ scenarios: Scenario[] }>>(
     "/scenarios",
     {
-      cache: "no-store", // Always fresh data for scenarios
+      cache: "no-store",
     }
   );
 
   if (!response.success) {
-    console.error("[session] getScenarios failed:", response.message);
     return [];
   }
 

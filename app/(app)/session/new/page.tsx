@@ -8,6 +8,8 @@ export const metadata = {
   title: "Lộ trình luyện nói",
 };
 
+export const revalidate = 0; // Disable cache - always fresh
+
 export default async function NewSessionPage() {
   const [scenarios, sessions] = await Promise.all([
     getScenarios(),

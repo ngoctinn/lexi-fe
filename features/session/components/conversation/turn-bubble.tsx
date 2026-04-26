@@ -191,7 +191,7 @@ export const TurnBubble = React.memo(function TurnBubble({
               </span>
             </PopoverTrigger>
             <PopoverContent 
-              className="w-96 p-0 shadow-2xl overflow-hidden bg-white rounded-xl border border-gray-300 ring-0"
+              className="w-[500px] p-0 shadow-2xl overflow-hidden bg-white rounded-xl border border-gray-300 ring-0"
               side="top"
               align="center"
               avoidCollisions={true}
@@ -210,32 +210,26 @@ export const TurnBubble = React.memo(function TurnBubble({
                       <>
                         <div className="relative flex flex-col">
                           {/* Header - cố định */}
-                          <div className="relative p-3 border-b bg-gradient-to-r from-primary-50 via-primary-50 to-primary-50 border-primary-100 shrink-0">
+                          <div className="relative p-3 border-b bg-muted/40 border-border/60 shrink-0">
                             <button 
-                              className="bg-gray-200 absolute top-2 right-2 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
+                              className="bg-muted absolute top-2 right-2 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors z-10"
                               onClick={() => setActiveWord(null)}
                             >
                               <XIcon className="h-4 w-4" />
                             </button>
-                            <div className="space-y-3 pr-8">
-                              <div>
-                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Word</p>
-                                <div className="flex items-center gap-2">
-                                  <p className="font-bold text-2xl text-primary">{activeWord.word}</p>
-                                  {vocabData.phonetic && (
-                                    <p className="text-sm text-muted-foreground italic">/{vocabData.phonetic}/</p>
-                                  )}
-                                </div>
+                            <div className="space-y-2 pr-8">
+                              <div className="flex items-center gap-2">
+                                <p className="font-bold text-2xl text-foreground">{activeWord.word}</p>
+                                {vocabData.phonetic && (
+                                  <p className="text-sm text-muted-foreground italic">/{vocabData.phonetic}/</p>
+                                )}
                               </div>
-                              <div>
-                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Translation</p>
-                                <p className="text-lg font-semibold text-foreground">{vocabData.translation_vi}</p>
-                              </div>
+                              <p className="text-base font-medium text-foreground">{vocabData.translation_vi}</p>
                             </div>
                           </div>
 
                           {/* Meanings + Synonyms - scroll */}
-                          <div className="max-h-[220px] overflow-y-auto">
+                          <div className="max-h-[350px] overflow-y-auto">
                             {vocabData.definitions && vocabData.definitions.length > 0 && (
                               <div className="p-3 border-b border-border space-y-3">
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Meanings</p>
@@ -274,7 +268,7 @@ export const TurnBubble = React.memo(function TurnBubble({
                             <Button
                               variant="default"
                               size="sm"
-                              className="w-full bg-primary-600 hover:bg-primary-700 text-white"
+                              className="w-full"
                               onClick={() => setActiveWord(null)}
                             >
                               <BookmarkPlus className="size-4 mr-2" />

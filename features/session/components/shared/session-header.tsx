@@ -110,7 +110,7 @@ export function SessionHeader({
               <span className="font-medium">Bạn:</span> {myRole || "Học viên"}
             </span>
             <span>
-              <span className="font-medium">Đối phương:</span> {partnerRole || "AI Assistant"}
+              <span className="font-medium">AI:</span> {aiCharacter} ({partnerRole || "AI Assistant"})
             </span>
             {scenarioGoals && scenarioGoals.length > 0 && (
               <span className="hidden lg:inline">

@@ -24,7 +24,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
 
   const [formData, setFormData] = React.useState<CreateSessionDto>({
     scenario_id: scenarios[0]?.scenario_id ?? "",
-    ai_gender: "female",
+    ai_character: "Sarah",
     level: "B1",
     prompt_snapshot: "",
   });
@@ -125,7 +125,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
         `Learner role: ${validUserRole}`,
         `AI role: ${validAiRole}`,
         `Goal: ${goals}`,
-        `AI gender: ${formData.ai_gender}`,
+        `AI character: ${formData.ai_character}`,
         `Level: ${formData.level}`,
       ].join("\n");
 
