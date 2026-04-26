@@ -24,6 +24,7 @@ export enum WsClientEvent {
   AUDIO_CHUNK = "AUDIO_CHUNK",
   END_STREAMING = "END_STREAMING",
   SUBMIT_TRANSCRIPT = "SUBMIT_TRANSCRIPT",
+  ANALYZE_TURN = "ANALYZE_TURN",
 }
 
 export enum WsServerEvent {
@@ -34,6 +35,7 @@ export enum WsServerEvent {
   AI_AUDIO_URL = "AI_AUDIO_URL",
   TURN_SAVED = "TURN_SAVED",
   HINT_TEXT = "HINT_TEXT",
+  TURN_ANALYSIS = "TURN_ANALYSIS",
   SCORING_COMPLETE = "SCORING_COMPLETE",
   ERROR = "ERROR",
   STREAMING_READY = "STREAMING_READY",
@@ -90,17 +92,20 @@ export interface Scoring {
 
 export interface Session {
   session_id: string;
-  user_id: string;
+  user_id?: string;
   scenario_id: string;
   learner_role_id?: string;
   ai_role_id?: string;
   ai_gender: AIGender;
   level: SessionLevel;
-  prompt_snapshot: string;
+  prompt_snapshot?: string;
+  selected_goal?: string;
   selected_goals?: string[];
-  total_turns: number;
-  user_turns: number;
-  hint_used_count: number;
+  status?: string;
+  total_turns?: number;
+  turn_count?: number;
+  user_turns?: number;
+  hint_used_count?: number;
   turns?: Turn[];
   scoring?: Scoring | null;
   connection_id?: string | null;
@@ -171,6 +176,12 @@ export interface WsSubmitTranscriptPayload {
   confidence: number;
 }
 
+export interface WsAnalyzeTurnPayload {
+  action: WsClientEvent.ANALYZE_TURN;
+  session_id: string;
+  turn_index: number;
+}
+
 export type WsClientPayload =
   | WsStartSessionPayload
   | WsAudioUploadedPayload
@@ -180,7 +191,8 @@ export type WsClientPayload =
   | WsStartStreamingPayload
   | WsAudioChunkPayload
   | WsEndStreamingPayload
-  | WsSubmitTranscriptPayload;
+  | WsSubmitTranscriptPayload
+  | WsAnalyzeTurnPayload;
 
 export interface WsSessionReadyEvent {
   event: WsServerEvent.SESSION_READY;
@@ -218,7 +230,24 @@ export interface WsTurnSavedEvent {
 
 export interface WsHintTextEvent {
   event: WsServerEvent.HINT_TEXT;
-  hint: string;
+  hint: {
+    level: string;
+    type: "vocabulary_suggestion" | "strategic_guidance" | "metacognitive_prompt";
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  };
+}
+
+export interface WsTurnAnalysisEvent {
+  event: WsServerEvent.TURN_ANALYSIS;
+  analysis: {
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  };
 }
 
 export interface WsScoringCompleteEvent {
@@ -262,6 +291,7 @@ export type WsServerPayload =
   | WsAiAudioUrlEvent
   | WsTurnSavedEvent
   | WsHintTextEvent
+  | WsTurnAnalysisEvent
   | WsScoringCompleteEvent
   | WsErrorEvent
   | WsStreamingReadyEvent
@@ -289,8 +319,47 @@ export interface SessionUiState {
   aiStreamingText: string;
   isAiStreaming: boolean;
   lastSttResult: { text: string; confidence: number } | null;
-  currentHint: string | null;
+  currentHint: {
+    level: string;
+    type: string;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  } | null;
+  hintTimeoutId?: NodeJS.Timeout | null;
+  hintHistory: Array<{
+    timestamp: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  }>;
+  currentAnalysis: {
+    turnIndex: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  } | null;
+  tempAnalysis: {
+    turnIndex: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  } | null;
+  analysisHistory: Array<{
+    turnIndex: number;
+    timestamp: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  }>;
+  analyzedTurns: Set<number>;
   hintPanelOpen: boolean;
+  analysisPanelOpen: boolean;
   recorderState: RecorderState;
   wsState: WsConnectionState;
   currentAudioUrl: string | null;
@@ -309,7 +378,7 @@ export interface CreateSessionDto {
   ai_role_id?: string;
   ai_gender: AIGender;
   level: SessionLevel;
-  selected_goals?: string[];
+  selected_goal?: string;
   prompt_snapshot: string;
 }
 

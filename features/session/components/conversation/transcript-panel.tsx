@@ -18,6 +18,7 @@ interface TranscriptPanelProps {
   aiName: string;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
+  onAnalyze?: (turnIndex: number) => void;
   savingTurnIndexes?: number[];
   className?: string;
 }
@@ -29,6 +30,7 @@ export function TranscriptPanel({
   aiName,
   onTranslate,
   onTranslateWord,
+  onAnalyze,
   savingTurnIndexes = [],
   className,
 }: TranscriptPanelProps) {
@@ -64,6 +66,7 @@ export function TranscriptPanel({
             turn={turn}
             onTranslate={onTranslate}
             onTranslateWord={onTranslateWord}
+            onAnalyze={onAnalyze}
           />
         ))}
 

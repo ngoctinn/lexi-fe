@@ -2,30 +2,40 @@
 
 import { apiFetch } from "@/lib/api/fetch";
 import type { ApiResponse } from "@/lib/api/types";
+import { getErrorMessage } from "@/features/session/utils/error-handler";
+
+interface VocabularyDefinition {
+  part_of_speech: string;
+  definition_en: string;
+  definition_vi: string;
+  example_en: string;
+  example_vi: string;
+}
 
 interface TranslateWordApiResponse {
   word: string;
   translation_vi: string;
-  part_of_speech: string;
-  definition_vi: string;
   phonetic: string;
-  audio_url: string;
-  example_sentence: string;
-  source_api: string;
-  detected_phrase?: string;
-  phrase_type?: string;
+  definitions: VocabularyDefinition[];
+  synonyms: string[];
+  response_time_ms: number;
+  cached: boolean;
 }
 
 export interface TranslateWordResult {
   word: string;
   translation_vi: string;
+  phonetic?: string;
+  definitions: VocabularyDefinition[];
+  synonyms: string[];
+  response_time_ms?: number;
+  cached?: boolean;
+  // Backward compatibility helpers
   definition_vi: string;
   part_of_speech?: string;
-  phonetic?: string;
-  audio_url?: string;
   example_sentence?: string;
-  detected_phrase?: string;
-  is_phrase?: boolean;
+  error?: string;
+  errorCode?: string;
 }
 
 /**
@@ -46,34 +56,45 @@ export async function translateWordAction(
   );
 
   if (!response.success) {
-    console.error("[translateWord] API error:", response.message);
+    const errorInfo = getErrorMessage(response.error);
+    console.error("[translateWord] API error:", response.message, response.error);
     return {
       word,
-      translation_vi: "Lỗi khi gọi API dịch.",
+      translation_vi: "",
+      definitions: [],
+      synonyms: [],
+      definition_vi: "",
+      error: errorInfo.userMessage,
+      errorCode: response.error,
+    };
+  }
+
+  const payload = response.data;
+
+  if (!payload) {
+    return {
+      word,
+      translation_vi: "Không có bản dịch.",
+      definitions: [],
+      synonyms: [],
       definition_vi: "",
     };
   }
 
-  const payload = response.data ?? {
-    word,
-    translation_vi: "",
-    definition_vi: "",
-    part_of_speech: "",
-    phonetic: "",
-    audio_url: "",
-    example_sentence: "",
-    source_api: "",
-  };
+  // Backward compatibility: extract first definition for legacy fields
+  const firstDef = payload.definitions?.[0];
 
   return {
     word: payload.word,
     translation_vi: payload.translation_vi || "Không có bản dịch.",
-    definition_vi: payload.definition_vi || "",
-    part_of_speech: payload.part_of_speech || undefined,
     phonetic: payload.phonetic || undefined,
-    audio_url: payload.audio_url || undefined,
-    example_sentence: payload.example_sentence || undefined,
-    detected_phrase: payload.detected_phrase || undefined,
-    is_phrase: payload.phrase_type === "phrase",
+    definitions: payload.definitions || [],
+    synonyms: payload.synonyms || [],
+    response_time_ms: payload.response_time_ms,
+    cached: payload.cached,
+    // Backward compatibility
+    definition_vi: firstDef?.definition_vi || "",
+    part_of_speech: firstDef?.part_of_speech || undefined,
+    example_sentence: firstDef?.example_en || undefined,
   };
 }

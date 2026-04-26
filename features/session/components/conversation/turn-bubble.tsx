@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, Languages, BookmarkPlus, Loader2, XIcon } from "lucide-react";
+import { Volume2, Languages, BookmarkPlus, Loader2, XIcon, Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -66,6 +66,7 @@ interface TurnBubbleProps {
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
+  onAnalyze?: (turnIndex: number) => void;
   isPlaying?: boolean;
 }
 
@@ -74,6 +75,7 @@ export const TurnBubble = React.memo(function TurnBubble({
   onPlayAudio,
   onTranslate,
   onTranslateWord,
+  onAnalyze,
   isPlaying,
 }: TurnBubbleProps) {
   const isUser = turn.speaker === TurnSpeaker.USER;
@@ -189,9 +191,11 @@ export const TurnBubble = React.memo(function TurnBubble({
               </span>
             </PopoverTrigger>
             <PopoverContent 
-              className="w-96 p-0 shadow-xl overflow-hidden bg-white rounded-xl border-2 border-primary-100"
-              side="right"
+              className="w-96 p-0 shadow-2xl overflow-hidden bg-white rounded-xl border border-gray-300 ring-0"
+              side="top"
               align="center"
+              avoidCollisions={true}
+              collisionPadding={16}
             >
               {isTranslatingWord ? (
                 <div className="flex items-center justify-center gap-2 p-6 text-muted-foreground">
@@ -204,76 +208,74 @@ export const TurnBubble = React.memo(function TurnBubble({
                     const vocabData = wordTranslations[activeWord.word];
                     return (
                       <>
-                        <div className="relative">
-                          <button 
-                            className="bg-gray-200 absolute top-2 right-2 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
-                            onClick={() => setActiveWord(null)}
-                          >
-                            <XIcon className="h-4 w-4" />
-                          </button>
-                          
-                          <div className="p-3 border-b bg-gradient-to-r from-primary-50 via-primary-50 to-primary-50 border-primary-100">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Word</p>
+                        <div className="relative flex flex-col">
+                          {/* Header - cố định */}
+                          <div className="relative p-3 border-b bg-gradient-to-r from-primary-50 via-primary-50 to-primary-50 border-primary-100 shrink-0">
+                            <button 
+                              className="bg-gray-200 absolute top-2 right-2 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors z-10"
+                              onClick={() => setActiveWord(null)}
+                            >
+                              <XIcon className="h-4 w-4" />
+                            </button>
+                            <div className="space-y-3 pr-8">
+                              <div>
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Word</p>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-bold text-2xl text-primary">{activeWord.word}</p>
+                                  {vocabData.phonetic && (
+                                    <p className="text-sm text-muted-foreground italic">/{vocabData.phonetic}/</p>
+                                  )}
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <p className="font-semibold text-xl text-gray-800">{activeWord.word}</p>
-                                {vocabData.audio_url && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-primary-600 hover:bg-primary-50"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onPlayAudio?.(vocabData.audio_url!);
-                                    }}
-                                  >
-                                    <Volume2 className="h-4 w-4" />
-                                  </Button>
-                                )}
+                              <div>
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Translation</p>
+                                <p className="text-lg font-semibold text-foreground">{vocabData.translation_vi}</p>
                               </div>
-                              <p className="font-bold text-2xl text-primary-700">{vocabData.translation_vi}</p>
                             </div>
                           </div>
 
-                          <div className="p-3 border-b bg-gradient-to-r from-gray-50 to-gray-50 border-gray-100 space-y-2">
-                            <p className="text-sm leading-relaxed text-gray-700">
-                              {cleanContent.split(new RegExp(`(${activeWord.word})`, 'gi')).map((part, i) =>
-                                part.toLowerCase() === activeWord.word.toLowerCase() ? (
-                                  <span key={i} className="bg-yellow-300 px-1.5 py-0.5 rounded-md font-bold text-gray-900 ring-2 ring-yellow-100/50">
-                                    {part}
-                                  </span>
-                                ) : (
-                                  <span key={i}>{part}</span>
-                                )
-                              )}
-                            </p>
-                            {turn.translated_content && (
-                              <div className="border-t border-gray-100 pt-2">
-                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Translation</p>
-                                <p className="text-sm text-primary-600 font-medium">{turn.translated_content}</p>
+                          {/* Meanings + Synonyms - scroll */}
+                          <div className="max-h-[220px] overflow-y-auto">
+                            {vocabData.definitions && vocabData.definitions.length > 0 && (
+                              <div className="p-3 border-b border-border space-y-3">
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Meanings</p>
+                                <div className="space-y-3">
+                                  {vocabData.definitions.map((def, idx) => (
+                                    <div key={idx} className="pl-3 border-l-2 border-primary/30 space-y-1">
+                                      <p className="text-xs font-bold text-primary uppercase tracking-wide">{def.part_of_speech}</p>
+                                      <p className="text-sm text-foreground leading-relaxed">{def.definition_vi}</p>
+                                      {def.example_en && (
+                                        <p className="text-xs text-muted-foreground italic bg-muted p-2 rounded">
+                                          &ldquo;{def.example_en}&rdquo;
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {vocabData.synonyms && vocabData.synonyms.length > 0 && (
+                              <div className="p-3 border-b border-border">
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Related Words</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {vocabData.synonyms.map((synonym, idx) => (
+                                    <Badge key={idx} variant="secondary" className="text-xs">
+                                      {synonym}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </div>
 
-                          {vocabData.example_sentence && (
-                            <div className="p-3 border-b border-gray-100">
-                              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Example</p>
-                              <p className="text-sm text-gray-700 italic">
-                                &ldquo;{vocabData.example_sentence}&rdquo;
-                              </p>
-                            </div>
-                          )}
-
-                          <div className="px-3 pt-2 pb-2">
+                          {/* Footer - cố định */}
+                          <div className="px-3 pt-2 pb-2 shrink-0">
                             <Button
                               variant="default"
                               size="sm"
                               className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                              onClick={() => {
-                                setActiveWord(null);
-                              }}
+                              onClick={() => setActiveWord(null)}
                             >
                               <BookmarkPlus className="size-4 mr-2" />
                               Lưu flashcard
@@ -299,7 +301,7 @@ export const TurnBubble = React.memo(function TurnBubble({
       // Return spaces and punctuation as-is
       return <span key={index}>{token}</span>;
     });
-  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations, cleanContent, turn.translated_content, onPlayAudio]);
+  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations]);
 
   // Track text selection to prevent word lookup when selecting
   const handleMouseDown = React.useCallback(() => {
@@ -323,90 +325,98 @@ export const TurnBubble = React.memo(function TurnBubble({
           isUser && "items-end",
         )}
       >
-        <div
-          className={cn(
-            "group relative rounded-2xl px-4 py-3 text-lg leading-relaxed transition-all",
-            isUser
-              ? "rounded-tr-sm bg-primary-500 text-white border border-primary-600 shadow-sm"
-              : cn(
-                  "rounded-tl-sm shadow-sm",
-                  toneConfig
-                    ? `${toneConfig.bgLight} ${toneConfig.textColor} border ${toneConfig.borderColor}`
-                    : "bg-muted text-foreground ring-1 ring-border"
-                ),
-            turn.is_pending && "opacity-70 animate-pulse",
-          )}
-        >
-          <div className="flex flex-col gap-2">
-            {/* Tone badge for AI turns */}
-            {!isUser && toneConfig && (
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-lg">{toneConfig.emoji}</span>
-                <span className="text-xs font-semibold uppercase tracking-wider opacity-75">
-                  {toneConfig.label}
-                </span>
-              </div>
-            )}
-
-            <div 
-              ref={contentRef}
-              className="leading-relaxed text-lg select-text"
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-            >
-              {tokenizeText(cleanContent)}
-            </div>
-
-            {/* Popover for word translation is now handled in tokenizeText */}
-
-            {showTranslation && (
-              <div
-                className={cn(
-                  "text-base border-t pt-2 mt-1",
-                  isUser
-                    ? "border-white/20 text-white/95"
-                    : "border-border text-muted-foreground",
-                )}
-              >
-                <div className="italic font-medium whitespace-pre-wrap text-lg">
-                  {hasTranslation
-                    ? turn.translated_content
-                    : "Đang yêu cầu bản dịch..."}
-                </div>
-              </div>
-            )}
-          </div>
-
+        {/* Turn bubble with audio button beside it for AI */}
+        <div className="flex items-center gap-2">
           <div
             className={cn(
-              "absolute top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200",
-              isUser ? "right-full mr-2" : "left-full ml-2",
+              "group relative rounded-2xl px-4 py-3 text-lg leading-relaxed transition-all",
+              isUser
+                ? "rounded-tr-sm bg-primary-500 text-white border border-primary-600 shadow-sm"
+                : cn(
+                    "rounded-tl-sm shadow-sm",
+                    toneConfig
+                      ? `${toneConfig.bgLight} ${toneConfig.textColor} border ${toneConfig.borderColor}`
+                      : "bg-muted text-foreground ring-1 ring-border"
+                  ),
+              turn.is_pending && "opacity-70 animate-pulse",
             )}
           >
-            {!isUser && turn.audio_url && (
-              <Button
-                variant="secondary"
-                size="icon-xs"
-                className="rounded-full bg-background/90 backdrop-blur shadow-sm border border-border/50 hover:bg-background"
-                onClick={() => onPlayAudio?.(turn.audio_url!)}
-              >
-                <Volume2
-                  className={cn("size-3", isPlaying && "text-primary")}
-                />
-              </Button>
-            )}
-            <Button
-              variant="secondary"
-              size="icon-xs"
-              className={cn(
-                "rounded-full bg-background/90 backdrop-blur shadow-sm border border-border/50 hover:bg-background",
-                showTranslation && "text-primary bg-primary/10",
+            <div className="flex flex-col gap-2">
+              {/* Tone badge for AI turns */}
+              {!isUser && toneConfig && (
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-lg">{toneConfig.emoji}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider opacity-75">
+                    {toneConfig.label}
+                  </span>
+                </div>
               )}
+
+              <div 
+                ref={contentRef}
+                className="leading-relaxed text-lg select-text"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+              >
+                {tokenizeText(cleanContent)}
+              </div>
+
+              {/* Popover for word translation is now handled in tokenizeText */}
+
+              {showTranslation && (
+                <div
+                  className={cn(
+                    "text-base border-t pt-2 mt-1",
+                    isUser
+                      ? "border-white/20 text-white/95"
+                      : "border-border text-muted-foreground",
+                  )}
+                >
+                  <div className="italic font-medium whitespace-pre-wrap text-lg">
+                    {hasTranslation
+                      ? turn.translated_content
+                      : "Đang yêu cầu bản dịch..."}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Audio button for AI - beside turn, vertically centered */}
+          {!isUser && turn.audio_url && (
+            <button
+              className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 h-9 rounded-full px-[7px] py-0 bg-transparent hover:bg-gray-100 text-gray-500 transition-all duration-200"
+              onClick={() => onPlayAudio?.(turn.audio_url!)}
+            >
+              <Volume2 className={cn("h-5 w-5 text-gray-500", isPlaying && "text-primary")} />
+            </button>
+          )}
+        </div>
+
+        {/* Translate button for AI, Analyze button for user - below turn, left-aligned within container */}
+        <div className="flex justify-start gap-2">
+          {isUser ? (
+            // Analyze button for user turns
+            onAnalyze && (
+              <button
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
+                onClick={() => onAnalyze(turn.turn_index)}
+                title="Phân tích turn này"
+              >
+                <Sparkles className="h-3 w-3" />
+                Phân tích
+              </button>
+            )
+          ) : (
+            // Translate button for AI turns
+            <button
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
               onClick={toggleTranslate}
             >
-              <Languages className="size-3" />
-            </Button>
-          </div>
+              <Languages className="h-3 w-3" />
+              Dịch
+            </button>
+          )}
         </div>
 
         {turn.is_hint_used && (

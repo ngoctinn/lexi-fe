@@ -45,6 +45,8 @@ const buttonVariants = cva(
         "icon-xl": "size-14 rounded-xl active:!translate-y-[2px]",
         "icon-2xl":
           "size-24 rounded-full active:!translate-y-[2px] [&_svg:not([class*='size-'])]:size-10",
+        "icon-action":
+          "size-9 rounded-full px-[7px] py-0 bg-transparent hover:bg-gray-100 text-gray-500 transition-all duration-200 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 [&_svg:not([class*='size-'])]:size-5",
       },
     },
     defaultVariants: {

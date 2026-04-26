@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { useSession } from "@/features/session/hooks/use-session";
+import { useSessionStore } from "@/features/session/stores/use-session-store";
 import { SessionHeader } from "../shared/session-header";
 import { TranscriptPanel } from "./transcript-panel";
 import { type Turn } from "@/features/session/types/session.types";
@@ -45,7 +46,17 @@ export function ConversationScreen({
   initialSummary = null,
   isNewSession,
 }: ConversationScreenProps) {
-  const { ui, uploadProgress, actions } = useSession({
+  // Debug logging
+  React.useEffect(() => {
+    console.log("[ConversationScreen] Mounted with:", {
+      sessionId: sessionId?.substring(0, 8) + "..." || "undefined",
+      idTokenLength: idToken?.length || 0,
+      hasInitialTurns: (initialTurns?.length || 0) > 0,
+      isNewSession,
+    });
+  }, [sessionId, idToken, initialTurns, isNewSession]);
+
+  const { ui, actions } = useSession({
     sessionId,
     idToken,
     initialTurns,
@@ -57,11 +68,14 @@ export function ConversationScreen({
   const [isSessionCompleted, setIsSessionCompleted] = React.useState(
     Boolean(initialSummary),
   );
+  const [hintLanguage, setHintLanguage] = React.useState<"vi" | "en">("vi");
+  const [analysisLanguage, setAnalysisLanguage] = React.useState<"vi" | "en">("vi");
   const hasStartedRef = React.useRef(false);
   const {
     startSession,
     toggleMic,
     requestHint,
+    analyzeTurn,
     translateTurn,
     translateWord,
     saveTurnToFlashcard,
@@ -120,7 +134,14 @@ export function ConversationScreen({
               </SheetDescription>
               <ConversationSidebar
                 currentHint={ui.currentHint}
+                hintHistory={ui.hintHistory}
+                tempAnalysis={ui.tempAnalysis}
+                analysisHistory={ui.analysisHistory}
                 onGetHint={requestHint}
+                onAnalysisClose={() => {
+                  const state = useSessionStore.getState();
+                  state.setTempAnalysis(null);
+                }}
                 isAiStreaming={ui.isAiStreaming}
                 disabled={ui.isControlsDisabled || isSessionCompleted}
                 isSessionCompleted={isSessionCompleted}
@@ -142,6 +163,7 @@ export function ConversationScreen({
             aria-live="polite"
             onTranslate={translateTurn}
             onTranslateWord={translateWord}
+            onAnalyze={analyzeTurn}
             savingTurnIndexes={ui.savingFlashcardTurnIndexes}
           />
 
@@ -189,11 +211,20 @@ export function ConversationScreen({
 
         <ConversationSidebar
           currentHint={ui.currentHint}
+          hintHistory={ui.hintHistory}
+          tempAnalysis={ui.tempAnalysis}
+          analysisHistory={ui.analysisHistory}
           onGetHint={requestHint}
+          onLanguageChange={setHintLanguage}
+          onAnalysisClose={() => {
+            const state = useSessionStore.getState();
+            state.setTempAnalysis(null);
+          }}
           isAiStreaming={ui.isAiStreaming}
           disabled={ui.isControlsDisabled || isSessionCompleted}
           isSessionCompleted={isSessionCompleted}
           sessionSummary={sessionSummary}
+          language={hintLanguage}
           className="hidden lg:flex flex-2"
         />
       </div>

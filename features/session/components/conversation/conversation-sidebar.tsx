@@ -5,10 +5,13 @@ import Link from "next/link";
 import {
   Lightbulb,
   CheckCircle2,
+  Globe,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,15 +24,48 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { SessionScoreSummary } from "@/features/session/types/session.types";
+import { useSessionStore } from "@/features/session/stores/use-session-store";
 
 interface ConversationSidebarProps {
-  currentHint: string | null;
+  currentHint: {
+    level: string;
+    type: string;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  } | null;
+  hintHistory: Array<{
+    timestamp: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  }>;
+  tempAnalysis?: {
+    turnIndex: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  } | null;
+  analysisHistory: Array<{
+    turnIndex: number;
+    timestamp: number;
+    markdown: {
+      vi: string;
+      en: string;
+    };
+  }>;
   onGetHint?: () => void;
+  onLanguageChange?: (language: "vi" | "en") => void;
+  onAnalysisClose?: () => void;
   isAiStreaming?: boolean;
   disabled?: boolean;
   className?: string;
   sessionSummary?: SessionScoreSummary | null;
   isSessionCompleted?: boolean;
+  language?: "vi" | "en";
 }
 
 function getProgressColor(score: number) {
@@ -118,13 +154,31 @@ function SessionCompletionSummary({
 
 export function ConversationSidebar({
   currentHint,
+  hintHistory,
+  tempAnalysis,
+  analysisHistory,
   onGetHint,
+  onLanguageChange,
+  onAnalysisClose,
   isAiStreaming,
   disabled,
   className,
   sessionSummary = null,
   isSessionCompleted = false,
+  language = "vi",
 }: ConversationSidebarProps) {
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to top when new hint or analysis is added
+  React.useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
+    }
+  }, [hintHistory.length, analysisHistory.length]);
+
   return (
     <aside
       className={cn(
@@ -159,19 +213,285 @@ export function ConversationSidebar({
                   Phân tích & Gợi ý
                 </h3>
               </div>
-              <Button
-                variant="soft-warning"
-                size="sm"
-                onClick={onGetHint}
-                disabled={disabled || isAiStreaming}
-                className="text-sm"
-              >
-                {currentHint ? "Gợi ý mới" : "Lấy gợi ý"}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => onLanguageChange?.(language === "vi" ? "en" : "vi")}
+                  title={language === "vi" ? "Chuyển sang English" : "Chuyển sang Tiếng Việt"}
+                  className="text-xs font-semibold"
+                >
+                  <Globe className="size-3.5 mr-1" />
+                  {language.toUpperCase()}
+                </Button>
+                <Button
+                  variant="soft-warning"
+                  size="sm"
+                  onClick={onGetHint}
+                  disabled={disabled || isAiStreaming}
+                  className="text-sm"
+                >
+                  {currentHint ? "Gợi ý mới" : "Lấy gợi ý"}
+                </Button>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto min-h-0 -mx-1 px-1">
-              {isAiStreaming && !currentHint ? (
+            <div className="flex-1 overflow-y-auto min-h-0 -mx-1 px-1 space-y-3" ref={scrollAreaRef}>
+              {/* Merge and sort all items by timestamp (newest first) */}
+              {[
+                ...analysisHistory.map(a => ({ type: 'analysis' as const, ...a })),
+                ...hintHistory.map(h => ({ type: 'hint' as const, ...h })),
+              ]
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .map((item) => {
+                  if (item.type === 'analysis') {
+                    return (
+                      <Alert 
+                        key={`analysis-${item.timestamp}`}
+                        variant="info"
+                        className="bg-sky-50/80 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-800/50"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <AlertDescription className="flex-1 text-base font-medium text-sky-900 dark:text-sky-100">
+                            <div className="prose prose-sm dark:prose-invert max-w-none">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                  p: ({ children }) => (
+                                    <span className="block mb-2 last:mb-0 leading-relaxed text-base">
+                                      {children}
+                                    </span>
+                                  ),
+                                  code: ({ children }) => (
+                                    <code className="px-1.5 py-0.5 rounded-md bg-sky-100/50 dark:bg-sky-900/50 font-mono text-sm font-bold border border-sky-200/50 dark:border-sky-700/50">
+                                      {children}
+                                    </code>
+                                  ),
+                                  pre: ({ children }) => (
+                                    <pre className="p-2 rounded-lg bg-sky-100/30 dark:bg-sky-900/30 border border-sky-200/50 dark:border-sky-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+                                      {children}
+                                    </pre>
+                                  ),
+                                  ul: ({ children }) => (
+                                    <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
+                                      {children}
+                                    </ul>
+                                  ),
+                                  ol: ({ children }) => (
+                                    <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
+                                      {children}
+                                    </ol>
+                                  ),
+                                  li: ({ children }) => (
+                                    <li className="text-base">
+                                      {children}
+                                    </li>
+                                  ),
+                                }}
+                              >
+                                {language === "vi" ? item.markdown.vi : item.markdown.en}
+                              </ReactMarkdown>
+                            </div>
+                          </AlertDescription>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              useSessionStore.getState().removeAnalysisFromHistory(item.timestamp);
+                            }}
+                            className="h-6 w-6 p-0 shrink-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </Alert>
+                    );
+                  } else {
+                    return (
+                      <Alert 
+                        key={`hint-${item.timestamp}`}
+                        variant="warning" 
+                        className="relative bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-800/50"
+                      >
+                        <AlertDescription className="text-base font-medium text-amber-900 dark:text-amber-100 pr-8">
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={{
+                                p: ({ children }) => (
+                                  <span className="block mb-2 last:mb-0 leading-relaxed text-base">
+                                    {children}
+                                  </span>
+                                ),
+                                code: ({ children }) => (
+                                  <code className="px-1.5 py-0.5 rounded-md bg-amber-100/50 dark:bg-amber-900/50 font-mono text-sm font-bold border border-amber-200/50 dark:border-amber-700/50">
+                                    {children}
+                                  </code>
+                                ),
+                                pre: ({ children }) => (
+                                  <pre className="p-2 rounded-lg bg-amber-100/30 dark:bg-amber-900/30 border border-amber-200/50 dark:border-amber-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+                                    {children}
+                                  </pre>
+                                ),
+                                ul: ({ children }) => (
+                                  <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
+                                    {children}
+                                  </ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
+                                    {children}
+                                  </ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="text-base">
+                                    {children}
+                                  </li>
+                                ),
+                              }}
+                            >
+                              {language === "vi" ? item.markdown.vi : item.markdown.en}
+                            </ReactMarkdown>
+                          </div>
+                        </AlertDescription>
+                        <div className="absolute top-2 right-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              useSessionStore.getState().removeHintFromHistory(item.timestamp);
+                            }}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </Alert>
+                    );
+                  }
+                })}
+
+              {/* Temp Analysis (currently being analyzed) - should not appear anymore */}
+              {tempAnalysis && (
+                <Alert variant="info" className="bg-sky-50/80 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-800/50">
+                  <div className="flex items-start justify-between gap-2">
+                    <AlertDescription className="flex-1 text-base font-medium text-sky-900 dark:text-sky-100">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            p: ({ children }) => (
+                              <span className="block mb-2 last:mb-0 leading-relaxed text-base">
+                                {children}
+                              </span>
+                            ),
+                            code: ({ children }) => (
+                              <code className="px-1.5 py-0.5 rounded-md bg-sky-100/50 dark:bg-sky-900/50 font-mono text-sm font-bold border border-sky-200/50 dark:border-sky-700/50">
+                                {children}
+                              </code>
+                            ),
+                            pre: ({ children }) => (
+                              <pre className="p-2 rounded-lg bg-sky-100/30 dark:bg-sky-900/30 border border-sky-200/50 dark:border-sky-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+                                {children}
+                              </pre>
+                            ),
+                            ul: ({ children }) => (
+                              <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
+                                {children}
+                              </ul>
+                            ),
+                            ol: ({ children }) => (
+                              <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
+                                {children}
+                              </ol>
+                            ),
+                            li: ({ children }) => (
+                              <li className="text-base">
+                                {children}
+                              </li>
+                            ),
+                          }}
+                        >
+                          {language === "vi" ? tempAnalysis.markdown.vi : tempAnalysis.markdown.en}
+                        </ReactMarkdown>
+                      </div>
+                    </AlertDescription>
+                    {onAnalysisClose && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onAnalysisClose}
+                        className="h-6 w-6 p-0 shrink-0"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </Alert>
+              )}
+
+              {/* Current Hint (loading state) */}
+              {!tempAnalysis && currentHint && (
+                <Alert variant="warning" className="relative bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-800/50">
+                  <AlertDescription className="text-base font-medium text-amber-900 dark:text-amber-100 pr-8">
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({ children }) => (
+                            <span className="block mb-2 last:mb-0 leading-relaxed text-base">
+                              {children}
+                            </span>
+                          ),
+                          code: ({ children }) => (
+                            <code className="px-1.5 py-0.5 rounded-md bg-amber-100/50 dark:bg-amber-900/50 font-mono text-sm font-bold border border-amber-200/50 dark:border-amber-700/50">
+                              {children}
+                            </code>
+                          ),
+                          pre: ({ children }) => (
+                            <pre className="p-2 rounded-lg bg-amber-100/30 dark:bg-amber-900/30 border border-amber-200/50 dark:border-amber-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+                              {children}
+                            </pre>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li className="text-base">
+                              {children}
+                            </li>
+                          ),
+                        }}
+                      >
+                        {language === "vi" ? currentHint.markdown.vi : currentHint.markdown.en}
+                      </ReactMarkdown>
+                    </div>
+                  </AlertDescription>
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const state = useSessionStore.getState();
+                        state.setHint(null);
+                      }}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </Alert>
+              )}
+
+              {/* Empty state when AI is streaming */}
+              {!tempAnalysis && !currentHint && hintHistory.length === 0 && analysisHistory.length === 0 && isAiStreaming && (
                 <div className="flex flex-col items-center justify-center py-12 gap-4 animate-in fade-in duration-500">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-amber-200/50 animate-ping" />
@@ -183,34 +503,10 @@ export function ConversationSidebar({
                     AI đang phân tích...
                   </p>
                 </div>
-              ) : currentHint ? (
-                <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-base/relaxed font-medium text-foreground tracking-tight">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        p: ({ children }) => (
-                          <span className="block mb-4 last:mb-0 leading-relaxed">
-                            {children}
-                          </span>
-                        ),
-                        code: ({ children }) => (
-                          <code className="px-1.5 py-0.5 rounded-md bg-muted font-mono text-sm font-bold text-foreground border border-border/50">
-                            {children}
-                          </code>
-                        ),
-                        pre: ({ children }) => (
-                          <pre className="p-4 rounded-2xl bg-muted/50 border border-border/70 my-4 last:mb-0 whitespace-pre-wrap wrap-break-word text-foreground font-mono text-sm leading-relaxed">
-                            {children}
-                          </pre>
-                        ),
-                      }}
-                    >
-                      {currentHint}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-              ) : (
+              )}
+
+              {/* Empty state when idle */}
+              {!tempAnalysis && !currentHint && hintHistory.length === 0 && analysisHistory.length === 0 && !isAiStreaming && (
                 <div className="py-20 text-center animate-in fade-in duration-700">
                   <p className="text-xs text-muted-foreground/40 font-medium tracking-tight">
                     AI đang chờ để phân tích...

@@ -15,8 +15,16 @@ interface SessionStoreState extends SessionUiState {
   setLastSttResult: (
     result: { text: string; confidence: number } | null,
   ) => void;
-  setHint: (hint: string | null) => void;
+  setHint: (hint: SessionUiState["currentHint"]) => void;
+  addHintToHistory: (markdown: { vi: string; en: string }) => void;
+  removeHintFromHistory: (timestamp: number) => void;
+  setHintTimeoutId: (timeoutId: NodeJS.Timeout | null) => void;
+  setAnalysis: (analysis: SessionUiState["currentAnalysis"]) => void;
+  setTempAnalysis: (analysis: SessionUiState["tempAnalysis"]) => void;
+  addAnalysisToHistory: (turnIndex: number, markdown: { vi: string; en: string }) => void;
+  removeAnalysisFromHistory: (timestamp: number) => void;
   setHintPanelOpen: (open: boolean) => void;
+  setAnalysisPanelOpen: (open: boolean) => void;
   setCurrentAudioUrl: (currentAudioUrl: string | null) => void;
   setStreamingTranscript: (finalText: string, partialText: string, isStreaming: boolean) => void;
   setStreamingError: (error: string | null) => void;
@@ -29,7 +37,14 @@ const initialState: SessionUiState = {
   isAiStreaming: false,
   lastSttResult: null,
   currentHint: null,
+  hintTimeoutId: null,
+  hintHistory: [],
+  currentAnalysis: null,
+  tempAnalysis: null,
+  analysisHistory: [],
+  analyzedTurns: new Set(),
   hintPanelOpen: false,
+  analysisPanelOpen: false,
   recorderState: "idle",
   wsState: "disconnected",
   currentAudioUrl: null,
@@ -69,7 +84,42 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
 
   setHint: (currentHint) => set({ currentHint }),
 
+  addHintToHistory: (markdown) =>
+    set((state) => ({
+      hintHistory: [
+        { timestamp: Date.now(), markdown },
+        ...state.hintHistory,
+      ],
+    })),
+
+  removeHintFromHistory: (timestamp) =>
+    set((state) => ({
+      hintHistory: state.hintHistory.filter((h) => h.timestamp !== timestamp),
+    })),
+
+  setHintTimeoutId: (hintTimeoutId) => set({ hintTimeoutId }),
+
+  setAnalysis: (currentAnalysis) => set({ currentAnalysis }),
+
+  setTempAnalysis: (tempAnalysis) => set({ tempAnalysis }),
+
+  addAnalysisToHistory: (turnIndex, markdown) =>
+    set((state) => ({
+      analysisHistory: [
+        { turnIndex, timestamp: Date.now(), markdown },
+        ...state.analysisHistory,
+      ],
+      analyzedTurns: new Set([...state.analyzedTurns, turnIndex]),
+    })),
+
+  removeAnalysisFromHistory: (timestamp) =>
+    set((state) => ({
+      analysisHistory: state.analysisHistory.filter((a) => a.timestamp !== timestamp),
+    })),
+
   setHintPanelOpen: (hintPanelOpen) => set({ hintPanelOpen }),
+
+  setAnalysisPanelOpen: (analysisPanelOpen) => set({ analysisPanelOpen }),
 
   setCurrentAudioUrl: (currentAudioUrl) => set({ currentAudioUrl }),
 

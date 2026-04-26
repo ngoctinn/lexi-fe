@@ -2,10 +2,13 @@
 
 import { apiFetch } from "@/lib/api/fetch";
 import type { ApiResponse } from "@/lib/api/types";
+import { getErrorMessage } from "@/features/session/utils/error-handler";
 
 export interface TranslateSentenceResult {
   sentence_en: string;
   sentence_vi: string;
+  error?: string;
+  errorCode?: string;
 }
 
 /**
@@ -25,10 +28,13 @@ export async function translateSentenceAction(
   );
 
   if (!response.success) {
-    console.error("[translateSentence] API error:", response.message);
+    const errorInfo = getErrorMessage(response.error);
+    console.error("[translateSentence] API error:", response.message, response.error);
     return {
       sentence_en: sentence,
-      sentence_vi: "Lỗi khi dịch câu.",
+      sentence_vi: "",
+      error: errorInfo.userMessage,
+      errorCode: response.error,
     };
   }
 

@@ -196,7 +196,7 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
   const initialSummary: SessionScoreSummary | null = session.scoring
     ? {
         scoring: session.scoring,
-        totalTurns: session.total_turns || session.turns?.length || 0,
+        totalTurns: session.total_turns || session.turn_count || 0,
         hintUsedCount: session.hint_used_count || 0,
       }
     : null;
@@ -205,9 +205,31 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
     redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
+  // Ensure sessionId is available and valid
+  const validSessionId = session.session_id?.trim();
+  console.log("[SessionPage] Session validation:", {
+    session_id: session.session_id,
+    validSessionId,
+    sessionKeys: Object.keys(session),
+    hasSessionId: !!session.session_id,
+  });
+  
+  if (!validSessionId) {
+    console.error("[SessionPage] Invalid session_id:", {
+      session_id: session.session_id,
+      sessionKeys: Object.keys(session),
+    });
+    return (
+      <SessionUnavailableState
+        callbackUrl={callbackUrl}
+        message="Phiên học không có ID hợp lệ. Vui lòng tạo phiên mới."
+      />
+    );
+  }
+
   return (
     <ConversationScreen
-      sessionId={session.session_id}
+      sessionId={validSessionId}
       idToken={idToken ?? ""}
       initialTurns={session.turns ?? []}
       initialSummary={initialSummary}

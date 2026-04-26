@@ -9,12 +9,22 @@ import type { GetSessionResult, Session } from "@/features/session/types/session
  * Pure Next.js pattern: return errors, don't throw
  */
 export async function getSession(sessionId: string): Promise<GetSessionResult> {
-  const response = await apiFetch<ApiResponse<Session>>(
+  console.log("[getSession] Fetching session:", { sessionId });
+  
+  const response = await apiFetch<ApiResponse<Session | { session: Session }>>(
     `/sessions/${sessionId}`,
     {
       cache: "no-store",
     }
   );
+
+  console.log("[getSession] API Response:", {
+    success: response.success,
+    message: response.message,
+    dataKeys: response.data ? Object.keys(response.data) : null,
+    session_id: (response.data as Session)?.session_id,
+    fullResponse: JSON.stringify(response).substring(0, 500),
+  });
 
   if (!response.success) {
     return {
@@ -23,8 +33,23 @@ export async function getSession(sessionId: string): Promise<GetSessionResult> {
     };
   }
 
+  // Handle both response formats:
+  // 1. Direct: { data: { session_id, ... } }
+  // 2. Nested: { data: { session: { session_id, ... } } }
+  const sessionData = response.data as Session | { session: Session };
+  const session = 'session_id' in sessionData 
+    ? (sessionData as Session)
+    : (sessionData as { session: Session }).session;
+
+  if (!session) {
+    return {
+      success: false,
+      error: "Phiên học không tồn tại.",
+    };
+  }
+
   return {
     success: true,
-    session: response.data,
+    session,
   };
 }

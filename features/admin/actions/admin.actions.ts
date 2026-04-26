@@ -43,7 +43,7 @@ const MOCK_USERS: AdminUser[] = [
  * Fallback to mock data if user is not admin (403 Forbidden)
  */
 export async function getAdminUsers(): Promise<AdminUser[]> {
-  const response = await apiFetch<ApiResponse<{ users: AdminUser[] }>>(
+  const response = await apiFetch<ApiResponse<{ users: AdminUser[]; total_count: number }>>(
     "/admin/users",
     {
       cache: "no-store", // Always fresh data for admin
@@ -70,7 +70,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
  * Fallback to public scenarios if user is not admin (403 Forbidden)
  */
 export async function getAdminScenarios(): Promise<AdminScenario[]> {
-  const response = await apiFetch<ApiResponse<{ scenarios: AdminScenario[] }>>(
+  const response = await apiFetch<ApiResponse<{ scenarios: AdminScenario[]; total_count: number }>>(
     "/admin/scenarios",
     {
       cache: "no-store", // Always fresh data for admin
@@ -107,16 +107,17 @@ export async function getAdminScenarios(): Promise<AdminScenario[]> {
 export async function upsertAdminUser(
   user: AdminUser
 ): Promise<ActionResult<AdminUser>> {
+  const userId = user.user_id || user.id;
+  
   const response = await apiFetch<ApiResponse<AdminUser>>(
-    `/admin/users/${user.id}`,
+    `/admin/users/${userId}`,
     {
       method: "PATCH",
       body: JSON.stringify({
         display_name: user.display_name,
         current_level: user.current_level,
         target_level: user.target_level,
-        learning_goal_text: user.learning_goal_text,
-        is_active: user.status === "active",
+        is_active: user.is_active !== false,
         role: user.role || "user",
       }),
     }
@@ -157,12 +158,14 @@ export async function upsertAdminScenario(
   const response = await apiFetch<ApiResponse<AdminScenario>>(endpoint, {
     method,
     body: JSON.stringify({
-      scenario_id: scenario.scenario_id,
-      title: scenario.scenario_title,
-      description: scenario.context,
-      level: scenario.difficulty_level,
+      scenario_title: scenario.scenario_title,
+      context: scenario.context,
+      difficulty_level: scenario.difficulty_level,
       roles: scenario.roles,
       goals: scenario.goals,
+      order: scenario.order,
+      notes: scenario.notes,
+      is_active: scenario.is_active,
     }),
   });
 

@@ -117,14 +117,14 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
     setIsPending(true);
     try {
       const goals =
-        validGoals.length > 0 ? validGoals : selectedScenario.goals;
+        validGoals.length > 0 ? validGoals[0] : selectedScenario.goals[0];
 
       // Tạo snapshot cho prompt
       const promptSnapshot = [
         `Scenario: ${selectedScenario.scenario_title}`,
         `Learner role: ${validUserRole}`,
         `AI role: ${validAiRole}`,
-        `Goals: ${goals.join(" | ")}`,
+        `Goal: ${goals}`,
         `AI gender: ${formData.ai_gender}`,
         `Level: ${formData.level}`,
       ].join("\n");
@@ -133,7 +133,7 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
         ...formData,
         learner_role_id: validUserRole,
         ai_role_id: validAiRole,
-        selected_goals: goals,
+        selected_goal: goals,
         prompt_snapshot: promptSnapshot,
       });
 

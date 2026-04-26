@@ -33,6 +33,16 @@ export function useSession({
   const [savingFlashcardTurnIndexes, setSavingFlashcardTurnIndexes] =
     React.useState<number[]>([]);
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log("[useSession] Initialized with:", {
+      sessionId: sessionId?.substring(0, 8) + "..." || "undefined",
+      idTokenLength: idToken?.length || 0,
+      initialTurnsCount: initialTurns?.length || 0,
+      isNewSession,
+    });
+  }, [sessionId, idToken, initialTurns, isNewSession]);
+
   const turns = useSessionStore((s) => s.turns);
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
@@ -40,6 +50,9 @@ export function useSession({
   const aiStreamingText = useSessionStore((s) => s.aiStreamingText);
   const lastSttResult = useSessionStore((s) => s.lastSttResult);
   const currentHint = useSessionStore((s) => s.currentHint);
+  const hintHistory = useSessionStore((s) => s.hintHistory);
+  const tempAnalysis = useSessionStore((s) => s.tempAnalysis);
+  const analysisHistory = useSessionStore((s) => s.analysisHistory);
   const recorderStateFromStore = useSessionStore((s) => s.recorderState);
   const currentAudioUrl = useSessionStore((s) => s.currentAudioUrl);
 
@@ -126,7 +139,37 @@ export function useSession({
   }, [send, sessionId]);
 
   const requestHint = React.useCallback(() => {
+    console.log("[useSession] requestHint called", { sessionId });
+    
+    // Clear old hint first
     setHint(null);
+    
+    // Show loading state
+    setHint({
+      level: "Intermediate",
+      type: "guidance",
+      markdown: {
+        vi: "Đang lấy gợi ý...",
+        en: "Getting hint...",
+      },
+    });
+    
+    // Set timeout to clear loading state if no response
+    const timeoutId = setTimeout(() => {
+      console.warn("[useSession] Hint request timeout");
+      setHint({
+        level: "Intermediate",
+        type: "guidance",
+        markdown: {
+          vi: "💡 Hệ thống gợi ý đang gặp sự cố tạm thời. Vui lòng thử lại sau vài giây.",
+          en: "💡 Hint system is temporarily unavailable. Please try again in a few seconds.",
+        },
+      });
+    }, 5000);
+    
+    // Store timeout ID in ref to clear it when response arrives
+    useSessionStore.getState().setHintTimeoutId?.(timeoutId);
+    
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
   }, [send, sessionId, setHint]);
 
@@ -208,6 +251,36 @@ export function useSession({
     setHintPanelOpen(!hintPanelOpen);
   }, [setHintPanelOpen, hintPanelOpen]);
 
+  const analyzeTurn = React.useCallback((turnIndex: number) => {
+    const state = useSessionStore.getState();
+    
+    // Check if this turn was already analyzed
+    if (state.analyzedTurns.has(turnIndex)) {
+      console.log("[useSession] Turn already analyzed, moving to top:", turnIndex);
+      
+      // Find the existing analysis
+      const existingAnalysis = state.analysisHistory.find(a => a.turnIndex === turnIndex);
+      if (existingAnalysis) {
+        // Remove from current position
+        state.removeAnalysisFromHistory(existingAnalysis.timestamp);
+        
+        // Add back to top with new timestamp
+        state.addAnalysisToHistory(turnIndex, existingAnalysis.markdown);
+      }
+      return;
+    }
+    
+    // Clear old temp analysis first
+    state.setTempAnalysis(null);
+    
+    // Send request to backend
+    send({ 
+      action: WsClientEvent.ANALYZE_TURN, 
+      session_id: sessionId,
+      turn_index: turnIndex 
+    });
+  }, [send, sessionId]);
+
   const saveWordToFlashcard = React.useCallback(
     async (turnIndex: number, vocabData?: TranslateWordResult) => {
       const targetTurn = useSessionStore
@@ -286,6 +359,9 @@ export function useSession({
       isAiStreaming,
       lastSttResult,
       currentHint,
+      hintHistory,
+      tempAnalysis,
+      analysisHistory,
       hintPanelOpen,
       recorderState: recorderStateFromStore,
       wsState: connectionState,
@@ -301,6 +377,7 @@ export function useSession({
       startSession,
       toggleMic,
       requestHint,
+      analyzeTurn,
       endSession,
       toggleHintPanel,
       translateTurn,

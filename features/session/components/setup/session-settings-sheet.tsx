@@ -79,21 +79,16 @@ export function SessionSettingsSheet({
             </Field>
 
             <Field>
-              <div className="flex items-center justify-between mb-1">
-                <FieldLabel className="text-foreground/80">
-                  Mục tiêu luyện tập
-                </FieldLabel>
-                <span className="text-2xs font-medium text-muted-foreground/50">
-                  {selectedGoals.length}/{selectedScenario.goals.length}
-                </span>
-              </div>
+              <FieldLabel className="text-foreground/80 mb-1">
+                Mục tiêu luyện tập
+              </FieldLabel>
               <ToggleGroup
-                type="multiple"
-                value={selectedGoals}
+                type="single"
+                value={selectedGoals[0] || ""}
                 onValueChange={(value) => {
-                  onGoalsChange(
-                    value.length > 0 ? value : selectedScenario.goals,
-                  );
+                  if (value) {
+                    onGoalsChange([value]);
+                  }
                 }}
                 spacing={3}
                 className="w-full! flex-wrap justify-start mt-2"

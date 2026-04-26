@@ -80,6 +80,15 @@ export function useWebSocket({
   const [connectionState, setConnectionState] =
     React.useState<WsConnectionState>("disconnected");
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log("[useWebSocket] Hook called with:", {
+      sessionId: sessionId?.substring(0, 8) + "..." || "undefined",
+      idTokenLength: idToken?.length || 0,
+      initialDelayMs,
+    });
+  }, [sessionId, idToken, initialDelayMs]);
+
   // Dùng refs để tránh re-render không cần thiết và race condition
   const wsRef = React.useRef<WebSocket | null>(null);
   const reconnectTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -100,9 +109,13 @@ export function useWebSocket({
   const send = React.useCallback(
     (payload: WsClientPayload) => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
+        console.log("[ws] Sending action:", payload.action, "session_id:", payload.session_id?.substring(0, 8) + "...");
         wsRef.current.send(JSON.stringify(payload));
       } else {
-        console.warn("[ws] Cannot send: not connected", payload.action);
+        console.warn("[ws] Cannot send: not connected", {
+          action: payload.action,
+          readyState: wsRef.current?.readyState,
+        });
       }
     },
     [],
@@ -124,14 +137,25 @@ export function useWebSocket({
   // Effect chính: chỉ chạy khi sessionId hoặc idToken thay đổi thực sự
   React.useEffect(() => {
     // Guard: bỏ qua nếu thiếu thông tin cần thiết
-    if (!idToken || !sessionId || !WS_BASE) {
-      console.warn("[ws] Skipping connection: missing idToken, sessionId or WS_BASE", {
-        hasIdToken: !!idToken,
-        hasSessionId: !!sessionId,
-        hasWsBase: !!WS_BASE,
+    const hasValidIdToken = !!idToken?.trim();
+    const hasValidSessionId = !!sessionId?.trim();
+    const hasValidWsBase = !!WS_BASE;
+    
+    if (!hasValidIdToken || !hasValidSessionId || !hasValidWsBase) {
+      console.debug("[ws] Waiting for connection requirements", {
+        hasIdToken: hasValidIdToken,
+        hasSessionId: hasValidSessionId,
+        hasWsBase: hasValidWsBase,
+        sessionIdLength: sessionId?.length || 0,
+        sessionIdValue: sessionId || "undefined",
       });
       return;
     }
+    
+    console.log("[ws] All requirements met, initiating connection", {
+      sessionId: sessionId?.substring(0, 8) + "...",
+      idTokenLength: idToken?.length,
+    });
 
     shouldReconnectRef.current = true;
     reconnectAttemptRef.current = 0;

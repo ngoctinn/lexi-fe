@@ -14,9 +14,25 @@ export const SessionDomain = {
       | "processing"
       | "error",
     isAiStreaming: boolean,
-  ): boolean =>
-    wsState !== "connected" ||
-    recorderState === "uploading" ||
-    recorderState === "processing" ||
-    isAiStreaming,
+  ): boolean => {
+    const disabled =
+      wsState !== "connected" ||
+      recorderState === "uploading" ||
+      recorderState === "processing" ||
+      isAiStreaming;
+    
+    if (disabled) {
+      console.log("[SessionDomain] Controls disabled:", {
+        wsState,
+        recorderState,
+        isAiStreaming,
+        reason: wsState !== "connected" ? "ws-not-connected" : 
+                recorderState === "uploading" ? "uploading" :
+                recorderState === "processing" ? "processing" :
+                isAiStreaming ? "ai-streaming" : "unknown"
+      });
+    }
+    
+    return disabled;
+  },
 };
