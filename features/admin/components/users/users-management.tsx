@@ -180,7 +180,6 @@ interface UsersManagementProps {
 
 export function UsersManagement({ users }: UsersManagementProps) {
   const [isMounted, setIsMounted] = React.useState(false);
-  const [records, setRecords] = React.useState(users);
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<
     "all" | AdminUserStatus
@@ -188,11 +187,27 @@ export function UsersManagement({ users }: UsersManagementProps) {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<AdminUser>(() => createEmptyUser());
   const [isSaving, setIsSaving] = React.useState(false);
+  const [localUpdates, setLocalUpdates] = React.useState<AdminUser[]>([]);
 
   React.useEffect(() => {
-    setIsMounted(true);
-    setRecords(users);
-  }, [users]);
+    // Set mounted flag in next tick to avoid cascading render
+    const timer = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Merge server data with local updates
+  const records = React.useMemo(() => {
+    const merged = [...users];
+    localUpdates.forEach(updated => {
+      const index = merged.findIndex(u => u.id === updated.id);
+      if (index >= 0) {
+        merged[index] = updated;
+      } else {
+        merged.unshift(updated);
+      }
+    });
+    return merged;
+  }, [users, localUpdates]);
 
   const visibleUsers = React.useMemo(() => {
     const normalizedQuery = normalizeSearch(query);
@@ -280,7 +295,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
 
       const savedUser = result.user;
 
-      setRecords((current) => {
+      setLocalUpdates((current) => {
         const exists = current.some((item) => item.id === savedUser.id);
 
         if (exists) {

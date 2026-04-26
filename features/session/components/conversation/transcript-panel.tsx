@@ -4,34 +4,31 @@ import * as React from "react";
 import type { Turn } from "@/features/session/types/session.types";
 import type { TranslateWordResult } from "@/features/session/actions/translate-word";
 import { TurnBubble } from "./turn-bubble";
-import { extractDeliveryCue, getCueEmoji, getCueLabel } from "@/features/session/utils/delivery-cue";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface TranscriptPanelProps {
   turns: Turn[];
   isAiStreaming: boolean;
-  aiStreamingText: string;
-  aiName: string;
+  onPlayAudio?: (url: string) => void;
+  playingAudioUrl?: string | null;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
+  onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => Promise<void>;
   onAnalyze?: (turnIndex: number) => void;
-  savingTurnIndexes?: number[];
   className?: string;
 }
 
 export function TranscriptPanel({
   turns,
   isAiStreaming,
-  aiStreamingText,
-  aiName,
+  onPlayAudio,
+  playingAudioUrl,
   onTranslate,
   onTranslateWord,
+  onSaveFlashcard,
   onAnalyze,
-  savingTurnIndexes = [],
   className,
 }: TranscriptPanelProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -40,7 +37,7 @@ export function TranscriptPanel({
   // Auto-scroll to bottom when new content arrives
   React.useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [turns.length, aiStreamingText, isAiStreaming]);
+  }, [turns.length, isAiStreaming]);
 
   return (
     <ScrollArea
@@ -64,64 +61,32 @@ export function TranscriptPanel({
           <TurnBubble
             key={`${turn.turn_index}-${idx}`}
             turn={turn}
+            onPlayAudio={onPlayAudio}
+            isPlaying={turn.audio_url === playingAudioUrl}
             onTranslate={onTranslate}
             onTranslateWord={onTranslateWord}
+            onSaveFlashcard={onSaveFlashcard}
             onAnalyze={onAnalyze}
           />
         ))}
 
-        {(isAiStreaming || aiStreamingText) && (
+        {isAiStreaming && (
           <div className="flex w-full items-end gap-3 px-4 py-2 justify-start">
             <div className="relative rounded-2xl rounded-tl-sm bg-muted text-foreground ring-1 ring-inset ring-border px-4 py-3 text-base leading-relaxed max-w-[80%] shadow-sm">
-              {aiStreamingText ? (
-                <div className="flex flex-col gap-2">
-                  {(() => {
-                    const { cue, cleanText } = extractDeliveryCue(aiStreamingText);
-                    return (
-                      <>
-                        {cue && (
-                          <Badge variant="secondary" className="w-fit text-xs">
-                            <span className="mr-1">{getCueEmoji(cue)}</span>
-                            {getCueLabel(cue)}
-                          </Badge>
-                        )}
-                        {cleanText}
-                      </>
-                    );
-                  })()}
-                  {isAiStreaming && (
-                    <div className="flex items-center gap-1 h-5 ml-1">
-                      <span
-                        className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                        style={{ animationDelay: "0s" }}
-                      />
-                      <span
-                        className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                        style={{ animationDelay: "0.2s" }}
-                      />
-                      <span
-                        className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                        style={{ animationDelay: "0.4s" }}
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 h-5">
-                  <span
-                    className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                    style={{ animationDelay: "0s" }}
-                  />
-                  <span
-                    className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                    style={{ animationDelay: "0.2s" }}
-                  />
-                  <span
-                    className="size-1.5 rounded-full bg-primary/60 animate-bounce"
-                    style={{ animationDelay: "0.4s" }}
-                  />
-                </div>
-              )}
+              <div className="flex items-center gap-1 h-5">
+                <span
+                  className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                  style={{ animationDelay: "0s" }}
+                />
+                <span
+                  className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                />
+                <span
+                  className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                  style={{ animationDelay: "0.4s" }}
+                />
+              </div>
             </div>
           </div>
         )}

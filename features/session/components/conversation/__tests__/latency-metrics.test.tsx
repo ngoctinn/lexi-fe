@@ -325,7 +325,7 @@ describe('LatencyMetrics - All Proficiency Levels', () => {
 
   describe('Accessibility', () => {
     it('should have proper button for expanding metrics', () => {
-      const { container } = render(
+      render(
         <LatencyMetrics
           ttftMs={300}
           latencyMs={1000}

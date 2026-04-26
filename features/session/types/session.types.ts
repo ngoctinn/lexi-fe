@@ -329,7 +329,6 @@ export type WsConnectionState =
 
 export interface SessionUiState {
   turns: Turn[];
-  aiStreamingText: string;
   isAiStreaming: boolean;
   lastSttResult: { text: string; confidence: number } | null;
   currentHint: {
@@ -385,6 +384,7 @@ export interface SessionUiState {
   streamingError?: string | null;
   requestHintInProgress?: boolean;
   isStartingSession?: boolean;
+  analyzingTurnIndex?: number | null;
 }
 
 export interface CreateSessionDto {

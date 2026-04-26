@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { TurnBubble } from '../turn-bubble';
 import { Turn, TurnSpeaker, ProficiencyLevel } from '@/features/session/types/session.types';
 
@@ -11,7 +10,7 @@ jest.mock('@/features/session/utils/feature-flags', () => ({
 
 // Mock the LatencyMetrics component
 jest.mock('../latency-metrics', () => ({
-  LatencyMetrics: ({ ttftMs, latencyMs }: any) => (
+  LatencyMetrics: ({ ttftMs, latencyMs }: { ttftMs?: number; latencyMs?: number }) => (
     <div data-testid="latency-metrics">
       TTFT: {ttftMs}ms, Latency: {latencyMs}ms
     </div>
@@ -245,6 +244,7 @@ describe('TurnBubble - All Proficiency Levels', () => {
     });
 
     it('should hide metrics when debug disabled', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { isDebugMetricsEnabled } = require('@/features/session/utils/feature-flags');
       isDebugMetricsEnabled.mockReturnValue(false);
 

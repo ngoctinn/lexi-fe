@@ -90,7 +90,7 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
 
           <Tabs
             value={statusFilter}
-            onValueChange={(value) => setStatusFilter(value as any)}
+            onValueChange={(value) => setStatusFilter(value as "all" | "active" | "inactive")}
             className="w-fit"
           >
             <TabsList className="flex-wrap justify-start">

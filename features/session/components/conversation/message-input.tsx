@@ -45,12 +45,17 @@ export function MessageInput({
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isRecording) {
-      setTimer(0);
+      // Reset timer in next tick to avoid cascading render
+      const resetTimer = setTimeout(() => setTimer(0), 0);
       interval = setInterval(() => {
         setTimer((v) => v + 1);
       }, 1000);
+      
+      return () => {
+        clearTimeout(resetTimer);
+        clearInterval(interval);
+      };
     }
-    return () => clearInterval(interval);
   }, [isRecording]);
 
   const formatTime = (seconds: number) => {

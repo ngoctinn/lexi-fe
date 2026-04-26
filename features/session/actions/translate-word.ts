@@ -16,6 +16,7 @@ interface TranslateWordApiResponse {
   word: string;
   translation_vi: string;
   phonetic: string;
+  audio_url?: string;
   definitions: VocabularyDefinition[];
   synonyms: string[];
   response_time_ms: number;
@@ -26,6 +27,7 @@ export interface TranslateWordResult {
   word: string;
   translation_vi: string;
   phonetic?: string;
+  audio_url?: string;
   definitions: VocabularyDefinition[];
   synonyms: string[];
   response_time_ms?: number;
@@ -88,6 +90,7 @@ export async function translateWordAction(
     word: payload.word,
     translation_vi: payload.translation_vi || "Không có bản dịch.",
     phonetic: payload.phonetic || undefined,
+    audio_url: payload.audio_url || undefined,
     definitions: payload.definitions || [],
     synonyms: payload.synonyms || [],
     response_time_ms: payload.response_time_ms,

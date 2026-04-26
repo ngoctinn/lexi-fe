@@ -12,18 +12,15 @@ interface DashboardHeroProps {
 }
 
 export function DashboardHero({ user }: DashboardHeroProps) {
-  const [currentDate, setCurrentDate] = React.useState<string>("");
-
-  React.useEffect(() => {
-    // Use Vietnamese locale for date format
-    const date = new Intl.DateTimeFormat("vi-VN", {
+  // Use lazy initialization to compute date once
+  const [currentDate] = React.useState(() => {
+    return new Intl.DateTimeFormat("vi-VN", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     }).format(new Date());
-    setCurrentDate(date);
-  }, []);
+  });
 
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border/40">

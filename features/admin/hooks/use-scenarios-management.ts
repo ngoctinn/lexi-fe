@@ -39,7 +39,7 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
 }
 
 export function useScenariosManagement(scenarios: AdminScenario[]) {
-  const [records, setRecords] = React.useState(scenarios);
+  // Use scenarios directly instead of syncing to state
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<
     "all" | "active" | "inactive"
@@ -49,10 +49,21 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
     createEmptyScenario(1),
   );
   const [isSaving, setIsSaving] = React.useState(false);
+  const [localUpdates, setLocalUpdates] = React.useState<AdminScenario[]>([]);
 
-  React.useEffect(() => {
-    setRecords(scenarios);
-  }, [scenarios]);
+  // Merge server data with local updates
+  const records = React.useMemo(() => {
+    const merged = [...scenarios];
+    localUpdates.forEach(updated => {
+      const index = merged.findIndex(s => s.scenario_id === updated.scenario_id);
+      if (index >= 0) {
+        merged[index] = updated;
+      } else {
+        merged.unshift(updated);
+      }
+    });
+    return merged;
+  }, [scenarios, localUpdates]);
 
   const visibleScenarios = React.useMemo(() => {
     const normalizedQuery = normalizeSearch(query);
@@ -166,7 +177,7 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
 
       const updatedScenario = result.scenario;
 
-      setRecords((current) => {
+      setLocalUpdates((current) => {
         const exists = current.some(
           (item) => item.scenario_id === updatedScenario.scenario_id,
         );
@@ -207,13 +218,21 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
 
       const updatedScenario = result.scenario;
 
-      setRecords((current) =>
-        current.map((item) =>
-          item.scenario_id === updatedScenario.scenario_id
-            ? updatedScenario
-            : item,
-        ),
-      );
+      setLocalUpdates((current) => {
+        const exists = current.some(
+          (item) => item.scenario_id === updatedScenario.scenario_id,
+        );
+
+        if (exists) {
+          return current.map((item) =>
+            item.scenario_id === updatedScenario.scenario_id
+              ? updatedScenario
+              : item,
+          );
+        }
+
+        return [updatedScenario, ...current];
+      });
 
       toast.success(
         updatedScenario.is_active ? "Đã bật kịch bản." : "Đã ẩn kịch bản.",

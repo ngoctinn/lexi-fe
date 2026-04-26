@@ -54,7 +54,6 @@ export function ResetPasswordForm({
     formState: { errors, isSubmitting, isSubmitted },
     setValue,
     control,
-    watch,
   } = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -66,7 +65,6 @@ export function ResetPasswordForm({
     reValidateMode: "onChange",
   });
   const otp = useWatch({ control, name: "otp" });
-  const password = watch("password");
 
   const onSubmit = async (data: ResetPasswordSchema) => {
     try {

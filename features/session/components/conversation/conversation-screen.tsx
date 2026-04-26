@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import { useSession } from "@/features/session/hooks/use-session";
-import { useSessionStore } from "@/features/session/stores/use-session-store";
 import { SessionHeader } from "../shared/session-header";
 import { TranscriptPanel } from "./transcript-panel";
 import { type Turn } from "@/features/session/types/session.types";
@@ -69,7 +68,7 @@ export function ConversationScreen({
     Boolean(initialSummary),
   );
   const [hintLanguage, setHintLanguage] = React.useState<"vi" | "en">("vi");
-  const [analysisLanguage, setAnalysisLanguage] = React.useState<"vi" | "en">("vi");
+  const [playingAudioUrl, setPlayingAudioUrl] = React.useState<string | null>(null);
   const hasStartedRef = React.useRef(false);
   const {
     startSession,
@@ -103,6 +102,16 @@ export function ConversationScreen({
     },
     [endConversationSession],
   );
+
+  const handlePlayAudio = React.useCallback((url: string) => {
+    setCurrentAudioUrl(url);
+    setPlayingAudioUrl(url);
+  }, [setCurrentAudioUrl]);
+
+  const handleAudioEnded = React.useCallback(() => {
+    setCurrentAudioUrl(null);
+    setPlayingAudioUrl(null);
+  }, [setCurrentAudioUrl]);
 
   return (
     <div className="flex w-full flex-col h-full bg-background relative overflow-hidden">
@@ -138,10 +147,6 @@ export function ConversationScreen({
                 tempAnalysis={ui.tempAnalysis}
                 analysisHistory={ui.analysisHistory}
                 onGetHint={requestHint}
-                onAnalysisClose={() => {
-                  const state = useSessionStore.getState();
-                  state.setTempAnalysis(null);
-                }}
                 isAiStreaming={ui.isAiStreaming}
                 disabled={ui.isControlsDisabled || isSessionCompleted}
                 isSessionCompleted={isSessionCompleted}
@@ -157,17 +162,17 @@ export function ConversationScreen({
           <TranscriptPanel
             turns={ui.turns}
             isAiStreaming={ui.isAiStreaming}
-            aiStreamingText={ui.aiStreamingText}
-            aiName={aiCharacter}
             className="flex-1"
             aria-live="polite"
+            onPlayAudio={handlePlayAudio}
+            playingAudioUrl={playingAudioUrl}
             onTranslate={translateTurn}
             onTranslateWord={translateWord}
+            onSaveFlashcard={saveTurnToFlashcard}
             onAnalyze={analyzeTurn}
-            savingTurnIndexes={ui.savingFlashcardTurnIndexes}
           />
 
-          <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 pb-safe lg:px-8 lg:pb-6">
+          <div className="p-4 bg-background/95 backdrop-blur border-t shrink-0 lg:px-8 lg:pb-6" suppressHydrationWarning>
             <MessageInput
               value={inputValue}
               onValueChange={setInputValue}
@@ -186,10 +191,6 @@ export function ConversationScreen({
           analysisHistory={ui.analysisHistory}
           onGetHint={requestHint}
           onLanguageChange={setHintLanguage}
-          onAnalysisClose={() => {
-            const state = useSessionStore.getState();
-            state.setTempAnalysis(null);
-          }}
           isAiStreaming={ui.isAiStreaming}
           disabled={ui.isControlsDisabled || isSessionCompleted}
           isSessionCompleted={isSessionCompleted}
@@ -201,7 +202,7 @@ export function ConversationScreen({
 
       <AiAudioPlayer
         url={ui.currentAudioUrl}
-        onEnded={() => setCurrentAudioUrl(null)}
+        onEnded={handleAudioEnded}
       />
     </div>
   );

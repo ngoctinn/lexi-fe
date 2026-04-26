@@ -45,7 +45,10 @@ class MockWebSocket {
     this.readyState = MockWebSocket.CLOSED;
   }
 
-  send(_data: string) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  send(_data: string) {
+    // Mock implementation - data intentionally unused
+  }
 
   triggerOpen() {
     this.readyState = MockWebSocket.OPEN;

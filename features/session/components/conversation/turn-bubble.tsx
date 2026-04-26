@@ -66,6 +66,7 @@ interface TurnBubbleProps {
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
+  onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => Promise<void>;
   onAnalyze?: (turnIndex: number) => void;
   isPlaying?: boolean;
 }
@@ -75,6 +76,7 @@ export const TurnBubble = React.memo(function TurnBubble({
   onPlayAudio,
   onTranslate,
   onTranslateWord,
+  onSaveFlashcard,
   onAnalyze,
   isPlaying,
 }: TurnBubbleProps) {
@@ -95,8 +97,8 @@ export const TurnBubble = React.memo(function TurnBubble({
   const getToneConfig = () => {
     if (isUser) return null;
     
-    // Try to extract tone from content first: [warmly] text...
-    const contentMatch = turn.content.match(/^\[(\w+)\]\s*/);
+    // Try to extract tone from content (anywhere in text): [warmly], [encouragingly], etc.
+    const contentMatch = turn.content.match(/\[(\w+)\]/);
     const toneFromContent = contentMatch?.[1]?.toLowerCase();
     
     // Fallback to delivery_cue field
@@ -109,9 +111,9 @@ export const TurnBubble = React.memo(function TurnBubble({
 
   const toneConfig = getToneConfig();
 
-  // Clean content by removing delivery cue prefix
+  // Clean content by removing ALL tone tags [word]
   const getCleanContent = () => {
-    return turn.content.replace(/^\[\w+\]\s*/, "");
+    return turn.content.replace(/\[\w+\]\s*/g, "").trim();
   };
 
   const cleanContent = getCleanContent();
@@ -269,10 +271,16 @@ export const TurnBubble = React.memo(function TurnBubble({
                               variant="default"
                               size="sm"
                               className="w-full"
-                              onClick={() => setActiveWord(null)}
+                              onClick={async () => {
+                                if (onSaveFlashcard && activeWord) {
+                                  await onSaveFlashcard(turn.turn_index, wordTranslations[activeWord.word]);
+                                }
+                                setActiveWord(null);
+                              }}
+                              disabled={turn.is_saved_to_flashcard}
                             >
                               <BookmarkPlus className="size-4 mr-2" />
-                              Lưu flashcard
+                              {turn.is_saved_to_flashcard ? "Đã lưu" : "Lưu flashcard"}
                             </Button>
                           </div>
                         </div>
@@ -295,7 +303,7 @@ export const TurnBubble = React.memo(function TurnBubble({
       // Return spaces and punctuation as-is
       return <span key={index}>{token}</span>;
     });
-  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations]);
+  }, [handleWordClick, activeWord, isTranslatingWord, wordTranslations, onSaveFlashcard, turn.turn_index, turn.is_saved_to_flashcard]);
 
   // Track text selection to prevent word lookup when selecting
   const handleMouseDown = React.useCallback(() => {

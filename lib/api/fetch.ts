@@ -11,7 +11,6 @@
 import { cookies } from "next/headers";
 import { fetchAuthSession } from "aws-amplify/auth/server";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
-import type { ApiResponse } from "./types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 

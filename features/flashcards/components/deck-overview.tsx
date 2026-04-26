@@ -294,11 +294,8 @@ function QueueCard({ queue, now }: { queue: Flashcard[]; now: number | null }) {
 }
 
 export function FlashcardDeckOverview({ queue }: FlashcardDeckOverviewProps) {
-  const [now, setNow] = React.useState<number | null>(null);
-
-  React.useEffect(() => {
-    setNow(Date.now());
-  }, []);
+  // Use lazy initialization to get timestamp once
+  const [now] = React.useState<number | null>(() => Date.now());
 
   return (
     <main className="flex-1 px-4 py-4 md:px-6 md:py-8">

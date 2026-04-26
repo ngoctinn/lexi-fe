@@ -47,7 +47,6 @@ export function useSession({
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
 
-  const aiStreamingText = useSessionStore((s) => s.aiStreamingText);
   const lastSttResult = useSessionStore((s) => s.lastSttResult);
   const currentHint = useSessionStore((s) => s.currentHint);
   const hintHistory = useSessionStore((s) => s.hintHistory);
@@ -152,37 +151,19 @@ export function useSession({
     
     console.log("[useSession] requestHint proceeding - setting flag to true");
     state.setRequestHintInProgress(true);
-    console.log("[useSession] requestHint called", { sessionId });
     
-    // Clear old hint first
+    // Clear old hint - don't show loading state, wait for streaming
     setHint(null);
     
-    // Show loading state
-    setHint({
-      level: "Intermediate",
-      type: "guidance",
-      markdown: {
-        vi: "Đang lấy gợi ý...",
-        en: "Getting hint...",
-      },
-    });
-    
-    // Set timeout to clear loading state if no response
+    // Set timeout to reset flag if no response from backend
     const timeoutId = setTimeout(() => {
-      console.warn("[useSession] Hint request timeout");
-      state.setRequestHintInProgress(false);
-      setHint({
-        level: "Intermediate",
-        type: "guidance",
-        markdown: {
-          vi: "💡 Hệ thống gợi ý đang gặp sự cố tạm thời. Vui lòng thử lại sau vài giây.",
-          en: "💡 Hint system is temporarily unavailable. Please try again in a few seconds.",
-        },
-      });
-    }, 5000);
+      console.log("[useSession] requestHint timeout - resetting flag");
+      useSessionStore.getState().setRequestHintInProgress(false);
+      SessionService.handleError("Hint system is temporarily unavailable. Please try again in a few seconds.", "Hint");
+    }, 15000); // 15 second timeout
     
-    // Store timeout ID in ref to clear it when response arrives
-    state.setHintTimeoutId?.(timeoutId);
+    // Store timeout ID in state for cleanup
+    useSessionStore.getState().setHintTimeoutId(timeoutId);
     
     console.log("[useSession] Sending USE_HINT WebSocket message");
     send({ action: WsClientEvent.USE_HINT, session_id: sessionId });
@@ -269,24 +250,31 @@ export function useSession({
   const analyzeTurn = React.useCallback((turnIndex: number) => {
     const state = useSessionStore.getState();
     
-    // Check if this turn was already analyzed
-    if (state.analyzedTurns.has(turnIndex)) {
-      console.log("[useSession] Turn already analyzed, moving to top:", turnIndex);
-      
-      // Find the existing analysis
-      const existingAnalysis = state.analysisHistory.find(a => a.turnIndex === turnIndex);
-      if (existingAnalysis) {
-        // Remove from current position
-        state.removeAnalysisFromHistory(existingAnalysis.timestamp);
-        
-        // Add back to top with new timestamp
-        state.addAnalysisToHistory(turnIndex, existingAnalysis.markdown);
-      }
+    console.log("[useSession] analyzeTurn called for turn:", turnIndex, "currently analyzing:", state.analyzingTurnIndex);
+    
+    // If already analyzing this turn, ignore (prevent duplicate requests)
+    if (state.analyzingTurnIndex === turnIndex) {
+      console.log("[useSession] Turn already being analyzed, ignoring");
       return;
     }
     
-    // Clear old temp analysis first
-    state.setTempAnalysis(null);
+    // If turn was already analyzed, refresh it (send new request)
+    if (state.analyzedTurns.has(turnIndex)) {
+      console.log("[useSession] Turn already analyzed, refreshing analysis");
+      // Mark as analyzing
+      state.setAnalyzingTurnIndex(turnIndex);
+      // Send request to backend for fresh analysis
+      send({ 
+        action: WsClientEvent.ANALYZE_TURN, 
+        session_id: sessionId,
+        turn_index: turnIndex 
+      });
+      return;
+    }
+    
+    // New analysis request
+    console.log("[useSession] New analysis request for turn:", turnIndex);
+    state.setAnalyzingTurnIndex(turnIndex);
     
     // Send request to backend
     send({ 
@@ -370,7 +358,6 @@ export function useSession({
   return {
     ui: {
       turns,
-      aiStreamingText,
       isAiStreaming,
       lastSttResult,
       currentHint,

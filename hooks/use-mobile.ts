@@ -10,9 +10,17 @@ export function useIsMobile() {
     const onChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
     }
+    
+    // Set initial value in next tick to avoid cascading render
+    const timer = setTimeout(() => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }, 0)
+    
     mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
+    return () => {
+      clearTimeout(timer)
+      mql.removeEventListener("change", onChange)
+    }
   }, [])
 
   return !!isMobile

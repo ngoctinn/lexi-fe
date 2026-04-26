@@ -8,7 +8,6 @@ import type {
 
 interface SessionStoreState extends SessionUiState {
   setTurns: (turns: Turn[] | ((prev: Turn[]) => Turn[])) => void;
-  setAiStreamingText: (text: string | ((prev: string) => string)) => void;
   setAiStreaming: (isStreaming: boolean, text?: string) => void;
   setWsState: (state: WsConnectionState) => void;
   setRecorderState: (state: RecorderState) => void;
@@ -30,12 +29,12 @@ interface SessionStoreState extends SessionUiState {
   setStreamingError: (error: string | null) => void;
   setRequestHintInProgress: (inProgress: boolean) => void;
   setIsStartingSession: (isStarting: boolean) => void;
+  setAnalyzingTurnIndex: (turnIndex: number | null) => void;
   reset: () => void;
 }
 
 const initialState: SessionUiState = {
   turns: [],
-  aiStreamingText: "",
   isAiStreaming: false,
   lastSttResult: null,
   currentHint: null,
@@ -45,6 +44,7 @@ const initialState: SessionUiState = {
   tempAnalysis: null,
   analysisHistory: [],
   analyzedTurns: new Set(),
+  analyzingTurnIndex: null,
   hintPanelOpen: false,
   analysisPanelOpen: false,
   recorderState: "idle",
@@ -68,17 +68,10 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
       turns: typeof turns === "function" ? turns(state.turns) : turns,
     })),
 
-  setAiStreamingText: (text) =>
-    set((state) => ({
-      aiStreamingText:
-        typeof text === "function" ? text(state.aiStreamingText) : text,
-    })),
-
-  setAiStreaming: (isStreaming, text) =>
-    set((state) => ({
+  setAiStreaming: (isStreaming) =>
+    set({
       isAiStreaming: isStreaming,
-      aiStreamingText: text !== undefined ? text : state.aiStreamingText,
-    })),
+    }),
 
   setWsState: (wsState) => set({ wsState }),
 
@@ -90,17 +83,6 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
 
   addHintToHistory: (markdown) =>
     set((state) => {
-      // Deduplicate - check if this exact hint already exists
-      const isDuplicate = state.hintHistory.some(h => 
-        h.markdown.vi === markdown.vi && 
-        h.markdown.en === markdown.en
-      );
-      
-      if (isDuplicate) {
-        console.log("[store] Duplicate hint detected, skipping add");
-        return state;
-      }
-      
       return {
         hintHistory: [
           { timestamp: Date.now(), markdown },
@@ -150,6 +132,8 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
   setRequestHintInProgress: (requestHintInProgress) => set({ requestHintInProgress }),
 
   setIsStartingSession: (isStartingSession) => set({ isStartingSession }),
+
+  setAnalyzingTurnIndex: (analyzingTurnIndex) => set({ analyzingTurnIndex }),
 
   reset: () => set(initialState),
 }));
