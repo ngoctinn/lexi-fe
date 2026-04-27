@@ -240,8 +240,8 @@ export function UsersManagement({ users }: UsersManagementProps) {
       })
       .sort(
         (left, right) =>
-          new Date(right.updated_at).getTime() -
-          new Date(left.updated_at).getTime(),
+          new Date(right.updated_at || "").getTime() -
+          new Date(left.updated_at || "").getTime(),
       );
   }, [query, records, statusFilter]);
 
@@ -288,17 +288,17 @@ export function UsersManagement({ users }: UsersManagementProps) {
         ...draft,
         display_name: draft.display_name.trim(),
         email: draft.email.trim(),
-        learning_goal_text: draft.learning_goal_text.trim(),
+        learning_goal_text: (draft.learning_goal_text || "").trim(),
         learning_goal: draft.target_level,
-        notes: draft.notes.trim(),
+        notes: (draft.notes || "").trim(),
       });
 
-      if (!result.success || !result.user) {
+      if (!result.success || !result.data) {
         toast.error(result.error ?? "Không thể lưu người dùng.");
         return;
       }
 
-      const savedUser = result.user;
+      const savedUser = result.data;
 
       setLocalUpdates((current) => {
         const exists = current.some((item) => item.id === savedUser.id);
@@ -416,7 +416,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
               <TableBody>
                 {visibleUsers.length > 0 ? (
                   visibleUsers.map((user) => {
-                    const statusMeta = getStatusMeta(user.status);
+                    const statusMeta = getStatusMeta(user.status || "active");
 
                     return (
                       <TableRow key={user.id}>

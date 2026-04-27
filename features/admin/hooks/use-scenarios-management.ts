@@ -33,6 +33,7 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
     usage_count: 0,
     difficulty_level: "A2",
     order,
+    created_at: finalNow,
     updated_at: finalNow,
     notes: "",
   };
@@ -170,12 +171,12 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
         notes: draft.notes.trim(),
       });
 
-      if (!result.success || !result.scenario) {
+      if (!result.success || !result.data) {
         toast.error(result.error ?? "Không thể lưu kịch bản.");
         return;
       }
 
-      const updatedScenario = result.scenario;
+      const updatedScenario = result.data;
 
       setLocalUpdates((current) => {
         const exists = current.some(
@@ -211,12 +212,12 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
         is_active: !scenario.is_active,
       });
 
-      if (!result.success || !result.scenario) {
+      if (!result.success || !result.data) {
         toast.error(result.error ?? "Không thể cập nhật trạng thái.");
         return;
       }
 
-      const updatedScenario = result.scenario;
+      const updatedScenario = result.data;
 
       setLocalUpdates((current) => {
         const exists = current.some(

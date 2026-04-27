@@ -29,6 +29,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { translateCognitoError } from "../utils/auth-errors";
 import { signupSchema, type SignupSchema } from "../schemas";
 import { PasswordInput } from "./password-input";
+import { GoogleLoginButton } from "./google-login-button";
+import { Separator } from "@/components/ui/separator";
 
 type SignupFormProps = React.ComponentProps<"div">;
 
@@ -92,7 +94,17 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
           </div>
         </CardHeader>
         <CardContent className="px-5 pt-0 sm:px-6">
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="mb-6">
+            <GoogleLoginButton disabled={isSubmitting} />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">hoặc</span>
+            <Separator className="flex-1" />
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6">
             <FieldGroup>
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email" className="text-foreground/80">

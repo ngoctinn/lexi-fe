@@ -157,7 +157,7 @@ export function FlashcardCard({
             <section className="space-y-2">
               <p className="text-sm font-bold text-foreground">Định nghĩa</p>
               <p className="max-w-2xl text-base leading-relaxed text-foreground/90">
-                {card.definition_vi || "Chưa có định nghĩa"}
+                {(card as any).definition_vi || "Chưa có định nghĩa"}
               </p>
             </section>
 

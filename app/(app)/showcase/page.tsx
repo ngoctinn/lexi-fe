@@ -7,6 +7,8 @@ export const metadata = {
   title: "UI Components Showcase - Lexi",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function ShowcasePage() {
   return (
     <div className="flex flex-1 flex-col">

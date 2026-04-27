@@ -5,6 +5,7 @@ import type {
   WsConnectionState,
   RecorderState,
 } from "../types/session.types";
+import { TurnSpeaker } from "../types/session.types";
 
 interface SessionStoreState extends SessionUiState {
   transcribeUrl: string | null;
@@ -75,7 +76,7 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
         // Create new partial turn
         turns.push({
           turn_index: -1, // Temporary index
-          speaker: "USER" as const,
+          speaker: TurnSpeaker.USER,
           content,
           is_hint_used: false,
           is_pending: true,

@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-lexife-dev-bd725-authRole",
+      "UnauthRoleArn": "arn:aws:iam::826229823693:role/amplify-lexife-dev-bd725-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::826229823693:role/amplify-lexife-dev-bd725-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-lexife-dev-bd725-deployment",
+      "UnauthRoleName": "amplify-lexife-dev-bd725-unauthRole",
+      "StackName": "amplify-lexife-dev-bd725",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:826229823693:stack/amplify-lexife-dev-bd725/eff3f490-4252-11f1-b7e9-0a7992b33b7f",
+      "AmplifyAppId": "do08vxm6ounn6"
+    }
+  }
+}
