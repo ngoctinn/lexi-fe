@@ -11,7 +11,6 @@ interface SaveFlashcardFromSessionInput {
   source_text: string;
   translated_text: string;
   translation_vi?: string;
-  definition_vi?: string;
   part_of_speech?: string;
   phonetic?: string;
   audio_url?: string;
@@ -105,10 +104,9 @@ export async function saveFlashcardFromSession(
   >("/flashcards", {
     method: "POST",
     body: JSON.stringify({
-      vocab: sourceText,
-      vocab_type: input.part_of_speech || "phrase",
+      word: sourceText,
+      word_type: input.part_of_speech || "phrase",
       translation_vi: input.translation_vi || translatedText,
-      definition_vi: input.definition_vi,
       phonetic: input.phonetic,
       audio_url: input.audio_url,
       example_sentence: input.example_sentence || sourceText,

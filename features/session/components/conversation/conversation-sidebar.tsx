@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   Globe,
   X,
+  Loader2,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
@@ -235,119 +237,6 @@ export function ConversationSidebar({
             </div>
 
             <div className="flex-1 overflow-y-auto min-h-0 -mx-1 px-1 space-y-3" ref={scrollAreaRef}>
-              {/* Current Analysis (streaming - show first) */}
-              {tempAnalysis && tempAnalysis.markdown.vi && (
-                <Alert variant="info" className="bg-sky-50/80 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-800/50 relative">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <div className="text-xs font-semibold text-sky-600 dark:text-sky-400 mb-2">
-                        Phân tích Turn #{tempAnalysis.turnIndex}
-                      </div>
-                      <AlertDescription className="flex-1 text-base font-medium text-sky-900 dark:text-sky-100">
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                              p: ({ children }) => (
-                                <span className="block mb-2 last:mb-0 leading-relaxed text-base">
-                                  {children}
-                                </span>
-                              ),
-                              code: ({ children }) => (
-                                <code className="px-1.5 py-0.5 rounded-md bg-sky-100/50 dark:bg-sky-900/50 font-mono text-sm font-bold border border-sky-200/50 dark:border-sky-700/50">
-                                  {children}
-                                </code>
-                              ),
-                              pre: ({ children }) => (
-                                <pre className="p-2 rounded-lg bg-sky-100/30 dark:bg-sky-900/30 border border-sky-200/50 dark:border-sky-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
-                                  {children}
-                                </pre>
-                              ),
-                              ul: ({ children }) => (
-                                <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
-                                  {children}
-                                </ul>
-                              ),
-                              ol: ({ children }) => (
-                                <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
-                                  {children}
-                                </ol>
-                              ),
-                              li: ({ children }) => (
-                                <li className="text-base">
-                                  {children}
-                                </li>
-                              ),
-                            }}
-                          >
-                            {language === "vi" ? tempAnalysis.markdown.vi : tempAnalysis.markdown.en}
-                          </ReactMarkdown>
-                        </div>
-                      </AlertDescription>
-                    </div>
-                  </div>
-                </Alert>
-              )}
-
-              {!tempAnalysis && currentHint && (
-                <Alert variant="warning" className="relative bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-800/50">
-                  <div className="absolute top-2 right-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const state = useSessionStore.getState();
-                        state.setHint(null);
-                      }}
-                      className="h-6 w-6 p-0"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  <AlertDescription className="text-base font-medium text-amber-900 dark:text-amber-100 pr-24">
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          p: ({ children }) => (
-                            <span className="block mb-2 last:mb-0 leading-relaxed text-base">
-                              {children}
-                            </span>
-                          ),
-                          code: ({ children }) => (
-                            <code className="px-1.5 py-0.5 rounded-md bg-amber-100/50 dark:bg-amber-900/50 font-mono text-sm font-bold border border-amber-200/50 dark:border-amber-700/50">
-                              {children}
-                            </code>
-                          ),
-                          pre: ({ children }) => (
-                            <pre className="p-2 rounded-lg bg-amber-100/30 dark:bg-amber-900/30 border border-amber-200/50 dark:border-amber-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
-                              {children}
-                            </pre>
-                          ),
-                          ul: ({ children }) => (
-                            <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
-                              {children}
-                            </ul>
-                          ),
-                          ol: ({ children }) => (
-                            <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
-                              {children}
-                            </ol>
-                          ),
-                          li: ({ children }) => (
-                            <li className="text-base">
-                              {children}
-                            </li>
-                          ),
-                        }}
-                      >
-                        {language === "vi" ? currentHint.markdown.vi : currentHint.markdown.en}
-                      </ReactMarkdown>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
-
               {/* History items (sorted by timestamp, newest first) */}
               {[
                 ...analysisHistory.map(a => ({ type: 'analysis' as const, ...a })),
@@ -360,12 +249,18 @@ export function ConversationSidebar({
                       <Alert 
                         key={`analysis-${item.timestamp}`}
                         variant="info"
-                        className="bg-sky-50/80 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-800/50"
+                        className="bg-sky-50/80 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-800/50 animate-in fade-in slide-in-from-top-2 duration-300"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <div className="text-xs font-semibold text-sky-600 dark:text-sky-400 mb-2">
-                              Phân tích Turn #{item.turnIndex}
+                            <div className="flex items-center gap-2 mb-3">
+                              <Badge variant="secondary" className="bg-sky-200/60 dark:bg-sky-800/60 text-sky-700 dark:text-sky-200 text-xs font-bold">
+                                <Sparkles className="h-3 w-3 mr-1" />
+                                Analyst
+                              </Badge>
+                              <span className="text-xs font-semibold text-sky-600 dark:text-sky-400">
+                                Turn #{item.turnIndex}
+                              </span>
                             </div>
                             <AlertDescription className="flex-1 text-base font-medium text-sky-900 dark:text-sky-100">
                               <div className="prose prose-sm dark:prose-invert max-w-none">
@@ -427,57 +322,65 @@ export function ConversationSidebar({
                       <Alert 
                         key={`hint-${item.timestamp}`}
                         variant="warning" 
-                        className="relative bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-800/50"
+                        className="bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-800/50 animate-in fade-in slide-in-from-top-2 duration-300"
                       >
-                        <AlertDescription className="text-base font-medium text-amber-900 dark:text-amber-100 pr-8">
-                          <div className="prose prose-sm dark:prose-invert max-w-none">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                p: ({ children }) => (
-                                  <span className="block mb-2 last:mb-0 leading-relaxed text-base">
-                                    {children}
-                                  </span>
-                                ),
-                                code: ({ children }) => (
-                                  <code className="px-1.5 py-0.5 rounded-md bg-amber-100/50 dark:bg-amber-900/50 font-mono text-sm font-bold border border-amber-200/50 dark:border-amber-700/50">
-                                    {children}
-                                  </code>
-                                ),
-                                pre: ({ children }) => (
-                                  <pre className="p-2 rounded-lg bg-amber-100/30 dark:bg-amber-900/30 border border-amber-200/50 dark:border-amber-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
-                                    {children}
-                                  </pre>
-                                ),
-                                ul: ({ children }) => (
-                                  <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
-                                    {children}
-                                  </ul>
-                                ),
-                                ol: ({ children }) => (
-                                  <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
-                                    {children}
-                                  </ol>
-                                ),
-                                li: ({ children }) => (
-                                  <li className="text-base">
-                                    {children}
-                                  </li>
-                                ),
-                              }}
-                            >
-                              {language === "vi" ? item.markdown.vi : item.markdown.en}
-                            </ReactMarkdown>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Badge variant="secondary" className="bg-amber-200/60 dark:bg-amber-800/60 text-amber-700 dark:text-amber-200 text-xs font-bold">
+                                <Lightbulb className="h-3 w-3 mr-1" />
+                                Hint
+                              </Badge>
+                            </div>
+                            <AlertDescription className="text-base font-medium text-amber-900 dark:text-amber-100">
+                              <div className="prose prose-sm dark:prose-invert max-w-none">
+                                <ReactMarkdown
+                                  remarkPlugins={[remarkGfm]}
+                                  components={{
+                                    p: ({ children }) => (
+                                      <span className="block mb-2 last:mb-0 leading-relaxed text-base">
+                                        {children}
+                                      </span>
+                                    ),
+                                    code: ({ children }) => (
+                                      <code className="px-1.5 py-0.5 rounded-md bg-amber-100/50 dark:bg-amber-900/50 font-mono text-sm font-bold border border-amber-200/50 dark:border-amber-700/50">
+                                        {children}
+                                      </code>
+                                    ),
+                                    pre: ({ children }) => (
+                                      <pre className="p-2 rounded-lg bg-amber-100/30 dark:bg-amber-900/30 border border-amber-200/50 dark:border-amber-700/50 my-2 last:mb-0 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+                                        {children}
+                                      </pre>
+                                    ),
+                                    ul: ({ children }) => (
+                                      <ul className="list-disc list-inside space-y-1 mb-2 last:mb-0">
+                                        {children}
+                                      </ul>
+                                    ),
+                                    ol: ({ children }) => (
+                                      <ol className="list-decimal list-inside space-y-1 mb-2 last:mb-0">
+                                        {children}
+                                      </ol>
+                                    ),
+                                    li: ({ children }) => (
+                                      <li className="text-base">
+                                        {children}
+                                      </li>
+                                    ),
+                                  }}
+                                >
+                                  {language === "vi" ? item.markdown.vi : item.markdown.en}
+                                </ReactMarkdown>
+                              </div>
+                            </AlertDescription>
                           </div>
-                        </AlertDescription>
-                        <div className="absolute top-2 right-2">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => {
                               useSessionStore.getState().removeHintFromHistory(item.timestamp);
                             }}
-                            className="h-6 w-6 p-0"
+                            className="h-6 w-6 p-0 shrink-0"
                           >
                             <X className="h-3 w-3" />
                           </Button>
@@ -488,7 +391,7 @@ export function ConversationSidebar({
                 })}
 
               {/* Empty state when AI is streaming */}
-              {!tempAnalysis && !currentHint && hintHistory.length === 0 && analysisHistory.length === 0 && isAiStreaming && (
+              {hintHistory.length === 0 && analysisHistory.length === 0 && isAiStreaming && (
                 <div className="flex flex-col items-center justify-center py-12 gap-4 animate-in fade-in duration-500">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-amber-200/50 animate-ping" />
@@ -503,7 +406,7 @@ export function ConversationSidebar({
               )}
 
               {/* Empty state when idle */}
-              {!tempAnalysis && !currentHint && hintHistory.length === 0 && analysisHistory.length === 0 && !isAiStreaming && (
+              {hintHistory.length === 0 && analysisHistory.length === 0 && !isAiStreaming && (
                 <div className="py-20 text-center animate-in fade-in duration-700">
                   <p className="text-xs text-muted-foreground/40 font-medium tracking-tight">
                     AI đang chờ để phân tích...

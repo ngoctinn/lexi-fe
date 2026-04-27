@@ -28,28 +28,26 @@ export enum WsClientEvent {
   SKIP_TURN = "SKIP_TURN",
   END_SESSION = "END_SESSION",
   SEND_MESSAGE = "SEND_MESSAGE",
-  START_STREAMING = "START_STREAMING",
-  AUDIO_CHUNK = "AUDIO_CHUNK",
-  END_STREAMING = "END_STREAMING",
+  // Legacy streaming events (removed in STT migration)
+  // START_STREAMING = "START_STREAMING",
+  // AUDIO_CHUNK = "AUDIO_CHUNK",
+  // END_STREAMING = "END_STREAMING",
+  GET_TRANSCRIBE_URL = "GET_TRANSCRIBE_URL",
   SUBMIT_TRANSCRIPT = "SUBMIT_TRANSCRIPT",
   ANALYZE_TURN = "ANALYZE_TURN",
 }
 
 export enum WsServerEvent {
   SESSION_READY = "SESSION_READY",
-  STT_RESULT = "STT_RESULT",
-  STT_LOW_CONFIDENCE = "STT_LOW_CONFIDENCE",
   AI_TEXT_CHUNK = "AI_TEXT_CHUNK",
+  AI_RESPONSE = "AI_RESPONSE",
   AI_AUDIO_URL = "AI_AUDIO_URL",
   TURN_SAVED = "TURN_SAVED",
   HINT_TEXT = "HINT_TEXT",
   TURN_ANALYSIS = "TURN_ANALYSIS",
   SCORING_COMPLETE = "SCORING_COMPLETE",
   ERROR = "ERROR",
-  STREAMING_READY = "STREAMING_READY",
-  PARTIAL_TRANSCRIPT = "PARTIAL_TRANSCRIPT",
-  FINAL_TRANSCRIPT = "FINAL_TRANSCRIPT",
-  STT_ERROR = "STT_ERROR",
+  TRANSCRIBE_URL = "TRANSCRIBE_URL",
 }
 
 export interface Scenario {
@@ -73,6 +71,7 @@ export interface Turn {
   is_hint_used: boolean;
   is_saved_to_flashcard?: boolean;
   is_pending?: boolean;
+  is_partial?: boolean; // For real-time partial transcripts
   // Phase 5: Performance & Quality Metrics
   ttft_ms?: number | null;
   latency_ms?: number | null;
@@ -161,19 +160,8 @@ export interface WsSendMessagePayload {
   text: string;
 }
 
-export interface WsStartStreamingPayload {
-  action: WsClientEvent.START_STREAMING;
-  session_id: string;
-}
-
-export interface WsAudioChunkPayload {
-  action: WsClientEvent.AUDIO_CHUNK;
-  session_id: string;
-  data: number[];
-}
-
-export interface WsEndStreamingPayload {
-  action: WsClientEvent.END_STREAMING;
+export interface WsGetTranscribeUrlPayload {
+  action: WsClientEvent.GET_TRANSCRIBE_URL;
   session_id: string;
 }
 
@@ -196,9 +184,7 @@ export type WsClientPayload =
   | WsUseHintPayload
   | WsEndSessionPayload
   | WsSendMessagePayload
-  | WsStartStreamingPayload
-  | WsAudioChunkPayload
-  | WsEndStreamingPayload
+  | WsGetTranscribeUrlPayload
   | WsSubmitTranscriptPayload
   | WsAnalyzeTurnPayload;
 
@@ -208,21 +194,15 @@ export interface WsSessionReadyEvent {
   s3_key: string;
 }
 
-export interface WsSttResultEvent {
-  event: WsServerEvent.STT_RESULT;
-  text: string;
-  confidence: number;
-}
-
-export interface WsSttLowConfidenceEvent {
-  event: WsServerEvent.STT_LOW_CONFIDENCE;
-  confidence: number;
-}
-
 export interface WsAiTextChunkEvent {
   event: WsServerEvent.AI_TEXT_CHUNK;
   chunk: string;
   done: boolean;
+}
+
+export interface WsAiResponseEvent {
+  event: WsServerEvent.AI_RESPONSE;
+  text: string;
 }
 
 export interface WsAiAudioUrlEvent {
@@ -274,43 +254,26 @@ export interface WsErrorEvent {
   code?: string;
 }
 
-export interface WsStreamingReadyEvent {
-  event: WsServerEvent.STREAMING_READY;
-  session_id: string;
-}
-
-export interface WsPartialTranscriptEvent {
-  event: WsServerEvent.PARTIAL_TRANSCRIPT;
-  text: string;
-  confidence: number;
-}
-
-export interface WsFinalTranscriptEvent {
-  event: WsServerEvent.FINAL_TRANSCRIPT;
-  text: string;
-  confidence: number;
-}
-
-export interface WsSttErrorEvent {
-  event: WsServerEvent.STT_ERROR;
-  message: string;
+export interface WsTranscribeUrlEvent {
+  event: WsServerEvent.TRANSCRIBE_URL;
+  url: string;
+  expires_in: number;
+  language_code: string;
+  media_encoding: string;
+  sample_rate: number;
 }
 
 export type WsServerPayload =
   | WsSessionReadyEvent
-  | WsSttResultEvent
-  | WsSttLowConfidenceEvent
   | WsAiTextChunkEvent
+  | WsAiResponseEvent
   | WsAiAudioUrlEvent
   | WsTurnSavedEvent
   | WsHintTextEvent
   | WsTurnAnalysisEvent
   | WsScoringCompleteEvent
   | WsErrorEvent
-  | WsStreamingReadyEvent
-  | WsPartialTranscriptEvent
-  | WsFinalTranscriptEvent
-  | WsSttErrorEvent;
+  | WsTranscribeUrlEvent;
 
 export type RecorderState =
   | "idle"
@@ -330,7 +293,6 @@ export type WsConnectionState =
 export interface SessionUiState {
   turns: Turn[];
   isAiStreaming: boolean;
-  lastSttResult: { text: string; confidence: number } | null;
   currentHint: {
     level: string;
     type: string;
@@ -376,12 +338,6 @@ export interface SessionUiState {
   wsState: WsConnectionState;
   currentAudioUrl: string | null;
   isControlsDisabled?: boolean;
-  streamingTranscript?: {
-    finalText: string;
-    partialText: string;
-    isStreaming: boolean;
-  };
-  streamingError?: string | null;
   requestHintInProgress?: boolean;
   isStartingSession?: boolean;
   analyzingTurnIndex?: number | null;

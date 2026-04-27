@@ -14,7 +14,7 @@ export interface Flashcard {
 
   // Vocabulary Data
   word_type?: string; // Loại từ (n, v, adj...)
-  definition_vi?: string; // Định nghĩa tiếng Việt
+  translation_vi?: string; // Bản dịch tiếng Việt
   phonetic?: string; // Cách phát âm (IPA)
   audio_url?: string; // Audio
   example_sentence?: string; // Câu ví dụ mẫu

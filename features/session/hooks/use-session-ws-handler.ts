@@ -8,51 +8,32 @@ import { SessionService } from "@/features/session/api/session.service";
 
 export function useSessionWsHandler() {
   const setTurns = useSessionStore((s) => s.setTurns);
-  const setLastSttResult = useSessionStore((s) => s.setLastSttResult);
-  const setRecorderState = useSessionStore((s) => s.setRecorderState);
   const setAiStreaming = useSessionStore((s) => s.setAiStreaming);
-  const setHint = useSessionStore((s) => s.setHint);
   const setHintPanelOpen = useSessionStore((s) => s.setHintPanelOpen);
   const setCurrentAudioUrl = useSessionStore((s) => s.setCurrentAudioUrl);
-  const setStreamingTranscript = useSessionStore((s) => s.setStreamingTranscript);
-  const setStreamingError = useSessionStore((s) => s.setStreamingError);
 
-  // Accumulate full response before rendering
+  // Accumulate AI text response before rendering
   const aiTextAccumRef = React.useRef<string>("");
-  const hintAccumRef = React.useRef<{ vi: string; en: string }>({ vi: "", en: "" });
-  const analysisAccumRef = React.useRef<{ vi: string; en: string }>({ vi: "", en: "" });
 
   const handleWsMessage = React.useCallback(
     (event: WsServerPayload) => {
       console.log("[ws-handler] Received message:", JSON.stringify(event).substring(0, 200));
-      
-      if (!('event' in event)) {
+
+      if (!("event" in event)) {
         console.warn("[ws-handler] Invalid message format (missing event field):", event);
         return;
       }
-      
+
       console.log("[ws-handler] Processing event:", event.event);
-      
+
       switch (event.event) {
         case WsServerEvent.SESSION_READY:
           console.log("[ws-handler] SESSION_READY");
           break;
 
-        case WsServerEvent.STT_RESULT:
-          console.log("[ws-handler] STT_RESULT:", event.text);
-          setLastSttResult({ text: event.text, confidence: event.confidence });
-          break;
-
-        case WsServerEvent.STT_LOW_CONFIDENCE:
-          console.log("[ws-handler] STT_LOW_CONFIDENCE");
-          setLastSttResult({ text: "", confidence: event.confidence });
-          setStreamingError("Không thể hiểu rõ. Vui lòng thử lại.");
-          setRecorderState("idle");
-          break;
-
         case WsServerEvent.AI_TEXT_CHUNK: {
           console.log("[ws-handler] AI_TEXT_CHUNK - done:", event.done);
-          
+
           if (event.done) {
             // Render full response when done
             const finalText = aiTextAccumRef.current;
@@ -60,16 +41,20 @@ export function useSessionWsHandler() {
             const audioUrl = state.currentAudioUrl;
 
             if (finalText.trim().length > 0) {
-              setTurns((prev: Turn[]) => [
-                ...prev,
-                {
-                  turn_index: prev.length,
-                  speaker: TurnSpeaker.AI,
-                  content: finalText,
-                  audio_url: audioUrl,
-                  is_hint_used: false,
-                },
-              ]);
+              setTurns((prev: Turn[]) => {
+                // Calculate turn_index excluding partial turns
+                const nextTurnIndex = prev.filter(t => !t.is_partial).length;
+                return [
+                  ...prev,
+                  {
+                    turn_index: nextTurnIndex,
+                    speaker: TurnSpeaker.AI,
+                    content: finalText,
+                    audio_url: audioUrl,
+                    is_hint_used: false,
+                  },
+                ];
+              });
             }
 
             // Reset state
@@ -84,15 +69,51 @@ export function useSessionWsHandler() {
           break;
         }
 
+        case WsServerEvent.AI_RESPONSE: {
+          console.log("[ws-handler] AI_RESPONSE:", event.text?.substring(0, 100));
+
+          const state = useSessionStore.getState();
+          const audioUrl = state.currentAudioUrl;
+
+          if (event.text?.trim()) {
+            setTurns((prev: Turn[]) => {
+              // Calculate turn_index excluding partial turns
+              const nextTurnIndex = prev.filter(t => !t.is_partial).length;
+              return [
+                ...prev,
+                {
+                  turn_index: nextTurnIndex,
+                  speaker: TurnSpeaker.AI,
+                  content: event.text,
+                  audio_url: audioUrl,
+                  is_hint_used: false,
+                },
+              ];
+            });
+          }
+
+          setAiStreaming(false, "");
+          break;
+        }
+
         case WsServerEvent.TURN_SAVED:
           console.log("[ws-handler] TURN_SAVED:", event.turn_index);
-          setTurns((prev: Turn[]) =>
-            prev.map((turn: Turn) =>
-              turn.turn_index === event.turn_index
-                ? { ...turn, is_pending: false }
-                : turn,
-            ),
-          );
+          // Mark the turn as no longer pending (fully saved)
+          // Find turn by actual position (excluding partials), not by turn_index field
+          setTurns((prev: Turn[]) => {
+            let actualIndex = 0;
+            const updated = prev.map((turn: Turn) => {
+              const isMatch = !turn.is_partial && actualIndex === event.turn_index;
+              if (!turn.is_partial) {
+                actualIndex++;
+              }
+              if (isMatch) {
+                console.log("[ws-handler] Clearing is_pending for turn at position:", event.turn_index, "content:", turn.content.substring(0, 30));
+              }
+              return isMatch ? { ...turn, is_pending: false } : turn;
+            });
+            return updated;
+          });
           break;
 
         case WsServerEvent.AI_AUDIO_URL:
@@ -114,135 +135,62 @@ export function useSessionWsHandler() {
           break;
 
         case WsServerEvent.HINT_TEXT: {
-          console.log("[ws-handler] HINT_TEXT - done:", event.isDone);
-          
+          console.log("[ws-handler] HINT_TEXT received");
+
           const hintState = useSessionStore.getState();
-          
+
           // Clear timeout when hint is received
           if (hintState.hintTimeoutId) {
             clearTimeout(hintState.hintTimeoutId);
             hintState.setHintTimeoutId(null);
           }
-          
+
           if (hintState.requestHintInProgress) {
             hintState.setRequestHintInProgress(false);
           }
-          
-          if (event.isDone === true) {
-            // Render full hint when done
-            const finalMarkdown = {
-              vi: hintAccumRef.current.vi + event.hint.markdown.vi,
-              en: hintAccumRef.current.en + event.hint.markdown.en,
-            };
-            
-            const finalHint = {
-              level: event.hint.level || "Intermediate",
-              type: event.hint.type || "guidance",
-              markdown: finalMarkdown,
-            };
-            
-            hintState.addHintToHistory(finalHint.markdown);
-            setHint(null);
-            setHintPanelOpen(true);
-            hintAccumRef.current = { vi: "", en: "" };
-          } else {
-            // Accumulate chunk and show loading
-            hintAccumRef.current.vi += event.hint.markdown.vi;
-            hintAccumRef.current.en += event.hint.markdown.en;
-            
-            setHint({
-              level: event.hint.level || "Intermediate",
-              type: event.hint.type || "guidance",
-              markdown: hintAccumRef.current,
-            });
-          }
+
+          // Backend sends complete hint in one message - add directly to history
+          hintState.addHintToHistory({
+            vi: event.hint.markdown.vi,
+            en: event.hint.markdown.en,
+          });
+
+          setHintPanelOpen(true);
           break;
         }
 
         case WsServerEvent.TURN_ANALYSIS: {
-          console.log("[ws-handler] TURN_ANALYSIS - done:", event.isDone);
-          
+          console.log("[ws-handler] TURN_ANALYSIS received");
+
           const analysisState = useSessionStore.getState();
-          const turnIndex = event.turn_index ?? 
-            (analysisState.turns.length > 0 ? analysisState.turns[analysisState.turns.length - 1].turn_index : 0);
-          
-          if (event.isDone === true) {
-            // Render full analysis when done
-            const finalMarkdown = {
-              vi: analysisAccumRef.current.vi + event.analysis.markdown.vi,
-              en: analysisAccumRef.current.en + event.analysis.markdown.en,
-            };
-            
-            if (finalMarkdown.vi || finalMarkdown.en) {
-              analysisState.addAnalysisToHistory(turnIndex, finalMarkdown);
-            }
-            analysisAccumRef.current = { vi: "", en: "" };
-            analysisState.setTempAnalysis(null);
-            // Clear analyzing flag
-            analysisState.setAnalyzingTurnIndex(null);
-          } else {
-            // Accumulate chunk and show loading
-            analysisAccumRef.current.vi += event.analysis.markdown.vi;
-            analysisAccumRef.current.en += event.analysis.markdown.en;
-            
-            if (!analysisState.tempAnalysis?.turnIndex) {
-              analysisState.setTempAnalysis({
-                turnIndex,
-                markdown: { vi: "", en: "" },
-              });
-            }
-            
-            analysisState.setTempAnalysis({
-              turnIndex,
-              markdown: analysisAccumRef.current,
-            });
-          }
+          const turnIndex =
+            event.turn_index ??
+            (analysisState.turns.length > 0
+              ? analysisState.turns[analysisState.turns.length - 1].turn_index
+              : 0);
+
+          // Backend sends complete analysis in one message - add directly to history
+          analysisState.addAnalysisToHistory(turnIndex, {
+            vi: event.analysis.markdown.vi,
+            en: event.analysis.markdown.en,
+          });
+
+          // Clear analyzing flag
+          analysisState.setAnalyzingTurnIndex(null);
           break;
         }
 
         case WsServerEvent.ERROR:
           console.error("[ws-handler] ERROR:", event.message);
-          if (event.message && event.message.toLowerCase().includes("hint")) {
-            setHint(null);
-            setHintPanelOpen(false);
-            // Reset hint request flag on error
-            const hintState = useSessionStore.getState();
-            
-            // Clear timeout
-            if (hintState.hintTimeoutId) {
-              clearTimeout(hintState.hintTimeoutId);
-              hintState.setHintTimeoutId(null);
-            }
-            
-            hintState.setRequestHintInProgress(false);
-          }
           SessionService.handleError(event.message, "WebSocket");
           break;
 
-        case WsServerEvent.STREAMING_READY:
-          console.log("[ws-handler] STREAMING_READY");
+        case WsServerEvent.TRANSCRIBE_URL: {
+          console.log("[ws-handler] TRANSCRIBE_URL received");
+          // Store the URL in session store for the recorder to pick up
+          useSessionStore.getState().setTranscribeUrl(event.url);
           break;
-
-        case WsServerEvent.PARTIAL_TRANSCRIPT:
-          console.log("[ws-handler] PARTIAL_TRANSCRIPT");
-          setStreamingTranscript(
-            useSessionStore.getState().streamingTranscript?.finalText || "",
-            event.text,
-            true
-          );
-          break;
-
-        case WsServerEvent.FINAL_TRANSCRIPT:
-          console.log("[ws-handler] FINAL_TRANSCRIPT");
-          setStreamingTranscript(event.text, "", false);
-          setLastSttResult({ text: event.text, confidence: event.confidence });
-          break;
-
-        case WsServerEvent.STT_ERROR:
-          console.error("[ws-handler] STT_ERROR");
-          setStreamingError(event.message);
-          setRecorderState("idle");
-          break;
+        }
 
         case WsServerEvent.SCORING_COMPLETE:
           console.log("[ws-handler] SCORING_COMPLETE");
@@ -255,14 +203,9 @@ export function useSessionWsHandler() {
     },
     [
       setTurns,
-      setLastSttResult,
-      setRecorderState,
       setAiStreaming,
-      setHint,
       setHintPanelOpen,
       setCurrentAudioUrl,
-      setStreamingTranscript,
-      setStreamingError,
     ],
   );
 

@@ -23,6 +23,7 @@ import { Menu } from "lucide-react";
 interface ConversationScreenProps {
   sessionId: string;
   idToken: string;
+  sessionLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
   initialTurns?: Turn[];
   scenarioTitle?: string;
   aiCharacter?: string;
@@ -36,6 +37,7 @@ interface ConversationScreenProps {
 export function ConversationScreen({
   sessionId,
   idToken,
+  sessionLevel,
   initialTurns,
   scenarioTitle = "Phiên luyện nói",
   aiCharacter = "AI Assistant",
@@ -50,14 +52,16 @@ export function ConversationScreen({
     console.log("[ConversationScreen] Mounted with:", {
       sessionId: sessionId?.substring(0, 8) + "..." || "undefined",
       idTokenLength: idToken?.length || 0,
+      sessionLevel,
       hasInitialTurns: (initialTurns?.length || 0) > 0,
       isNewSession,
     });
-  }, [sessionId, idToken, initialTurns, isNewSession]);
+  }, [sessionId, idToken, sessionLevel, initialTurns, isNewSession]);
 
   const { ui, actions } = useSession({
     sessionId,
     idToken,
+    sessionLevel,
     initialTurns,
     isNewSession,
   });
@@ -73,6 +77,7 @@ export function ConversationScreen({
   const {
     startSession,
     toggleMic,
+    cancelRecording,
     requestHint,
     analyzeTurn,
     translateTurn,
@@ -178,6 +183,7 @@ export function ConversationScreen({
               onValueChange={setInputValue}
               onSendMessage={sendMessage}
               onToggleMic={toggleMic}
+              onCancelRecording={cancelRecording}
               recorderState={ui.recorderState}
               disabled={ui.isControlsDisabled || isSessionCompleted}
             />

@@ -232,6 +232,7 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
     <ConversationScreen
       sessionId={validSessionId}
       idToken={idToken ?? ""}
+      sessionLevel={session.level}
       initialTurns={session.turns ?? []}
       initialSummary={initialSummary}
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}

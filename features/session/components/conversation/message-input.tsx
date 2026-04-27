@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { SendHorizontal } from "lucide-react";
+import { SendHorizontal, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -14,10 +14,12 @@ import {
 import { MicButton } from "./mic-button";
 import type { RecorderState } from "@/features/session/types/session.types";
 import { useSessionStore } from "@/features/session/stores/use-session-store";
+import { Button } from "@/components/ui/button";
 
 interface MessageInputProps {
   onSendMessage: (text: string) => void;
   onToggleMic: () => void;
+  onCancelRecording?: () => void;
   recorderState: RecorderState;
   disabled?: boolean;
   className?: string;
@@ -28,6 +30,7 @@ interface MessageInputProps {
 export function MessageInput({
   onSendMessage,
   onToggleMic,
+  onCancelRecording,
   recorderState,
   disabled,
   className,
@@ -36,11 +39,11 @@ export function MessageInput({
 }: MessageInputProps) {
   const [timer, setTimer] = React.useState(0);
   const isRecording = recorderState === "recording";
-  const streamingTranscript = useSessionStore((state) => state.streamingTranscript);
-
-  const hasFinalText = Boolean(streamingTranscript?.finalText);
-  const hasPartialText = Boolean(streamingTranscript?.partialText);
-  const hasAnyTranscript = hasFinalText || hasPartialText;
+  
+  // Get partial turn from turns array
+  const turns = useSessionStore((state) => state.turns);
+  const partialTurn = turns.find(t => t.is_partial);
+  const partialText = partialTurn?.content || "";
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -80,8 +83,39 @@ export function MessageInput({
 
   return (
     <div
-      className={cn("flex flex-col gap-1 w-full max-w-4xl mx-auto", className)}
+      className={cn("flex flex-col gap-2 w-full max-w-4xl mx-auto", className)}
     >
+      {/* Recording status bar */}
+      {isRecording && (
+        <div className="flex items-center justify-between px-4 py-2 bg-primary-50 border border-primary-200 rounded-lg animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center gap-2">
+            <div className="size-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-sm font-medium text-primary">
+              Đang ghi âm
+            </span>
+            <span className="text-xs text-muted-foreground">
+              • Sẽ tự động gửi khi bạn ngừng nói
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-primary font-bold tabular-nums">
+              {formatTime(timer)}
+            </span>
+            {onCancelRecording && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onCancelRecording}
+                className="h-7 px-2 text-xs hover:bg-destructive-50 hover:text-destructive"
+              >
+                <X className="size-3 mr-1" />
+                Hủy
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-4 w-full">
         <div className="relative flex-1 group">
           <InputGroup
@@ -92,35 +126,19 @@ export function MessageInput({
             )}
           >
             {isRecording ? (
-              <div className="flex-1 flex items-center justify-between gap-3 px-4 animate-in fade-in duration-300">
+              <div className="flex-1 flex items-center gap-3 px-4 py-3 animate-in fade-in duration-300">
                 {/* Transcript display inside input */}
                 <div className="flex-1 min-w-0">
-                  {hasAnyTranscript ? (
-                    <div className="flex flex-col gap-0.5">
-                      {/* Final text - màu đen */}
-                      {hasFinalText && streamingTranscript && (
-                        <p className="text-sm text-foreground font-medium leading-relaxed truncate">
-                          {streamingTranscript.finalText}
-                        </p>
-                      )}
-                      {/* Partial text - màu xám */}
-                      {hasPartialText && streamingTranscript && (
-                        <p className="text-sm text-muted-foreground leading-relaxed truncate">
-                          {streamingTranscript.partialText}
-                        </p>
-                      )}
+                  {partialText ? (
+                    <div className="flex items-center gap-2">
+                      <p className="text-base text-foreground font-medium leading-relaxed">
+                        {partialText}
+                      </p>
+                      <span className="inline-block animate-pulse text-primary">▊</span>
                     </div>
                   ) : (
                     <span className="text-sm text-muted-foreground italic">Đang lắng nghe...</span>
                   )}
-                </div>
-                
-                {/* Timer */}
-                <div className="flex items-center gap-2 px-3 py-1 bg-primary-100 rounded-full border border-primary-100 shrink-0">
-                  <div className="size-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs text-primary font-bold tabular-nums">
-                    {formatTime(timer)}
-                  </span>
                 </div>
               </div>
             ) : (

@@ -36,7 +36,11 @@ export function TranscriptPanel({
 
   // Auto-scroll to bottom when new content arrives
   React.useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Use requestAnimationFrame to ensure DOM is updated before scrolling
+    const timeoutId = requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(timeoutId);
   }, [turns.length, isAiStreaming]);
 
   return (
@@ -57,18 +61,27 @@ export function TranscriptPanel({
           </div>
         )}
 
-        {turns.map((turn, idx) => (
-          <TurnBubble
-            key={`${turn.turn_index}-${idx}`}
-            turn={turn}
-            onPlayAudio={onPlayAudio}
-            isPlaying={turn.audio_url === playingAudioUrl}
-            onTranslate={onTranslate}
-            onTranslateWord={onTranslateWord}
-            onSaveFlashcard={onSaveFlashcard}
-            onAnalyze={onAnalyze}
-          />
-        ))}
+        {turns.map((turn, idx) => {
+          // Calculate actual turn_index by counting non-partial turns before this one
+          const actualTurnIndex = turns
+            .slice(0, idx)
+            .filter(t => !t.is_partial)
+            .length;
+          
+          return (
+            <TurnBubble
+              key={`${turn.turn_index}-${idx}`}
+              turn={turn}
+              actualTurnIndex={actualTurnIndex}
+              onPlayAudio={onPlayAudio}
+              isPlaying={turn.audio_url === playingAudioUrl}
+              onTranslate={onTranslate}
+              onTranslateWord={onTranslateWord}
+              onSaveFlashcard={onSaveFlashcard}
+              onAnalyze={onAnalyze}
+            />
+          );
+        })}
 
         {isAiStreaming && (
           <div className="flex w-full items-end gap-3 px-4 py-2 justify-start">

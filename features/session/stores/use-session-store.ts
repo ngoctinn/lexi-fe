@@ -7,36 +7,36 @@ import type {
 } from "../types/session.types";
 
 interface SessionStoreState extends SessionUiState {
+  transcribeUrl: string | null;
   setTurns: (turns: Turn[] | ((prev: Turn[]) => Turn[])) => void;
+  updatePartialTurn: (content: string) => void; // Update partial transcript
+  removePartialTurn: () => void; // Remove partial turn when finalizing
   setAiStreaming: (isStreaming: boolean, text?: string) => void;
   setWsState: (state: WsConnectionState) => void;
   setRecorderState: (state: RecorderState) => void;
-  setLastSttResult: (
-    result: { text: string; confidence: number } | null,
-  ) => void;
   setHint: (hint: SessionUiState["currentHint"]) => void;
   addHintToHistory: (markdown: { vi: string; en: string }) => void;
   removeHintFromHistory: (timestamp: number) => void;
   setHintTimeoutId: (timeoutId: NodeJS.Timeout | null) => void;
+  clearCurrentHint: () => void;
   setAnalysis: (analysis: SessionUiState["currentAnalysis"]) => void;
   setTempAnalysis: (analysis: SessionUiState["tempAnalysis"]) => void;
   addAnalysisToHistory: (turnIndex: number, markdown: { vi: string; en: string }) => void;
   removeAnalysisFromHistory: (timestamp: number) => void;
+  clearTempAnalysis: () => void;
   setHintPanelOpen: (open: boolean) => void;
   setAnalysisPanelOpen: (open: boolean) => void;
   setCurrentAudioUrl: (currentAudioUrl: string | null) => void;
-  setStreamingTranscript: (finalText: string, partialText: string, isStreaming: boolean) => void;
-  setStreamingError: (error: string | null) => void;
   setRequestHintInProgress: (inProgress: boolean) => void;
   setIsStartingSession: (isStarting: boolean) => void;
   setAnalyzingTurnIndex: (turnIndex: number | null) => void;
+  setTranscribeUrl: (url: string | null) => void;
   reset: () => void;
 }
 
 const initialState: SessionUiState = {
   turns: [],
   isAiStreaming: false,
-  lastSttResult: null,
   currentHint: null,
   hintTimeoutId: null,
   hintHistory: [],
@@ -50,22 +50,45 @@ const initialState: SessionUiState = {
   recorderState: "idle",
   wsState: "disconnected",
   currentAudioUrl: null,
-  streamingTranscript: {
-    finalText: "",
-    partialText: "",
-    isStreaming: false,
-  },
-  streamingError: null,
   requestHintInProgress: false,
   isStartingSession: false,
 };
 
 export const useSessionStore = create<SessionStoreState>((set) => ({
   ...initialState,
+  transcribeUrl: null,
 
   setTurns: (turns) =>
     set((state) => ({
       turns: typeof turns === "function" ? turns(state.turns) : turns,
+    })),
+
+  updatePartialTurn: (content) =>
+    set((state) => {
+      const turns = [...state.turns];
+      const partialIndex = turns.findIndex((t) => t.is_partial);
+      
+      if (partialIndex >= 0) {
+        // Update existing partial turn
+        turns[partialIndex] = { ...turns[partialIndex], content };
+      } else {
+        // Create new partial turn
+        turns.push({
+          turn_index: -1, // Temporary index
+          speaker: "USER" as const,
+          content,
+          is_hint_used: false,
+          is_pending: true,
+          is_partial: true,
+        });
+      }
+      
+      return { turns };
+    }),
+
+  removePartialTurn: () =>
+    set((state) => ({
+      turns: state.turns.filter((t) => !t.is_partial),
     })),
 
   setAiStreaming: (isStreaming) =>
@@ -76,8 +99,6 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
   setWsState: (wsState) => set({ wsState }),
 
   setRecorderState: (recorderState) => set({ recorderState }),
-
-  setLastSttResult: (lastSttResult) => set({ lastSttResult }),
 
   setHint: (currentHint) => set({ currentHint }),
 
@@ -98,6 +119,8 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
 
   setHintTimeoutId: (hintTimeoutId) => set({ hintTimeoutId }),
 
+  clearCurrentHint: () => set({ currentHint: null }),
+
   setAnalysis: (currentAnalysis) => set({ currentAnalysis }),
 
   setTempAnalysis: (tempAnalysis) => set({ tempAnalysis }),
@@ -116,18 +139,13 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
       analysisHistory: state.analysisHistory.filter((a) => a.timestamp !== timestamp),
     })),
 
+  clearTempAnalysis: () => set({ tempAnalysis: null }),
+
   setHintPanelOpen: (hintPanelOpen) => set({ hintPanelOpen }),
 
   setAnalysisPanelOpen: (analysisPanelOpen) => set({ analysisPanelOpen }),
 
   setCurrentAudioUrl: (currentAudioUrl) => set({ currentAudioUrl }),
-
-  setStreamingTranscript: (finalText, partialText, isStreaming) =>
-    set({
-      streamingTranscript: { finalText, partialText, isStreaming },
-    }),
-
-  setStreamingError: (streamingError) => set({ streamingError }),
 
   setRequestHintInProgress: (requestHintInProgress) => set({ requestHintInProgress }),
 
@@ -135,5 +153,7 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
 
   setAnalyzingTurnIndex: (analyzingTurnIndex) => set({ analyzingTurnIndex }),
 
-  reset: () => set(initialState),
+  setTranscribeUrl: (transcribeUrl) => set({ transcribeUrl }),
+
+  reset: () => set({ ...initialState, transcribeUrl: null }),
 }));

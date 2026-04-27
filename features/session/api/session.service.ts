@@ -54,13 +54,16 @@ export const SessionService = {
   async saveWordToFlashcard(
     input: SaveTurnToFlashcardInput,
   ): Promise<{ success: boolean; message: string }> {
+    // If vocabData exists (saving from word popover), use the word itself
+    // Otherwise use sourceText (saving from translation panel)
+    const wordToSave = input.vocabData?.word || input.sourceText;
+    
     const result = await saveFlashcardFromSession({
       session_id: input.sessionId,
       turn_index: input.turnIndex,
-      source_text: input.sourceText,
+      source_text: wordToSave,
       translated_text: input.translatedText,
       translation_vi: input.vocabData?.translation_vi,
-      definition_vi: input.vocabData?.definition_vi,
       part_of_speech: input.vocabData?.part_of_speech,
       phonetic: input.vocabData?.phonetic,
       audio_url: input.vocabData?.audio_url,

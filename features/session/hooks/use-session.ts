@@ -20,6 +20,7 @@ import { useSessionWsHandler } from "./use-session-ws-handler";
 interface UseSessionOptions {
   sessionId: string;
   idToken: string;
+  sessionLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
   initialTurns?: Turn[];
   isNewSession?: boolean;
 }
@@ -27,6 +28,7 @@ interface UseSessionOptions {
 export function useSession({
   sessionId,
   idToken,
+  sessionLevel,
   initialTurns = [],
   isNewSession,
 }: UseSessionOptions) {
@@ -47,7 +49,6 @@ export function useSession({
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
 
-  const lastSttResult = useSessionStore((s) => s.lastSttResult);
   const currentHint = useSessionStore((s) => s.currentHint);
   const hintHistory = useSessionStore((s) => s.hintHistory);
   const tempAnalysis = useSessionStore((s) => s.tempAnalysis);
@@ -87,25 +88,19 @@ export function useSession({
     state: streamingRecorderState,
     startRecording: startStreamingRecording,
     stopRecording: stopStreamingRecording,
+    cancelRecording: cancelStreamingRecording,
   } = useClientStreamingRecorder({
     ws: { send, connectionState, disconnect },
     sessionId,
+    sessionLevel, // Pass user level for adaptive timeout
     onPartialTranscript: (text) => {
       console.log("[Session] Partial transcript:", text);
-      useSessionStore.getState().setStreamingTranscript(
-        useSessionStore.getState().streamingTranscript?.finalText || "",
-        text,
-        true
-      );
     },
     onFinalTranscript: (text, confidence) => {
       console.log("[Session] Final transcript:", text, confidence);
-      useSessionStore.getState().setStreamingTranscript(text, "", false);
-      useSessionStore.getState().setLastSttResult({ text, confidence });
     },
     onError: (message) => {
       SessionService.handleError(message, "Streaming Recorder");
-      useSessionStore.getState().setStreamingError(message);
       setRecorderState("error");
     },
   });
@@ -118,7 +113,10 @@ export function useSession({
     (text: string) => {
       if (!text.trim()) return;
 
-      const nextTurnIndex = useSessionStore.getState().turns.length;
+      // Calculate turn_index excluding partial turns
+      const currentTurns = useSessionStore.getState().turns;
+      const nextTurnIndex = currentTurns.filter(t => !t.is_partial).length;
+      
       const newTurn: Turn = {
         turn_index: nextTurnIndex,
         speaker: TurnSpeaker.USER,
@@ -127,6 +125,9 @@ export function useSession({
         is_pending: true,
       };
       setTurns((prev: Turn[]) => [...prev, newTurn]);
+
+      // Show loading animation while waiting for AI response
+      useSessionStore.getState().setAiStreaming(true);
 
       send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
     },
@@ -152,7 +153,7 @@ export function useSession({
     console.log("[useSession] requestHint proceeding - setting flag to true");
     state.setRequestHintInProgress(true);
     
-    // Clear old hint - don't show loading state, wait for streaming
+    // Clear current hint to prepare for new one (streaming will show in currentHint)
     setHint(null);
     
     // Set timeout to reset flag if no response from backend
@@ -186,14 +187,17 @@ export function useSession({
     toggleMicRef.current = true;
 
     try {
-      // Clear previous streaming transcript when starting new recording
-      useSessionStore.getState().setStreamingTranscript("", "", false);
-      useSessionStore.getState().setStreamingError(null);
       await startStreamingRecording();
     } finally {
       toggleMicRef.current = false;
     }
   }, [streamingRecorderState, stopStreamingRecording, startStreamingRecording]);
+
+  const cancelRecording = React.useCallback(() => {
+    if (streamingRecorderState === "recording") {
+      cancelStreamingRecording();
+    }
+  }, [streamingRecorderState, cancelStreamingRecording]);
 
   const endSession = React.useCallback(() => {
     send({ action: WsClientEvent.END_SESSION, session_id: sessionId });
@@ -258,25 +262,14 @@ export function useSession({
       return;
     }
     
-    // If turn was already analyzed, refresh it (send new request)
-    if (state.analyzedTurns.has(turnIndex)) {
-      console.log("[useSession] Turn already analyzed, refreshing analysis");
-      // Mark as analyzing
-      state.setAnalyzingTurnIndex(turnIndex);
-      // Send request to backend for fresh analysis
-      send({ 
-        action: WsClientEvent.ANALYZE_TURN, 
-        session_id: sessionId,
-        turn_index: turnIndex 
-      });
-      return;
-    }
+    // Clear temp analysis to prepare for new one (streaming will show in tempAnalysis)
+    state.setTempAnalysis(null);
     
-    // New analysis request
-    console.log("[useSession] New analysis request for turn:", turnIndex);
+    // Mark as analyzing
     state.setAnalyzingTurnIndex(turnIndex);
     
-    // Send request to backend
+    // Send request to backend (creates new analysis alert)
+    console.log("[useSession] Sending ANALYZE_TURN request for turn:", turnIndex);
     send({ 
       action: WsClientEvent.ANALYZE_TURN, 
       session_id: sessionId,
@@ -323,7 +316,7 @@ export function useSession({
           sessionId,
           turnIndex,
           sourceText: targetTurn.content,
-          translatedText: vocabData?.definition_vi || targetTurn.translated_content || "",
+          translatedText: vocabData?.translation_vi || targetTurn.translated_content || "",
           vocabData,
         });
 
@@ -359,7 +352,6 @@ export function useSession({
     ui: {
       turns,
       isAiStreaming,
-      lastSttResult,
       currentHint,
       hintHistory,
       tempAnalysis,
@@ -378,6 +370,7 @@ export function useSession({
     actions: {
       startSession,
       toggleMic,
+      cancelRecording,
       requestHint,
       analyzeTurn,
       endSession,

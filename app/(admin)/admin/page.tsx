@@ -126,8 +126,8 @@ export default async function AdminPage() {
   const recentUsers = [...users]
     .sort(
       (left, right) =>
-        new Date(right.updated_at).getTime() -
-        new Date(left.updated_at).getTime(),
+        new Date(right.updated_at ?? 0).getTime() -
+        new Date(left.updated_at ?? 0).getTime(),
     )
     .slice(0, 5);
   const popularScenarios = [...scenarios]
@@ -257,7 +257,7 @@ export default async function AdminPage() {
                   </TableHeader>
                   <TableBody>
                     {recentUsers.map((user) => {
-                      const statusMeta = getUserStatusMeta(user.status);
+                      const statusMeta = getUserStatusMeta(user.status ?? "active");
 
                       return (
                         <TableRow key={user.id}>
