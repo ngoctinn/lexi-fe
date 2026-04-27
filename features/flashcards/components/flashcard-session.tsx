@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Flashcard, ReviewDifficulty } from "../types";
+import { Flashcard, ReviewDifficulty } from "../schemas/flashcard.schema";
 import { FlashcardCard } from "./flashcard-card";
 import { SessionSummary } from "./session-summary";
-import { updateFlashcardSRS } from "../actions/practice-actions";
+import { updateFlashcardSRS } from "../actions/practice-actions-v2";
 import { toast } from "sonner";
 import { FlashcardProgress } from "./flashcard-progress";
 import { SRSControls } from "./srs-controls";

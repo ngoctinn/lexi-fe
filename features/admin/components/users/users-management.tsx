@@ -125,10 +125,15 @@ function createEmptyUser(now?: string): AdminUser {
 
   return {
     id: "",
+    user_id: "",
     display_name: "",
     email: "",
     current_level: "A2",
     target_level: "B1",
+    role: "user",
+    is_active: true,
+    total_words_learned: 0,
+    joined_at: finalNow,
     learning_goal_text: "",
     status: "active",
     sessions_completed: 0,

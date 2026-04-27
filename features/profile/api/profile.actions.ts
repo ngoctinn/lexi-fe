@@ -58,7 +58,7 @@ export async function updateProfile(data: {
   }
 
   // Invalidate cache for Server Components to refetch
-  revalidateTag("profile");
+  revalidateTag("profile", "max");
 
   return {
     success: true,

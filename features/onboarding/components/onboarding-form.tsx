@@ -69,6 +69,7 @@ export function OnboardingForm() {
   const isStep1Valid = data.current_level !== "";
   const isStep2Valid = data.target_level !== "";
   const canProceed = step === 0 ? isStep0Valid : step === 1 ? isStep1Valid : isStep2Valid;
+  const isFormComplete = isStep0Valid && isStep1Valid && isStep2Valid;
 
   return (
     <Card
@@ -165,11 +166,11 @@ export function OnboardingForm() {
                       key={level.id}
                       htmlFor={level.id}
                       className={cn(
-                        "flex cursor-pointer items-center rounded-xl border px-4 py-3 ring-offset-background transition-all",
-                        "hover:bg-accent/50",
+                        "flex cursor-pointer items-center rounded-lg border border-border/40 bg-muted/30 px-4 py-3 ring-offset-background transition-all",
+                        "hover:border-border/60 hover:bg-muted/80",
                         data.current_level === level.id
                           ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
-                          : "bg-card/50",
+                          : "",
                       )}
                     >
                       <RadioGroupItem
@@ -182,7 +183,7 @@ export function OnboardingForm() {
                           "text-sm font-semibold",
                           data.current_level === level.id
                             ? "text-primary"
-                            : "text-foreground",
+                            : "text-muted-foreground",
                         )}
                       >
                         {level.label}
@@ -211,11 +212,11 @@ export function OnboardingForm() {
                       key={`goal-${level.id}`}
                       htmlFor={`goal-${level.id}`}
                       className={cn(
-                        "flex cursor-pointer items-center rounded-xl border px-4 py-3 ring-offset-background transition-all",
-                        "hover:bg-accent/50",
+                        "flex cursor-pointer items-center rounded-lg border border-border/40 bg-muted/30 px-4 py-3 ring-offset-background transition-all",
+                        "hover:border-border/60 hover:bg-muted/80",
                         data.target_level === level.id
                           ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
-                          : "bg-card/50",
+                          : "",
                       )}
                     >
                       <RadioGroupItem
@@ -228,7 +229,7 @@ export function OnboardingForm() {
                           "text-sm font-semibold",
                           data.target_level === level.id
                             ? "text-primary"
-                            : "text-foreground",
+                            : "text-muted-foreground",
                         )}
                       >
                         {level.label}
@@ -275,7 +276,7 @@ export function OnboardingForm() {
                 type="submit"
                 size="xl"
                 className="flex-1"
-                disabled={isPending}
+                disabled={isPending || !isFormComplete}
               >
                 {isPending ? "Đang lưu..." : "Bắt đầu hành trình"}
               </Button>

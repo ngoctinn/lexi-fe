@@ -296,7 +296,7 @@ export default async function AdminPage() {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
-                            {formatDateTime(user.updated_at)}
+                            {user.updated_at ? formatDateTime(user.updated_at) : "-"}
                           </TableCell>
                         </TableRow>
                       );

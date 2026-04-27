@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Flashcard } from "../types";
+import { Flashcard } from "../schemas/flashcard.schema";
 
 interface FlashcardDeckOverviewProps {
   queue: Flashcard[];
@@ -91,7 +91,7 @@ function QueueRow({ card, now }: { card: Flashcard; now: number | null }) {
         </div>
 
         <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-          {card.definition_vi || "Chưa có định nghĩa"}
+          {card.translation_vi || "Chưa có bản dịch"}
         </p>
 
         <p className="mt-2 text-xs text-muted-foreground">

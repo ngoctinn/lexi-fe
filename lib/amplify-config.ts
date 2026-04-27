@@ -7,6 +7,17 @@ export const amplifyConfig: ResourcesConfig = {
       userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || "",
       loginWith: {
         email: true,
+        oauth: {
+          domain: process.env.NEXT_PUBLIC_COGNITO_DOMAIN || "",
+          scopes: ["email", "openid", "profile"],
+          redirectSignIn: [
+            process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN || "http://localhost:3000/dashboard",
+          ],
+          redirectSignOut: [
+            process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT || "http://localhost:3000/login",
+          ],
+          responseType: "code",
+        },
       },
     },
   },

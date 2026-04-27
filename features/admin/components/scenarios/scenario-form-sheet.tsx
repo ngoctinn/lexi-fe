@@ -141,7 +141,7 @@ export function ScenarioFormSheet({
                   onChange={(e) =>
                     onUpdateDraft(
                       "order",
-                      Number.isNaN(e.target.valueAsNumber) ? undefined : e.target.valueAsNumber,
+                      Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber,
                     )
                   }
                 />

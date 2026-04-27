@@ -55,21 +55,95 @@ export async function apiFetch<T = unknown>(
   const token = await getAuthToken();
   const url = `${BASE_URL}${path}`;
 
-  const headers = new Headers(options.headers);
-  headers.set("Content-Type", "application/json");
-  
-  if (token) {
-    headers.set("Authorization", token);
+  if (!token) {
+    console.error(`[apiFetch] No auth token available for ${path} - user may not be authenticated`);
+    return {
+      success: false,
+      message: "Not authenticated",
+      error: "Not authenticated",
+    } as T;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const headers = new Headers(options.headers);
+  headers.set("Content-Type", "application/json");
+  headers.set("Authorization", token);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage = errorData.message || errorData.error || `HTTP ${response.status}`;
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      let errorData: Record<string, unknown> = {};
+      let responseText = "";
+      
+      try {
+        responseText = await response.text();
+        if (responseText) {
+          errorData = JSON.parse(responseText) as Record<string, unknown>;
+        }
+      } catch {
+        // Response is not JSON, use raw text
+        errorData = { rawResponse: responseText };
+      }
+      
+      const errorMessage = 
+        errorData.message || 
+        errorData.error || 
+        errorData.rawResponse ||
+        `HTTP ${response.status}`;
+      
+      console.error(`[apiFetch] ${options.method || 'GET'} ${path} failed:`, {
+        status: response.status,
+        statusText: response.statusText,
+        message: errorMessage,
+        details: errorData,
+        headers: {
+          contentType: response.headers.get('content-type'),
+        },
+      });
+      
+      return {
+        success: false,
+        message: errorMessage,
+        error: errorMessage,
+      } as T;
+    }
+
+    const responseText = await response.text();
+    if (!responseText) {
+      console.warn(`[apiFetch] Empty response from ${path}`);
+      return {
+        success: false,
+        message: "Empty response from server",
+        error: "Empty response from server",
+      } as T;
+    }
+
+    try {
+      const parsed = JSON.parse(responseText);
+      // Ensure response has success field
+      if (typeof parsed.success === 'undefined') {
+        console.warn(`[apiFetch] Response missing 'success' field from ${path}:`, parsed);
+        return {
+          success: false,
+          message: "Invalid response format from server",
+          error: "Invalid response format from server",
+        } as T;
+      }
+      return parsed;
+    } catch {
+      console.error(`[apiFetch] Failed to parse response from ${path}:`, responseText);
+      return {
+        success: false,
+        message: "Invalid JSON response from server",
+        error: "Invalid JSON response from server",
+      } as T;
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Network error";
+    console.error(`[apiFetch] Network error for ${path}:`, errorMessage);
     
     return {
       success: false,
@@ -77,8 +151,6 @@ export async function apiFetch<T = unknown>(
       error: errorMessage,
     } as T;
   }
-
-  return response.json();
 }
 
 /**

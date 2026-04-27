@@ -17,6 +17,8 @@ export default async function AppLayout({
 }) {
   const profile = await getProfile();
 
+  // If profile fetch fails, user might not be authenticated
+  // Continue anyway - sidebar will handle null profile gracefully
   if (profile?.is_new_user === true) {
     redirect("/onboarding");
   }
