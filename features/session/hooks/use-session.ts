@@ -89,6 +89,8 @@ export function useSession({
     startRecording: startStreamingRecording,
     stopRecording: stopStreamingRecording,
     cancelRecording: cancelStreamingRecording,
+    silenceTimeoutMs,
+    timeSinceLastTranscript,
   } = useClientStreamingRecorder({
     ws: { send, connectionState, disconnect },
     sessionId,
@@ -361,6 +363,8 @@ export function useSession({
       wsState: connectionState,
       currentAudioUrl,
       savingFlashcardTurnIndexes,
+      silenceTimeoutMs,
+      timeSinceLastTranscript,
       isControlsDisabled: SessionDomain.isControlsDisabled(
         connectionState,
         streamingRecorderState,

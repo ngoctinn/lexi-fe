@@ -31,13 +31,14 @@ import { useSessionStore } from "../stores/use-session-store";
 const SAMPLE_RATE = 16_000;
 
 // Adaptive silence detection based on user level
+// Increased timeouts to allow natural pauses between sentences
 const SILENCE_TIMEOUTS = {
-  A1: 2000,
-  A2: 1800,
-  B1: 1500,
-  B2: 1200,
-  C1: 1000,
-  C2: 800,
+  A1: 4000,  // 4 seconds (beginners need more time)
+  A2: 3500,  // 3.5 seconds
+  B1: 3000,  // 3 seconds
+  B2: 2500,  // 2.5 seconds
+  C1: 2000,  // 2 seconds
+  C2: 1500,  // 1.5 seconds (advanced can speak continuously)
 } as const;
 
 const MIN_SPEECH_DURATION_MS = 500;
@@ -59,6 +60,8 @@ interface UseClientStreamingRecorderReturn {
   startRecording: () => Promise<void>;
   stopRecording: () => void;
   cancelRecording: () => void;
+  silenceTimeoutMs: number;
+  timeSinceLastTranscript: number;
 }
 
 export function useClientStreamingRecorder({
@@ -70,6 +73,7 @@ export function useClientStreamingRecorder({
   onError,
 }: UseClientStreamingRecorderOptions): UseClientStreamingRecorderReturn {
   const [state, setState] = React.useState<RecorderState>("idle");
+  const [timeSinceLastTranscript, setTimeSinceLastTranscript] = React.useState(0);
 
   const SILENCE_TIMEOUT_MS = SILENCE_TIMEOUTS[sessionLevel];
 
@@ -91,6 +95,7 @@ export function useClientStreamingRecorder({
   const silenceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const hasReceivedTranscriptRef = React.useRef<boolean>(false);
   const isStoppingRef = React.useRef<boolean>(false); // Prevent double stop
+  const isCancelledRef = React.useRef<boolean>(false); // Track if user cancelled
 
   // URL request tracking
   const urlRequestTimeRef = React.useRef<number>(0);
@@ -150,6 +155,9 @@ export function useClientStreamingRecorder({
           const timeSinceLastTranscript = now - lastTranscriptTimeRef.current;
           const recordingDuration = now - recordingStartTimeRef.current;
 
+          // Update state for countdown
+          setTimeSinceLastTranscript(timeSinceLastTranscript);
+
           if (
             hasReceivedTranscriptRef.current &&
             recordingDuration > MIN_SPEECH_DURATION_MS &&
@@ -157,7 +165,7 @@ export function useClientStreamingRecorder({
           ) {
             stopRecordingRef.current?.();
           }
-        }, 500);
+        }, 100); // Update every 100ms for smooth countdown
       };
 
       socket.onmessage = (event: MessageEvent) => {
@@ -239,6 +247,27 @@ export function useClientStreamingRecorder({
       transcribeSocketRef.current = null;
     }
 
+    // Check if user cancelled - if so, don't submit
+    if (isCancelledRef.current) {
+      // Remove partial turn (don't submit anything)
+      useSessionStore.getState().removePartialTurn();
+      
+      // Reset refs
+      finalTranscriptsRef.current = [];
+      currentPartialRef.current = "";
+      finalConfidenceRef.current = 0;
+      lastTranscriptTimeRef.current = 0;
+      recordingStartTimeRef.current = 0;
+      hasReceivedTranscriptRef.current = false;
+      isCancelledRef.current = false;
+
+      setState("idle");
+      isStartingRef.current = false;
+      pendingUrlRequestRef.current = false;
+      isStoppingRef.current = false;
+      return;
+    }
+
     // Submit transcript
     const finalTranscript = finalTranscriptsRef.current.join(" ").trim();
     const partialTranscript = currentPartialRef.current.trim();
@@ -283,6 +312,7 @@ export function useClientStreamingRecorder({
     lastTranscriptTimeRef.current = 0;
     recordingStartTimeRef.current = 0;
     hasReceivedTranscriptRef.current = false;
+    isCancelledRef.current = false;
 
     setState("idle");
     isStartingRef.current = false;
@@ -291,54 +321,11 @@ export function useClientStreamingRecorder({
   }, [ws, sessionId, onError]);
 
   const cancelRecording = React.useCallback(() => {
-    // Prevent double stop
-    if (isStoppingRef.current) {
-      return;
-    }
+    // Set cancelled flag BEFORE calling stop
+    isCancelledRef.current = true;
     
-    isStoppingRef.current = true;
-    
-    if (silenceTimerRef.current) {
-      clearInterval(silenceTimerRef.current);
-      silenceTimerRef.current = null;
-    }
-
-    if (audioWorkletNodeRef.current) {
-      audioWorkletNodeRef.current.disconnect();
-      audioWorkletNodeRef.current = null;
-    }
-
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-    }
-
-    // Close Transcribe WebSocket without sending data
-    if (transcribeSocketRef.current) {
-      transcribeSocketRef.current.close();
-      transcribeSocketRef.current = null;
-    }
-
-    // Remove partial turn (don't submit anything)
-    useSessionStore.getState().removePartialTurn();
-
-    // Reset refs
-    finalTranscriptsRef.current = [];
-    currentPartialRef.current = "";
-    finalConfidenceRef.current = 0;
-    lastTranscriptTimeRef.current = 0;
-    recordingStartTimeRef.current = 0;
-    hasReceivedTranscriptRef.current = false;
-
-    setState("idle");
-    isStartingRef.current = false;
-    pendingUrlRequestRef.current = false;
-    isStoppingRef.current = false;
+    // Call stopRecording which will check the flag and skip submission
+    stopRecordingRef.current?.();
   }, []);
 
   // Set the ref after callback is defined
@@ -531,6 +518,7 @@ export function useClientStreamingRecorder({
       isStartingRef.current = false;
       pendingUrlRequestRef.current = false;
       isStoppingRef.current = false;
+      isCancelledRef.current = false;
       
       // Remove partial turn on cleanup
       useSessionStore.getState().removePartialTurn();
@@ -544,5 +532,5 @@ export function useClientStreamingRecorder({
     };
   }, []);
 
-  return { state, startRecording, stopRecording, cancelRecording };
+  return { state, startRecording, stopRecording, cancelRecording, silenceTimeoutMs: SILENCE_TIMEOUT_MS, timeSinceLastTranscript };
 }

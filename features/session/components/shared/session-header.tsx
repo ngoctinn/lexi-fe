@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Square, ArrowLeft } from "lucide-react";
+import { Square, ArrowLeft, User, Bot } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -100,23 +101,42 @@ export function SessionHeader({
           <ArrowLeft data-icon="inline-start" />
         </Button>
 
-        <div className="flex flex-col min-w-0 flex-1">
+        <div className="flex items-center gap-4 min-w-0 flex-1 flex-wrap">
+          {/* Title */}
           <h1 className="text-lg font-bold leading-tight text-foreground truncate">
             {scenarioTitle || "Phiên luyện nói"}
           </h1>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-            <span>
-              <span className="font-medium">Bạn:</span> {myRole || "Học viên"}
-            </span>
-            <span>
-              <span className="font-medium">AI:</span> {aiCharacter} ({partnerRole || "AI Assistant"})
-            </span>
-            {scenarioGoals && scenarioGoals.length > 0 && (
-              <span className="hidden lg:inline">
-                <span className="font-medium">Mục tiêu:</span> {scenarioGoals.join(" • ")}
-              </span>
-            )}
+          
+          {/* Role Badges */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* User Role Badge */}
+            <Badge 
+              variant="secondary" 
+              className="gap-1.5"
+            >
+              <User className="size-3.5" />
+              <span className="font-semibold">Bạn:</span>
+              <span>{myRole || "Học viên"}</span>
+            </Badge>
+            
+            {/* AI Role Badge */}
+            <Badge 
+              variant="secondary"
+              className="gap-1.5"
+            >
+              <Bot className="size-3.5" />
+              <span className="font-semibold">{aiCharacter}:</span>
+              <span>{partnerRole || "AI Assistant"}</span>
+            </Badge>
           </div>
+          
+          {/* Goal - Desktop only */}
+          {scenarioGoals && scenarioGoals.length > 0 && (
+            <div className="hidden xl:flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-medium">Mục tiêu:</span>
+              <span>{scenarioGoals.join(" • ")}</span>
+            </div>
+          )}
         </div>
       </div>
 

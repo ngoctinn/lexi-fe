@@ -167,6 +167,8 @@ export function ConversationScreen({
           <TranscriptPanel
             turns={ui.turns}
             isAiStreaming={ui.isAiStreaming}
+            silenceTimeoutMs={ui.silenceTimeoutMs}
+            timeSinceLastTranscript={ui.timeSinceLastTranscript}
             className="flex-1"
             aria-live="polite"
             onPlayAudio={handlePlayAudio}

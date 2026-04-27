@@ -237,7 +237,7 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
       initialSummary={initialSummary}
       scenarioTitle={scenario?.scenario_title ?? "Phiên luyện nói"}
       aiCharacter={aiCharacter}
-      scenarioGoals={scenario?.goals ?? []}
+      scenarioGoals={session.selected_goal ? [session.selected_goal] : []}
       myRole={learnerRole}
       partnerRole={aiRole}
       isNewSession={isNewSession}

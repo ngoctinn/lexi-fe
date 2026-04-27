@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Mic, Loader2, MicOff, Square } from "lucide-react";
+import { Mic, Loader2, MicOff, ArrowUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,14 +29,14 @@ export function MicButton({
       case "permission-denied":
         return "Quyền truy cập micro bị từ chối. Vui lòng click vào ổ khóa trên thanh địa chỉ để cấp quyền lại.";
       case "recording":
-        return "Đang lắng nghe... Nhấn để dừng lượt ghi âm này và gửi";
+        return "Bấm để gửi ngay";
       case "uploading":
       case "processing":
         return "Đang xử lý âm thanh...";
       case "error":
         return "Đã xảy ra lỗi micro. Vui lòng tải lại trang.";
       default:
-        return "Nhấn để bắt đầu ghi âm lượt này";
+        return "Nhấn để bắt đầu ghi âm";
     }
   };
 
@@ -55,17 +55,17 @@ export function MicButton({
         onClick={onToggle}
         className={cn(
           "shrink-0 relative z-10 rounded-full",
-          isListening && "ring-4 ring-primary-200 shadow-lg shadow-primary-200",
+          isListening && "ring-4 ring-primary-200 shadow-lg shadow-primary-200 bg-primary hover:bg-primary/90",
         )}
         aria-label={
-          isListening ? "Dừng ghi âm lượt này" : "Bắt đầu ghi âm lượt này"
+          isListening ? "Gửi ngay" : "Bắt đầu ghi âm"
         }
         title={getTooltipContent()}
       >
         {isProcessing ? (
           <Loader2 className="animate-spin size-6" />
         ) : isListening ? (
-          <Square className="fill-primary-foreground size-5 text-primary-foreground" />
+          <ArrowUp className="size-6 stroke-[2.5]" />
         ) : recorderState === "permission-denied" ? (
           <MicOff className="size-6" />
         ) : (

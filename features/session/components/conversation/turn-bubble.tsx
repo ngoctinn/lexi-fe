@@ -51,6 +51,46 @@ const TONE_CONFIG = {
     textColor: "text-purple-900",
     borderColor: "border-purple-200",
   },
+  enthusiastically: {
+    emoji: "🎉",
+    label: "Enthusiastic",
+    bgLight: "bg-orange-50",
+    bgDark: "bg-orange-100",
+    textColor: "text-orange-900",
+    borderColor: "border-orange-200",
+  },
+  playfully: {
+    emoji: "😄",
+    label: "Playful",
+    bgLight: "bg-pink-50",
+    bgDark: "bg-pink-100",
+    textColor: "text-pink-900",
+    borderColor: "border-pink-200",
+  },
+  supportively: {
+    emoji: "🤲",
+    label: "Supportive",
+    bgLight: "bg-green-50",
+    bgDark: "bg-green-100",
+    textColor: "text-green-900",
+    borderColor: "border-green-200",
+  },
+  calmly: {
+    emoji: "🧘",
+    label: "Calm",
+    bgLight: "bg-cyan-50",
+    bgDark: "bg-cyan-100",
+    textColor: "text-cyan-900",
+    borderColor: "border-cyan-200",
+  },
+  excitedly: {
+    emoji: "✨",
+    label: "Excited",
+    bgLight: "bg-rose-50",
+    bgDark: "bg-rose-100",
+    textColor: "text-rose-900",
+    borderColor: "border-rose-200",
+  },
   naturally: {
     emoji: "💬",
     label: "Natural",
@@ -64,6 +104,8 @@ const TONE_CONFIG = {
 interface TurnBubbleProps {
   turn: Turn;
   actualTurnIndex: number; // Actual position in conversation (excluding partials)
+  silenceTimeoutMs?: number;
+  timeSinceLastTranscript?: number;
   onPlayAudio?: (url: string) => void;
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
@@ -75,6 +117,8 @@ interface TurnBubbleProps {
 export function TurnBubble({
   turn,
   actualTurnIndex,
+  silenceTimeoutMs = 3000,
+  timeSinceLastTranscript = 0,
   onPlayAudio,
   onTranslate,
   onTranslateWord,
@@ -94,6 +138,11 @@ export function TurnBubble({
   const [isTranslatingWord, setIsTranslatingWord] = React.useState(false);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const isSelectingRef = React.useRef(false);
+
+  // Calculate countdown for partial turns
+  const remainingMs = Math.max(0, silenceTimeoutMs - timeSinceLastTranscript);
+  const remainingSeconds = Math.ceil(remainingMs / 1000);
+  const showCountdown = turn.is_partial && remainingSeconds <= 3 && remainingSeconds > 0;
 
   // Extract tone from delivery_cue
   const getToneConfig = () => {
@@ -387,9 +436,6 @@ export function TurnBubble({
                 onMouseMove={handleMouseMove}
               >
                 {tokenizeText(cleanContent)}
-                {turn.is_partial && (
-                  <span className="inline-block ml-1 animate-pulse">▊</span>
-                )}
               </div>
 
               {/* Popover for word translation is now handled in tokenizeText */}
@@ -427,20 +473,34 @@ export function TurnBubble({
           )}
         </div>
 
-        {/* Translate button for AI, Analyze button for user - below turn, left-aligned within container */}
+        {/* Translate button for AI, Analyze/Countdown for user - below turn, left-aligned within container */}
         <div className="flex justify-start gap-2">
           {isUser ? (
-            // Analyze button for user turns
-            onAnalyze && (
-              <button
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
-                onClick={() => onAnalyze(actualTurnIndex)}
-                title="Phân tích turn này"
-              >
-                <Sparkles className="h-3 w-3" />
-                Phân tích
-              </button>
-            )
+            <>
+              {/* Show countdown badge when recording (partial turn) */}
+              {turn.is_partial && showCountdown ? (
+                <Badge
+                  variant="secondary"
+                  size="sm"
+                  className="gap-1.5 animate-pulse"
+                >
+                  <span className="text-xs">Gửi sau</span>
+                  <span className="text-xs font-bold tabular-nums">{remainingSeconds}s</span>
+                </Badge>
+              ) : (
+                // Show Analyze button when NOT recording
+                onAnalyze && !turn.is_partial && (
+                  <button
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
+                    onClick={() => onAnalyze(actualTurnIndex)}
+                    title="Phân tích turn này"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    Phân tích
+                  </button>
+                )
+              )}
+            </>
           ) : (
             // Translate button for AI turns
             <button

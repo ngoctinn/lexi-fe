@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 interface TranscriptPanelProps {
   turns: Turn[];
   isAiStreaming: boolean;
+  silenceTimeoutMs?: number;
+  timeSinceLastTranscript?: number;
   onPlayAudio?: (url: string) => void;
   playingAudioUrl?: string | null;
   onTranslate?: (turnIndex: number) => void;
@@ -23,6 +25,8 @@ interface TranscriptPanelProps {
 export function TranscriptPanel({
   turns,
   isAiStreaming,
+  silenceTimeoutMs = 3000,
+  timeSinceLastTranscript = 0,
   onPlayAudio,
   playingAudioUrl,
   onTranslate,
@@ -73,6 +77,8 @@ export function TranscriptPanel({
               key={`${turn.turn_index}-${idx}`}
               turn={turn}
               actualTurnIndex={actualTurnIndex}
+              silenceTimeoutMs={silenceTimeoutMs}
+              timeSinceLastTranscript={timeSinceLastTranscript}
               onPlayAudio={onPlayAudio}
               isPlaying={turn.audio_url === playingAudioUrl}
               onTranslate={onTranslate}

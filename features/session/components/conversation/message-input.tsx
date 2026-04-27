@@ -40,10 +40,9 @@ export function MessageInput({
   const [timer, setTimer] = React.useState(0);
   const isRecording = recorderState === "recording";
   
-  // Get partial turn from turns array
+  // Get partial turn from turns array to detect if user is speaking
   const turns = useSessionStore((state) => state.turns);
-  const partialTurn = turns.find(t => t.is_partial);
-  const partialText = partialTurn?.content || "";
+  const hasPartialText = turns.some(turn => turn.is_partial && turn.content.trim().length > 0);
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -85,38 +84,7 @@ export function MessageInput({
     <div
       className={cn("flex flex-col gap-2 w-full max-w-4xl mx-auto", className)}
     >
-      {/* Recording status bar */}
-      {isRecording && (
-        <div className="flex items-center justify-between px-4 py-2 bg-primary-50 border border-primary-200 rounded-lg animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="flex items-center gap-2">
-            <div className="size-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-primary">
-              Đang ghi âm
-            </span>
-            <span className="text-xs text-muted-foreground">
-              • Sẽ tự động gửi khi bạn ngừng nói
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-primary font-bold tabular-nums">
-              {formatTime(timer)}
-            </span>
-            {onCancelRecording && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={onCancelRecording}
-                className="h-7 px-2 text-xs hover:bg-destructive-50 hover:text-destructive"
-              >
-                <X className="size-3 mr-1" />
-                Hủy
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="flex items-center gap-4 w-full">
+      <div className="flex items-center gap-3 w-full">
         <div className="relative flex-1 group">
           <InputGroup
             size="xl"
@@ -127,19 +95,34 @@ export function MessageInput({
           >
             {isRecording ? (
               <div className="flex-1 flex items-center gap-3 px-4 py-3 animate-in fade-in duration-300">
-                {/* Transcript display inside input */}
-                <div className="flex-1 min-w-0">
-                  {partialText ? (
-                    <div className="flex items-center gap-2">
-                      <p className="text-base text-foreground font-medium leading-relaxed">
-                        {partialText}
-                      </p>
-                      <span className="inline-block animate-pulse text-primary">▊</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-muted-foreground italic">Đang lắng nghe...</span>
-                  )}
+                {/* Simple horizontal bar - vibrates when speaking */}
+                <div className="flex-1 flex items-center h-8">
+                  <div 
+                    className={cn(
+                      "flex-1 h-1 bg-primary rounded-full transition-all duration-150",
+                      hasPartialText ? "animate-pulse scale-y-150" : ""
+                    )}
+                  />
                 </div>
+                
+                {/* Timer */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-xs text-muted-foreground font-mono tabular-nums">
+                    {formatTime(timer)}
+                  </span>
+                </div>
+                
+                {/* Cancel button inside input */}
+                {onCancelRecording && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={onCancelRecording}
+                    className="h-8 px-2 shrink-0 hover:bg-destructive-50 hover:text-destructive"
+                  >
+                    <X className="size-4" />
+                  </Button>
+                )}
               </div>
             ) : (
               <InputGroupInput
@@ -168,12 +151,13 @@ export function MessageInput({
           </InputGroup>
         </div>
         
+        {/* Mic button - changes to Send when recording */}
         <MicButton
           recorderState={recorderState}
           onToggle={onToggleMic}
           disabled={disabled}
           className={cn(
-            "shrink-0 transition-transform duration-200",
+            "shrink-0 transition-all duration-200",
             isRecording && "scale-110"
           )}
         />
