@@ -17,6 +17,7 @@ import {
 import { getScenarios } from "@/features/session/actions/get-scenarios";
 import { getSessions } from "@/features/session/actions/get-sessions";
 import type { Scenario, Session } from "@/features/session/types/session.types";
+import { getDashboardStats } from "@/features/dashboard/actions/dashboard.actions";
 
 import { DashboardMetricCard } from "./dashboard-metric-card";
 import { DashboardTile } from "./dashboard-tile";
@@ -121,9 +122,10 @@ function RecentSessionsCard({
 }
 
 export async function Dashboard() {
-  const [sessions, scenarios] = await Promise.all([
+  const [sessions, scenarios, stats] = await Promise.all([
     getSessions(),
     getScenarios(),
+    getDashboardStats(),
   ]);
 
   const scenarioMap = new Map(
@@ -133,23 +135,19 @@ export async function Dashboard() {
   const overviewCards = [
     {
       title: "Flashcard",
-      value: "1,248",
+      value: stats.flashcardCount.toString(),
       suffix: "thẻ",
       description: "Số thẻ đã học và đang được theo dõi trong hệ thống.",
-      progress: 62,
-      progressLabel: "Mục tiêu 2,000 thẻ",
       footerLabel: "Thẻ cần ôn hôm nay",
-      footerValue: "38 thẻ",
+      footerValue: `${stats.flashcardDueToday} thẻ`,
     },
     {
       title: "Luyện nói",
-      value: "64",
+      value: stats.sessionsCount.toString(),
       suffix: "phiên",
       description: "Tổng số phiên hội thoại đã hoàn thành cùng AI.",
-      progress: 78,
-      progressLabel: "Mục tiêu tuần",
       footerLabel: "Tổng thời gian",
-      footerValue: "12h 25m",
+      footerValue: stats.totalSessionTime,
     },
   ];
 
@@ -169,19 +167,15 @@ export async function Dashboard() {
   ];
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)] animate-in fade-in duration-700">
+    <div className="grid gap-6 grid-cols-1 md:grid-cols-3 animate-in fade-in duration-700">
       <div className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          {overviewCards.map((card) => (
-            <DashboardMetricCard key={card.title} {...card} />
-          ))}
-        </div>
+        <DashboardMetricCard {...overviewCards[0]} />
+        <DashboardTile {...tiles[0]} />
+      </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          {tiles.map((tile) => (
-            <DashboardTile key={tile.title} {...tile} />
-          ))}
-        </div>
+      <div className="space-y-4">
+        <DashboardMetricCard {...overviewCards[1]} />
+        <DashboardTile {...tiles[1]} />
       </div>
 
       <RecentSessionsCard sessions={sessions} scenarioMap={scenarioMap} />

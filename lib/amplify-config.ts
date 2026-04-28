@@ -11,14 +11,15 @@ export const amplifyConfig: ResourcesConfig = {
           domain: process.env.NEXT_PUBLIC_COGNITO_DOMAIN || "",
           scopes: ["email", "openid", "profile"],
           redirectSignIn: [
-            "http://localhost:3000/dashboard",
-            "https://main.do08vxm6ounn6.amplifyapp.com/dashboard",
+            "http://localhost:3000/auth/callback",
+            "https://main.do08vxm6ounn6.amplifyapp.com/auth/callback",
           ],
           redirectSignOut: [
             "http://localhost:3000/login",
             "https://main.do08vxm6ounn6.amplifyapp.com/login",
           ],
           responseType: "code",
+          providers: ["Google"],
         },
       },
     },

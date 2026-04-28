@@ -44,7 +44,7 @@ export function DashboardTile({
           </span>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1 px-4">
           <h3
             className={cn(
               "font-semibold text-foreground",
