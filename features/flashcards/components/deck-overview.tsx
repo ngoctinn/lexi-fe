@@ -2,12 +2,14 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, PlusCircle, Volume2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, PlusCircle, Volume2, Search, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { Flashcard } from "../schemas/flashcard.schema";
+import { FlashcardStatisticsCard } from "./flashcard-statistics-card";
 
 interface FlashcardDeckOverviewProps {
   queue: Flashcard[];
@@ -62,11 +64,11 @@ function QueueRow({ card, now }: { card: Flashcard; now: number | null }) {
   const newCard = isNewCard(card);
 
   return (
-    <div className="flex items-start gap-3 border-b border-border/60 px-4 py-3 last:border-b-0">
+    <div className="group flex items-start gap-3 border-b border-border/60 px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30">
       <button
         type="button"
         onClick={() => playPronunciation(card)}
-        className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary transition hover:bg-primary-100"
+        className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary transition-all hover:bg-primary-100 hover:scale-105 active:scale-95"
         aria-label={`Nghe phát âm ${card.word}`}
       >
         <Volume2 className="size-4" aria-hidden />
@@ -124,22 +126,49 @@ function QueueSection({
   emptyText: string;
   now: number | null;
 }) {
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const filteredCards = React.useMemo(() => {
+    if (!searchQuery.trim()) return cards;
+    
+    const query = searchQuery.toLowerCase();
+    return cards.filter(
+      (card) =>
+        card.word.toLowerCase().includes(query) ||
+        card.translation_vi?.toLowerCase().includes(query)
+    );
+  }, [cards, searchQuery]);
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-foreground">{title}</p>
-        <span className="text-xs text-muted-foreground">{cards.length} từ</span>
+        <span className="text-xs text-muted-foreground">
+          {filteredCards.length} / {cards.length} từ
+        </span>
       </div>
 
-      {cards.length > 0 ? (
+      {cards.length > 0 && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Tìm từ vựng..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      )}
+
+      {filteredCards.length > 0 ? (
         <div className="max-h-112 overflow-y-auto rounded-2xl border border-border/60 bg-muted/15 pr-1">
-          {cards.map((card) => (
+          {filteredCards.map((card) => (
             <QueueRow key={card.flashcard_id} card={card} now={now} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-4 text-sm text-muted-foreground">
-          {emptyText}
+        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-4 text-center text-sm text-muted-foreground">
+          {searchQuery ? "Không tìm thấy từ vựng phù hợp" : emptyText}
         </div>
       )}
     </div>
@@ -155,75 +184,82 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
     : 0;
 
   return (
-    <Card size="sm" className="self-start border-border/70 shadow-none">
+    <Card size="sm" className="border-border/70 shadow-none">
       <CardHeader className="pb-3">
-        <CardTitle className="truncate text-2xl font-bold tracking-tight text-primary-900">
+        <CardTitle className="text-2xl font-bold tracking-tight text-primary-900">
           Tiến độ học
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="p-4 pt-0">
-        <div className="space-y-4">
+      <CardContent className="space-y-4 p-4 pt-0">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-muted-foreground">
+              Hoàn thành {progressValue}%
+            </span>
+            <span className="font-bold text-foreground">
+              {studiedCards.length}/{queue.length}
+            </span>
+          </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-primary-50">
             <div
-              className="h-full rounded-full bg-primary transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500"
               style={{ width: `${progressValue}%` }}
             />
           </div>
+        </div>
 
-          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-center">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                Từ mới
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="flex flex-col gap-1 rounded-lg border bg-card p-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Từ mới
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-2xl leading-none" aria-hidden>
+                🎯
               </span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-2xl leading-none md:text-3xl" aria-hidden>
-                  🎯
-                </span>
-                <span className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                  {newCards.length}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                Từ sắp học
+              <span className="text-3xl font-bold tracking-tight text-foreground">
+                {newCards.length}
               </span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-2xl leading-none md:text-3xl" aria-hidden>
-                  ⏰
-                </span>
-                <span className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                  {studiedCards.length}
-                </span>
-              </div>
             </div>
+          </div>
 
-            {hasCards ? (
-              <Button
-                asChild
-                size="lg"
-                variant="soft"
-                className="self-center px-12"
-              >
-                <Link href="/flashcards/review">
-                  Vào học
-                  <ArrowRight className="size-5" aria-hidden />
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                className="self-center px-6"
-                size="lg"
-                variant="secondary"
-                disabled
-              >
-                Chưa có thẻ để học
-              </Button>
-            )}
+          <div className="flex flex-col gap-1 rounded-lg border bg-card p-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Từ sắp học
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-2xl leading-none" aria-hidden>
+                ⏰
+              </span>
+              <span className="text-3xl font-bold tracking-tight text-foreground">
+                {studiedCards.length}
+              </span>
+            </div>
           </div>
         </div>
+
+        {hasCards ? (
+          <Button
+            asChild
+            size="lg"
+            className="w-full"
+          >
+            <Link href="/flashcards/review">
+              Bắt đầu học
+              <ArrowRight className="size-5" aria-hidden />
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            className="w-full"
+            size="lg"
+            variant="secondary"
+            disabled
+          >
+            Chưa có thẻ để học
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
@@ -240,29 +276,27 @@ function QueueCard({ queue, now }: { queue: Flashcard[]; now: number | null }) {
   const newCards = queue.filter(isNewCard);
 
   return (
-    <Card size="sm" className="self-start border-border/70 shadow-none">
+    <Card size="sm" className="border-border/70 shadow-none">
       <CardHeader className="pb-3">
-        <CardTitle className="truncate text-2xl font-bold tracking-tight text-primary-900">
+        <CardTitle className="text-2xl font-bold tracking-tight text-primary-900">
           Từ vựng
         </CardTitle>
       </CardHeader>
 
       <CardContent className="pt-0">
         <Tabs defaultValue="studied" className="w-full">
-          <TabsList>
-            <TabsTrigger value="studied">
+          <TabsList className="w-full">
+            <TabsTrigger value="studied" className="flex-1">
               Đã học{" "}
-              <span className="font-bold text-foreground tabular-nums">
+              <span className="ml-1 font-bold text-foreground tabular-nums">
                 {studiedCards.length}
-              </span>{" "}
-              từ
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="new">
+            <TabsTrigger value="new" className="flex-1">
               Chưa học{" "}
-              <span className="font-bold text-foreground tabular-nums">
+              <span className="ml-1 font-bold text-foreground tabular-nums">
                 {newCards.length}
-              </span>{" "}
-              từ
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -299,10 +333,17 @@ export function FlashcardDeckOverview({ queue }: FlashcardDeckOverviewProps) {
 
   return (
     <main className="flex-1 px-4 py-4 md:px-6 md:py-8">
-      <div className="mx-auto w-full max-w-6xl grid items-start gap-4 lg:grid-cols-[4fr_6fr]">
-        <ProgressCard queue={queue} />
+      <div className="mx-auto w-full max-w-6xl space-y-4">
+        {/* Statistics Row */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <ProgressCard queue={queue} />
+          <FlashcardStatisticsCard />
+        </div>
+
+        {/* Queue Card */}
         <QueueCard queue={queue} now={now} />
       </div>
     </main>
   );
 }
+

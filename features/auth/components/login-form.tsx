@@ -60,12 +60,15 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   );
 
   const onSubmit = async (data: LoginSchema) => {
+    console.log("[Login] Attempting login with:", { email: data.email, passwordLength: data.password.length });
 
     try {
       const { isSignedIn, nextStep } = await signIn({
         username: data.email,
         password: data.password,
       });
+
+      console.log("[Login] Sign in response:", { isSignedIn, nextStep });
 
       if (isSignedIn) {
         toast.success("Đăng nhập thành công!");
@@ -78,6 +81,8 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         toast.info(`Cần thực hiện bước: ${nextStep.signInStep}`);
       }
     } catch (error) {
+      console.error("[Login] Error:", error);
+      console.error("[Login] Error details:", JSON.stringify(error, null, 2));
       toast.error(translateCognitoError(error));
     }
   };

@@ -30,6 +30,21 @@ export async function submitTurn(
   sessionId: string,
   request: SubmitTurnRequest,
 ): Promise<SubmitTurnResponse> {
+  // Validate input
+  if (!sessionId) {
+    return {
+      success: false,
+      error: "Session ID không hợp lệ.",
+    };
+  }
+
+  if (!request.text || request.text.trim().length === 0) {
+    return {
+      success: false,
+      error: "Vui lòng nhập câu trả lời.",
+    };
+  }
+
   const response = await apiFetch<ApiResponse<SubmitTurnResponse>>(
     `/sessions/${sessionId}/turns`,
     {
@@ -50,7 +65,15 @@ export async function submitTurn(
     };
   }
 
-  const data = response.data ?? { success: true };
+  // Validate response structure
+  const data = response.data;
+  if (!data) {
+    return {
+      success: false,
+      error: "Phản hồi từ server không hợp lệ.",
+    };
+  }
+
   return {
     success: data.success ?? true,
     session: data.session,

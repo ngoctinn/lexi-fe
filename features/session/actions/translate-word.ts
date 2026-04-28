@@ -2,7 +2,7 @@
 
 import { apiFetch } from "@/lib/api/fetch";
 import type { ApiResponse } from "@/lib/api/types";
-import { getErrorMessage } from "@/features/session/utils/error-handler";
+import { getUserFriendlyMessage } from "@/lib/api/errors";
 
 interface VocabularyDefinition {
   part_of_speech: string;
@@ -58,7 +58,7 @@ export async function translateWordAction(
   );
 
   if (!response.success) {
-    const errorInfo = getErrorMessage(response.error);
+    const userMessage = getUserFriendlyMessage(response.error || "SERVICE_ERROR");
     console.error("[translateWord] API error:", response.message, response.error);
     return {
       word,
@@ -66,7 +66,7 @@ export async function translateWordAction(
       definitions: [],
       synonyms: [],
       definition_vi: "",
-      error: errorInfo.userMessage,
+      error: userMessage,
       errorCode: response.error,
     };
   }

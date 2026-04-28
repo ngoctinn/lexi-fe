@@ -14,6 +14,35 @@ import type {
 export async function createSession(
   dto: CreateSessionDto,
 ): Promise<CreateSessionResult> {
+  // Validate input
+  if (!dto) {
+    return {
+      success: false,
+      error: "Dữ liệu phiên học không hợp lệ.",
+    };
+  }
+
+  if (!dto.scenario_id) {
+    return {
+      success: false,
+      error: "Vui lòng chọn một kịch bản.",
+    };
+  }
+
+  if (!dto.user_role) {
+    return {
+      success: false,
+      error: "Vui lòng chọn vai trò của bạn.",
+    };
+  }
+
+  if (!dto.ai_role) {
+    return {
+      success: false,
+      error: "Vui lòng chọn vai trò của AI.",
+    };
+  }
+
   const response = await apiFetch<
     ApiResponse<{ session: { session_id: string; user_id: string } }>
   >("/sessions", {

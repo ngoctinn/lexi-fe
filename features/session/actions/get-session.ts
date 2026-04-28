@@ -9,6 +9,14 @@ import type { GetSessionResult, Session } from "@/features/session/types/session
  * Pure Next.js pattern: return errors, don't throw
  */
 export async function getSession(sessionId: string): Promise<GetSessionResult> {
+  // Validate input
+  if (!sessionId) {
+    return {
+      success: false,
+      error: "Session ID không hợp lệ.",
+    };
+  }
+
   console.log("[getSession] Fetching session:", { sessionId });
   
   const response = await apiFetch<ApiResponse<{ session: Session }>>(

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePracticeQueue } from "../hooks/use-flashcards";
+import { useFlashcards } from "../hooks/use-flashcards";
 import { FlashcardDeckOverview } from "./deck-overview";
 import { FlashcardOverviewSkeleton } from "./flashcard-skeleton";
 import { FlashcardErrorBoundary } from "./flashcard-error-boundary";
@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button";
 /**
  * Client wrapper for flashcard overview with React Query
  * Handles loading, error, and caching
+ * Uses GET /flashcards to fetch ALL flashcards (not just due cards)
  */
 export function FlashcardDeckOverviewClient() {
-  const { data, isLoading, error, refetch } = usePracticeQueue();
+  const { data, isLoading, error, refetch } = useFlashcards(100); // Fetch up to 100 cards
 
   if (isLoading) {
     return <FlashcardOverviewSkeleton />;
@@ -49,7 +50,7 @@ export function FlashcardDeckOverviewClient() {
 
   return (
     <FlashcardErrorBoundary>
-      <FlashcardDeckOverview queue={data || []} />
+      <FlashcardDeckOverview queue={data?.cards || []} />
     </FlashcardErrorBoundary>
   );
 }

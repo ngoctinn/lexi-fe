@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { ChevronLeft } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldDescription, FieldError } from "@/components/ui/field";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Logo } from "@/components/shared/logo";
 import { saveOnboardingAction } from "../api/onboarding.actions";
 import type { OnboardingActionState, OnboardingLevel } from "../types/schema";
@@ -27,14 +27,57 @@ const INITIAL_ACTION_STATE: OnboardingActionState = {
   message: "",
 };
 
-const LEVELS: Array<{ id: OnboardingLevel; label: string }> = [
-  { id: "A1", label: "A1 - Mới bắt đầu" },
-  { id: "A2", label: "A2 - Căn bản" },
-  { id: "B1", label: "B1 - Trung cấp" },
-  { id: "B2", label: "B2 - Trung cấp khá" },
-  { id: "C1", label: "C1 - Cao cấp" },
-  { id: "C2", label: "C2 - Thành thạo" },
+const LEVELS: Array<{ id: OnboardingLevel; label: string; description: string; image: string }> = [
+  { id: "A1", label: "A1", description: "Mới bắt đầu", image: "/images/onboarding/levels/a1-seedling.svg" },
+  { id: "A2", label: "A2", description: "Căn bản", image: "/images/onboarding/levels/a2-young.svg" },
+  { id: "B1", label: "B1", description: "Trung cấp", image: "/images/onboarding/levels/b1-medium.svg" },
+  { id: "B2", label: "B2", description: "Trung cấp khá", image: "/images/onboarding/levels/b2-large.svg" },
+  { id: "C1", label: "C1", description: "Cao cấp", image: "/images/onboarding/levels/c1-mature.svg" },
+  { id: "C2", label: "C2", description: "Thành thạo", image: "/images/onboarding/levels/c2-flourishing.svg" },
 ];
+
+interface LevelSelectorProps {
+  value: OnboardingLevel | null;
+  onChange: (value: OnboardingLevel) => void;
+  disabled?: boolean;
+}
+
+function LevelSelector({ value, onChange, disabled }: LevelSelectorProps) {
+  return (
+    <div className="grid w-full gap-3 grid-cols-2 sm:grid-cols-3 pt-4">
+      {LEVELS.map((level) => (
+        <button
+          key={level.id}
+          type="button"
+          onClick={() => onChange(level.id)}
+          disabled={disabled}
+          className={cn(
+            "flex flex-col items-center gap-2 rounded-2xl border-2 p-6 transition-all duration-300",
+            "hover:border-primary hover:bg-primary/5",
+            value === level.id
+              ? "border-primary bg-primary/10 shadow-md scale-105"
+              : "border-border/40 bg-muted/30",
+          )}
+        >
+          <div className={cn(
+            "relative w-16 h-16 transition-all duration-300",
+            value === level.id ? "scale-110" : "scale-100"
+          )}>
+            <Image
+              src={level.image}
+              alt={level.description}
+              fill
+              className="object-contain"
+            />
+          </div>
+          <span className="text-xs font-semibold text-center line-clamp-2">
+            {level.description}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export function OnboardingForm() {
   const [step, setStep] = useState(0);
@@ -44,14 +87,24 @@ export function OnboardingForm() {
   );
   const [data, setData] = useState({
     display_name: "",
-    current_level: "A1",
-    target_level: "B1",
+    current_level: null as OnboardingLevel | null,
+    target_level: null as OnboardingLevel | null,
     learning_goal_text: "",
   });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const nextStep = () =>
     setStep((current) => Math.min(current + 1, TOTAL_STEPS - 1));
   const prevStep = () => setStep((current) => Math.max(current - 1, 0));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    // Prevent submit if form not complete
+    if (!isFormComplete) {
+      e.preventDefault();
+      setSubmitAttempted(true);
+      return;
+    }
+  };
 
   const displayNameErrors = formState.errors?.display_name?.map((message) => ({
     message,
@@ -66,15 +119,15 @@ export function OnboardingForm() {
   })) || [];
 
   const isStep0Valid = data.display_name.trim().length > 0;
-  const isStep1Valid = data.current_level !== "";
-  const isStep2Valid = data.target_level !== "";
+  const isStep1Valid = data.current_level !== null;
+  const isStep2Valid = data.target_level !== null;
   const canProceed = step === 0 ? isStep0Valid : step === 1 ? isStep1Valid : isStep2Valid;
   const isFormComplete = isStep0Valid && isStep1Valid && isStep2Valid;
 
   return (
     <Card
       size="lg"
-      className="mx-auto w-full max-w-md overflow-visible animate-in fade-in zoom-in-95 duration-500"
+      className="mx-auto w-full max-w-2xl overflow-visible animate-in fade-in zoom-in-95 duration-500"
     >
       <CardHeader className="pb-2 pt-8 text-center">
         <div className="flex flex-col items-center gap-4">
@@ -83,7 +136,7 @@ export function OnboardingForm() {
           <div className="mt-4 space-y-1">
             <CardTitle className="text-xl font-bold tracking-tight">
               {step === 0 && "Chào bạn, chúng mình nên gọi bạn là gì nhỉ?"}
-              {step === 1 && "Trình độ tiếng Anh hiện tại của bạn?"}
+              {step === 1 && "Bạn tự đánh giá trình độ Tiếng Anh của mình thế nào?"}
               {step === 2 && "Bạn mong muốn đạt đến trình độ nào?"}
             </CardTitle>
             <CardDescription className="px-4 text-sm">
@@ -98,14 +151,18 @@ export function OnboardingForm() {
         </div>
       </CardHeader>
 
-      <form action={formAction}>
-        <CardContent className="flex flex-col justify-center overflow-hidden">
+      <form action={formAction} onSubmit={handleSubmit}>
+        <CardContent className="flex flex-col justify-center overflow-hidden pb-8">
           <input
             type="hidden"
             name="current_level"
-            value={data.current_level}
+            value={data.current_level || ""}
           />
-          <input type="hidden" name="target_level" value={data.target_level} />
+          <input
+            type="hidden"
+            name="target_level"
+            value={data.target_level || ""}
+          />
           <input
             type="hidden"
             name="learning_goal_text"
@@ -154,43 +211,13 @@ export function OnboardingForm() {
 
             {step === 1 && (
               <Field className="w-full gap-3">
-                <RadioGroup
+                <LevelSelector
                   value={data.current_level}
-                  onValueChange={(value) =>
+                  onChange={(value) =>
                     setData({ ...data, current_level: value })
                   }
-                  className="flex w-full flex-col gap-2"
-                >
-                  {LEVELS.map((level) => (
-                    <label
-                      key={level.id}
-                      htmlFor={level.id}
-                      className={cn(
-                        "flex cursor-pointer items-center rounded-lg border border-border/40 bg-muted/30 px-4 py-3 ring-offset-background transition-all",
-                        "hover:border-border/60 hover:bg-muted/80",
-                        data.current_level === level.id
-                          ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
-                          : "",
-                      )}
-                    >
-                      <RadioGroupItem
-                        value={level.id}
-                        id={level.id}
-                        className="mr-3"
-                      />
-                      <span
-                        className={cn(
-                          "text-sm font-semibold",
-                          data.current_level === level.id
-                            ? "text-primary"
-                            : "text-muted-foreground",
-                        )}
-                      >
-                        {level.label}
-                      </span>
-                    </label>
-                  ))}
-                </RadioGroup>
+                  disabled={isPending}
+                />
                 <FieldError
                   className="text-center"
                   errors={currentLevelErrors}
@@ -200,43 +227,13 @@ export function OnboardingForm() {
 
             {step === 2 && (
               <Field className="w-full gap-3">
-                <RadioGroup
+                <LevelSelector
                   value={data.target_level}
-                  onValueChange={(value) =>
+                  onChange={(value) =>
                     setData({ ...data, target_level: value })
                   }
-                  className="flex w-full flex-col gap-2"
-                >
-                  {LEVELS.map((level) => (
-                    <label
-                      key={`goal-${level.id}`}
-                      htmlFor={`goal-${level.id}`}
-                      className={cn(
-                        "flex cursor-pointer items-center rounded-lg border border-border/40 bg-muted/30 px-4 py-3 ring-offset-background transition-all",
-                        "hover:border-border/60 hover:bg-muted/80",
-                        data.target_level === level.id
-                          ? "border-primary bg-primary-50 ring-1 ring-primary-100 shadow-sm"
-                          : "",
-                      )}
-                    >
-                      <RadioGroupItem
-                        value={level.id}
-                        id={`goal-${level.id}`}
-                        className="mr-3"
-                      />
-                      <span
-                        className={cn(
-                          "text-sm font-semibold",
-                          data.target_level === level.id
-                            ? "text-primary"
-                            : "text-muted-foreground",
-                        )}
-                      >
-                        {level.label}
-                      </span>
-                    </label>
-                  ))}
-                </RadioGroup>
+                  disabled={isPending}
+                />
                 <FieldError
                   className="text-center"
                   errors={learningGoalErrors}
@@ -286,7 +283,11 @@ export function OnboardingForm() {
           <FieldError
             className="text-center"
             errors={
-              formState.message ? [{ message: formState.message }] : undefined
+              submitAttempted && !isFormComplete
+                ? [{ message: "Vui lòng hoàn thành tất cả các bước trước khi tiếp tục" }]
+                : formState.message
+                  ? [{ message: formState.message }]
+                  : undefined
             }
           />
         </CardFooter>

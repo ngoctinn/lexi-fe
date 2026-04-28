@@ -9,16 +9,22 @@ import type { Session } from "@/features/session/types/session.types";
  * Pure Next.js pattern: fetch directly, handle errors gracefully
  */
 export async function getSessions(): Promise<Session[]> {
-  const response = await apiFetch<ApiResponse<{ sessions: Session[] }>>(
-    "/sessions",
-    {
-      cache: "no-store",
-    }
-  );
+  try {
+    const response = await apiFetch<ApiResponse<{ sessions: Session[] }>>(
+      "/sessions",
+      {
+        cache: "no-store",
+      }
+    );
 
-  if (!response.success) {
+    if (!response.success) {
+      console.error("[getSessions] API error:", response.message);
+      return [];
+    }
+
+    return response.data?.sessions ?? [];
+  } catch (error) {
+    console.error("[getSessions] Error:", error instanceof Error ? error.message : error);
     return [];
   }
-
-  return response.data?.sessions ?? [];
 }

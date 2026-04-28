@@ -66,7 +66,7 @@ export async function apiFetch<T = unknown>(
 
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
-  headers.set("Authorization", token);
+  headers.set("Authorization", `Bearer ${token}`);
 
   try {
     const response = await fetch(url, {

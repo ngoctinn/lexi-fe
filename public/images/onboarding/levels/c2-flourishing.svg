@@ -1,0 +1,30 @@
+<svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soil -->
+  <ellipse cx="100" cy="240" rx="80" ry="30" fill="#8B6F47"/>
+  <path d="M 30 240 Q 30 250 50 255 Q 70 260 100 260 Q 130 260 150 255 Q 170 250 170 240" fill="#6B5437"/>
+  
+  <!-- Trunk -->
+  <rect x="88" y="120" width="24" height="120" fill="#8B6F47" rx="4"/>
+  
+  <!-- Lower foliage - massive -->
+  <ellipse cx="45" cy="155" rx="45" ry="52" fill="#4CAF50"/>
+  <ellipse cx="155" cy="155" rx="45" ry="52" fill="#4CAF50"/>
+  
+  <!-- Middle foliage -->
+  <ellipse cx="55" cy="110" rx="48" ry="55" fill="#66BB6A"/>
+  <ellipse cx="145" cy="110" rx="48" ry="55" fill="#66BB6A"/>
+  
+  <!-- Upper foliage -->
+  <ellipse cx="100" cy="70" rx="52" ry="60" fill="#81C784"/>
+  <ellipse cx="65" cy="95" rx="40" ry="45" fill="#81C784"/>
+  <ellipse cx="135" cy="95" rx="40" ry="45" fill="#81C784"/>
+  
+  <!-- Top crown - flourishing -->
+  <ellipse cx="100" cy="50" rx="30" ry="35" fill="#A5D6A7"/>
+  <ellipse cx="80" cy="65" rx="22" ry="28" fill="#A5D6A7"/>
+  <ellipse cx="120" cy="65" rx="22" ry="28" fill="#A5D6A7"/>
+  
+  <!-- Extra flourish leaves -->
+  <ellipse cx="70" cy="75" rx="15" ry="20" fill="#C8E6C9"/>
+  <ellipse cx="130" cy="75" rx="15" ry="20" fill="#C8E6C9"/>
+</svg>

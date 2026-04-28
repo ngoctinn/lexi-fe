@@ -1,0 +1,15 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Amplify Hosting Configuration",
+  "Resources": {
+    "AmplifyHosting": {
+      "Type": "AWS::Amplify::App",
+      "Properties": {
+        "Name": "lexife",
+        "Repository": "https://github.com/ngoctinn/lexi-fe",
+        "OauthToken": "YOUR_GITHUB_TOKEN",
+        "BuildSpec": "version: 1\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - npm install -g pnpm\n        - pnpm install\n    build:\n      commands:\n        - pnpm build\n  artifacts:\n    baseDirectory: .next\n    files:\n      - '**/*'\n  cache:\n    paths:\n      - node_modules/**/*\n      - .pnpm-store/**/*"
+      }
+    }
+  }
+}

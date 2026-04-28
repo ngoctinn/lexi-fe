@@ -10,6 +10,14 @@ import type { ApiResponse, ActionResult } from "@/lib/api/types";
 export async function endSession(
   sessionId: string,
 ): Promise<ActionResult> {
+  // Validate input
+  if (!sessionId) {
+    return {
+      success: false,
+      error: "Session ID không hợp lệ.",
+    };
+  }
+
   const response = await apiFetch<ApiResponse<unknown>>(
     `/sessions/${sessionId}/complete`,
     {

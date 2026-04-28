@@ -101,8 +101,8 @@ export interface Session {
   session_id: string;
   user_id?: string;
   scenario_id: string;
-  learner_role_id?: string;
-  ai_role_id?: string;
+  user_role?: string;
+  ai_role?: string;
   ai_character: AICharacter;
   level: SessionLevel;
   prompt_snapshot?: string;
@@ -345,12 +345,13 @@ export interface SessionUiState {
 
 export interface CreateSessionDto {
   scenario_id: string;
-  learner_role_id?: string;
-  ai_role_id?: string;
-  ai_character: AICharacter;
-  level: SessionLevel;
-  selected_goal?: string;
-  prompt_snapshot: string;
+  user_role: string;           // ✅ Khớp với API spec
+  ai_role: string;             // ✅ Khớp với API spec
+  difficulty_level?: string;   // ✅ Khớp với API spec
+  ai_character?: AICharacter;  // Optional - có thể không cần gửi lên API
+  level?: SessionLevel;        // Optional - có thể map từ difficulty_level
+  selected_goal?: string;      // Optional - additional field
+  prompt_snapshot?: string;    // Optional - additional field
 }
 
 export interface CreateSessionResult {

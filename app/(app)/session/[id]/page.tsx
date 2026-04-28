@@ -190,8 +190,8 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
     (item) => item.scenario_id === session.scenario_id,
   );
   const scenarioRoles = scenario?.roles ?? [];
-  const learnerRole = session.learner_role_id ?? scenarioRoles[0] ?? "Học viên";
-  const aiRole = session.ai_role_id ?? scenarioRoles[1] ?? "AI Assistant";
+  const learnerRole = session.user_role ?? scenarioRoles[0] ?? "Học viên";
+  const aiRole = session.ai_role ?? scenarioRoles[1] ?? "AI Assistant";
   const aiCharacter = session.ai_character ?? "Sarah";
 
   const initialSummary: SessionScoreSummary | null = session.scoring

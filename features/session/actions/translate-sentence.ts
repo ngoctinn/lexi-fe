@@ -2,7 +2,7 @@
 
 import { apiFetch } from "@/lib/api/fetch";
 import type { ApiResponse } from "@/lib/api/types";
-import { getErrorMessage } from "@/features/session/utils/error-handler";
+import { getUserFriendlyMessage } from "@/lib/api/errors";
 
 export interface TranslateSentenceResult {
   sentence_en: string;
@@ -28,12 +28,12 @@ export async function translateSentenceAction(
   );
 
   if (!response.success) {
-    const errorInfo = getErrorMessage(response.error);
+    const userMessage = getUserFriendlyMessage(response.error || "SERVICE_ERROR");
     console.error("[translateSentence] API error:", response.message, response.error);
     return {
       sentence_en: sentence,
       sentence_vi: "",
-      error: errorInfo.userMessage,
+      error: userMessage,
       errorCode: response.error,
     };
   }

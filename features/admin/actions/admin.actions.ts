@@ -5,52 +5,10 @@ import { apiFetch } from "@/lib/api/fetch";
 import type { ApiResponse, ActionResult } from "@/lib/api/types";
 import type { AdminScenario, AdminUser } from "@/features/admin/types";
 
-// Temporary mock data for development (fallback when user is not admin)
-const MOCK_USERS: AdminUser[] = [
-  {
-    id: "user-1001",
-    user_id: "user-1001",
-    display_name: "Nguyễn Minh Anh",
-    email: "minhanh@lexi.app",
-    current_level: "A2",
-    target_level: "B1",
-    role: "user",
-    is_active: true,
-    total_words_learned: 145,
-    joined_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    learning_goal_text: "Du lịch tự tin",
-    status: "active",
-    sessions_completed: 18,
-    streak: 9,
-    last_active_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-    notes: "Ưu tiên các kịch bản hỏi đường, check-in và gọi món.",
-  },
-  {
-    id: "user-1002",
-    user_id: "user-1002",
-    display_name: "Trần Quốc Huy",
-    email: "quochuy@lexi.app",
-    current_level: "B1",
-    target_level: "B2",
-    role: "user",
-    is_active: true,
-    total_words_learned: 287,
-    joined_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-    learning_goal_text: "Phỏng vấn việc làm",
-    status: "review",
-    sessions_completed: 12,
-    streak: 4,
-    last_active_at: new Date(Date.now() - 28 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-    notes: "Cần thêm phản hồi ngữ pháp và luyện câu trả lời dài hơn.",
-  },
-];
-
 /**
  * Get all users (admin only)
  * Pure Next.js pattern: fetch directly from /admin/users
- * Fallback to mock data if user is not admin (403 Forbidden)
+ * Fallback to empty array if user is not admin (403 Forbidden)
  */
 export async function getAdminUsers(): Promise<AdminUser[]> {
   const response = await apiFetch<ApiResponse<{ users: AdminUser[]; total_count: number }>>(
@@ -61,10 +19,10 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
   );
 
   if (!response.success) {
-    // If Forbidden (403), user is not admin - use mock data
+    // If Forbidden (403), user is not admin
     if (response.message?.includes("Forbidden") || response.error?.includes("Forbidden")) {
-      console.warn("[admin] User is not admin, using mock data for development");
-      return MOCK_USERS;
+      console.warn("[admin] User is not admin, access denied");
+      return [];
     }
     
     console.error("[admin] getAdminUsers failed:", response.message);

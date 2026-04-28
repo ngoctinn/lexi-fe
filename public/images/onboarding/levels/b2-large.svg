@@ -1,0 +1,24 @@
+<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soil -->
+  <ellipse cx="100" cy="200" rx="80" ry="30" fill="#8B6F47"/>
+  <path d="M 30 200 Q 30 210 50 215 Q 70 220 100 220 Q 130 220 150 215 Q 170 210 170 200" fill="#6B5437"/>
+  
+  <!-- Trunk -->
+  <rect x="92" y="110" width="16" height="90" fill="#8B6F47" rx="3"/>
+  
+  <!-- Lower foliage - large -->
+  <ellipse cx="55" cy="135" rx="35" ry="42" fill="#4CAF50"/>
+  <ellipse cx="145" cy="135" rx="35" ry="42" fill="#4CAF50"/>
+  
+  <!-- Middle foliage -->
+  <ellipse cx="65" cy="100" rx="38" ry="45" fill="#66BB6A"/>
+  <ellipse cx="135" cy="100" rx="38" ry="45" fill="#66BB6A"/>
+  
+  <!-- Upper foliage -->
+  <ellipse cx="100" cy="60" rx="42" ry="48" fill="#81C784"/>
+  <ellipse cx="75" cy="75" rx="30" ry="35" fill="#81C784"/>
+  <ellipse cx="125" cy="75" rx="30" ry="35" fill="#81C784"/>
+  
+  <!-- Top accent -->
+  <ellipse cx="100" cy="45" rx="20" ry="25" fill="#A5D6A7"/>
+</svg>

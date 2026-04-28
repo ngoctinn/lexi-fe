@@ -1,79 +1,27 @@
 /**
  * Flashcard-specific error handling
+ * Re-exports from unified error handler for backward compatibility
  */
 
-export class FlashcardError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public statusCode: number = 500,
-    public retryable: boolean = false,
-  ) {
-    super(message);
-    this.name = "FlashcardError";
-  }
-}
-
-export class ValidationError extends FlashcardError {
-  constructor(message: string) {
-    super(message, "VALIDATION_ERROR", 400, false);
-    this.name = "ValidationError";
-  }
-}
-
-export class NotFoundError extends FlashcardError {
-  constructor(message: string = "Flashcard not found") {
-    super(message, "NOT_FOUND", 404, false);
-    this.name = "NotFoundError";
-  }
-}
-
-export class UnauthorizedError extends FlashcardError {
-  constructor(message: string = "Unauthorized") {
-    super(message, "UNAUTHORIZED", 401, false);
-    this.name = "UnauthorizedError";
-  }
-}
-
-export class ConflictError extends FlashcardError {
-  constructor(message: string = "Conflict") {
-    super(message, "CONFLICT", 409, false);
-    this.name = "ConflictError";
-  }
-}
-
-export class NetworkError extends FlashcardError {
-  constructor(message: string = "Network error") {
-    super(message, "NETWORK_ERROR", 0, true);
-    this.name = "NetworkError";
-  }
-}
-
-export class TimeoutError extends FlashcardError {
-  constructor(message: string = "Request timeout") {
-    super(message, "TIMEOUT", 0, true);
-    this.name = "TimeoutError";
-  }
-}
-
-/**
- * Parse API error response
- */
-export function parseApiError(
-  status: number,
-  data: any,
-): { message: string; code: string; retryable: boolean } {
-  const message = data?.message || data?.error || `HTTP ${status}`;
-  const code = data?.code || `HTTP_${status}`;
-
-  // Determine if error is retryable
-  const retryable =
-    status >= 500 || // Server errors
-    status === 408 || // Request timeout
-    status === 429; // Rate limit
-
-  return { message, code, retryable };
-}
+export {
+  ApiError,
+  ValidationError,
+  NotFoundError,
+  UnauthorizedError,
+  ConflictError,
+  NetworkError,
+  TimeoutError,
+  ServerError,
+  RateLimitError,
+  ForbiddenError,
+  parseHttpError as parseApiError,
+  getErrorInfo,
+  getUserFriendlyMessage,
+  isRetryableError,
+  throwHttpError,
+  type ApiErrorResponse,
+  type ErrorInfo,
+} from "@/lib/api/errors";
 
 /**
  * User-friendly error messages (Vietnamese)

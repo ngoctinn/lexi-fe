@@ -11,6 +11,7 @@ import {
   saveFlashcardFromSession,
   updateFlashcardSRS,
 } from "../actions/practice-actions";
+import { calculateFlashcardStatistics } from "../lib/statistics";
 import type {
   Flashcard,
   ReviewDifficulty,
@@ -29,6 +30,7 @@ export const flashcardQueryKeys = {
   details: () => [...flashcardQueryKeys.all, "detail"] as const,
   detail: (id: string) => [...flashcardQueryKeys.details(), id] as const,
   queue: () => [...flashcardQueryKeys.all, "queue"] as const,
+  statistics: () => [...flashcardQueryKeys.all, "statistics"] as const,
 };
 
 /**
@@ -145,4 +147,18 @@ export function usePrefetchPracticeQueue(queryClient: any) {
       queryFn: fetchPracticeQueue,
       staleTime: 2 * 60 * 1000,
     });
+}
+
+/**
+ * Calculate flashcard statistics from all flashcards
+ * Note: Computed client-side since /flashcards/statistics endpoint doesn't exist
+ */
+export function useFlashcardStatistics() {
+  const { data: flashcardsData } = useFlashcards(100); // Fetch all cards for statistics
+  
+  return {
+    data: flashcardsData?.cards ? calculateFlashcardStatistics(flashcardsData.cards) : null,
+    isLoading: false,
+    error: null,
+  };
 }

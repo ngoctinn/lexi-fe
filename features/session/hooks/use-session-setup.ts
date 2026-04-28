@@ -131,8 +131,8 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
 
       const result = await createSession({
         ...formData,
-        learner_role_id: validUserRole,
-        ai_role_id: validAiRole,
+        user_role: validUserRole,
+        ai_role: validAiRole,
         selected_goal: goals,
         prompt_snapshot: promptSnapshot,
       });

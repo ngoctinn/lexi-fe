@@ -9,16 +9,22 @@ import type { Scenario } from "@/features/session/types/session.types";
  * Pure Next.js pattern: fetch directly
  */
 export async function getScenarios(): Promise<Scenario[]> {
-  const response = await apiPublicFetch<ApiResponse<{ scenarios: Scenario[] }>>(
-    "/scenarios",
-    {
-      cache: "no-store",
-    }
-  );
+  try {
+    const response = await apiPublicFetch<ApiResponse<{ scenarios: Scenario[] }>>(
+      "/scenarios",
+      {
+        cache: "no-store",
+      }
+    );
 
-  if (!response.success) {
+    if (!response.success) {
+      console.error("[getScenarios] API error:", response.message);
+      return [];
+    }
+
+    return response.data?.scenarios ?? [];
+  } catch (error) {
+    console.error("[getScenarios] Error:", error instanceof Error ? error.message : error);
     return [];
   }
-
-  return response.data?.scenarios ?? [];
 }

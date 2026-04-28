@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Flashcard, ReviewDifficulty } from "../schemas/flashcard.schema";
 import { FlashcardCard } from "./flashcard-card";
 import { SessionSummary } from "./session-summary";
-import { updateFlashcardSRS } from "../actions/practice-actions-v2";
+import { updateFlashcardSRS } from "../actions/practice-actions";
 import { toast } from "sonner";
 import { FlashcardProgress } from "./flashcard-progress";
 import { SRSControls } from "./srs-controls";
@@ -112,7 +112,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         setCorrectCardsCount((prev) => prev + 1);
       }
 
-      if (difficulty === "forgot") {
+      if (difficulty === "again") {
         const hasCard = relearnQueueRef.current.some(
           (item) => item.flashcard_id === currentCard.flashcard_id,
         );
@@ -176,10 +176,10 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
       }
 
       const ratingMap: Record<string, ReviewDifficulty> = {
-        "1": "forgot",
-        Digit1: "forgot",
-        "!": "forgot",
-        "¹": "forgot",
+        "1": "again",
+        Digit1: "again",
+        "!": "again",
+        "¹": "again",
         "2": "hard",
         Digit2: "hard",
         "@": "hard",
@@ -199,7 +199,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
       if (difficulty && isRevealed && !isSubmitting) {
         e.preventDefault();
         const displayKey =
-          difficulty === "forgot"
+          difficulty === "again"
             ? "1"
             : difficulty === "hard"
               ? "2"
