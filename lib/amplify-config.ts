@@ -12,8 +12,12 @@ export const amplifyConfig: ResourcesConfig = {
           scopes: ["email", "openid", "profile"],
           redirectSignIn: [
             "http://localhost:3000/dashboard",
+            "https://main.do08vxm6ounn6.amplifyapp.com/dashboard",
           ],
-          redirectSignOut: ["http://localhost:3000/login"],
+          redirectSignOut: [
+            "http://localhost:3000/login",
+            "https://main.do08vxm6ounn6.amplifyapp.com/login",
+          ],
           responseType: "code",
         },
       },
