@@ -38,7 +38,7 @@ function normalizeText(value: string): string {
  * Parse API error response and throw appropriate error
  */
 function handleApiError(status: number, data: any): never {
-  const { message, code, retryable } = parseApiError(status, data);
+  const { message, code } = parseApiError(status, data);
 
   switch (status) {
     case 400:

@@ -55,6 +55,7 @@ export function SidebarAccountMenu({ profile }: SidebarAccountMenuProps) {
   const handleLogout = React.useCallback(async () => {
     await signOut();
     router.replace("/login");
+    router.refresh();
   }, [router]);
 
   return (

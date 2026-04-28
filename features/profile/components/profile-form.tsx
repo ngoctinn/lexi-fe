@@ -19,7 +19,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 import { updateProfile } from "../api/profile.actions";
-import { signOut } from "aws-amplify/auth";
 import { useRouter } from "next/navigation";
 
 interface ProfileFormProps {
@@ -59,7 +58,6 @@ function isValidAvatarUrl(url: string): boolean {
 }
 
 export function ProfileForm({ initialData }: ProfileFormProps) {
-  const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
   const levelValues = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
   const legacyGoal = (initialData.learning_goal || "").trim();
@@ -87,11 +85,6 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
 
   const handleRemoveAvatar = () => {
     setFormData((prev) => ({ ...prev, avatar_url: DEFAULT_AVATAR }));
-  };
-
-  const handleLogout = async () => {
-    await signOut();
-    router.replace("/login");
   };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -286,28 +279,10 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
-        <div className="text-center sm:text-left">
-          <p className="text-sm font-medium text-foreground">
-            Đăng xuất tài khoản
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Kết thúc phiên làm việc hiện tại của bạn.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            variant="ghost"
-            className="text-muted-foreground"
-            onClick={handleLogout}
-          >
-            Đăng xuất
-          </Button>
-          <Button type="submit" size="xl" disabled={isSaving}>
-            {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
-          </Button>
-        </div>
+      <div className="flex justify-end pt-8 border-t">
+        <Button type="submit" size="xl" disabled={isSaving}>
+          {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+        </Button>
       </div>
     </form>
   );
