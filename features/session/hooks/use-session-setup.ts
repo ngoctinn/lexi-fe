@@ -24,6 +24,8 @@ export function useSessionSetup({ scenarios }: UseSessionSetupProps) {
 
   const [formData, setFormData] = React.useState<CreateSessionDto>({
     scenario_id: scenarios[0]?.scenario_id ?? "",
+    user_role: "",
+    ai_role: "",
     ai_character: "Sarah",
     level: "B1",
     prompt_snapshot: "",

@@ -41,10 +41,3 @@ export const ERROR_MESSAGES: Record<string, string> = {
   HTTP_413: "Dữ liệu quá lớn.",
   HTTP_500: "Lỗi máy chủ. Vui lòng thử lại sau.",
 };
-
-/**
- * Get user-friendly error message
- */
-export function getUserFriendlyMessage(code: string): string {
-  return ERROR_MESSAGES[code] || "Có lỗi xảy ra. Vui lòng thử lại.";
-}
