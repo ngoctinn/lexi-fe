@@ -176,6 +176,7 @@ export function ConversationScreen({
             onTranslate={translateTurn}
             onTranslateWord={translateWord}
             onSaveFlashcard={saveTurnToFlashcard}
+            savingFlashcardTurnIndexes={ui.savingFlashcardTurnIndexes}
             onAnalyze={analyzeTurn}
           />
 

@@ -12,7 +12,9 @@ export default function FlashcardOverviewPage() {
   return (
     <div className="flex flex-1 flex-col">
       <PageHeader icon={BookOpen} title="Luyện từ vựng" />
-      <FlashcardDeckOverviewClient />
+      <main className="flex flex-1 flex-col gap-6 p-4 md:p-8">
+        <FlashcardDeckOverviewClient />
+      </main>
     </div>
   );
 }

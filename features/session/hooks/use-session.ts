@@ -289,7 +289,8 @@ export function useSession({
         return;
       }
 
-      if (targetTurn.is_saved_to_flashcard) {
+      // Only check if saving the exact same word that was already saved
+      if (targetTurn.is_saved_to_flashcard && !vocabData) {
         toast.success("Nội dung này đã được lưu trước đó.");
         return;
       }
@@ -327,13 +328,16 @@ export function useSession({
           return;
         }
 
-        setTurns((prev: Turn[]) =>
-          prev.map((turn) =>
-            turn.turn_index === turnIndex
-              ? { ...turn, is_saved_to_flashcard: true }
-              : turn,
-          ),
-        );
+        // Only mark as saved if saving the entire turn content (not individual words)
+        if (!vocabData) {
+          setTurns((prev: Turn[]) =>
+            prev.map((turn) =>
+              turn.turn_index === turnIndex
+                ? { ...turn, is_saved_to_flashcard: true }
+                : turn,
+            ),
+          );
+        }
 
         toast.success(result.message);
       } catch (err) {

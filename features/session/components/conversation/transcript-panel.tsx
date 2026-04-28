@@ -18,6 +18,7 @@ interface TranscriptPanelProps {
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
   onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => Promise<void>;
+  savingFlashcardTurnIndexes?: number[];
   onAnalyze?: (turnIndex: number) => void;
   className?: string;
 }
@@ -32,6 +33,7 @@ export function TranscriptPanel({
   onTranslate,
   onTranslateWord,
   onSaveFlashcard,
+  savingFlashcardTurnIndexes = [],
   onAnalyze,
   className,
 }: TranscriptPanelProps) {
@@ -84,6 +86,7 @@ export function TranscriptPanel({
               onTranslate={onTranslate}
               onTranslateWord={onTranslateWord}
               onSaveFlashcard={onSaveFlashcard}
+              savingFlashcardTurnIndexes={savingFlashcardTurnIndexes}
               onAnalyze={onAnalyze}
             />
           );

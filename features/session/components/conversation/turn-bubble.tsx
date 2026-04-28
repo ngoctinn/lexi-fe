@@ -110,6 +110,7 @@ interface TurnBubbleProps {
   onTranslate?: (turnIndex: number) => void;
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
   onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => Promise<void>;
+  savingFlashcardTurnIndexes?: number[];
   onAnalyze?: (turnIndex: number) => void;
   isPlaying?: boolean;
 }
@@ -123,6 +124,7 @@ export function TurnBubble({
   onTranslate,
   onTranslateWord,
   onSaveFlashcard,
+  savingFlashcardTurnIndexes = [],
   onAnalyze,
   isPlaying,
 }: TurnBubbleProps) {
@@ -349,10 +351,19 @@ export function TurnBubble({
                                   }
                                   setActiveWord(null);
                                 }}
-                                disabled={turn.is_saved_to_flashcard}
+                                disabled={savingFlashcardTurnIndexes.includes(actualTurnIndex)}
                               >
-                                <BookmarkPlus className="size-4" />
-                                {turn.is_saved_to_flashcard ? "Đã lưu flashcard" : "Lưu flashcard"}
+                                {savingFlashcardTurnIndexes.includes(actualTurnIndex) ? (
+                                  <>
+                                    <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                    Đang lưu...
+                                  </>
+                                ) : (
+                                  <>
+                                    <BookmarkPlus className="size-4" />
+                                    {turn.is_saved_to_flashcard ? "Đã lưu flashcard" : "Lưu flashcard"}
+                                  </>
+                                )}
                               </Button>
                             </div>
                           </div>

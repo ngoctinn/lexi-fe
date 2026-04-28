@@ -64,51 +64,45 @@ function QueueRow({ card, now }: { card: Flashcard; now: number | null }) {
   const newCard = isNewCard(card);
 
   return (
-    <div className="group flex items-start gap-3 border-b border-border/60 px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30">
+    <div className="group flex items-center gap-3 border-b border-border/60 px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30">
       <button
         type="button"
         onClick={() => playPronunciation(card)}
-        className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary transition-all hover:bg-primary-100 hover:scale-105 active:scale-95"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary transition-all hover:bg-primary-100 hover:scale-105 active:scale-95"
         aria-label={`Nghe phát âm ${card.word}`}
       >
         <Volume2 className="size-4" aria-hidden />
       </button>
 
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-foreground">
+        <div className="flex flex-wrap items-center gap-2 mb-1">
+          <span className="font-semibold text-sm text-foreground">
             {card.word}
           </span>
+          {card.phonetic && (
+            <span className="text-xs text-muted-foreground">
+              /{card.phonetic}/
+            </span>
+          )}
           <Badge
             variant={newCard ? "warning" : "success"}
-            data-icon="inline-start"
+            size="sm"
           >
-            {newCard ? (
-              <PlusCircle className="size-3" aria-hidden />
-            ) : (
-              <CheckCircle2 className="size-3" aria-hidden />
-            )}
-            {newCard ? "Chưa học" : "Đã học"}
+            {newCard ? "Mới" : `Lần ${card.review_count}`}
           </Badge>
         </div>
 
-        <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {card.translation_vi || "Chưa có bản dịch"}
-        </p>
-
-        <p className="mt-2 text-xs text-muted-foreground">
-          {newCard
-            ? "Bắt đầu với thẻ mới"
-            : `Lần ôn gần nhất: ${card.interval_days} ngày`}
         </p>
       </div>
 
       <div className="shrink-0 text-right">
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="text-xs font-medium text-foreground mb-1">
           {formatNextReview(card, now)}
         </p>
         <p className="text-xs text-muted-foreground">
-          {newCard ? "Mới" : `SRS ${card.review_count}`}
+          {newCard ? "Chưa học" : `${card.interval_days} ngày`}
         </p>
       </div>
     </div>
@@ -140,35 +134,37 @@ function QueueSection({
   }, [cards, searchQuery]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-foreground">{title}</p>
-        <span className="text-xs text-muted-foreground">
-          {filteredCards.length} / {cards.length} từ
-        </span>
+        <h3 className="text-xs font-semibold text-foreground">{title}</h3>
+        <Badge variant="secondary" size="sm">
+          {filteredCards.length} / {cards.length}
+        </Badge>
       </div>
 
       {cards.length > 0 && (
         <div className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Tìm từ vựng..."
+            placeholder="Tìm..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 text-sm h-9"
           />
         </div>
       )}
 
       {filteredCards.length > 0 ? (
-        <div className="max-h-112 overflow-y-auto rounded-2xl border border-border/60 bg-muted/15 pr-1">
+        <div className="max-h-[300px] overflow-y-auto rounded-lg border border-border/60 bg-background">
           {filteredCards.map((card) => (
             <QueueRow key={card.flashcard_id} card={card} now={now} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-4 text-center text-sm text-muted-foreground">
-          {searchQuery ? "Không tìm thấy từ vựng phù hợp" : emptyText}
+        <div className="rounded-lg border border-dashed border-border/60 bg-muted/10 p-4 text-center">
+          <p className="text-xs text-muted-foreground">
+            {searchQuery ? "Không tìm thấy" : emptyText}
+          </p>
         </div>
       )}
     </div>
@@ -184,14 +180,15 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
     : 0;
 
   return (
-    <Card size="sm" className="border-border/70 shadow-none">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-2xl font-bold tracking-tight text-primary-900">
+    <Card size="sm" className="border-border/60">
+      <CardHeader className="border-b border-border/60 pb-3">
+        <CardTitle className="text-base font-bold tracking-tight">
           Tiến độ học
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-4 p-4 pt-0">
+      <CardContent className="space-y-4 p-4">
+        {/* Progress bar section */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium text-muted-foreground">
@@ -201,7 +198,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
               {studiedCards.length}/{queue.length}
             </span>
           </div>
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-primary-50">
+          <div className="h-3 w-full overflow-hidden rounded-full bg-primary-50">
             <div
               className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500"
               style={{ width: `${progressValue}%` }}
@@ -209,51 +206,53 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
           </div>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2">
+        {/* Two cards below progress bar */}
+        <div className="grid gap-3 grid-cols-2">
           <div className="flex flex-col gap-1 rounded-lg border bg-card p-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Từ mới
-            </span>
             <div className="flex items-center gap-1.5">
-              <span className="text-2xl leading-none" aria-hidden>
+              <span className="text-lg" aria-hidden>
                 🎯
               </span>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {newCards.length}
-              </span>
+              <p className="text-xs font-medium text-muted-foreground">
+                Từ mới
+              </p>
             </div>
+            <p className="text-2xl font-bold tracking-tight text-foreground">
+              {newCards.length}
+            </p>
           </div>
 
           <div className="flex flex-col gap-1 rounded-lg border bg-card p-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Từ sắp học
-            </span>
             <div className="flex items-center gap-1.5">
-              <span className="text-2xl leading-none" aria-hidden>
+              <span className="text-lg" aria-hidden>
                 ⏰
               </span>
-              <span className="text-3xl font-bold tracking-tight text-foreground">
-                {studiedCards.length}
-              </span>
+              <p className="text-xs font-medium text-muted-foreground">
+                Từ sắp học
+              </p>
             </div>
+            <p className="text-2xl font-bold tracking-tight text-foreground">
+              {studiedCards.length}
+            </p>
           </div>
         </div>
 
+        {/* Button */}
         {hasCards ? (
           <Button
             asChild
-            size="lg"
+            size="sm"
             className="w-full"
           >
             <Link href="/flashcards/review">
               Bắt đầu học
-              <ArrowRight className="size-5" aria-hidden />
+              <ArrowRight className="size-4" aria-hidden />
             </Link>
           </Button>
         ) : (
           <Button
             className="w-full"
-            size="lg"
+            size="sm"
             variant="secondary"
             disabled
           >
@@ -276,32 +275,39 @@ function QueueCard({ queue, now }: { queue: Flashcard[]; now: number | null }) {
   const newCards = queue.filter(isNewCard);
 
   return (
-    <Card size="sm" className="border-border/70 shadow-none">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-2xl font-bold tracking-tight text-primary-900">
-          Từ vựng
-        </CardTitle>
+    <Card size="sm" className="border-border/60">
+      <CardHeader className="border-b border-border/60 pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-bold tracking-tight">
+            Danh sách từ vựng
+          </CardTitle>
+          <Badge variant="secondary" size="sm">
+            {queue.length} từ
+          </Badge>
+        </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <Tabs defaultValue="studied" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="studied" className="flex-1">
-              Đã học{" "}
-              <span className="ml-1 font-bold text-foreground tabular-nums">
-                {studiedCards.length}
-              </span>
-            </TabsTrigger>
-            <TabsTrigger value="new" className="flex-1">
-              Chưa học{" "}
-              <span className="ml-1 font-bold text-foreground tabular-nums">
-                {newCards.length}
-              </span>
-            </TabsTrigger>
-          </TabsList>
+      <CardContent className="p-0">
+        <Tabs defaultValue="studied" className="w-full" variant="soft">
+          <div className="border-b border-border/60 px-4 pt-3">
+            <TabsList className="w-full">
+              <TabsTrigger value="studied" className="flex-1 text-sm">
+                Đã học{" "}
+                <span className="ml-1 font-bold text-primary-700 tabular-nums text-base">
+                  {studiedCards.length}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="new" className="flex-1 text-sm">
+                Chưa học{" "}
+                <span className="ml-1 font-bold text-primary-700 tabular-nums text-base">
+                  {newCards.length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          <TabsContent value="studied">
-            <div className="mt-4">
+          <TabsContent value="studied" className="mt-0">
+            <div className="p-4">
               <QueueSection
                 title="Thẻ đã học"
                 cards={studiedCards}
@@ -311,8 +317,8 @@ function QueueCard({ queue, now }: { queue: Flashcard[]; now: number | null }) {
             </div>
           </TabsContent>
 
-          <TabsContent value="new">
-            <div className="mt-4">
+          <TabsContent value="new" className="mt-0">
+            <div className="p-4">
               <QueueSection
                 title="Thẻ chưa học"
                 cards={newCards}
@@ -332,18 +338,16 @@ export function FlashcardDeckOverview({ queue }: FlashcardDeckOverviewProps) {
   const [now] = React.useState<number | null>(() => Date.now());
 
   return (
-    <main className="flex-1 px-4 py-4 md:px-6 md:py-8">
-      <div className="mx-auto w-full max-w-6xl space-y-4">
-        {/* Statistics Row */}
-        <div className="grid gap-4 lg:grid-cols-2">
-          <ProgressCard queue={queue} />
-          <FlashcardStatisticsCard />
-        </div>
+    <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 animate-in fade-in duration-700">
+      <div className="space-y-4">
+        <FlashcardStatisticsCard />
+        <ProgressCard queue={queue} />
+      </div>
 
-        {/* Queue Card */}
+      <div>
         <QueueCard queue={queue} now={now} />
       </div>
-    </main>
+    </div>
   );
 }
 
