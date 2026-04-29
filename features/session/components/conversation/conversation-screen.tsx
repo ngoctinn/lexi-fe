@@ -120,48 +120,50 @@ export function ConversationScreen({
 
   return (
     <div className="flex w-full flex-col h-full bg-background relative overflow-hidden">
-      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur lg:px-6">
-        <SessionHeader
-          sessionId={sessionId}
-          scenarioTitle={scenarioTitle}
-          aiCharacter={aiCharacter}
-          myRole={myRole}
-          partnerRole={partnerRole}
-          scenarioGoals={scenarioGoals}
-          className="flex-1 border-none bg-transparent h-auto p-0"
-          isCompleted={isSessionCompleted}
-          onEnd={handleSessionEnded}
-        />
+      <SessionHeader
+        sessionId={sessionId}
+        scenarioTitle={scenarioTitle}
+        aiCharacter={aiCharacter}
+        myRole={myRole}
+        partnerRole={partnerRole}
+        scenarioGoals={scenarioGoals}
+        isCompleted={isSessionCompleted}
+        onEnd={handleSessionEnded}
+      />
 
-        <div className="lg:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="p-0 sm:w-80">
-              <SheetTitle className="sr-only">Menu hội thoại</SheetTitle>
-              <SheetDescription className="sr-only">
-                Các công cụ và tùy chọn của phiên hội thoại trên thiết bị di
-                động.
-              </SheetDescription>
-              <ConversationSidebar
-                currentHint={ui.currentHint}
-                hintHistory={ui.hintHistory}
-                tempAnalysis={ui.tempAnalysis}
-                analysisHistory={ui.analysisHistory}
-                onGetHint={requestHint}
-                isAiStreaming={ui.isAiStreaming}
-                disabled={ui.isControlsDisabled || isSessionCompleted}
-                isSessionCompleted={isSessionCompleted}
-                sessionSummary={sessionSummary}
-                className="border-none w-full h-full"
-              />
-            </SheetContent>
-          </Sheet>
-        </div>
-      </header>
+      <div className="lg:hidden absolute top-3 right-4 z-20">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="p-0 sm:w-80">
+            <SheetTitle className="sr-only">Menu hội thoại</SheetTitle>
+            <SheetDescription className="sr-only">
+              Các công cụ và tùy chọn của phiên hội thoại trên thiết bị di
+              động.
+            </SheetDescription>
+            <ConversationSidebar
+              currentHint={ui.currentHint}
+              hintHistory={ui.hintHistory}
+              tempAnalysis={ui.tempAnalysis}
+              analysisHistory={ui.analysisHistory}
+              onGetHint={requestHint}
+              isAiStreaming={ui.isAiStreaming}
+              isRequestingHint={ui.requestHintInProgress}
+              isAnalyzing={ui.analyzingTurnIndex !== null}
+              disabled={ui.isControlsDisabled || isSessionCompleted || ui.wsState !== "connected"}
+              isSessionCompleted={isSessionCompleted}
+              sessionSummary={sessionSummary}
+              myRole={myRole}
+              partnerRole={partnerRole}
+              className="border-none w-full h-full"
+            />
+          </SheetContent>
+        </Sheet>
+      </div>
+      
       <div className="flex flex-1 overflow-hidden">
         <main className="flex flex-3 flex-col overflow-hidden relative border-r">
           <TranscriptPanel
@@ -177,6 +179,7 @@ export function ConversationScreen({
             onTranslateWord={translateWord}
             onSaveFlashcard={saveTurnToFlashcard}
             savingFlashcardTurnIndexes={ui.savingFlashcardTurnIndexes}
+            analyzingTurnIndex={ui.analyzingTurnIndex}
             onAnalyze={analyzeTurn}
           />
 
@@ -201,10 +204,14 @@ export function ConversationScreen({
           onGetHint={requestHint}
           onLanguageChange={setHintLanguage}
           isAiStreaming={ui.isAiStreaming}
-          disabled={ui.isControlsDisabled || isSessionCompleted}
+          isRequestingHint={ui.requestHintInProgress}
+          isAnalyzing={ui.analyzingTurnIndex !== null}
+          disabled={ui.isControlsDisabled || isSessionCompleted || ui.wsState !== "connected"}
           isSessionCompleted={isSessionCompleted}
           sessionSummary={sessionSummary}
           language={hintLanguage}
+          myRole={myRole}
+          partnerRole={partnerRole}
           className="hidden lg:flex flex-2"
         />
       </div>

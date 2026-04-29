@@ -13,7 +13,7 @@ export function LandingFooter() {
             <a href="#" className="hover:text-foreground transition-colors">Liên hệ</a>
           </div>
 
-          <p className="text-sm text-muted-foreground">© 2025 LexiLearn. Made with ❤️ in Việt Nam.</p>
+          <p className="text-sm text-muted-foreground">© 2025 Lexi. Made with ❤️ in Việt Nam.</p>
         </div>
       </div>
     </footer>

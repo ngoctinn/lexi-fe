@@ -1,11 +1,14 @@
 import { type ReactNode } from "react";
-import { type LucideIcon } from "lucide-react";
+import { type LucideIcon, ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface PageHeaderProps {
   icon: LucideIcon;
   title: string;
   actions?: ReactNode;
+  backHref?: string;
   className?: string;
 }
 
@@ -13,6 +16,7 @@ export function PageHeader({
   icon: Icon,
   title,
   actions,
+  backHref,
   className,
 }: PageHeaderProps) {
   return (
@@ -25,6 +29,14 @@ export function PageHeader({
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
+        {backHref && (
+          <Button asChild variant="ghost" size="icon" className="shrink-0">
+            <Link href={backHref}>
+              <ChevronLeft className="size-5" />
+            </Link>
+          </Button>
+        )}
+        
         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary border border-primary-100">
           <Icon className="size-5.5" strokeWidth={2.25} />
         </div>

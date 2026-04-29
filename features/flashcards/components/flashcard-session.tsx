@@ -231,7 +231,7 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
   }
 
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-4 animate-in fade-in duration-300">
+    <div className="flex w-full max-w-3xl flex-col gap-4 animate-in fade-in duration-300 mx-auto">
       <FlashcardProgress
         currentIndex={currentIndex}
         totalCards={totalCards}
@@ -244,17 +244,20 @@ export function FlashcardSession({ initialQueue }: FlashcardSessionProps) {
         onToggleReveal={handleFlip}
       />
 
-      {isRevealed ? (
-        <SRSControls
-          onRate={handleRate}
-          disabled={isSubmitting}
-          activeKey={activeKey}
-        />
-      ) : (
-        <p className="text-center text-sm text-muted-foreground">
-          Nhấn Space hoặc chạm vào thẻ để xem đáp án.
-        </p>
-      )}
+      {/* Fixed height container to prevent card jumping */}
+      <div className="min-h-[180px] flex flex-col justify-start">
+        {isRevealed ? (
+          <SRSControls
+            onRate={handleRate}
+            disabled={isSubmitting}
+            activeKey={activeKey}
+          />
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">
+            Nhấn Space hoặc chạm vào thẻ để xem đáp án.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

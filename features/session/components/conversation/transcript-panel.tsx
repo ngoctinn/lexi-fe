@@ -19,6 +19,7 @@ interface TranscriptPanelProps {
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
   onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => Promise<void>;
   savingFlashcardTurnIndexes?: number[];
+  analyzingTurnIndex?: number | null;
   onAnalyze?: (turnIndex: number) => void;
   className?: string;
 }
@@ -34,11 +35,20 @@ export function TranscriptPanel({
   onTranslateWord,
   onSaveFlashcard,
   savingFlashcardTurnIndexes = [],
+  analyzingTurnIndex,
   onAnalyze,
   className,
 }: TranscriptPanelProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const bottomRef = React.useRef<HTMLDivElement>(null);
+
+  // Debug: Log turns changes
+  React.useEffect(() => {
+    console.log("[TranscriptPanel] Turns updated, count:", turns.length);
+    if (turns.length > 0) {
+      console.log("[TranscriptPanel] Last turn:", turns[turns.length - 1]);
+    }
+  }, [turns]);
 
   // Auto-scroll to bottom when new content arrives
   React.useEffect(() => {
@@ -87,6 +97,7 @@ export function TranscriptPanel({
               onTranslateWord={onTranslateWord}
               onSaveFlashcard={onSaveFlashcard}
               savingFlashcardTurnIndexes={savingFlashcardTurnIndexes}
+              analyzingTurnIndex={analyzingTurnIndex}
               onAnalyze={onAnalyze}
             />
           );

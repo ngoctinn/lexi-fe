@@ -70,7 +70,7 @@ export function Logo({
             textClassName,
           )}
         >
-          Lexi learn
+          Lexi
         </span>
       )}
     </Link>

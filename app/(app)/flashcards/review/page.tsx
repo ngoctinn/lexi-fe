@@ -1,7 +1,6 @@
 import { FlashcardSessionClient } from "@/features/flashcards/components/flashcard-session-client";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
+import { PageHeader } from "@/components/shared/page-header";
+import { BookOpen } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,17 +10,12 @@ export const metadata: Metadata = {
 
 export default function FlashcardReviewPage() {
   return (
-    <main className="min-h-screen px-4 py-4 sm:px-6 sm:py-6">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit">
-          <Link href="/flashcards">
-            <ChevronLeft className="size-4" />
-            Về deck overview
-          </Link>
-        </Button>
-
+    <div className="flex flex-1 flex-col">
+      <PageHeader icon={BookOpen} title="Ôn tập flashcard" backHref="/flashcards" />
+      
+      <main className="flex flex-1 flex-col gap-6 p-4 md:p-8">
         <FlashcardSessionClient />
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

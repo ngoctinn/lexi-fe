@@ -4,6 +4,14 @@ import { apiFetch } from "@/lib/api/fetch";
 import type { ApiResponse } from "@/lib/api/types";
 import { getUserFriendlyMessage } from "@/lib/api/errors";
 
+interface VocabularyMeaning {
+  part_of_speech: string;
+  definition: string;
+  definition_vi: string;
+  example: string;
+  example_vi: string;
+}
+
 interface VocabularyDefinition {
   part_of_speech: string;
   definition_en: string;
@@ -17,7 +25,8 @@ interface TranslateWordApiResponse {
   translation_vi: string;
   phonetic: string;
   audio_url?: string;
-  definitions: VocabularyDefinition[];
+  meanings: VocabularyMeaning[]; // ✅ New field from API
+  definitions: VocabularyDefinition[]; // Legacy field
   synonyms: string[];
   response_time_ms: number;
   cached: boolean;
@@ -84,7 +93,7 @@ export async function translateWordAction(
   }
 
   // Backward compatibility: extract first definition for legacy fields
-  const firstDef = payload.definitions?.[0];
+  const firstMeaning = payload.meanings?.[0];
 
   return {
     word: payload.word,
@@ -95,9 +104,9 @@ export async function translateWordAction(
     synonyms: payload.synonyms || [],
     response_time_ms: payload.response_time_ms,
     cached: payload.cached,
-    // Backward compatibility
-    definition_vi: firstDef?.definition_vi || "",
-    part_of_speech: firstDef?.part_of_speech || undefined,
-    example_sentence: firstDef?.example_en || undefined,
+    // Backward compatibility - use meanings instead of definitions
+    definition_vi: firstMeaning?.definition_vi || "",
+    part_of_speech: firstMeaning?.part_of_speech || undefined,
+    example_sentence: firstMeaning?.example || undefined, // ✅ Use English example
   };
 }

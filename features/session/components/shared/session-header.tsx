@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Square, ArrowLeft, User, Bot } from "lucide-react";
+import { Square, ChevronLeft, User, Bot } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -87,64 +88,42 @@ export function SessionHeader({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-between px-4 h-16",
+        "flex shrink-0 items-center justify-between gap-4 px-4 lg:px-6 h-16 border-b border-border/60 bg-background/95 backdrop-blur",
         className,
       )}
     >
-      <div className="flex items-center gap-4 flex-1 min-w-0">
+      {/* Left Section: Back + Title + Goals */}
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {/* Back Button */}
         <Button
+          asChild
           variant="ghost"
           size="icon"
-          className="shrink-0 md:hidden"
-          onClick={() => router.back()}
+          className="shrink-0"
         >
-          <ArrowLeft data-icon="inline-start" />
+          <Link href="/session/new">
+            <ChevronLeft className="size-5" />
+          </Link>
         </Button>
 
-        <div className="flex items-center gap-4 min-w-0 flex-1 flex-wrap">
-          {/* Title */}
-          <h1 className="text-lg font-bold leading-tight text-foreground truncate">
+        {/* Title and Goals */}
+        <div className="flex flex-col min-w-0 flex-1">
+          <h1 className="text-base font-bold leading-tight text-foreground truncate">
             {scenarioTitle || "Phiên luyện nói"}
           </h1>
-          
-          {/* Role Badges */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* User Role Badge */}
-            <Badge 
-              variant="secondary" 
-              className="gap-1.5"
-            >
-              <User className="size-3.5" />
-              <span className="font-semibold">Bạn:</span>
-              <span>{myRole || "Học viên"}</span>
-            </Badge>
-            
-            {/* AI Role Badge */}
-            <Badge 
-              variant="secondary"
-              className="gap-1.5"
-            >
-              <Bot className="size-3.5" />
-              <span className="font-semibold">{aiCharacter}:</span>
-              <span>{partnerRole || "AI Assistant"}</span>
-            </Badge>
-          </div>
-          
-          {/* Goal - Desktop only */}
           {scenarioGoals && scenarioGoals.length > 0 && (
-            <div className="hidden xl:flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-medium">Mục tiêu:</span>
-              <span>{scenarioGoals.join(" • ")}</span>
-            </div>
+            <p className="text-xs text-muted-foreground truncate">
+              {scenarioGoals.join(" • ")}
+            </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Right Section: End Button */}
+      <div className="flex items-center gap-2 shrink-0">
         {isCompleted ? (
           <Button variant="secondary" size="sm" disabled>
             <Square
-              data-icon="inline-start"
               className="size-3.5 fill-current"
             />
             <span className="hidden sm:inline">Đã nộp bài</span>
@@ -154,10 +133,9 @@ export function SessionHeader({
             <AlertDialogTrigger asChild>
               <Button variant="default" size="sm" disabled={isPending}>
                 <Square
-                  data-icon="inline-start"
                   className="size-3.5 fill-current"
                 />
-                <span className="hidden sm:inline">Nộp &amp; chấm điểm</span>
+                <span className="hidden sm:inline">Nộp bài</span>
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

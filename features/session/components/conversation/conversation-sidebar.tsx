@@ -9,6 +9,8 @@ import {
   X,
   Loader2,
   Sparkles,
+  User,
+  Bot,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
@@ -62,11 +64,15 @@ interface ConversationSidebarProps {
   onGetHint?: () => void;
   onLanguageChange?: (language: "vi" | "en") => void;
   isAiStreaming?: boolean;
+  isRequestingHint?: boolean;
+  isAnalyzing?: boolean;
   disabled?: boolean;
   className?: string;
   sessionSummary?: SessionScoreSummary | null;
   isSessionCompleted?: boolean;
   language?: "vi" | "en";
+  myRole?: string;
+  partnerRole?: string;
 }
 
 function getProgressColor(score: number) {
@@ -161,11 +167,15 @@ export function ConversationSidebar({
   onGetHint,
   onLanguageChange,
   isAiStreaming,
+  isRequestingHint = false,
+  isAnalyzing = false,
   disabled,
   className,
   sessionSummary = null,
   isSessionCompleted = false,
   language = "vi",
+  myRole,
+  partnerRole,
 }: ConversationSidebarProps) {
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
@@ -206,12 +216,17 @@ export function ConversationSidebar({
           <>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
-                  <Lightbulb className="size-4.5" />
-                </div>
-                <h3 className="text-sm font-bold tracking-tight">
-                  Phân tích & Gợi ý
-                </h3>
+                {/* User Role Badge */}
+                <Badge variant="default" size="sm" className="gap-1.5 h-8 px-3">
+                  <User className="size-3.5" />
+                  <span>{myRole || "Học viên"}</span>
+                </Badge>
+                
+                {/* AI Role Badge */}
+                <Badge variant="info" size="sm" className="gap-1.5 h-8 px-3">
+                  <Bot className="size-3.5" />
+                  <span>{partnerRole || "AI Assistant"}</span>
+                </Badge>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -231,12 +246,61 @@ export function ConversationSidebar({
                   disabled={disabled || isAiStreaming}
                   className="text-sm"
                 >
-                  {currentHint ? "Gợi ý mới" : "Lấy gợi ý"}
+                  {isAiStreaming ? (
+                    <>
+                      <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+                      Đang xử lý...
+                    </>
+                  ) : currentHint ? (
+                    "Gợi ý mới"
+                  ) : (
+                    "Lấy gợi ý"
+                  )}
                 </Button>
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto min-h-0 -mx-1 px-1 space-y-3" ref={scrollAreaRef}>
+              {/* Skeleton loading for HINT when requesting */}
+              {isRequestingHint && hintHistory.length === 0 && (
+                <Alert 
+                  variant="default"
+                  className="bg-amber-50/50 border-amber-200/50 animate-in fade-in slide-in-from-top-2 duration-300"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-5 w-20 bg-amber-200/30 rounded animate-pulse" />
+                      <Loader2 className="h-3 w-3 text-amber-600 animate-spin" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-amber-200/30 rounded animate-pulse w-full" />
+                      <div className="h-4 bg-amber-200/30 rounded animate-pulse w-5/6" />
+                      <div className="h-4 bg-amber-200/30 rounded animate-pulse w-4/6" />
+                    </div>
+                  </div>
+                </Alert>
+              )}
+
+              {/* Skeleton loading for ANALYST when analyzing */}
+              {isAnalyzing && analysisHistory.length === 0 && (
+                <Alert 
+                  variant="default"
+                  className="bg-sky-50/50 border-sky-200/50 animate-in fade-in slide-in-from-top-2 duration-300"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-5 w-24 bg-sky-200/30 rounded animate-pulse" />
+                      <Loader2 className="h-3 w-3 text-sky-600 animate-spin" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-sky-200/30 rounded animate-pulse w-full" />
+                      <div className="h-4 bg-sky-200/30 rounded animate-pulse w-5/6" />
+                      <div className="h-4 bg-sky-200/30 rounded animate-pulse w-4/6" />
+                    </div>
+                  </div>
+                </Alert>
+              )}
+
               {/* History items (sorted by timestamp, newest first) */}
               {[
                 ...analysisHistory.map(a => ({ type: 'analysis' as const, ...a })),

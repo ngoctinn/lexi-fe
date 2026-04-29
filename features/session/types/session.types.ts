@@ -27,19 +27,13 @@ export enum WsClientEvent {
   USE_HINT = "USE_HINT",
   SKIP_TURN = "SKIP_TURN",
   END_SESSION = "END_SESSION",
-  SEND_MESSAGE = "SEND_MESSAGE",
-  // Legacy streaming events (removed in STT migration)
-  // START_STREAMING = "START_STREAMING",
-  // AUDIO_CHUNK = "AUDIO_CHUNK",
-  // END_STREAMING = "END_STREAMING",
   GET_TRANSCRIBE_URL = "GET_TRANSCRIBE_URL",
-  SUBMIT_TRANSCRIPT = "SUBMIT_TRANSCRIPT",
+  SUBMIT_TRANSCRIPT = "SUBMIT_TRANSCRIPT", // ✅ Unified action for both text and mic input
   ANALYZE_TURN = "ANALYZE_TURN",
 }
 
 export enum WsServerEvent {
   SESSION_READY = "SESSION_READY",
-  AI_TEXT_CHUNK = "AI_TEXT_CHUNK",
   AI_RESPONSE = "AI_RESPONSE",
   AI_AUDIO_URL = "AI_AUDIO_URL",
   TURN_SAVED = "TURN_SAVED",
@@ -154,12 +148,6 @@ export interface WsEndSessionPayload {
   session_id: string;
 }
 
-export interface WsSendMessagePayload {
-  action: WsClientEvent.SEND_MESSAGE;
-  session_id: string;
-  text: string;
-}
-
 export interface WsGetTranscribeUrlPayload {
   action: WsClientEvent.GET_TRANSCRIBE_URL;
   session_id: string;
@@ -183,7 +171,6 @@ export type WsClientPayload =
   | WsAudioUploadedPayload
   | WsUseHintPayload
   | WsEndSessionPayload
-  | WsSendMessagePayload
   | WsGetTranscribeUrlPayload
   | WsSubmitTranscriptPayload
   | WsAnalyzeTurnPayload;
@@ -192,12 +179,6 @@ export interface WsSessionReadyEvent {
   event: WsServerEvent.SESSION_READY;
   upload_url: string;
   s3_key: string;
-}
-
-export interface WsAiTextChunkEvent {
-  event: WsServerEvent.AI_TEXT_CHUNK;
-  chunk: string;
-  done: boolean;
 }
 
 export interface WsAiResponseEvent {
@@ -265,7 +246,6 @@ export interface WsTranscribeUrlEvent {
 
 export type WsServerPayload =
   | WsSessionReadyEvent
-  | WsAiTextChunkEvent
   | WsAiResponseEvent
   | WsAiAudioUrlEvent
   | WsTurnSavedEvent

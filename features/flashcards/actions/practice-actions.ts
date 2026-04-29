@@ -291,7 +291,15 @@ export async function saveFlashcardFromSession(
 
     if (!response.success) {
       // Handle specific errors
-      if (response.message?.includes("Duplicate")) {
+      const errorMsg = response.message || "";
+      
+      // Check for duplicate errors (various formats from backend)
+      if (
+        errorMsg.includes("Duplicate") ||
+        errorMsg.includes("already exists") ||
+        errorMsg.includes("next_review_at") ||
+        errorMsg.toLowerCase().includes("duplicate")
+      ) {
         return {
           success: false,
           error: "Từ này đã tồn tại trong flashcard của bạn.",
@@ -300,7 +308,7 @@ export async function saveFlashcardFromSession(
 
       return {
         success: false,
-        error: response.message || "Không thể lưu flashcard.",
+        error: errorMsg || "Không thể lưu flashcard.",
       };
     }
 

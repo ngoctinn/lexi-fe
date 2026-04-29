@@ -293,6 +293,7 @@ export function useClientStreamingRecorder({
       useSessionStore.getState().setTurns((prev: Turn[]) => [...prev, newTurn]);
       useSessionStore.getState().setAiStreaming(true, "");
 
+      // Mic input uses SUBMIT_TRANSCRIPT (keep it separate from text input)
       ws.send({
         action: WsClientEvent.SUBMIT_TRANSCRIPT,
         session_id: sessionId,

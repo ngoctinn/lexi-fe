@@ -48,6 +48,8 @@ export function useSession({
   const turns = useSessionStore((s) => s.turns);
   const hintPanelOpen = useSessionStore((s) => s.hintPanelOpen);
   const isAiStreaming = useSessionStore((s) => s.isAiStreaming);
+  const requestHintInProgress = useSessionStore((s) => s.requestHintInProgress);
+  const analyzingTurnIndex = useSessionStore((s) => s.analyzingTurnIndex);
 
   const currentHint = useSessionStore((s) => s.currentHint);
   const hintHistory = useSessionStore((s) => s.hintHistory);
@@ -115,9 +117,13 @@ export function useSession({
     (text: string) => {
       if (!text.trim()) return;
 
+      console.log("[useSession] sendMessage called with text:", text.substring(0, 50));
+
       // Calculate turn_index excluding partial turns
       const currentTurns = useSessionStore.getState().turns;
       const nextTurnIndex = currentTurns.filter(t => !t.is_partial).length;
+      
+      console.log("[useSession] Creating new turn with index:", nextTurnIndex);
       
       const newTurn: Turn = {
         turn_index: nextTurnIndex,
@@ -126,12 +132,43 @@ export function useSession({
         is_hint_used: false,
         is_pending: true,
       };
-      setTurns((prev: Turn[]) => [...prev, newTurn]);
+      
+      // ✅ Add turn to UI IMMEDIATELY (synchronously)
+      setTurns((prev: Turn[]) => {
+        console.log("[useSession] Adding user turn to UI, prev length:", prev.length);
+        return [...prev, newTurn];
+      });
 
       // Show loading animation while waiting for AI response
       useSessionStore.getState().setAiStreaming(true);
-
-      send({ action: WsClientEvent.SEND_MESSAGE, session_id: sessionId, text });
+      
+      console.log("[useSession] Sending SUBMIT_TRANSCRIPT WebSocket event (unified for text and mic)");
+      
+      // ✅ Use SUBMIT_TRANSCRIPT (same as mic input) - unified action
+      send({ 
+        action: WsClientEvent.SUBMIT_TRANSCRIPT, 
+        session_id: sessionId, 
+        text,
+        confidence: 1.0, // Text input has 100% confidence
+      });
+      
+      console.log("[useSession] SUBMIT_TRANSCRIPT sent, waiting for backend response...");
+      
+      // ⚠️ Safety timeout: If no response after 30 seconds, stop loading animation
+      const timeoutId = setTimeout(() => {
+        const state = useSessionStore.getState();
+        if (state.isAiStreaming) {
+          console.error("[useSession] ⚠️ Backend response timeout after 30s");
+          state.setAiStreaming(false);
+          SessionService.handleError(
+            "Backend không phản hồi. Vui lòng kiểm tra kết nối hoặc thử lại.",
+            "WebSocket"
+          );
+        }
+      }, 30000);
+      
+      // Store timeout ID for cleanup
+      useSessionStore.getState().setResponseTimeoutId?.(timeoutId);
     },
     [send, sessionId, setTurns],
   );
@@ -358,6 +395,8 @@ export function useSession({
     ui: {
       turns,
       isAiStreaming,
+      requestHintInProgress,
+      analyzingTurnIndex,
       currentHint,
       hintHistory,
       tempAnalysis,

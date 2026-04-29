@@ -14,7 +14,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "LexiLearn — AI-Powered English Learning",
+  title: "Lexi — AI-Powered English Learning",
   description:
     "Nền tảng học tiếng Anh cá nhân hóa với Flashcards 3D và Trình đối thoại AI thông minh.",
 };

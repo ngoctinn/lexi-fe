@@ -96,7 +96,7 @@ export function AdminSidebar({
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary ring-1 ring-primary-100">
                   <ShieldCheck className="size-5" />
                 </div>
-                <span className="font-extrabold tracking-tight text-2xl text-sidebar-foreground group-data-[collapsible=icon]:hidden">
+                <span className="font-extrabold tracking-tight text-2xl text-primary group-data-[collapsible=icon]:hidden">
                   Lexi Admin
                 </span>
               </Link>

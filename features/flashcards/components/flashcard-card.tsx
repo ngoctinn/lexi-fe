@@ -57,7 +57,7 @@ export function FlashcardCard({
         "group relative w-full max-w-3xl cursor-pointer overflow-hidden border-border/70 shadow-lg shadow-black/5 transition-all duration-300",
         "min-h-104",
         "hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10",
-        isRevealed && "ring-2 ring-primary-200",
+        "focus-visible:outline-none",
         className,
       )}
       onClick={onToggleReveal}
@@ -70,6 +70,7 @@ export function FlashcardCard({
           ? `Ẩn đáp án của ${card.word}`
           : `Xem đáp án của ${card.word}`
       }
+      style={{ perspective: "1000px" }}
     >
       <CardContent className="relative flex flex-1 flex-col">
         {/* Mặt trước: Ẩn đáp án */}
@@ -78,9 +79,13 @@ export function FlashcardCard({
             "absolute inset-0 flex flex-col items-center justify-center text-center p-5 sm:p-6",
             "transition-all duration-500 ease-out",
             isRevealed
-              ? "pointer-events-none translate-y-2 scale-95 opacity-0 blur-sm"
-              : "translate-y-0 scale-100 opacity-100 blur-0",
+              ? "pointer-events-none opacity-0"
+              : "opacity-100",
           )}
+          style={{
+            transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)",
+            backfaceVisibility: "hidden",
+          }}
         >
           <div className="flex flex-wrap items-center justify-center gap-3">
             <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -119,15 +124,20 @@ export function FlashcardCard({
         {/* Mặt sau: Hiện đáp án */}
         <div
           className={cn(
-            "absolute inset-0 flex flex-col justify-start text-left p-5 sm:p-6",
+            "absolute inset-0 flex flex-col items-center justify-center text-center p-5 sm:p-6",
             "transition-all duration-500 ease-out",
             isRevealed
-              ? "translate-y-0 opacity-100 blur-0"
-              : "pointer-events-none translate-y-2 opacity-0 blur-sm",
+              ? "opacity-100"
+              : "pointer-events-none opacity-0",
           )}
+          style={{
+            transform: isRevealed ? "rotateY(0deg)" : "rotateY(-180deg)",
+            backfaceVisibility: "hidden",
+          }}
         >
-          <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="space-y-5 w-full max-w-2xl animate-in fade-in duration-700">
+            {/* Word and type */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {card.word}
               </h2>
@@ -138,7 +148,8 @@ export function FlashcardCard({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 animate-in fade-in duration-700 delay-150">
+            {/* Phonetic and audio */}
+            <div className="flex flex-wrap items-center justify-center gap-3 animate-in fade-in duration-700 delay-150">
               {card.phonetic && (
                 <p className="font-mono text-sm text-muted-foreground sm:text-base">
                   {card.phonetic}
@@ -155,25 +166,24 @@ export function FlashcardCard({
                 <Volume2 className="size-4" />
               </Button>
             </div>
-          </div>
 
-          <Separator className="my-4 sm:my-5 animate-in fade-in duration-700 delay-200" />
+            <Separator className="animate-in fade-in duration-700 delay-200" />
 
-          <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-            <section className="space-y-2">
-              <p className="text-sm font-bold text-foreground">Định nghĩa</p>
-              <p className="max-w-2xl text-base leading-relaxed text-foreground/90">
+            {/* Translation - BOLD and CENTERED */}
+            <div className="animate-in fade-in duration-700 delay-300">
+              <p className="text-3xl font-bold text-foreground leading-relaxed">
                 {card.translation_vi || "Chưa có định nghĩa"}
               </p>
-            </section>
+            </div>
 
+            {/* Example sentence */}
             {card.example_sentence && (
-              <section className="space-y-2 animate-in fade-in duration-700 delay-400">
-                <p className="text-sm font-bold text-foreground">Ví dụ</p>
-                <p className="max-w-2xl text-sm leading-relaxed text-foreground/70 sm:text-base">
-                  - {card.example_sentence}
+              <div className="space-y-1 animate-in fade-in duration-700 delay-400">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Ví dụ</p>
+                <p className="text-sm leading-relaxed text-foreground/70 sm:text-base italic">
+                  "{card.example_sentence}"
                 </p>
-              </section>
+              </div>
             )}
           </div>
         </div>

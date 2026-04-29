@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import {
   LayoutDashboard,
   Mic,
@@ -24,6 +23,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/shared/logo";
 
 import type { ProfileData } from "@/features/profile/api/profile.actions";
 import { SidebarAccountMenu } from "./sidebar-account-menu";
@@ -79,22 +79,15 @@ export function AppSidebar({
             <SidebarMenuButton
               asChild
               size="lg"
-              tooltip="LexiLearn"
+              tooltip="Lexi"
               className="hover:bg-transparent hover:shadow-none active:translate-y-0 active:shadow-none data-active:bg-transparent data-active:shadow-none"
             >
-              <Link href="/">
-                <Image
-                  src="/logo.svg"
-                  alt="Lexi"
-                  width={40}
-                  height={40}
-                  priority
-                  className="size-10 shrink-0 object-contain"
-                />
-                <span className="font-extrabold tracking-tight text-2xl text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-                  LexiLearn
+              <div className="flex items-center gap-2 cursor-pointer">
+                <Logo showText={false} href="/" className="shrink-0" />
+                <span className="font-extrabold tracking-tight text-2xl text-primary group-data-[collapsible=icon]:hidden">
+                  Lexi
                 </span>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

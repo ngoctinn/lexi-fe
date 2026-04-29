@@ -111,6 +111,7 @@ interface TurnBubbleProps {
   onTranslateWord?: (word: string, context: string) => Promise<TranslateWordResult>;
   onSaveFlashcard?: (turnIndex: number, vocabData?: TranslateWordResult) => Promise<void>;
   savingFlashcardTurnIndexes?: number[];
+  analyzingTurnIndex?: number | null;
   onAnalyze?: (turnIndex: number) => void;
   isPlaying?: boolean;
 }
@@ -125,6 +126,7 @@ export function TurnBubble({
   onTranslateWord,
   onSaveFlashcard,
   savingFlashcardTurnIndexes = [],
+  analyzingTurnIndex,
   onAnalyze,
   isPlaying,
 }: TurnBubbleProps) {
@@ -491,7 +493,7 @@ export function TurnBubble({
               {/* Show countdown badge when recording (partial turn) */}
               {turn.is_partial && showCountdown ? (
                 <Badge
-                  variant="secondary"
+                  variant="warning"
                   size="sm"
                   className="gap-1.5 animate-pulse"
                 >
@@ -504,10 +506,20 @@ export function TurnBubble({
                   <button
                     className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
                     onClick={() => onAnalyze(actualTurnIndex)}
+                    disabled={analyzingTurnIndex === actualTurnIndex}
                     title="Phân tích turn này"
                   >
-                    <Sparkles className="h-3 w-3" />
-                    Phân tích
+                    {analyzingTurnIndex === actualTurnIndex ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Đang xử lý...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-3 w-3" />
+                        Phân tích
+                      </>
+                    )}
                   </button>
                 )
               )}

@@ -12,12 +12,11 @@ export function useSessionWsHandler() {
   const setHintPanelOpen = useSessionStore((s) => s.setHintPanelOpen);
   const setCurrentAudioUrl = useSessionStore((s) => s.setCurrentAudioUrl);
 
-  // Accumulate AI text response before rendering
-  const aiTextAccumRef = React.useRef<string>("");
-
   const handleWsMessage = React.useCallback(
     (event: WsServerPayload) => {
-      console.log("[ws-handler] Received message:", JSON.stringify(event).substring(0, 200));
+      console.log("[ws-handler] ========== NEW MESSAGE ==========");
+      console.log("[ws-handler] Full event:", JSON.stringify(event, null, 2));
+      console.log("[ws-handler] Event type:", event.event);
 
       if (!("event" in event)) {
         console.warn("[ws-handler] Invalid message format (missing event field):", event);
@@ -31,55 +30,27 @@ export function useSessionWsHandler() {
           console.log("[ws-handler] SESSION_READY");
           break;
 
-        case WsServerEvent.AI_TEXT_CHUNK: {
-          console.log("[ws-handler] AI_TEXT_CHUNK - done:", event.done);
-
-          if (event.done) {
-            // Render full response when done
-            const finalText = aiTextAccumRef.current;
-            const state = useSessionStore.getState();
-            const audioUrl = state.currentAudioUrl;
-
-            if (finalText.trim().length > 0) {
-              setTurns((prev: Turn[]) => {
-                // Calculate turn_index excluding partial turns
-                const nextTurnIndex = prev.filter(t => !t.is_partial).length;
-                return [
-                  ...prev,
-                  {
-                    turn_index: nextTurnIndex,
-                    speaker: TurnSpeaker.AI,
-                    content: finalText,
-                    audio_url: audioUrl,
-                    is_hint_used: false,
-                  },
-                ];
-              });
-            }
-
-            // Reset state
-            aiTextAccumRef.current = "";
-            setAiStreaming(false, "");
-          } else {
-            // Accumulate chunk
-            aiTextAccumRef.current += event.chunk;
-            // Show loading animation while accumulating
-            setAiStreaming(true, "");
-          }
-          break;
-        }
-
         case WsServerEvent.AI_RESPONSE: {
-          console.log("[ws-handler] AI_RESPONSE:", event.text?.substring(0, 100));
+          console.log("[ws-handler] ✅ AI_RESPONSE RECEIVED!");
+          console.log("[ws-handler] AI_RESPONSE - text length:", event.text?.length);
+          console.log("[ws-handler] AI_RESPONSE - text preview:", event.text?.substring(0, 100));
+          console.log("[ws-handler] AI_RESPONSE - full event:", JSON.stringify(event, null, 2));
 
           const state = useSessionStore.getState();
           const audioUrl = state.currentAudioUrl;
+          
+          // Clear response timeout if exists
+          if (state.responseTimeoutId) {
+            clearTimeout(state.responseTimeoutId);
+            state.setResponseTimeoutId?.(null);
+          }
 
           if (event.text?.trim()) {
             setTurns((prev: Turn[]) => {
               // Calculate turn_index excluding partial turns
               const nextTurnIndex = prev.filter(t => !t.is_partial).length;
-              return [
+              console.log("[ws-handler] Adding AI turn (AI_RESPONSE) with index:", nextTurnIndex, "prev length:", prev.length);
+              const newTurns = [
                 ...prev,
                 {
                   turn_index: nextTurnIndex,
@@ -89,9 +60,15 @@ export function useSessionWsHandler() {
                   is_hint_used: false,
                 },
               ];
+              console.log("[ws-handler] New turns array length:", newTurns.length);
+              console.log("[ws-handler] ✅ AI turn added to UI successfully");
+              return newTurns;
             });
+          } else {
+            console.warn("[ws-handler] ⚠️ AI_RESPONSE but text is empty!");
           }
 
+          console.log("[ws-handler] Stopping AI streaming animation");
           setAiStreaming(false, "");
           break;
         }

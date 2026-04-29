@@ -17,16 +17,12 @@ export function FlashcardSessionClient() {
   const { data, isLoading, error, refetch } = usePracticeQueue();
 
   if (isLoading) {
-    return (
-      <section className="flex min-h-[calc(100vh-7rem)] items-center justify-center">
-        <FlashcardSessionSkeleton />
-      </section>
-    );
+    return <FlashcardSessionSkeleton />;
   }
 
   if (error) {
     return (
-      <section className="flex min-h-[calc(100vh-7rem)] items-center justify-center px-4">
+      <div className="flex items-center justify-center px-4">
         <Alert variant="destructive" className="max-w-md">
           <AlertCircle className="size-4" />
           <AlertTitle>Không thể tải flashcard</AlertTitle>
@@ -47,21 +43,19 @@ export function FlashcardSessionClient() {
             </Button>
           </AlertDescription>
         </Alert>
-      </section>
+      </div>
     );
   }
 
   const queue = data || [];
 
   return (
-    <section className="flex min-h-[calc(100vh-7rem)] items-center justify-center">
-      <FlashcardErrorBoundary>
-        {queue.length === 0 ? (
-          <FlashcardEmptyState />
-        ) : (
-          <FlashcardSession initialQueue={queue} />
-        )}
-      </FlashcardErrorBoundary>
-    </section>
+    <FlashcardErrorBoundary>
+      {queue.length === 0 ? (
+        <FlashcardEmptyState />
+      ) : (
+        <FlashcardSession initialQueue={queue} />
+      )}
+    </FlashcardErrorBoundary>
   );
 }
