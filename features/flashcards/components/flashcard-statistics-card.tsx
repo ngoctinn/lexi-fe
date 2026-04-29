@@ -53,13 +53,8 @@ export function FlashcardStatisticsCard() {
 
   if (isLoading) {
     return (
-      <Card size="sm" className="border-border/70 shadow-none">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-2xl font-bold tracking-tight text-primary-900">
-            Thống kê
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
+      <Card size="lg" className="border-border/60">
+        <CardContent className="grid gap-4 p-6 grid-cols-2">
           <StatItemSkeleton />
           <StatItemSkeleton />
           <StatItemSkeleton />
@@ -76,13 +71,8 @@ export function FlashcardStatisticsCard() {
     : 0;
 
   return (
-    <Card size="sm" className="border-border/70 shadow-none">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-2xl font-bold tracking-tight text-primary-900">
-          Thống kê
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-3 sm:grid-cols-2">
+    <Card size="lg" className="border-border/60">
+      <CardContent className="grid gap-4 p-6 grid-cols-2">
         <StatItem
           icon={<Target className="size-5" />}
           label="Tổng từ vựng"

@@ -36,12 +36,11 @@ interface ScenarioMetricsProps {
   total: number;
   active: number;
   inactive: number;
-  totalUsage: number;
 }
 
-export function ScenarioMetrics({ total, active, inactive, totalUsage }: ScenarioMetricsProps) {
+export function ScenarioMetrics({ total, active, inactive }: ScenarioMetricsProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-3">
       <MetricCard
         icon={SlidersHorizontal}
         label="Tổng kịch bản"
@@ -58,13 +57,7 @@ export function ScenarioMetrics({ total, active, inactive, totalUsage }: Scenari
         icon={CircleAlert}
         label="Đã ẩn"
         value={inactive}
-        detail="Tạm thời không hiển thị trên luồng học"
-      />
-      <MetricCard
-        icon={BarChart3}
-        label="Tổng lượt dùng"
-        value={totalUsage}
-        detail="Tổng lượt mở kịch bản trên hệ thống"
+        detail="Tạm thời không hiển thị"
       />
     </div>
   );

@@ -84,14 +84,14 @@ export function ScenarioFormSheet({
             </Field>
 
             <Field className="md:col-span-2">
-              <FieldLabel htmlFor="scenario-context">Chủ đề</FieldLabel>
+              <FieldLabel htmlFor="scenario-context">Context</FieldLabel>
               <FieldContent>
                 <Select
                   value={draft.context || DEFAULT_SCENARIO_CONTEXT}
                   onValueChange={(value) => onUpdateDraft("context", value)}
                 >
                   <SelectTrigger id="scenario-context" className="w-full">
-                    <SelectValue placeholder="Chọn chủ đề" />
+                    <SelectValue placeholder="Select context" />
                   </SelectTrigger>
                   <SelectContent>
                     {SCENARIO_CONTEXT_OPTIONS.map((option) => (
@@ -183,19 +183,39 @@ export function ScenarioFormSheet({
             </Field>
 
             <Field className="md:col-span-2">
-              <FieldLabel htmlFor="scenario-roles">Vai trò</FieldLabel>
+              <FieldLabel htmlFor="scenario-user-role">Vai trò người dùng</FieldLabel>
               <FieldContent>
-                <Textarea
-                  id="scenario-roles"
-                  value={draft.roles.join("\n")}
-                  onChange={(e) => onUpdateDraft("roles", splitLines(e.target.value))}
-                  placeholder="Khách hàng\nNhân viên bán hàng"
-                  className="min-h-28"
+                <Input
+                  id="scenario-user-role"
+                  value={draft.roles.user_role}
+                  onChange={(e) =>
+                    onUpdateDraft("roles", {
+                      ...draft.roles,
+                      user_role: e.target.value,
+                    })
+                  }
+                  placeholder="Ví dụ: Khách hàng"
                 />
               </FieldContent>
-              <FieldDescription>
-                Nhập đúng 2 dòng, mỗi dòng là một vai trung tính.
-              </FieldDescription>
+              <FieldDescription>Vai trò của người học.</FieldDescription>
+            </Field>
+
+            <Field className="md:col-span-2">
+              <FieldLabel htmlFor="scenario-ai-role">Vai trò AI</FieldLabel>
+              <FieldContent>
+                <Input
+                  id="scenario-ai-role"
+                  value={draft.roles.ai_role}
+                  onChange={(e) =>
+                    onUpdateDraft("roles", {
+                      ...draft.roles,
+                      ai_role: e.target.value,
+                    })
+                  }
+                  placeholder="Ví dụ: Nhân viên bán hàng"
+                />
+              </FieldContent>
+              <FieldDescription>Vai trò của AI trong cuộc hội thoại.</FieldDescription>
             </Field>
 
             <Field className="md:col-span-2">

@@ -20,12 +20,31 @@ export function GoogleLoginButton({
   const handleGoogleSignIn = async () => {
     try {
       setIsSigningIn(true);
+      console.log("[Google Login] Starting OAuth flow...");
+      
       await signInWithRedirect({
         provider: "Google",
       });
+      
+      // Note: This code won't execute because signInWithRedirect redirects the page
+      console.log("[Google Login] Redirect initiated");
+      
     } catch (error) {
-      console.error("Google sign-in error:", error);
-      toast.error("Không thể đăng nhập bằng Google. Vui lòng thử lại.");
+      console.error("[Google Login] Error:", error);
+      console.error("[Google Login] Error details:", JSON.stringify(error, null, 2));
+      
+      // More specific error messages
+      let errorMessage = "Không thể đăng nhập bằng Google. Vui lòng thử lại.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("network") || error.message.includes("Network")) {
+          errorMessage = "Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.";
+        } else if (error.message.includes("configuration") || error.message.includes("Configuration")) {
+          errorMessage = "Lỗi cấu hình OAuth. Vui lòng liên hệ hỗ trợ.";
+        }
+      }
+      
+      toast.error(errorMessage);
       setIsSigningIn(false);
     }
   };

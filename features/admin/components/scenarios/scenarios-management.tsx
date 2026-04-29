@@ -52,7 +52,6 @@ export function ScenariosManagement({ scenarios }: ScenariosManagementProps) {
         total={summary.active + summary.inactive}
         active={summary.active}
         inactive={summary.inactive}
-        totalUsage={summary.totalUsage}
       />
 
       {/* Main Content Section */}

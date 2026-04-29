@@ -2,7 +2,10 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import { upsertAdminScenario } from "@/features/admin/actions/admin.actions";
+import {
+  createAdminScenario,
+  updateAdminScenario,
+} from "@/features/admin/actions/admin.actions";
 import type { AdminScenario } from "@/features/admin/types";
 import { DEFAULT_SCENARIO_CONTEXT } from "@/features/session/constants/scenario-contexts";
 
@@ -13,13 +16,6 @@ function normalizeSearch(value: string) {
     .toLowerCase();
 }
 
-function getScenarioRoles(scenario: AdminScenario) {
-  return scenario.roles
-    .map((role) => role.trim())
-    .filter(Boolean)
-    .slice(0, 2);
-}
-
 function createEmptyScenario(order: number, now?: string): AdminScenario {
   const finalNow = now || new Date(0).toISOString();
 
@@ -27,10 +23,12 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
     scenario_id: "",
     scenario_title: "",
     context: DEFAULT_SCENARIO_CONTEXT,
-    roles: [],
+    roles: {
+      user_role: "",
+      ai_role: "",
+    },
     goals: [],
     is_active: true,
-    usage_count: 0,
     difficulty_level: "A2",
     order,
     created_at: finalNow,
@@ -40,14 +38,13 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
 }
 
 export function useScenariosManagement(scenarios: AdminScenario[]) {
-  // Use scenarios directly instead of syncing to state
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<
     "all" | "active" | "inactive"
   >("all");
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<AdminScenario>(() =>
-    createEmptyScenario(1),
+    createEmptyScenario(1)
   );
   const [isSaving, setIsSaving] = React.useState(false);
   const [localUpdates, setLocalUpdates] = React.useState<AdminScenario[]>([]);
@@ -55,8 +52,10 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
   // Merge server data with local updates
   const records = React.useMemo(() => {
     const merged = [...scenarios];
-    localUpdates.forEach(updated => {
-      const index = merged.findIndex(s => s.scenario_id === updated.scenario_id);
+    localUpdates.forEach((updated) => {
+      const index = merged.findIndex(
+        (s) => s.scenario_id === updated.scenario_id
+      );
       if (index >= 0) {
         merged[index] = updated;
       } else {
@@ -81,8 +80,9 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
             scenario.context,
             scenario.notes,
             scenario.goals.join(" "),
-            scenario.roles.join(" "),
-          ].join(" "),
+            scenario.roles.user_role,
+            scenario.roles.ai_role,
+          ].join(" ")
         ).includes(normalizedQuery);
       })
       .sort((left, right) => {
@@ -100,17 +100,13 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
   const summary = React.useMemo(() => {
     const active = records.filter((scenario) => scenario.is_active).length;
     const inactive = records.length - active;
-    const totalUsage = records.reduce(
-      (sum, scenario) => sum + scenario.usage_count,
-      0,
-    );
 
-    return { active, inactive, totalUsage };
+    return { active, inactive, totalUsage: 0 };
   }, [records]);
 
   const updateDraft = <K extends keyof AdminScenario>(
     key: K,
-    value: AdminScenario[K],
+    value: AdminScenario[K]
   ) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
@@ -124,12 +120,9 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
   };
 
   const handleOpenEdit = (scenario: AdminScenario) => {
-    const roles = getScenarioRoles(scenario);
-
     setDraft({
       ...scenario,
       context: scenario.context || DEFAULT_SCENARIO_CONTEXT,
-      roles,
     });
     setIsDialogOpen(true);
   };
@@ -152,24 +145,31 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
       return;
     }
 
-    const roles = getScenarioRoles(draft);
-
-    if (roles.length !== 2) {
-      toast.error("Vui lòng nhập đúng 2 vai trò.");
+    if (!draft.roles.user_role.trim() || !draft.roles.ai_role.trim()) {
+      toast.error("Vui lòng nhập đầy đủ 2 vai trò.");
       return;
     }
 
     setIsSaving(true);
 
     try {
-      const result = await upsertAdminScenario({
-        ...draft,
+      const payload = {
         scenario_title: draft.scenario_title.trim(),
         context: draft.context.trim(),
-        roles,
+        difficulty_level: draft.difficulty_level,
+        roles: {
+          user_role: draft.roles.user_role.trim(),
+          ai_role: draft.roles.ai_role.trim(),
+        },
         goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
-        notes: draft.notes.trim(),
-      });
+        order: draft.order,
+        notes: draft.notes?.trim() || "",
+        is_active: draft.is_active,
+      };
+
+      const result = draft.scenario_id
+        ? await updateAdminScenario(draft.scenario_id, payload)
+        : await createAdminScenario(payload);
 
       if (!result.success || !result.data) {
         toast.error(result.error ?? "Không thể lưu kịch bản.");
@@ -180,14 +180,14 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
 
       setLocalUpdates((current) => {
         const exists = current.some(
-          (item) => item.scenario_id === updatedScenario.scenario_id,
+          (item) => item.scenario_id === updatedScenario.scenario_id
         );
 
         if (exists) {
           return current.map((item) =>
             item.scenario_id === updatedScenario.scenario_id
               ? updatedScenario
-              : item,
+              : item
           );
         }
 
@@ -207,8 +207,7 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
     setIsSaving(true);
 
     try {
-      const result = await upsertAdminScenario({
-        ...scenario,
+      const result = await updateAdminScenario(scenario.scenario_id, {
         is_active: !scenario.is_active,
       });
 
@@ -221,14 +220,14 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
 
       setLocalUpdates((current) => {
         const exists = current.some(
-          (item) => item.scenario_id === updatedScenario.scenario_id,
+          (item) => item.scenario_id === updatedScenario.scenario_id
         );
 
         if (exists) {
           return current.map((item) =>
             item.scenario_id === updatedScenario.scenario_id
               ? updatedScenario
-              : item,
+              : item
           );
         }
 
@@ -236,7 +235,7 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
       });
 
       toast.success(
-        updatedScenario.is_active ? "Đã bật kịch bản." : "Đã ẩn kịch bản.",
+        updatedScenario.is_active ? "Đã bật kịch bản." : "Đã ẩn kịch bản."
       );
     } catch {
       toast.error("Không thể cập nhật trạng thái. Vui lòng thử lại.");

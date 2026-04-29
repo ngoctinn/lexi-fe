@@ -1,10 +1,8 @@
 import Link from "next/link";
 import type { ComponentType } from "react";
 import {
-  CircleAlert,
   CircleCheck,
   ShieldCheck,
-  Sparkles,
   Users2,
 } from "lucide-react";
 
@@ -18,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -31,41 +28,12 @@ import {
   getAdminScenarios,
   getAdminUsers,
 } from "@/features/admin/actions/admin.actions";
-import type { AdminUserStatus } from "@/features/admin/types";
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("vi-VN", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
-}
-
-function getInitials(value: string) {
-  const normalized = value.trim();
-
-  if (!normalized) {
-    return "LT";
-  }
-
-  return normalized
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("")
-    .slice(0, 2);
-}
-
-function getUserStatusMeta(status: AdminUserStatus) {
-  switch (status) {
-    case "active":
-      return { label: "Đang hoạt động", variant: "success" as const };
-    case "invited":
-      return { label: "Mới mời", variant: "default" as const };
-    case "paused":
-      return { label: "Tạm dừng", variant: "secondary" as const };
-    case "review":
-      return { label: "Cần hỗ trợ", variant: "warning" as const };
-  }
 }
 
 function getScenarioStatusMeta(isActive: boolean) {
@@ -111,17 +79,10 @@ export default async function AdminPage() {
     getAdminScenarios(),
   ]);
 
-  const activeUsers = users.filter((user) => user.status === "active").length;
+  const activeUsers = users.filter((user) => user.is_active).length;
   const activeScenarios = scenarios.filter(
     (scenario) => scenario.is_active,
   ).length;
-  const reviewUsers = users.filter(
-    (user) => user.status === "review" || user.status === "paused",
-  ).length;
-  const totalUsage = scenarios.reduce(
-    (sum, scenario) => sum + scenario.usage_count,
-    0,
-  );
 
   const recentUsers = [...users]
     .sort(
@@ -130,8 +91,13 @@ export default async function AdminPage() {
         new Date(left.updated_at ?? 0).getTime(),
     )
     .slice(0, 5);
-  const popularScenarios = [...scenarios]
-    .sort((left, right) => right.usage_count - left.usage_count)
+  
+  const recentScenarios = [...scenarios]
+    .sort(
+      (left, right) =>
+        new Date(right.updated_at ?? 0).getTime() -
+        new Date(left.updated_at ?? 0).getTime(),
+    )
     .slice(0, 5);
 
   return (
@@ -183,10 +149,10 @@ export default async function AdminPage() {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3 xl:w-136">
+              <div className="grid gap-3 sm:grid-cols-2 xl:w-96">
                 <div className="rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                    Người dùng đang hoạt động
+                    Người dùng active
                   </p>
                   <div className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                     {activeUsers}
@@ -200,19 +166,11 @@ export default async function AdminPage() {
                     {activeScenarios}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm backdrop-blur">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                    Tổng lượt dùng
-                  </p>
-                  <div className="mt-2 text-3xl font-bold tracking-tight text-foreground">
-                    {totalUsage}
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2">
             <MetricCard
               icon={Users2}
               label="Tổng học viên"
@@ -223,23 +181,11 @@ export default async function AdminPage() {
               icon={CircleCheck}
               label="Đang hoạt động"
               value={activeUsers}
-              detail="Sẵn sàng tham gia các buổi luyện nói"
-            />
-            <MetricCard
-              icon={Sparkles}
-              label="Cần onboarding"
-              value={users.filter((user) => user.status === "invited").length}
-              detail="Người dùng mới cần được hướng dẫn"
-            />
-            <MetricCard
-              icon={CircleAlert}
-              label="Cần theo dõi"
-              value={reviewUsers}
-              detail="Tài khoản đang tạm dừng hoặc cần hỗ trợ"
+              detail="Tài khoản đang active"
             />
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+          <div className="grid gap-6 xl:grid-cols-2">
             <Card size="lg" className="border-border/60">
               <CardHeader className="border-b border-border/60 pb-4">
                 <CardTitle>Người dùng gần đây</CardTitle>
@@ -256,51 +202,36 @@ export default async function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentUsers.map((user) => {
-                      const statusMeta = getUserStatusMeta(user.status ?? "active");
-
-                      return (
-                        <TableRow key={user.id}>
-                          <TableCell className="whitespace-normal">
-                            <div className="flex items-center gap-3">
-                              <Avatar
-                                size="sm"
-                                className="ring-1 ring-border/40"
-                              >
-                                <AvatarImage
-                                  src={user.avatar_url}
-                                  alt={user.display_name}
-                                />
-                                <AvatarFallback>
-                                  {getInitials(user.display_name)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="min-w-0 space-y-1">
-                                <p className="font-semibold leading-none text-foreground">
-                                  {user.display_name}
-                                </p>
-                                <p className="truncate text-xs text-muted-foreground">
-                                  {user.email}
-                                </p>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" size="sm">
-                              {user.current_level}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={statusMeta.variant} size="sm">
-                              {statusMeta.label}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {user.updated_at ? formatDateTime(user.updated_at) : "-"}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                    {recentUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell className="whitespace-normal">
+                          <div className="min-w-0 space-y-1">
+                            <p className="font-semibold leading-none text-foreground">
+                              {user.display_name}
+                            </p>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {user.email}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" size="sm">
+                            {user.current_level}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={user.is_active ? "success" : "secondary"}
+                            size="sm"
+                          >
+                            {user.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {user.updated_at ? formatDateTime(user.updated_at) : "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -308,8 +239,8 @@ export default async function AdminPage() {
 
             <Card size="lg" className="border-border/60">
               <CardHeader className="border-b border-border/60 pb-4">
-                <CardTitle>Kịch bản được dùng nhiều</CardTitle>
-                <CardDescription>Đang được dùng nhiều.</CardDescription>
+                <CardTitle>Kịch bản gần đây</CardTitle>
+                <CardDescription>Cập nhật gần đây.</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -318,11 +249,11 @@ export default async function AdminPage() {
                       <TableHead>Kịch bản</TableHead>
                       <TableHead>Level</TableHead>
                       <TableHead>Trạng thái</TableHead>
-                      <TableHead>Lượt dùng</TableHead>
+                      <TableHead>Cập nhật</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {popularScenarios.map((scenario) => {
+                    {recentScenarios.map((scenario) => {
                       const statusMeta = getScenarioStatusMeta(
                         scenario.is_active,
                       );
@@ -349,13 +280,8 @@ export default async function AdminPage() {
                               {statusMeta.label}
                             </Badge>
                           </TableCell>
-                          <TableCell>
-                            <div className="space-y-1 text-sm">
-                              <div className="font-medium text-foreground">
-                                {scenario.usage_count}
-                              </div>
-                              <div className="text-muted-foreground">lượt</div>
-                            </div>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {scenario.updated_at ? formatDateTime(scenario.updated_at) : "-"}
                           </TableCell>
                         </TableRow>
                       );

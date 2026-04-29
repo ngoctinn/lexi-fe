@@ -2,20 +2,16 @@
 
 import * as React from "react";
 import {
-  CircleAlert,
   CircleCheck,
   Loader2,
   PencilLine,
-  Plus,
   Search,
-  Sparkles,
   Users2,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { upsertAdminUser } from "@/features/admin/actions/admin.actions";
-import type { AdminUser, AdminUserStatus } from "@/features/admin/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { updateAdminUser } from "@/features/admin/actions/admin.actions";
+import type { AdminUser } from "@/features/admin/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,7 +26,6 @@ import {
 import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
@@ -42,7 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -51,30 +45,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 
 const LEVEL_OPTIONS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
-
-const USER_STATUS_META: Record<
-  AdminUserStatus,
-  { label: string; variant: "default" | "secondary" | "success" | "warning" }
-> = {
-  active: { label: "Đang hoạt động", variant: "success" },
-  invited: { label: "Mới mời", variant: "default" },
-  paused: { label: "Tạm dừng", variant: "secondary" },
-  review: { label: "Cần hỗ trợ", variant: "warning" },
-};
-
-const USER_FILTER_TABS: Array<{
-  value: "all" | AdminUserStatus;
-  label: string;
-}> = [
-  { value: "all", label: "Tất cả" },
-  { value: "active", label: "Hoạt động" },
-  { value: "invited", label: "Mới mời" },
-  { value: "paused", label: "Tạm dừng" },
-  { value: "review", label: "Cần hỗ trợ" },
-];
 
 function normalizeSearch(value: string) {
   return value
@@ -84,18 +56,12 @@ function normalizeSearch(value: string) {
 }
 
 function formatDateTime(value: string | undefined) {
-  // Handle missing or invalid dates (e.g., from mock data)
-  if (!value) {
-    return "N/A";
-  }
-  
+  if (!value) return "N/A";
+
   try {
     const date = new Date(value);
-    // Check if date is valid
-    if (isNaN(date.getTime())) {
-      return "N/A";
-    }
-    
+    if (isNaN(date.getTime())) return "N/A";
+
     return new Intl.DateTimeFormat("vi-VN", {
       dateStyle: "medium",
       timeStyle: "short",
@@ -107,10 +73,7 @@ function formatDateTime(value: string | undefined) {
 
 function getInitials(value: string) {
   const normalized = value.trim();
-
-  if (!normalized) {
-    return "LT";
-  }
+  if (!normalized) return "LT";
 
   return normalized
     .split(/\s+/)
@@ -118,34 +81,6 @@ function getInitials(value: string) {
     .map((part) => part[0]?.toUpperCase())
     .join("")
     .slice(0, 2);
-}
-
-function createEmptyUser(now?: string): AdminUser {
-  const finalNow = now || new Date(0).toISOString();
-
-  return {
-    id: "",
-    user_id: "",
-    display_name: "",
-    email: "",
-    current_level: "A2",
-    target_level: "B1",
-    role: "user",
-    is_active: true,
-    total_words_learned: 0,
-    joined_at: finalNow,
-    learning_goal_text: "",
-    status: "active",
-    sessions_completed: 0,
-    streak: 0,
-    last_active_at: finalNow,
-    updated_at: finalNow,
-    notes: "",
-  };
-}
-
-function getStatusMeta(status: AdminUserStatus) {
-  return USER_STATUS_META[status];
 }
 
 function MetricCard({
@@ -186,16 +121,12 @@ interface UsersManagementProps {
 export function UsersManagement({ users }: UsersManagementProps) {
   const [isMounted, setIsMounted] = React.useState(false);
   const [query, setQuery] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState<
-    "all" | AdminUserStatus
-  >("all");
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState<AdminUser>(() => createEmptyUser());
+  const [draft, setDraft] = React.useState<Partial<AdminUser> | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
   const [localUpdates, setLocalUpdates] = React.useState<AdminUser[]>([]);
 
   React.useEffect(() => {
-    // Set mounted flag in next tick to avoid cascading render
     const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
@@ -203,12 +134,10 @@ export function UsersManagement({ users }: UsersManagementProps) {
   // Merge server data with local updates
   const records = React.useMemo(() => {
     const merged = [...users];
-    localUpdates.forEach(updated => {
-      const index = merged.findIndex(u => u.id === updated.id);
+    localUpdates.forEach((updated) => {
+      const index = merged.findIndex((u) => u.id === updated.id);
       if (index >= 0) {
         merged[index] = updated;
-      } else {
-        merged.unshift(updated);
       }
     });
     return merged;
@@ -219,13 +148,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
 
     return [...records]
       .filter((user) => {
-        if (statusFilter !== "all" && user.status !== statusFilter) {
-          return false;
-        }
-
-        if (!normalizedQuery) {
-          return true;
-        }
+        if (!normalizedQuery) return true;
 
         return normalizeSearch(
           [
@@ -235,37 +158,26 @@ export function UsersManagement({ users }: UsersManagementProps) {
             user.notes,
             user.current_level,
             user.target_level,
-          ].join(" "),
+          ].join(" ")
         ).includes(normalizedQuery);
       })
       .sort(
         (left, right) =>
           new Date(right.updated_at || "").getTime() -
-          new Date(left.updated_at || "").getTime(),
+          new Date(left.updated_at || "").getTime()
       );
-  }, [query, records, statusFilter]);
+  }, [query, records]);
 
   const summary = React.useMemo(() => {
-    const active = records.filter((user) => user.status === "active").length;
-    const invited = records.filter((user) => user.status === "invited").length;
-    const attention = records.filter(
-      (user) => user.status === "review" || user.status === "paused",
-    ).length;
-
-    return { active, invited, attention };
+    const active = records.filter((user) => user.is_active).length;
+    return { active, total: records.length };
   }, [records]);
 
   const updateDraft = <K extends keyof AdminUser>(
     key: K,
-    value: AdminUser[K],
+    value: AdminUser[K]
   ) => {
     setDraft((current) => ({ ...current, [key]: value }));
-  };
-
-  const handleOpenCreate = () => {
-    const now = new Date().toISOString();
-    setDraft(createEmptyUser(now));
-    setIsDialogOpen(true);
   };
 
   const handleOpenEdit = (user: AdminUser) => {
@@ -276,21 +188,25 @@ export function UsersManagement({ users }: UsersManagementProps) {
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!draft.display_name.trim() || !draft.email.trim()) {
-      toast.error("Vui lòng nhập tên và email của người dùng.");
+    if (!draft || !draft.id) {
+      toast.error("Không tìm thấy thông tin người dùng.");
+      return;
+    }
+
+    if (!draft.display_name?.trim()) {
+      toast.error("Vui lòng nhập tên người dùng.");
       return;
     }
 
     setIsSaving(true);
 
     try {
-      const result = await upsertAdminUser({
-        ...draft,
+      const result = await updateAdminUser(draft.id, {
         display_name: draft.display_name.trim(),
-        email: draft.email.trim(),
-        learning_goal_text: (draft.learning_goal_text || "").trim(),
-        learning_goal: draft.target_level,
-        notes: (draft.notes || "").trim(),
+        current_level: draft.current_level,
+        target_level: draft.target_level,
+        is_active: draft.is_active,
+        role: draft.role,
       });
 
       if (!result.success || !result.data) {
@@ -305,7 +221,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
 
         if (exists) {
           return current.map((item) =>
-            item.id === savedUser.id ? savedUser : item,
+            item.id === savedUser.id ? savedUser : item
           );
         }
 
@@ -323,30 +239,18 @@ export function UsersManagement({ users }: UsersManagementProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <MetricCard
           icon={Users2}
           label="Tổng học viên"
-          value={records.length}
+          value={summary.total}
           detail="Tất cả tài khoản trong hệ thống"
         />
         <MetricCard
           icon={CircleCheck}
           label="Đang hoạt động"
           value={summary.active}
-          detail="Sẵn sàng tham gia các buổi luyện nói"
-        />
-        <MetricCard
-          icon={Sparkles}
-          label="Mới mời"
-          value={summary.invited}
-          detail="Cần hoàn tất onboarding"
-        />
-        <MetricCard
-          icon={CircleAlert}
-          label="Cần hỗ trợ"
-          value={summary.attention}
-          detail="Cần theo dõi thêm từ admin"
+          detail="Tài khoản đang active"
         />
       </div>
 
@@ -363,42 +267,20 @@ export function UsersManagement({ users }: UsersManagementProps) {
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Tìm nhanh học viên, cập nhật cấp độ, mục tiêu và trạng thái học.
+                Tìm nhanh học viên, cập nhật cấp độ và mục tiêu.
               </p>
             </div>
 
-            <div className="flex w-full flex-col gap-3 sm:flex-row xl:w-auto xl:items-center">
-              <div className="relative w-full sm:w-80">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Tìm tên, email, mục tiêu..."
-                  className="pl-9"
-                />
-              </div>
-              <Button onClick={handleOpenCreate} className="shrink-0">
-                <Plus className="size-4" />
-                Thêm người dùng
-              </Button>
+            <div className="relative w-full sm:w-80">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Tìm tên, email, mục tiêu..."
+                className="pl-9"
+              />
             </div>
           </div>
-
-          <Tabs
-            value={statusFilter}
-            onValueChange={(value) =>
-              setStatusFilter(value as "all" | AdminUserStatus)
-            }
-            className="w-fit"
-          >
-            <TabsList className="flex-wrap justify-start">
-              {USER_FILTER_TABS.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
 
           <div className="overflow-hidden rounded-2xl border border-border/60 bg-background">
             <Table>
@@ -409,100 +291,82 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   <TableHead>Mục tiêu</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead>Hoạt động gần nhất</TableHead>
-                  <TableHead>Phiên</TableHead>
+                  <TableHead>Thống kê</TableHead>
                   <TableHead className="text-right">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {visibleUsers.length > 0 ? (
-                  visibleUsers.map((user) => {
-                    const statusMeta = getStatusMeta(user.status || "active");
-
-                    return (
-                      <TableRow key={user.id}>
-                        <TableCell className="whitespace-normal">
-                          <div className="flex items-center gap-3">
-                            <Avatar size="sm" className="ring-1 ring-border/40">
-                              <AvatarImage
-                                src={user.avatar_url}
-                                alt={user.display_name}
-                              />
-                              <AvatarFallback>
-                                {getInitials(user.display_name)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="min-w-0 space-y-1">
-                              <p className="font-semibold leading-none text-foreground">
-                                {user.display_name}
-                              </p>
-                              <p className="truncate text-xs text-muted-foreground">
-                                {user.email}
-                              </p>
-                            </div>
+                  visibleUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="whitespace-normal">
+                        <div className="min-w-0 space-y-1">
+                          <p className="font-semibold leading-none text-foreground">
+                            {user.display_name}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" size="sm">
+                          {user.current_level}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-[18rem] whitespace-normal">
+                        <div className="space-y-1">
+                          <p className="font-medium leading-snug text-foreground">
+                            {user.target_level}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {user.learning_goal_text || "Chưa có mục tiêu"}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={user.is_active ? "success" : "secondary"}
+                          size="sm"
+                        >
+                          {user.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {isMounted ? formatDateTime(user.last_active_at) : "..."}
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1 text-sm">
+                          <div className="font-medium text-foreground">
+                            {user.sessions_completed} buổi
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" size="sm">
-                            {user.current_level}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="max-w-[18rem] whitespace-normal">
-                          <div className="space-y-1">
-                            <p className="font-medium leading-snug text-foreground">
-                              Mục tiêu: {user.target_level}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {user.learning_goal_text ||
-                                "Chưa có mục tiêu mô tả."}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {user.notes || "Không có ghi chú bổ sung."}
-                            </p>
+                          <div className="text-muted-foreground">
+                            {user.total_words_learned} từ
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusMeta.variant} size="sm">
-                            {statusMeta.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {isMounted
-                            ? formatDateTime(user.last_active_at)
-                            : "..."}
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1 text-sm">
-                            <div className="font-medium text-foreground">
-                              {user.sessions_completed} buổi
-                            </div>
-                            <div className="text-muted-foreground">
-                              Streak {user.streak} ngày
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenEdit(user)}
-                          >
-                            <PencilLine className="size-4" />
-                            Sửa
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenEdit(user)}
+                        >
+                          <PencilLine className="size-4" />
+                          Sửa
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="py-12 text-center">
                       <div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-muted-foreground">
                         <Users2 className="size-6 text-primary" />
                         <p className="font-medium text-foreground">
-                          Không tìm thấy người dùng phù hợp
+                          Không tìm thấy người dùng
                         </p>
                         <p className="text-sm">
-                          Thử đổi từ khóa tìm kiếm hoặc xóa bộ lọc hiện tại.
+                          Thử đổi từ khóa tìm kiếm.
                         </p>
                       </div>
                     </TableCell>
@@ -517,22 +381,20 @@ export function UsersManagement({ users }: UsersManagementProps) {
       <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <SheetContent className="w-full lg:w-[40vw] lg:max-w-none">
           <SheetHeader>
-            <SheetTitle>
-              {draft.id ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
-            </SheetTitle>
-            <SheetDescription>Sửa nhanh thông tin.</SheetDescription>
+            <SheetTitle>Chỉnh sửa người dùng</SheetTitle>
+            <SheetDescription>Cập nhật thông tin người dùng.</SheetDescription>
           </SheetHeader>
 
-          <form className="space-y-6" onSubmit={handleSave}>
-            <FieldGroup className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Field>
+          <form className="space-y-6 mt-6" onSubmit={handleSave}>
+            <FieldGroup className="grid gap-4 md:grid-cols-2">
+              <Field className="md:col-span-2">
                 <FieldLabel htmlFor="user-display-name">
                   Tên hiển thị
                 </FieldLabel>
                 <FieldContent>
                   <Input
                     id="user-display-name"
-                    value={draft.display_name}
+                    value={draft?.display_name || ""}
                     onChange={(event) =>
                       updateDraft("display_name", event.target.value)
                     }
@@ -542,30 +404,12 @@ export function UsersManagement({ users }: UsersManagementProps) {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="user-email">Email</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="user-email"
-                    type="email"
-                    value={draft.email}
-                    onChange={(event) =>
-                      updateDraft("email", event.target.value)
-                    }
-                    placeholder="example@lexi.app"
-                  />
-                </FieldContent>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="user-level">Cấp độ</FieldLabel>
+                <FieldLabel htmlFor="user-level">Cấp độ hiện tại</FieldLabel>
                 <FieldContent>
                   <Select
-                    value={draft.current_level}
+                    value={draft?.current_level || "A2"}
                     onValueChange={(value) =>
-                      updateDraft(
-                        "current_level",
-                        value as AdminUser["current_level"],
-                      )
+                      updateDraft("current_level", value as AdminUser["current_level"])
                     }
                   >
                     <SelectTrigger id="user-level" className="w-full">
@@ -583,42 +427,14 @@ export function UsersManagement({ users }: UsersManagementProps) {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="user-status">Trạng thái</FieldLabel>
-                <FieldContent>
-                  <Select
-                    value={draft.status}
-                    onValueChange={(value) =>
-                      updateDraft("status", value as AdminUserStatus)
-                    }
-                  >
-                    <SelectTrigger id="user-status" className="w-full">
-                      <SelectValue placeholder="Chọn trạng thái" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {USER_FILTER_TABS.filter(
-                        (tab) => tab.value !== "all",
-                      ).map((tab) => (
-                        <SelectItem key={tab.value} value={tab.value}>
-                          {tab.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FieldContent>
-              </Field>
-
-              <Field>
                 <FieldLabel htmlFor="user-target-level">
-                  Trình độ mục tiêu
+                  Cấp độ mục tiêu
                 </FieldLabel>
                 <FieldContent>
                   <Select
-                    value={draft.target_level}
+                    value={draft?.target_level || "B1"}
                     onValueChange={(value) =>
-                      updateDraft(
-                        "target_level",
-                        value as AdminUser["target_level"],
-                      )
+                      updateDraft("target_level", value as AdminUser["target_level"])
                     }
                   >
                     <SelectTrigger id="user-target-level" className="w-full">
@@ -634,83 +450,45 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   </Select>
                 </FieldContent>
               </Field>
-            </FieldGroup>
 
-            <FieldGroup className="grid gap-4 md:grid-cols-2">
-              <Field className="md:col-span-2">
-                <FieldLabel htmlFor="user-learning-goal">
-                  Mục tiêu học tập
-                </FieldLabel>
+              <Field>
+                <FieldLabel htmlFor="user-role">Vai trò</FieldLabel>
                 <FieldContent>
-                  <Input
-                    id="user-learning-goal"
-                    value={draft.learning_goal_text}
-                    onChange={(event) =>
-                      updateDraft("learning_goal_text", event.target.value)
+                  <Select
+                    value={draft?.role || "user"}
+                    onValueChange={(value) =>
+                      updateDraft("role", value as "user" | "admin")
                     }
-                    placeholder="Ví dụ: Du lịch tự tin"
-                  />
+                  >
+                    <SelectTrigger id="user-role" className="w-full">
+                      <SelectValue placeholder="Chọn vai trò" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FieldContent>
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="user-sessions-completed">
-                  Số buổi đã học
-                </FieldLabel>
+                <FieldLabel htmlFor="user-active">Trạng thái</FieldLabel>
                 <FieldContent>
-                  <Input
-                    id="user-sessions-completed"
-                    type="number"
-                    min={0}
-                    value={draft.sessions_completed}
-                    onChange={(event) =>
-                      updateDraft(
-                        "sessions_completed",
-                        Number.isNaN(event.target.valueAsNumber)
-                          ? 0
-                          : event.target.valueAsNumber,
-                      )
+                  <Select
+                    value={draft?.is_active ? "active" : "inactive"}
+                    onValueChange={(value) =>
+                      updateDraft("is_active", value === "active")
                     }
-                  />
+                  >
+                    <SelectTrigger id="user-active" className="w-full">
+                      <SelectValue placeholder="Chọn trạng thái" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FieldContent>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="user-streak">Streak hiện tại</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="user-streak"
-                    type="number"
-                    min={0}
-                    value={draft.streak}
-                    onChange={(event) =>
-                      updateDraft(
-                        "streak",
-                        Number.isNaN(event.target.valueAsNumber)
-                          ? 0
-                          : event.target.valueAsNumber,
-                      )
-                    }
-                  />
-                </FieldContent>
-              </Field>
-            </FieldGroup>
-
-            <FieldGroup className="grid gap-4">
-              <Field>
-                <FieldLabel htmlFor="user-notes">Ghi chú</FieldLabel>
-                <FieldContent>
-                  <Textarea
-                    id="user-notes"
-                    value={draft.notes}
-                    onChange={(event) =>
-                      updateDraft("notes", event.target.value)
-                    }
-                    placeholder="Ví dụ: cần thêm bài tập phản xạ, ưu tiên hội thoại ngắn..."
-                    className="min-h-28"
-                  />
-                </FieldContent>
-                <FieldDescription>Chỉ admin thấy.</FieldDescription>
               </Field>
             </FieldGroup>
 

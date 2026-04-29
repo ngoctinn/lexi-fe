@@ -1,0 +1,508 @@
+{
+  "scenarios": [
+    {
+      "scenario_id": "a1-greeting-introduction",
+      "scenario_title": "Meeting Someone New",
+      "context": "You meet a new neighbor who just moved in next door. Introduce yourself and have a simple conversation about basic personal information.",
+      "difficulty_level": "A1",
+      "roles": {
+        "user_role": "New neighbor",
+        "ai_role": "Friendly resident"
+      },
+      "goals": [
+        "Introduce yourself with name and basic information",
+        "Ask simple questions about the other person",
+        "Use basic greetings and polite expressions",
+        "Exchange contact information"
+      ],
+      "order": 1,
+      "notes": "Focus on present simple tense, basic vocabulary (name, age, job, country)",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a1-shopping-basics",
+      "scenario_title": "Shopping at a Store",
+      "context": "You are at a clothing store and want to buy a t-shirt. Ask about prices, sizes, and colors.",
+      "difficulty_level": "A1",
+      "roles": {
+        "user_role": "Customer",
+        "ai_role": "Shop assistant"
+      },
+      "goals": [
+        "Ask about prices using 'How much'",
+        "Request specific items with colors and sizes",
+        "Use numbers and basic shopping vocabulary",
+        "Complete a simple purchase"
+      ],
+      "order": 2,
+      "notes": "Practice numbers, colors, clothing items, and basic questions",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a1-restaurant-ordering",
+      "scenario_title": "Ordering Food at a Restaurant",
+      "context": "You are at a restaurant and want to order lunch. Look at the menu and order food and drinks.",
+      "difficulty_level": "A1",
+      "roles": {
+        "user_role": "Customer",
+        "ai_role": "Waiter/Waitress"
+      },
+      "goals": [
+        "Order food and drinks using 'I would like'",
+        "Ask about menu items",
+        "Request the bill",
+        "Use polite expressions like 'please' and 'thank you'"
+      ],
+      "order": 3,
+      "notes": "Focus on food vocabulary, polite requests, and restaurant phrases",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a1-asking-directions",
+      "scenario_title": "Finding Your Way",
+      "context": "You are lost in a new city and need to find the train station. Ask someone for directions.",
+      "difficulty_level": "A1",
+      "roles": {
+        "user_role": "Tourist",
+        "ai_role": "Local resident"
+      },
+      "goals": [
+        "Ask for directions using 'Where is'",
+        "Understand basic direction words (left, right, straight)",
+        "Thank the person for help",
+        "Confirm understanding"
+      ],
+      "order": 4,
+      "notes": "Practice location prepositions and direction vocabulary",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a2-hotel-checkin",
+      "scenario_title": "Checking into a Hotel",
+      "context": "You arrive at a hotel for your vacation. Check in at the reception and ask about hotel facilities.",
+      "difficulty_level": "A2",
+      "roles": {
+        "user_role": "Hotel guest",
+        "ai_role": "Hotel receptionist"
+      },
+      "goals": [
+        "Provide booking information",
+        "Ask about hotel amenities (WiFi, breakfast, pool)",
+        "Request room preferences",
+        "Understand check-in and check-out times"
+      ],
+      "order": 5,
+      "notes": "Use past simple for booking, present simple for facilities",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a2-doctor-appointment",
+      "scenario_title": "Visiting the Doctor",
+      "context": "You don't feel well and visit a doctor. Describe your symptoms and understand the doctor's advice.",
+      "difficulty_level": "A2",
+      "roles": {
+        "user_role": "Patient",
+        "ai_role": "Doctor"
+      },
+      "goals": [
+        "Describe symptoms and how you feel",
+        "Answer questions about your health",
+        "Understand basic medical advice",
+        "Ask about medication"
+      ],
+      "order": 6,
+      "notes": "Practice health vocabulary, present perfect for duration",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a2-making-plans",
+      "scenario_title": "Planning a Weekend Trip",
+      "context": "You want to plan a weekend trip with a friend. Discuss destinations, activities, and make arrangements.",
+      "difficulty_level": "A2",
+      "roles": {
+        "user_role": "Friend planning trip",
+        "ai_role": "Friend"
+      },
+      "goals": [
+        "Suggest activities using 'Let's' and 'How about'",
+        "Discuss preferences and make decisions",
+        "Talk about future plans",
+        "Agree on time and meeting point"
+      ],
+      "order": 7,
+      "notes": "Use future forms (going to, will), time expressions",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "a2-phone-conversation",
+      "scenario_title": "Making a Phone Call",
+      "context": "You need to call a company to ask about their services and make an appointment.",
+      "difficulty_level": "A2",
+      "roles": {
+        "user_role": "Customer",
+        "ai_role": "Company representative"
+      },
+      "goals": [
+        "Introduce yourself on the phone",
+        "Explain the reason for calling",
+        "Ask for information about services",
+        "Schedule an appointment"
+      ],
+      "order": 8,
+      "notes": "Practice phone etiquette, polite requests, time expressions",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b1-job-interview",
+      "scenario_title": "Job Interview",
+      "context": "You are interviewing for a position at a company. Answer questions about your experience and skills.",
+      "difficulty_level": "B1",
+      "roles": {
+        "user_role": "Job candidate",
+        "ai_role": "Interviewer"
+      },
+      "goals": [
+        "Describe your work experience and education",
+        "Explain your strengths and weaknesses",
+        "Discuss your career goals",
+        "Ask questions about the position"
+      ],
+      "order": 9,
+      "notes": "Use past simple, present perfect, and conditional forms",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b1-complaint-resolution",
+      "scenario_title": "Making a Complaint",
+      "context": "You bought a product online but it arrived damaged. Call customer service to complain and request a solution.",
+      "difficulty_level": "B1",
+      "roles": {
+        "user_role": "Dissatisfied customer",
+        "ai_role": "Customer service representative"
+      },
+      "goals": [
+        "Explain the problem clearly",
+        "Express dissatisfaction politely",
+        "Request a refund or replacement",
+        "Negotiate a solution"
+      ],
+      "order": 10,
+      "notes": "Practice complaint language, passive voice, conditional sentences",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b1-apartment-viewing",
+      "scenario_title": "Renting an Apartment",
+      "context": "You are viewing an apartment for rent. Ask questions about the property, rent, and contract terms.",
+      "difficulty_level": "B1",
+      "roles": {
+        "user_role": "Potential tenant",
+        "ai_role": "Landlord/Real estate agent"
+      },
+      "goals": [
+        "Ask about apartment features and condition",
+        "Discuss rent, deposit, and utilities",
+        "Inquire about lease terms and rules",
+        "Express interest or concerns"
+      ],
+      "order": 11,
+      "notes": "Use comparative forms, conditional sentences, housing vocabulary",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b1-travel-problem",
+      "scenario_title": "Dealing with Travel Issues",
+      "context": "Your flight has been cancelled and you need to find an alternative. Speak with airline staff to resolve the situation.",
+      "difficulty_level": "B1",
+      "roles": {
+        "user_role": "Stranded passenger",
+        "ai_role": "Airline staff"
+      },
+      "goals": [
+        "Explain your situation and urgency",
+        "Ask about alternative flights",
+        "Request compensation or accommodation",
+        "Understand rebooking options"
+      ],
+      "order": 12,
+      "notes": "Practice problem-solving language, modal verbs, travel vocabulary",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b2-business-meeting",
+      "scenario_title": "Business Negotiation",
+      "context": "You are in a meeting to negotiate a business deal. Discuss terms, prices, and reach an agreement.",
+      "difficulty_level": "B2",
+      "roles": {
+        "user_role": "Business representative",
+        "ai_role": "Potential partner"
+      },
+      "goals": [
+        "Present your company's proposal",
+        "Negotiate terms and conditions",
+        "Handle objections diplomatically",
+        "Reach a mutually beneficial agreement"
+      ],
+      "order": 13,
+      "notes": "Use formal business language, persuasive techniques, complex sentences",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b2-debate-discussion",
+      "scenario_title": "Discussing Social Issues",
+      "context": "You are participating in a discussion about environmental protection. Express and defend your opinions.",
+      "difficulty_level": "B2",
+      "roles": {
+        "user_role": "Debate participant",
+        "ai_role": "Discussion moderator/opponent"
+      },
+      "goals": [
+        "Express complex opinions clearly",
+        "Support arguments with examples",
+        "Respond to counterarguments",
+        "Use appropriate discourse markers"
+      ],
+      "order": 14,
+      "notes": "Practice argumentation, linking words, abstract vocabulary",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b2-presentation-feedback",
+      "scenario_title": "Giving a Presentation",
+      "context": "You are presenting a project to colleagues. Deliver your presentation and handle questions from the audience.",
+      "difficulty_level": "B2",
+      "roles": {
+        "user_role": "Presenter",
+        "ai_role": "Audience member"
+      },
+      "goals": [
+        "Structure and deliver a clear presentation",
+        "Use visual aids effectively",
+        "Handle questions confidently",
+        "Summarize key points"
+      ],
+      "order": 15,
+      "notes": "Practice presentation phrases, signposting language, Q&A skills",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "b2-cultural-exchange",
+      "scenario_title": "Cultural Differences Discussion",
+      "context": "You are talking with someone from another country about cultural differences and customs.",
+      "difficulty_level": "B2",
+      "roles": {
+        "user_role": "Cultural ambassador",
+        "ai_role": "International friend"
+      },
+      "goals": [
+        "Describe cultural practices and traditions",
+        "Compare and contrast different cultures",
+        "Discuss cultural misunderstandings",
+        "Show cultural sensitivity"
+      ],
+      "order": 16,
+      "notes": "Use comparative structures, cultural vocabulary, diplomatic language",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c1-academic-discussion",
+      "scenario_title": "Academic Conference",
+      "context": "You are at an academic conference discussing research findings. Engage in intellectual discourse with peers.",
+      "difficulty_level": "C1",
+      "roles": {
+        "user_role": "Researcher",
+        "ai_role": "Fellow academic"
+      },
+      "goals": [
+        "Present complex research concepts",
+        "Analyze and critique methodologies",
+        "Discuss theoretical frameworks",
+        "Engage in scholarly debate"
+      ],
+      "order": 17,
+      "notes": "Use academic register, complex syntax, specialized terminology",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c1-crisis-management",
+      "scenario_title": "Managing a Crisis",
+      "context": "Your company faces a PR crisis. Lead a meeting to develop a crisis management strategy.",
+      "difficulty_level": "C1",
+      "roles": {
+        "user_role": "Crisis manager",
+        "ai_role": "Team member"
+      },
+      "goals": [
+        "Analyze the situation comprehensively",
+        "Propose strategic solutions",
+        "Coordinate team responses",
+        "Communicate with stakeholders effectively"
+      ],
+      "order": 18,
+      "notes": "Practice leadership language, strategic thinking, persuasive communication",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c1-policy-debate",
+      "scenario_title": "Policy Making Discussion",
+      "context": "You are participating in a policy-making committee discussing new regulations. Contribute to the debate.",
+      "difficulty_level": "C1",
+      "roles": {
+        "user_role": "Policy advisor",
+        "ai_role": "Committee member"
+      },
+      "goals": [
+        "Analyze policy implications",
+        "Present evidence-based arguments",
+        "Consider multiple perspectives",
+        "Propose balanced solutions"
+      ],
+      "order": 19,
+      "notes": "Use sophisticated argumentation, political vocabulary, nuanced language",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c1-media-interview",
+      "scenario_title": "Media Interview",
+      "context": "You are being interviewed by a journalist about your expertise. Handle challenging questions professionally.",
+      "difficulty_level": "C1",
+      "roles": {
+        "user_role": "Expert interviewee",
+        "ai_role": "Journalist"
+      },
+      "goals": [
+        "Articulate complex ideas clearly",
+        "Handle difficult questions diplomatically",
+        "Stay on message",
+        "Engage the audience effectively"
+      ],
+      "order": 20,
+      "notes": "Practice media training techniques, concise explanations, public speaking",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c2-philosophical-debate",
+      "scenario_title": "Philosophical Discussion",
+      "context": "Engage in a deep philosophical discussion about ethics, consciousness, or existential questions.",
+      "difficulty_level": "C2",
+      "roles": {
+        "user_role": "Philosopher",
+        "ai_role": "Intellectual peer"
+      },
+      "goals": [
+        "Explore abstract concepts with precision",
+        "Construct sophisticated arguments",
+        "Reference philosophical traditions",
+        "Challenge and refine ideas"
+      ],
+      "order": 21,
+      "notes": "Master-level discourse, philosophical terminology, rhetorical devices",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c2-literary-analysis",
+      "scenario_title": "Literary Criticism",
+      "context": "Discuss and analyze a complex literary work, exploring themes, symbolism, and cultural context.",
+      "difficulty_level": "C2",
+      "roles": {
+        "user_role": "Literary critic",
+        "ai_role": "Fellow scholar"
+      },
+      "goals": [
+        "Analyze literary techniques and devices",
+        "Interpret symbolism and metaphor",
+        "Contextualize within literary movements",
+        "Articulate nuanced interpretations"
+      ],
+      "order": 22,
+      "notes": "Use literary terminology, critical theory, sophisticated analysis",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c2-diplomatic-negotiation",
+      "scenario_title": "International Diplomacy",
+      "context": "You are a diplomat negotiating a sensitive international agreement. Navigate complex political dynamics.",
+      "difficulty_level": "C2",
+      "roles": {
+        "user_role": "Diplomat",
+        "ai_role": "Foreign representative"
+      },
+      "goals": [
+        "Navigate cultural and political sensitivities",
+        "Use diplomatic language with precision",
+        "Build consensus across differences",
+        "Achieve strategic objectives"
+      ],
+      "order": 23,
+      "notes": "Master diplomatic register, subtle persuasion, cross-cultural communication",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    },
+    {
+      "scenario_id": "c2-scientific-symposium",
+      "scenario_title": "Scientific Symposium",
+      "context": "Present groundbreaking research at an international symposium. Defend your findings against expert scrutiny.",
+      "difficulty_level": "C2",
+      "roles": {
+        "user_role": "Lead researcher",
+        "ai_role": "Expert reviewer"
+      },
+      "goals": [
+        "Present complex scientific concepts",
+        "Defend methodology rigorously",
+        "Address expert critiques",
+        "Discuss implications and future research"
+      ],
+      "order": 24,
+      "notes": "Use advanced scientific discourse, technical precision, academic rigor",
+      "is_active": true,
+      "created_at": "2026-04-28T12:00:00Z",
+      "updated_at": "2026-04-28T12:00:00Z"
+    }
+  ]
+}

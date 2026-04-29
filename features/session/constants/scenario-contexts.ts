@@ -22,79 +22,79 @@ export interface ScenarioContextOption {
 
 export const SCENARIO_CONTEXT_OPTIONS: ScenarioContextOption[] = [
   {
-    value: "Giao tiếp xã hội",
-    label: "Giao tiếp xã hội",
+    value: "Social Communication",
+    label: "Social Communication",
     icon: MessageCircle,
   },
   {
-    value: "Tại quán cà phê",
-    label: "Tại quán cà phê",
+    value: "At the Coffee Shop",
+    label: "At the Coffee Shop",
     icon: Coffee,
   },
   {
-    value: "Đi lại & Hỏi đường",
-    label: "Đi lại & Hỏi đường",
+    value: "Transportation & Asking Directions",
+    label: "Transportation & Asking Directions",
     icon: MapPinned,
   },
   {
-    value: "Sức khỏe & Y tế",
-    label: "Sức khỏe & Y tế",
+    value: "Health & Medical",
+    label: "Health & Medical",
     icon: HeartHandshake,
   },
   {
-    value: "Du lịch & Khách sạn",
-    label: "Du lịch & Khách sạn",
+    value: "Travel & Hotels",
+    label: "Travel & Hotels",
     icon: Plane,
   },
   {
-    value: "Đời sống hàng ngày",
-    label: "Đời sống hàng ngày",
+    value: "Daily Life",
+    label: "Daily Life",
     icon: ShoppingCart,
   },
   {
-    value: "Tài chính & Ngân hàng",
-    label: "Tài chính & Ngân hàng",
+    value: "Finance & Banking",
+    label: "Finance & Banking",
     icon: Landmark,
   },
   {
-    value: "Mua sắm",
-    label: "Mua sắm",
+    value: "Shopping",
+    label: "Shopping",
     icon: ShoppingCart,
   },
   {
-    value: "Ẩm thực & Nhà hàng",
-    label: "Ẩm thực & Nhà hàng",
+    value: "Food & Restaurants",
+    label: "Food & Restaurants",
     icon: Utensils,
   },
   {
-    value: "Du lịch & Hàng không",
-    label: "Du lịch & Hàng không",
+    value: "Travel & Aviation",
+    label: "Travel & Aviation",
     icon: Plane,
   },
   {
-    value: "Công việc & Sự nghiệp",
-    label: "Công việc & Sự nghiệp",
+    value: "Work & Career",
+    label: "Work & Career",
     icon: Briefcase,
   },
   {
-    value: "Công sở & Hội họp",
-    label: "Công sở & Hội họp",
+    value: "Office & Meetings",
+    label: "Office & Meetings",
     icon: Users2,
   },
   {
-    value: "Kinh doanh & Thuyết trình",
-    label: "Kinh doanh & Thuyết trình",
+    value: "Business & Presentations",
+    label: "Business & Presentations",
     icon: BarChart3,
   },
   {
-    value: "Xã hội & Thế giới",
-    label: "Xã hội & Thế giới",
+    value: "Society & World",
+    label: "Society & World",
     icon: Globe2,
   },
 ];
 
 export const DEFAULT_SCENARIO_CONTEXT =
-  SCENARIO_CONTEXT_OPTIONS[0]?.value ?? "Giao tiếp xã hội";
+  SCENARIO_CONTEXT_OPTIONS[0]?.value ?? "Social Communication";
 
 export const SCENARIO_CONTEXT_ICON_MAP = SCENARIO_CONTEXT_OPTIONS.reduce(
   (accumulator, option) => {

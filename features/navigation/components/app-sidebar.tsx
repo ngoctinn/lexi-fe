@@ -3,9 +3,6 @@
 import * as React from "react";
 import Image from "next/image";
 import {
-  Map,
-  Trophy,
-  Store,
   LayoutDashboard,
   Mic,
   BrainCircuit,
@@ -38,11 +35,6 @@ const mainNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Lộ trình học",
-    url: "/learn",
-    icon: Map,
-  },
-  {
     title: "Flashcard",
     url: "/flashcards",
     icon: BrainCircuit,
@@ -51,19 +43,6 @@ const mainNavItems = [
     title: "Luyện nói",
     url: "/session/new",
     icon: Mic,
-  },
-  {
-    title: "Cửa hàng",
-    url: "/shop",
-    icon: Store,
-  },
-];
-
-const communityNavItems = [
-  {
-    title: "Bảng xếp hạng",
-    url: "/leaderboard",
-    icon: Trophy,
   },
 ];
 
@@ -135,34 +114,6 @@ export function AppSidebar({
                   tooltip={item.title}
                   size="lg"
                   className="transition-all duration-200"
-                >
-                  <Link href={item.url}>
-                    <item.icon
-                      className={sidebarIconClassName}
-                      strokeWidth={sidebarIconStrokeWidth}
-                    />
-                    <span className="group-data-[collapsible=icon]:hidden">
-                      {item.title}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
-            Cộng đồng
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            {communityNavItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={item.url === pathname}
-                  tooltip={item.title}
-                  size="lg"
                 >
                   <Link href={item.url}>
                     <item.icon

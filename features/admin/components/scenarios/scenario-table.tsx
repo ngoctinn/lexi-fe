@@ -75,10 +75,7 @@ export function ScenarioTable({
             scenarios.map((scenario) => {
               const statusMeta = getStatusMeta(scenario.is_active);
               const level = scenario.difficulty_level ?? "B1";
-              const roles = scenario.roles
-                .map((r) => r.trim())
-                .filter(Boolean)
-                .slice(0, 2);
+              const rolesText = `${scenario.roles.user_role} · ${scenario.roles.ai_role}`;
 
               return (
                 <TableRow key={scenario.scenario_id}>
@@ -100,7 +97,7 @@ export function ScenarioTable({
                   <TableCell className="whitespace-normal">
                     <div className="space-y-1 text-sm">
                       <p className="font-medium text-foreground">
-                        {roles.join(" · ")}
+                        {rolesText}
                       </p>
                       <p className="text-muted-foreground">
                         {scenario.goals.length} mục tiêu
@@ -113,11 +110,8 @@ export function ScenarioTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="space-y-0.5 text-sm">
-                      <div className="font-medium text-foreground">
-                        {scenario.usage_count ?? 0}
-                      </div>
-                      <div className="text-2xs text-muted-foreground">lượt dùng</div>
+                    <div className="text-sm text-muted-foreground">
+                      N/A
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
