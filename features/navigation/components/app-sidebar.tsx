@@ -62,9 +62,14 @@ export function AppSidebar({
   const pathname = usePathname();
   const isSpeakingFlowPath =
     pathname === "/session/new" || pathname.startsWith("/session/");
+  const isFlashcardsPath =
+    pathname === "/flashcards" || pathname.startsWith("/flashcards/");
 
-  const isMainNavItemActive = (itemUrl: string) =>
-    itemUrl === pathname || (itemUrl === "/session/new" && isSpeakingFlowPath);
+  const isMainNavItemActive = (itemUrl: string) => {
+    if (itemUrl === "/session/new" && isSpeakingFlowPath) return true;
+    if (itemUrl === "/flashcards" && isFlashcardsPath) return true;
+    return itemUrl === pathname;
+  };
 
   return (
     <Sidebar

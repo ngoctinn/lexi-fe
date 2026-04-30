@@ -249,7 +249,12 @@ export function TurnBubble({
             >
               <PopoverTrigger asChild>
                 <span
-                  className="cursor-pointer inline-block rounded hover:bg-yellow-300 transition-colors"
+                  className={cn(
+                    "cursor-pointer inline-block rounded transition-colors",
+                    activeWord?.word === cleanToken 
+                      ? "bg-yellow-200" 
+                      : "hover:bg-yellow-100"
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleWordClick(cleanToken);
@@ -350,14 +355,15 @@ export function TurnBubble({
                                 onClick={async () => {
                                   if (onSaveFlashcard && activeWord) {
                                     await onSaveFlashcard(actualTurnIndex, wordTranslations[activeWord.word]);
+                                    // Only close popover after save completes
+                                    setActiveWord(null);
                                   }
-                                  setActiveWord(null);
                                 }}
                                 disabled={savingFlashcardTurnIndexes.includes(actualTurnIndex)}
                               >
                                 {savingFlashcardTurnIndexes.includes(actualTurnIndex) ? (
                                   <>
-                                    <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                    <Loader2 className="size-4 animate-spin" />
                                     Đang lưu...
                                   </>
                                 ) : (
@@ -487,7 +493,7 @@ export function TurnBubble({
         </div>
 
         {/* Translate button for AI, Analyze/Countdown for user - below turn, left-aligned within container */}
-        <div className="flex justify-start gap-2">
+        <div className="flex justify-start gap-2 items-start">
           {isUser ? (
             <>
               {/* Show countdown badge when recording (partial turn) */}
@@ -525,14 +531,30 @@ export function TurnBubble({
               )}
             </>
           ) : (
-            // Translate button for AI turns
-            <button
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
-              onClick={toggleTranslate}
-            >
-              <Languages className="h-3 w-3" />
-              Dịch
-            </button>
+            // Translate button and Metrics for AI turns
+            <>
+              <button
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300 border border-neutral-200 bg-white hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 shrink-0 gap-1 text-gray-600 hover:text-gray-900 text-xs px-2 py-1 h-auto"
+                onClick={toggleTranslate}
+              >
+                <Languages className="h-3 w-3" />
+                Dịch
+              </button>
+              
+              {/* Metrics dropdown - only for admin, separate from translate button */}
+              {isDebugMetricsEnabled() && (turn.ttft_ms !== undefined || turn.latency_ms !== undefined) && (
+                <div className="shrink-0">
+                  <LatencyMetrics
+                    ttftMs={turn.ttft_ms}
+                    latencyMs={turn.latency_ms}
+                    inputTokens={turn.input_tokens}
+                    outputTokens={turn.output_tokens}
+                    costUsd={turn.cost_usd}
+                    qualityScore={turn.quality_score}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -550,24 +572,6 @@ export function TurnBubble({
             >
               Dùng gợi ý
             </Badge>
-          </div>
-        )}
-
-        {!isUser && isDebugMetricsEnabled() && (turn.ttft_ms !== undefined || turn.latency_ms !== undefined) && (
-          <div
-            className={cn(
-              "flex px-1",
-              isUser ? "justify-end" : "justify-start",
-            )}
-          >
-            <LatencyMetrics
-              ttftMs={turn.ttft_ms}
-              latencyMs={turn.latency_ms}
-              inputTokens={turn.input_tokens}
-              outputTokens={turn.output_tokens}
-              costUsd={turn.cost_usd}
-              qualityScore={turn.quality_score}
-            />
           </div>
         )}
       </div>
