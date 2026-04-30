@@ -12,11 +12,8 @@ import { cookies } from "next/headers";
 import { fetchAuthSession } from "aws-amplify/auth/server";
 import { runWithAmplifyServerContext } from "@/lib/amplify-server";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!BASE_URL) {
-  throw new Error("NEXT_PUBLIC_API_URL is not defined");
-}
+// Use fallback for build time, actual value will be injected at runtime by Amplify
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://mnjxcw3o1e.execute-api.ap-southeast-1.amazonaws.com/Prod/";
 
 /**
  * Get auth token from Amplify session

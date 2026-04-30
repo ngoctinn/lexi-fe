@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { getAdminUsers } from "@/features/admin/actions/admin.actions";
 import { UsersManagement } from "@/features/admin/components/users/users-management";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsersPage() {
   const users = await getAdminUsers();
 

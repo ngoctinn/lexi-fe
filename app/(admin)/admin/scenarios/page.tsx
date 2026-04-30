@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { getAdminScenarios } from "@/features/admin/actions/admin.actions";
 import { ScenariosManagement } from "@/features/admin/components/scenarios/scenarios-management";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminScenariosPage() {
   const scenarios = await getAdminScenarios();
 

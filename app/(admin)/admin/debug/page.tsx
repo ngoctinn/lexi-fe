@@ -1,6 +1,8 @@
 import { getAdminUsers, getAdminScenarios } from "@/features/admin/actions/admin.actions";
 import { getProfile } from "@/features/profile/api/profile.actions";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDebugPage() {
   console.log("=== ADMIN DEBUG PAGE ===");
   

@@ -30,6 +30,8 @@ import {
 } from "@/features/admin/actions/admin.actions";
 import type { AdminUser, AdminScenario } from "@/features/admin/types";
 
+export const dynamic = 'force-dynamic';
+
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("vi-VN", {
     dateStyle: "medium",
