@@ -13,6 +13,7 @@ export interface ProfileData {
   learning_goal?: string;
   avatar_url?: string;
   is_new_user?: boolean;
+  role?: string;
 }
 
 /**

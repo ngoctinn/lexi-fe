@@ -28,6 +28,7 @@ import {
   getAdminScenarios,
   getAdminUsers,
 } from "@/features/admin/actions/admin.actions";
+import type { AdminUser, AdminScenario } from "@/features/admin/types";
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("vi-VN", {
@@ -74,10 +75,20 @@ function MetricCard({
 }
 
 export default async function AdminPage() {
-  const [users, scenarios] = await Promise.all([
-    getAdminUsers(),
-    getAdminScenarios(),
-  ]);
+  let users: AdminUser[] = [];
+  let scenarios: AdminScenario[] = [];
+  
+  try {
+    users = await getAdminUsers();
+  } catch (error) {
+    console.error("[admin-page] Error fetching users:", error);
+  }
+  
+  try {
+    scenarios = await getAdminScenarios();
+  } catch (error) {
+    console.error("[admin-page] Error fetching scenarios:", error);
+  }
 
   const activeUsers = users.filter((user) => user.is_active).length;
   const activeScenarios = scenarios.filter(
@@ -202,36 +213,51 @@ export default async function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentUsers.map((user) => (
-                      <TableRow key={user.user_id}>
-                        <TableCell className="whitespace-normal">
-                          <div className="min-w-0 space-y-1">
-                            <p className="font-semibold leading-none text-foreground">
-                              {user.display_name}
+                    {recentUsers.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="h-24 text-center">
+                          <div className="flex flex-col items-center gap-2">
+                            <p className="text-sm text-muted-foreground">
+                              Không có người dùng nào
                             </p>
-                            <p className="truncate text-xs text-muted-foreground">
-                              {user.email}
+                            <p className="text-xs text-muted-foreground">
+                              Kiểm tra quyền admin hoặc dữ liệu trong database
                             </p>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" size="sm">
-                            N/A
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={user.is_active ? "success" : "secondary"}
-                            size="sm"
-                          >
-                            {user.is_active ? "Active" : "Inactive"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {user.joined_at ? formatDateTime(user.joined_at) : "-"}
-                        </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      recentUsers.map((user) => (
+                        <TableRow key={user.user_id}>
+                          <TableCell className="whitespace-normal">
+                            <div className="min-w-0 space-y-1">
+                              <p className="font-semibold leading-none text-foreground">
+                                {user.display_name}
+                              </p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                {user.email}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" size="sm">
+                              N/A
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={user.is_active ? "success" : "secondary"}
+                              size="sm"
+                            >
+                              {user.is_active ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {user.joined_at ? formatDateTime(user.joined_at) : "-"}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -253,39 +279,54 @@ export default async function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentScenarios.map((scenario) => {
-                      const statusMeta = getScenarioStatusMeta(
-                        scenario.is_active,
-                      );
+                    {recentScenarios.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="h-24 text-center">
+                          <div className="flex flex-col items-center gap-2">
+                            <p className="text-sm text-muted-foreground">
+                              Không có kịch bản nào
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Kiểm tra quyền admin hoặc dữ liệu trong database
+                            </p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      recentScenarios.map((scenario) => {
+                        const statusMeta = getScenarioStatusMeta(
+                          scenario.is_active,
+                        );
 
-                      return (
-                        <TableRow key={scenario.scenario_id}>
-                          <TableCell className="whitespace-normal">
-                            <div className="space-y-1">
-                              <p className="font-semibold leading-none text-foreground">
-                                {scenario.scenario_title}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {scenario.context}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" size="sm">
-                              {scenario.difficulty_level ?? "B1"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={statusMeta.variant} size="sm">
-                              {statusMeta.label}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {scenario.updated_at ? formatDateTime(scenario.updated_at) : "-"}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                        return (
+                          <TableRow key={scenario.scenario_id}>
+                            <TableCell className="whitespace-normal">
+                              <div className="space-y-1">
+                                <p className="font-semibold leading-none text-foreground">
+                                  {scenario.scenario_title}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {scenario.context}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" size="sm">
+                                {scenario.difficulty_level ?? "B1"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={statusMeta.variant} size="sm">
+                                {statusMeta.label}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {scenario.updated_at ? formatDateTime(scenario.updated_at) : "-"}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>

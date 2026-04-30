@@ -154,6 +154,79 @@ export async function apiFetch<T = unknown>(
 }
 
 /**
+ * Authenticated fetch for direct body responses (no wrapper)
+ * Used for admin endpoints that return direct body without {success: true, data: ...} wrapper
+ * 
+ * Usage:
+ * ```ts
+ * const response = await apiFetchDirect<{users: User[]}>("/admin/users");
+ * return response.users ?? [];
+ * ```
+ */
+export async function apiFetchDirect<T = unknown>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T | null> {
+  const token = await getAuthToken();
+  const url = `${BASE_URL}${path}`;
+
+  if (!token) {
+    console.error(`[apiFetchDirect] No auth token available for ${path}`);
+    throw new Error("Not authenticated");
+  }
+
+  const headers = new Headers(options.headers);
+  headers.set("Content-Type", "application/json");
+  headers.set("Authorization", `Bearer ${token}`);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      let errorData: Record<string, unknown> = {};
+      
+      try {
+        const responseText = await response.text();
+        if (responseText) {
+          errorData = JSON.parse(responseText) as Record<string, unknown>;
+        }
+      } catch {
+        // Ignore parse errors
+      }
+      
+      const errorMessage = String(
+        errorData.message || 
+        errorData.error || 
+        `HTTP ${response.status}`
+      );
+      
+      console.error(`[apiFetchDirect] ${options.method || 'GET'} ${path} failed:`, {
+        status: response.status,
+        statusText: response.statusText,
+        message: errorMessage,
+      });
+      
+      throw new Error(errorMessage);
+    }
+
+    const responseText = await response.text();
+    if (!responseText) {
+      console.warn(`[apiFetchDirect] Empty response from ${path}`);
+      return null;
+    }
+
+    return JSON.parse(responseText) as T;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Network error";
+    console.error(`[apiFetchDirect] Error for ${path}:`, errorMessage);
+    throw error;
+  }
+}
+
+/**
  * Public fetch - for public endpoints (no auth required)
  * 
  * Usage:

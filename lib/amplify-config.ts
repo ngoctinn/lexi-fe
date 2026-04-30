@@ -1,5 +1,10 @@
 import { ResourcesConfig } from "aws-amplify";
 
+// Debug: Log configuration on load
+if (typeof window !== "undefined") {
+  console.log("[Amplify Config] COGNITO_DOMAIN:", process.env.NEXT_PUBLIC_COGNITO_DOMAIN);
+}
+
 export const amplifyConfig: ResourcesConfig = {
   Auth: {
     Cognito: {

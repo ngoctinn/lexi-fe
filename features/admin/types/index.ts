@@ -3,12 +3,13 @@ import type { SessionLevel } from "@/features/session/types/session.types";
 /**
  * AdminUser type - matches VERIFIED API response from GET /admin/users
  * Source: lexi-be/docs/api/07-admin-VERIFIED.md
+ * Note: Backend uses uppercase enum values (LEARNER, ADMIN)
  */
 export interface AdminUser {
   user_id: string;
   email: string;
   display_name: string;
-  role: "learner" | "admin";
+  role: "LEARNER" | "ADMIN";
   is_active: boolean;
   joined_at: string;
   total_words_learned: number;

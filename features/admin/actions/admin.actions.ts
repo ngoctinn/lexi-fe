@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { apiFetch } from "@/lib/api/fetch";
+import { apiFetchDirect } from "@/lib/api/fetch";
 import type { ActionResult } from "@/lib/api/types";
 import type {
   AdminScenario,
@@ -25,30 +25,32 @@ interface AdminScenariosResponse {
   total_count: number;
 }
 
-interface AdminErrorResponse {
-  error: string;
-}
-
 /**
  * Get all users (admin only)
  * Endpoint: GET /admin/users
  * Returns empty array if user is not admin (403 Forbidden)
+ * 
+ * Note: Backend actually returns {success: true, data: {users: [], total_count: 0}}
+ * despite docs saying direct body
  */
 export async function getAdminUsers(): Promise<AdminUser[]> {
   try {
-    const response = await apiFetch<AdminUsersResponse>("/admin/users", {
+    const response = await apiFetchDirect<any>("/admin/users", {
       cache: "no-store",
     });
 
-    return response.users ?? [];
-  } catch (error: any) {
-    // Check if 403 Forbidden
-    if (error?.message?.includes("Forbidden") || error?.status === 403) {
-      console.warn("[admin] User is not admin, access denied");
+    if (!response) {
       return [];
     }
 
-    console.error("[admin] getAdminUsers failed:", error);
+    const data = response.data || response;
+    const users = data.users || [];
+    
+    return users;
+  } catch (error: any) {
+    if (error?.message?.includes("Forbidden") || error?.message?.includes("403")) {
+      return [];
+    }
     return [];
   }
 }
@@ -57,22 +59,28 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
  * Get all scenarios (admin only)
  * Endpoint: GET /admin/scenarios
  * Returns empty array if user is not admin (403 Forbidden)
+ * 
+ * Note: Backend actually returns {success: true, data: {scenarios: [], total_count: 0}}
+ * despite docs saying direct body
  */
 export async function getAdminScenarios(): Promise<AdminScenario[]> {
   try {
-    const response = await apiFetch<AdminScenariosResponse>("/admin/scenarios", {
+    const response = await apiFetchDirect<any>("/admin/scenarios", {
       cache: "no-store",
     });
 
-    return response.scenarios ?? [];
-  } catch (error: any) {
-    // Check if 403 Forbidden
-    if (error?.message?.includes("Forbidden") || error?.status === 403) {
-      console.warn("[admin] User is not admin, access denied");
+    if (!response) {
       return [];
     }
 
-    console.error("[admin] getAdminScenarios failed:", error);
+    const data = response.data || response;
+    const scenarios = data.scenarios || [];
+    
+    return scenarios;
+  } catch (error: any) {
+    if (error?.message?.includes("Forbidden") || error?.message?.includes("403")) {
+      return [];
+    }
     return [];
   }
 }
@@ -86,7 +94,7 @@ export async function updateAdminUser(
   data: UpdateAdminUserRequest
 ): Promise<ActionResult<AdminUser>> {
   try {
-    const response = await apiFetch<AdminUser>(
+    const response = await apiFetchDirect<any>(
       `/admin/users/${userId}`,
       {
         method: "PATCH",
@@ -94,12 +102,22 @@ export async function updateAdminUser(
       }
     );
 
+    if (!response) {
+      return {
+        success: false,
+        error: "Empty response from server",
+      };
+    }
+
+    // Backend returns {success: true, data: {...}}
+    const user = response.data || response;
+
     revalidatePath("/admin");
     revalidatePath("/admin/users");
 
     return {
       success: true,
-      data: response,
+      data: user,
     };
   } catch (error: any) {
     return {
@@ -117,7 +135,7 @@ export async function createAdminScenario(
   data: CreateAdminScenarioRequest
 ): Promise<ActionResult<AdminScenario>> {
   try {
-    const response = await apiFetch<AdminScenario>(
+    const response = await apiFetchDirect<any>(
       "/admin/scenarios",
       {
         method: "POST",
@@ -125,12 +143,22 @@ export async function createAdminScenario(
       }
     );
 
+    if (!response) {
+      return {
+        success: false,
+        error: "Empty response from server",
+      };
+    }
+
+    // Backend returns {success: true, data: {...}}
+    const scenario = response.data || response;
+
     revalidatePath("/admin");
     revalidatePath("/admin/scenarios");
 
     return {
       success: true,
-      data: response,
+      data: scenario,
     };
   } catch (error: any) {
     return {
@@ -149,7 +177,7 @@ export async function updateAdminScenario(
   data: UpdateAdminScenarioRequest
 ): Promise<ActionResult<AdminScenario>> {
   try {
-    const response = await apiFetch<AdminScenario>(
+    const response = await apiFetchDirect<any>(
       `/admin/scenarios/${scenarioId}`,
       {
         method: "PATCH",
@@ -157,12 +185,22 @@ export async function updateAdminScenario(
       }
     );
 
+    if (!response) {
+      return {
+        success: false,
+        error: "Empty response from server",
+      };
+    }
+
+    // Backend returns {success: true, data: {...}}
+    const scenario = response.data || response;
+
     revalidatePath("/admin");
     revalidatePath("/admin/scenarios");
 
     return {
       success: true,
-      data: response,
+      data: scenario,
     };
   } catch (error: any) {
     return {
