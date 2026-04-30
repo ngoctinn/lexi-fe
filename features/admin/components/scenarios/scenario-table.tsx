@@ -75,7 +75,7 @@ export function ScenarioTable({
             scenarios.map((scenario) => {
               const statusMeta = getStatusMeta(scenario.is_active);
               const level = scenario.difficulty_level ?? "B1";
-              const rolesText = `${scenario.roles.user_role} · ${scenario.roles.ai_role}`;
+              const rolesText = `${scenario.roles[0]} ⇄ ${scenario.roles[1]}`;
 
               return (
                 <TableRow key={scenario.scenario_id}>
@@ -111,7 +111,7 @@ export function ScenarioTable({
                   </TableCell>
                   <TableCell>
                     <div className="text-sm text-muted-foreground">
-                      N/A
+                      {scenario.usage_count || 0}
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">

@@ -135,7 +135,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
   const records = React.useMemo(() => {
     const merged = [...users];
     localUpdates.forEach((updated) => {
-      const index = merged.findIndex((u) => u.id === updated.id);
+      const index = merged.findIndex((u) => u.user_id === updated.user_id);
       if (index >= 0) {
         merged[index] = updated;
       }
@@ -154,17 +154,14 @@ export function UsersManagement({ users }: UsersManagementProps) {
           [
             user.display_name,
             user.email,
-            user.learning_goal_text,
-            user.notes,
-            user.current_level,
-            user.target_level,
+            user.role,
           ].join(" ")
         ).includes(normalizedQuery);
       })
       .sort(
         (left, right) =>
-          new Date(right.updated_at || "").getTime() -
-          new Date(left.updated_at || "").getTime()
+          new Date(right.joined_at || "").getTime() -
+          new Date(left.joined_at || "").getTime()
       );
   }, [query, records]);
 
@@ -188,25 +185,18 @@ export function UsersManagement({ users }: UsersManagementProps) {
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!draft || !draft.id) {
+    if (!draft || !draft.user_id) {
       toast.error("Không tìm thấy thông tin người dùng.");
-      return;
-    }
-
-    if (!draft.display_name?.trim()) {
-      toast.error("Vui lòng nhập tên người dùng.");
       return;
     }
 
     setIsSaving(true);
 
     try {
-      const result = await updateAdminUser(draft.id, {
-        display_name: draft.display_name.trim(),
-        current_level: draft.current_level,
-        target_level: draft.target_level,
+      const result = await updateAdminUser(draft.user_id, {
         is_active: draft.is_active,
-        role: draft.role,
+        current_level: undefined, // Not supported in API yet
+        target_level: undefined, // Not supported in API yet
       });
 
       if (!result.success || !result.data) {
@@ -217,11 +207,11 @@ export function UsersManagement({ users }: UsersManagementProps) {
       const savedUser = result.data;
 
       setLocalUpdates((current) => {
-        const exists = current.some((item) => item.id === savedUser.id);
+        const exists = current.some((item) => item.user_id === savedUser.user_id);
 
         if (exists) {
           return current.map((item) =>
-            item.id === savedUser.id ? savedUser : item
+            item.user_id === savedUser.user_id ? savedUser : item
           );
         }
 
@@ -298,7 +288,7 @@ export function UsersManagement({ users }: UsersManagementProps) {
               <TableBody>
                 {visibleUsers.length > 0 ? (
                   visibleUsers.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.user_id}>
                       <TableCell className="whitespace-normal">
                         <div className="min-w-0 space-y-1">
                           <p className="font-semibold leading-none text-foreground">
@@ -310,17 +300,14 @@ export function UsersManagement({ users }: UsersManagementProps) {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" size="sm">
-                          {user.current_level}
+                        <Badge variant="secondary" size="sm">
+                          N/A
                         </Badge>
                       </TableCell>
                       <TableCell className="max-w-[18rem] whitespace-normal">
                         <div className="space-y-1">
-                          <p className="font-medium leading-snug text-foreground">
-                            {user.target_level}
-                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {user.learning_goal_text || "Chưa có mục tiêu"}
+                            Chưa có mục tiêu
                           </p>
                         </div>
                       </TableCell>
@@ -333,13 +320,10 @@ export function UsersManagement({ users }: UsersManagementProps) {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {isMounted ? formatDateTime(user.last_active_at) : "..."}
+                        {isMounted ? formatDateTime(user.joined_at) : "..."}
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1 text-sm">
-                          <div className="font-medium text-foreground">
-                            {user.sessions_completed} buổi
-                          </div>
                           <div className="text-muted-foreground">
                             {user.total_words_learned} từ
                           </div>
@@ -395,59 +379,23 @@ export function UsersManagement({ users }: UsersManagementProps) {
                   <Input
                     id="user-display-name"
                     value={draft?.display_name || ""}
-                    onChange={(event) =>
-                      updateDraft("display_name", event.target.value)
-                    }
-                    placeholder="Ví dụ: Nguyễn Minh Anh"
+                    disabled
+                    placeholder="Không thể chỉnh sửa"
                   />
                 </FieldContent>
               </Field>
 
-              <Field>
-                <FieldLabel htmlFor="user-level">Cấp độ hiện tại</FieldLabel>
-                <FieldContent>
-                  <Select
-                    value={draft?.current_level || "A2"}
-                    onValueChange={(value) =>
-                      updateDraft("current_level", value as AdminUser["current_level"])
-                    }
-                  >
-                    <SelectTrigger id="user-level" className="w-full">
-                      <SelectValue placeholder="Chọn cấp độ" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LEVEL_OPTIONS.map((level) => (
-                        <SelectItem key={level} value={level}>
-                          {level}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FieldContent>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="user-target-level">
-                  Cấp độ mục tiêu
+              <Field className="md:col-span-2">
+                <FieldLabel htmlFor="user-email">
+                  Email
                 </FieldLabel>
                 <FieldContent>
-                  <Select
-                    value={draft?.target_level || "B1"}
-                    onValueChange={(value) =>
-                      updateDraft("target_level", value as AdminUser["target_level"])
-                    }
-                  >
-                    <SelectTrigger id="user-target-level" className="w-full">
-                      <SelectValue placeholder="Chọn cấp độ mục tiêu" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LEVEL_OPTIONS.map((level) => (
-                        <SelectItem key={`target-${level}`} value={level}>
-                          {level}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    id="user-email"
+                    value={draft?.email || ""}
+                    disabled
+                    placeholder="Không thể chỉnh sửa"
+                  />
                 </FieldContent>
               </Field>
 
@@ -455,16 +403,14 @@ export function UsersManagement({ users }: UsersManagementProps) {
                 <FieldLabel htmlFor="user-role">Vai trò</FieldLabel>
                 <FieldContent>
                   <Select
-                    value={draft?.role || "user"}
-                    onValueChange={(value) =>
-                      updateDraft("role", value as "user" | "admin")
-                    }
+                    value={draft?.role || "learner"}
+                    disabled
                   >
                     <SelectTrigger id="user-role" className="w-full">
                       <SelectValue placeholder="Chọn vai trò" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="learner">Learner</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>

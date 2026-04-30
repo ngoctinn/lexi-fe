@@ -6,8 +6,18 @@ import {
   createAdminScenario,
   updateAdminScenario,
 } from "@/features/admin/actions/admin.actions";
-import type { AdminScenario } from "@/features/admin/types";
+import type { AdminScenario, CreateAdminScenarioRequest, UpdateAdminScenarioRequest } from "@/features/admin/types";
 import { DEFAULT_SCENARIO_CONTEXT } from "@/features/session/constants/scenario-contexts";
+
+/**
+ * UI representation of scenario with roles as object for easier form handling
+ */
+interface ScenarioDraft extends Omit<AdminScenario, "roles"> {
+  roles: {
+    user_role: string;
+    ai_role: string;
+  };
+}
 
 function normalizeSearch(value: string) {
   return value
@@ -16,7 +26,7 @@ function normalizeSearch(value: string) {
     .toLowerCase();
 }
 
-function createEmptyScenario(order: number, now?: string): AdminScenario {
+function createEmptyScenario(order: number, now?: string): ScenarioDraft {
   const finalNow = now || new Date(0).toISOString();
 
   return {
@@ -29,11 +39,41 @@ function createEmptyScenario(order: number, now?: string): AdminScenario {
     },
     goals: [],
     is_active: true,
+    usage_count: 0,
     difficulty_level: "A2",
     order,
     created_at: finalNow,
     updated_at: finalNow,
     notes: "",
+  };
+}
+
+/**
+ * Convert API scenario (roles as array) to UI draft (roles as object)
+ */
+function scenarioToDraft(scenario: AdminScenario): ScenarioDraft {
+  return {
+    ...scenario,
+    roles: {
+      user_role: scenario.roles[0] || "",
+      ai_role: scenario.roles[1] || "",
+    },
+  };
+}
+
+/**
+ * Convert UI draft (roles as object) to API format (roles as array)
+ */
+function draftToApiPayload(draft: ScenarioDraft): CreateAdminScenarioRequest | UpdateAdminScenarioRequest {
+  return {
+    scenario_title: draft.scenario_title.trim(),
+    context: draft.context.trim(),
+    difficulty_level: draft.difficulty_level,
+    roles: [draft.roles.user_role.trim(), draft.roles.ai_role.trim()],
+    goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
+    order: draft.order,
+    notes: draft.notes?.trim() || "",
+    is_active: draft.is_active,
   };
 }
 
@@ -43,7 +83,7 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
     "all" | "active" | "inactive"
   >("all");
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState<AdminScenario>(() =>
+  const [draft, setDraft] = React.useState<ScenarioDraft>(() =>
     createEmptyScenario(1)
   );
   const [isSaving, setIsSaving] = React.useState(false);
@@ -80,8 +120,8 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
             scenario.context,
             scenario.notes,
             scenario.goals.join(" "),
-            scenario.roles.user_role,
-            scenario.roles.ai_role,
+            scenario.roles[0],
+            scenario.roles[1],
           ].join(" ")
         ).includes(normalizedQuery);
       })
@@ -100,13 +140,14 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
   const summary = React.useMemo(() => {
     const active = records.filter((scenario) => scenario.is_active).length;
     const inactive = records.length - active;
+    const totalUsage = records.reduce((sum, s) => sum + (s.usage_count || 0), 0);
 
-    return { active, inactive, totalUsage: 0 };
+    return { active, inactive, totalUsage };
   }, [records]);
 
-  const updateDraft = <K extends keyof AdminScenario>(
+  const updateDraft = <K extends keyof ScenarioDraft>(
     key: K,
-    value: AdminScenario[K]
+    value: ScenarioDraft[K]
   ) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
@@ -120,10 +161,10 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
   };
 
   const handleOpenEdit = (scenario: AdminScenario) => {
-    setDraft({
+    setDraft(scenarioToDraft({
       ...scenario,
       context: scenario.context || DEFAULT_SCENARIO_CONTEXT,
-    });
+    }));
     setIsDialogOpen(true);
   };
 
@@ -146,30 +187,18 @@ export function useScenariosManagement(scenarios: AdminScenario[]) {
     }
 
     if (!draft.roles.user_role.trim() || !draft.roles.ai_role.trim()) {
-      toast.error("Vui lòng nhập đầy đủ 2 vai trò.");
+      toast.error("Vui lòng nhập đầy đủ 2 vai trò (người học có thể swap giữa 2 vai trò này).");
       return;
     }
 
     setIsSaving(true);
 
     try {
-      const payload = {
-        scenario_title: draft.scenario_title.trim(),
-        context: draft.context.trim(),
-        difficulty_level: draft.difficulty_level,
-        roles: {
-          user_role: draft.roles.user_role.trim(),
-          ai_role: draft.roles.ai_role.trim(),
-        },
-        goals: draft.goals.map((goal) => goal.trim()).filter(Boolean),
-        order: draft.order,
-        notes: draft.notes?.trim() || "",
-        is_active: draft.is_active,
-      };
+      const payload = draftToApiPayload(draft);
 
       const result = draft.scenario_id
         ? await updateAdminScenario(draft.scenario_id, payload)
-        : await createAdminScenario(payload);
+        : await createAdminScenario(payload as CreateAdminScenarioRequest);
 
       if (!result.success || !result.data) {
         toast.error(result.error ?? "Không thể lưu kịch bản.");

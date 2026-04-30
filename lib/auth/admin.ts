@@ -13,6 +13,8 @@ import { getProfile } from "@/features/profile/api/profile.actions";
  * Reads user profile from database and verifies admin role
  * 
  * Returns true if user has admin role, false otherwise
+ * 
+ * TODO: Implement role field in ProfileData
  */
 export async function isUserAdmin(): Promise<boolean> {
   try {
@@ -26,11 +28,11 @@ export async function isUserAdmin(): Promise<boolean> {
       return false;
     }
 
-    // Get user profile from database
-    const profile = await getProfile();
+    // TODO: Add role field to ProfileData and implement role check
+    // const profile = await getProfile();
+    // return profile?.role === "ADMIN";
     
-    // Check if user has admin role in database
-    return profile?.role === "ADMIN";
+    return false; // Temporarily return false until role is implemented
   } catch (error) {
     console.error("[auth] Failed to check admin role:", error);
     return false;

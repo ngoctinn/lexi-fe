@@ -2,13 +2,32 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api/fetch";
-import type { ApiResponse, ActionResult } from "@/lib/api/types";
+import type { ActionResult } from "@/lib/api/types";
 import type {
   AdminScenario,
   AdminUser,
   UpdateAdminUserRequest,
-  UpsertAdminScenarioRequest,
+  CreateAdminScenarioRequest,
+  UpdateAdminScenarioRequest,
 } from "@/features/admin/types";
+
+/**
+ * Admin API Response Types (Direct body, no wrapper)
+ * Source: lexi-be/docs/api/07-admin-VERIFIED.md
+ */
+interface AdminUsersResponse {
+  users: AdminUser[];
+  total_count: number;
+}
+
+interface AdminScenariosResponse {
+  scenarios: AdminScenario[];
+  total_count: number;
+}
+
+interface AdminErrorResponse {
+  error: string;
+}
 
 /**
  * Get all users (admin only)
@@ -16,64 +35,46 @@ import type {
  * Returns empty array if user is not admin (403 Forbidden)
  */
 export async function getAdminUsers(): Promise<AdminUser[]> {
-  const response = await apiFetch<
-    ApiResponse<{ users: AdminUser[]; total_count: number }>
-  >("/admin/users", {
-    cache: "no-store",
-  });
+  try {
+    const response = await apiFetch<AdminUsersResponse>("/admin/users", {
+      cache: "no-store",
+    });
 
-  if (!response.success) {
-    if (
-      response.message?.includes("Forbidden") ||
-      response.error?.includes("Forbidden")
-    ) {
+    return response.users ?? [];
+  } catch (error: any) {
+    // Check if 403 Forbidden
+    if (error?.message?.includes("Forbidden") || error?.status === 403) {
       console.warn("[admin] User is not admin, access denied");
       return [];
     }
 
-    console.error("[admin] getAdminUsers failed:", response.message);
+    console.error("[admin] getAdminUsers failed:", error);
     return [];
   }
-
-  return response.data?.users ?? [];
 }
 
 /**
  * Get all scenarios (admin only)
  * Endpoint: GET /admin/scenarios
- * Fallback to public scenarios if user is not admin (403 Forbidden)
+ * Returns empty array if user is not admin (403 Forbidden)
  */
 export async function getAdminScenarios(): Promise<AdminScenario[]> {
-  const response = await apiFetch<
-    ApiResponse<{ scenarios: AdminScenario[]; total_count: number }>
-  >("/admin/scenarios", {
-    cache: "no-store",
-  });
+  try {
+    const response = await apiFetch<AdminScenariosResponse>("/admin/scenarios", {
+      cache: "no-store",
+    });
 
-  if (!response.success) {
-    if (
-      response.message?.includes("Forbidden") ||
-      response.error?.includes("Forbidden")
-    ) {
-      console.warn(
-        "[admin] User is not admin, fetching public scenarios instead"
-      );
-
-      // Fetch public scenarios as fallback
-      const publicResponse = await apiFetch<
-        ApiResponse<{ scenarios: AdminScenario[] }>
-      >("/scenarios", { cache: "no-store" });
-
-      if (publicResponse.success) {
-        return publicResponse.data?.scenarios ?? [];
-      }
+    return response.scenarios ?? [];
+  } catch (error: any) {
+    // Check if 403 Forbidden
+    if (error?.message?.includes("Forbidden") || error?.status === 403) {
+      console.warn("[admin] User is not admin, access denied");
+      return [];
     }
 
-    console.error("[admin] getAdminScenarios failed:", response.message);
+    console.error("[admin] getAdminScenarios failed:", error);
     return [];
   }
-
-  return response.data?.scenarios ?? [];
 }
 
 /**
@@ -84,28 +85,28 @@ export async function updateAdminUser(
   userId: string,
   data: UpdateAdminUserRequest
 ): Promise<ActionResult<AdminUser>> {
-  const response = await apiFetch<ApiResponse<AdminUser>>(
-    `/admin/users/${userId}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    }
-  );
+  try {
+    const response = await apiFetch<AdminUser>(
+      `/admin/users/${userId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }
+    );
 
-  if (!response.success) {
+    revalidatePath("/admin");
+    revalidatePath("/admin/users");
+
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
     return {
       success: false,
-      error: response.message || "Không thể cập nhật người dùng.",
+      error: error?.message || "Không thể cập nhật người dùng.",
     };
   }
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/users");
-
-  return {
-    success: true,
-    data: response.data,
-  };
 }
 
 /**
@@ -113,30 +114,30 @@ export async function updateAdminUser(
  * Endpoint: POST /admin/scenarios
  */
 export async function createAdminScenario(
-  data: UpsertAdminScenarioRequest
+  data: CreateAdminScenarioRequest
 ): Promise<ActionResult<AdminScenario>> {
-  const response = await apiFetch<ApiResponse<AdminScenario>>(
-    "/admin/scenarios",
-    {
-      method: "POST",
-      body: JSON.stringify(data),
-    }
-  );
+  try {
+    const response = await apiFetch<AdminScenario>(
+      "/admin/scenarios",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
 
-  if (!response.success) {
+    revalidatePath("/admin");
+    revalidatePath("/admin/scenarios");
+
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
     return {
       success: false,
-      error: response.message || "Không thể tạo kịch bản.",
+      error: error?.message || "Không thể tạo kịch bản.",
     };
   }
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/scenarios");
-
-  return {
-    success: true,
-    data: response.data,
-  };
 }
 
 /**
@@ -145,28 +146,28 @@ export async function createAdminScenario(
  */
 export async function updateAdminScenario(
   scenarioId: string,
-  data: Partial<UpsertAdminScenarioRequest>
+  data: UpdateAdminScenarioRequest
 ): Promise<ActionResult<AdminScenario>> {
-  const response = await apiFetch<ApiResponse<AdminScenario>>(
-    `/admin/scenarios/${scenarioId}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    }
-  );
+  try {
+    const response = await apiFetch<AdminScenario>(
+      `/admin/scenarios/${scenarioId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }
+    );
 
-  if (!response.success) {
+    revalidatePath("/admin");
+    revalidatePath("/admin/scenarios");
+
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
     return {
       success: false,
-      error: response.message || "Không thể cập nhật kịch bản.",
+      error: error?.message || "Không thể cập nhật kịch bản.",
     };
   }
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/scenarios");
-
-  return {
-    success: true,
-    data: response.data,
-  };
 }

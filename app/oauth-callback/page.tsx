@@ -4,7 +4,7 @@
 // This enables Amplify to complete OAuth code exchange in Next.js
 import "aws-amplify/auth/enable-oauth-listener";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getCurrentUser, fetchUserAttributes } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
@@ -24,7 +24,7 @@ import { toast } from "sonner";
  * Refs:
  * - https://docs.amplify.aws/react/build-a-backend/auth/concepts/external-identity-providers/
  */
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
@@ -90,7 +90,7 @@ export default function AuthCallbackPage() {
           console.error("[OAuth Callback] OAuth sign-in failed:", payload.data);
           setDebugInfo(prev => [...prev, `❌ Sign-in failed: ${JSON.stringify(payload.data)}`]);
           
-          const errorMsg = payload.data?.message || "Authentication failed";
+          const errorMsg = (payload.data?.error as any)?.message || "Authentication failed";
           toast.error(`Đăng nhập thất bại: ${errorMsg}`);
           
           setTimeout(() => {
@@ -129,5 +129,17 @@ export default function AuthCallbackPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }

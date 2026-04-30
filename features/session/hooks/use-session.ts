@@ -166,9 +166,6 @@ export function useSession({
           );
         }
       }, 30000);
-      
-      // Store timeout ID for cleanup
-      useSessionStore.getState().setResponseTimeoutId?.(timeoutId);
     },
     [send, sessionId, setTurns],
   );

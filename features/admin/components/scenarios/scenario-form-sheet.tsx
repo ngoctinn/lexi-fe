@@ -33,6 +33,16 @@ import {
   SCENARIO_CONTEXT_OPTIONS,
 } from "@/features/session/constants/scenario-contexts";
 
+/**
+ * UI representation of scenario with roles as object for easier form handling
+ */
+interface ScenarioDraft extends Omit<AdminScenario, "roles"> {
+  roles: {
+    user_role: string;
+    ai_role: string;
+  };
+}
+
 const LEVEL_OPTIONS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 
 function splitLines(value: string) {
@@ -45,9 +55,9 @@ function splitLines(value: string) {
 interface ScenarioFormSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  draft: AdminScenario;
+  draft: ScenarioDraft;
   isSaving: boolean;
-  onUpdateDraft: <K extends keyof AdminScenario>(key: K, value: AdminScenario[K]) => void;
+  onUpdateDraft: <K extends keyof ScenarioDraft>(key: K, value: ScenarioDraft[K]) => void;
   onSave: (event: React.FormEvent) => void;
 }
 
@@ -113,7 +123,7 @@ export function ScenarioFormSheet({
                 <Select
                   value={draft.difficulty_level ?? "A2"}
                   onValueChange={(value) =>
-                    onUpdateDraft("difficulty_level", value as AdminScenario["difficulty_level"])
+                    onUpdateDraft("difficulty_level", value as ScenarioDraft["difficulty_level"])
                   }
                 >
                   <SelectTrigger id="scenario-level" className="w-full">
@@ -183,10 +193,10 @@ export function ScenarioFormSheet({
             </Field>
 
             <Field className="md:col-span-2">
-              <FieldLabel htmlFor="scenario-user-role">Vai trò người dùng</FieldLabel>
+              <FieldLabel htmlFor="scenario-role-1">Vai trò 1</FieldLabel>
               <FieldContent>
                 <Input
-                  id="scenario-user-role"
+                  id="scenario-role-1"
                   value={draft.roles.user_role}
                   onChange={(e) =>
                     onUpdateDraft("roles", {
@@ -197,14 +207,14 @@ export function ScenarioFormSheet({
                   placeholder="Ví dụ: Khách hàng"
                 />
               </FieldContent>
-              <FieldDescription>Vai trò của người học.</FieldDescription>
+              <FieldDescription>Người học có thể chọn vai trò này hoặc vai trò 2.</FieldDescription>
             </Field>
 
             <Field className="md:col-span-2">
-              <FieldLabel htmlFor="scenario-ai-role">Vai trò AI</FieldLabel>
+              <FieldLabel htmlFor="scenario-role-2">Vai trò 2</FieldLabel>
               <FieldContent>
                 <Input
-                  id="scenario-ai-role"
+                  id="scenario-role-2"
                   value={draft.roles.ai_role}
                   onChange={(e) =>
                     onUpdateDraft("roles", {
@@ -215,7 +225,7 @@ export function ScenarioFormSheet({
                   placeholder="Ví dụ: Nhân viên bán hàng"
                 />
               </FieldContent>
-              <FieldDescription>Vai trò của AI trong cuộc hội thoại.</FieldDescription>
+              <FieldDescription>AI sẽ đóng vai trò còn lại mà người học không chọn.</FieldDescription>
             </Field>
 
             <Field className="md:col-span-2">

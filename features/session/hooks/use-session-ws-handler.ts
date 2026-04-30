@@ -38,12 +38,6 @@ export function useSessionWsHandler() {
 
           const state = useSessionStore.getState();
           const audioUrl = state.currentAudioUrl;
-          
-          // Clear response timeout if exists
-          if (state.responseTimeoutId) {
-            clearTimeout(state.responseTimeoutId);
-            state.setResponseTimeoutId?.(null);
-          }
 
           if (event.text?.trim()) {
             setTurns((prev: Turn[]) => {

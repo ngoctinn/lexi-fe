@@ -87,8 +87,8 @@ export default async function AdminPage() {
   const recentUsers = [...users]
     .sort(
       (left, right) =>
-        new Date(right.updated_at ?? 0).getTime() -
-        new Date(left.updated_at ?? 0).getTime(),
+        new Date(right.joined_at ?? 0).getTime() -
+        new Date(left.joined_at ?? 0).getTime(),
     )
     .slice(0, 5);
   
@@ -203,7 +203,7 @@ export default async function AdminPage() {
                   </TableHeader>
                   <TableBody>
                     {recentUsers.map((user) => (
-                      <TableRow key={user.id}>
+                      <TableRow key={user.user_id}>
                         <TableCell className="whitespace-normal">
                           <div className="min-w-0 space-y-1">
                             <p className="font-semibold leading-none text-foreground">
@@ -215,8 +215,8 @@ export default async function AdminPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" size="sm">
-                            {user.current_level}
+                          <Badge variant="secondary" size="sm">
+                            N/A
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -228,7 +228,7 @@ export default async function AdminPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {user.updated_at ? formatDateTime(user.updated_at) : "-"}
+                          {user.joined_at ? formatDateTime(user.joined_at) : "-"}
                         </TableCell>
                       </TableRow>
                     ))}
