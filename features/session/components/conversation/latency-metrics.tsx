@@ -25,6 +25,12 @@ export function LatencyMetrics({
   className,
 }: LatencyMetricsProps) {
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  // Only render after client mount to avoid hydration mismatch
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Only show if we have at least one metric
   const hasMetrics =
@@ -35,7 +41,8 @@ export function LatencyMetrics({
     costUsd !== undefined ||
     qualityScore !== undefined;
 
-  if (!hasMetrics) return null;
+  // Don't render until mounted (avoid hydration mismatch)
+  if (!isMounted || !hasMetrics) return null;
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>

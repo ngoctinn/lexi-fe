@@ -241,6 +241,15 @@ export default async function SessionPage({ params, searchParams }: SessionPageP
       myRole={learnerRole}
       partnerRole={aiRole}
       isNewSession={isNewSession}
+      session={{
+        assigned_model: session.assigned_model,
+        avg_ttft_ms: session.avg_ttft_ms,
+        avg_latency_ms: session.avg_latency_ms,
+        avg_output_tokens: session.avg_output_tokens,
+        total_cost_usd: session.total_cost_usd,
+        total_turns: session.total_turns || session.turn_count,
+        user_turns: session.user_turns,
+      }}
     />
   );
 }

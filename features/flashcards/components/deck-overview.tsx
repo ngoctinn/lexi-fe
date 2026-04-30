@@ -241,7 +241,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
         {hasCards ? (
           <Button
             asChild
-            size="sm"
+            size="md"
             className="w-full"
           >
             <Link href="/flashcards/review">
@@ -252,7 +252,7 @@ function ProgressCard({ queue }: { queue: Flashcard[] }) {
         ) : (
           <Button
             className="w-full"
-            size="sm"
+            size="md"
             variant="secondary"
             disabled
           >

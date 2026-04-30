@@ -29,6 +29,8 @@ import {
 import { Progress } from "@/components/ui/progress";
 import type { SessionScoreSummary } from "@/features/session/types/session.types";
 import { useSessionStore } from "@/features/session/stores/use-session-store";
+import { SessionMetricsPanel } from "./session-metrics-panel";
+import { isDebugMetricsEnabled } from "@/features/session/utils/feature-flags";
 
 interface ConversationSidebarProps {
   currentHint: {
@@ -73,6 +75,15 @@ interface ConversationSidebarProps {
   language?: "vi" | "en";
   myRole?: string;
   partnerRole?: string;
+  session?: {
+    assigned_model?: string;
+    avg_ttft_ms?: number;
+    avg_latency_ms?: number;
+    avg_output_tokens?: number;
+    total_cost_usd?: number;
+    total_turns?: number;
+    user_turns?: number;
+  } | null;
 }
 
 function getProgressColor(score: number) {
@@ -176,6 +187,7 @@ export function ConversationSidebar({
   language = "vi",
   myRole,
   partnerRole,
+  session = null,
 }: ConversationSidebarProps) {
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
@@ -481,6 +493,11 @@ export function ConversationSidebar({
           </>
         )}
       </div>
+
+      {/* Session Metrics Panel - Only visible for admin users */}
+      {!isSessionCompleted && session && isDebugMetricsEnabled() && (
+        <SessionMetricsPanel session={session} />
+      )}
     </aside>
   );
 }

@@ -11,11 +11,25 @@ export function isStreamingEnabled(): boolean {
 
 /**
  * Feature flag for showing debug metrics (latency, tokens, cost)
- * Only enable in development or for debugging
+ * Enabled when:
+ * 1. NEXT_PUBLIC_DEBUG_METRICS=true (development/debugging)
+ * 2. User has ADMIN role (stored in localStorage after profile fetch)
  */
 export function isDebugMetricsEnabled(): boolean {
   if (typeof window === "undefined") {
     return false;
   }
-  return process.env.NEXT_PUBLIC_DEBUG_METRICS === "true";
+  
+  // Check environment variable
+  if (process.env.NEXT_PUBLIC_DEBUG_METRICS === "true") {
+    return true;
+  }
+  
+  // Check if user is admin (from localStorage)
+  try {
+    const userRole = localStorage.getItem("user_role");
+    return userRole === "ADMIN";
+  } catch {
+    return false;
+  }
 }

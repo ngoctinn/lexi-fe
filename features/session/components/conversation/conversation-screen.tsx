@@ -32,6 +32,15 @@ interface ConversationScreenProps {
   partnerRole?: string;
   initialSummary?: SessionScoreSummary | null;
   isNewSession?: boolean;
+  session?: {
+    assigned_model?: string;
+    avg_ttft_ms?: number;
+    avg_latency_ms?: number;
+    avg_output_tokens?: number;
+    total_cost_usd?: number;
+    total_turns?: number;
+    user_turns?: number;
+  } | null;
 }
 
 export function ConversationScreen({
@@ -46,6 +55,7 @@ export function ConversationScreen({
   partnerRole,
   initialSummary = null,
   isNewSession,
+  session = null,
 }: ConversationScreenProps) {
   // Debug logging
   React.useEffect(() => {
@@ -158,6 +168,7 @@ export function ConversationScreen({
               sessionSummary={sessionSummary}
               myRole={myRole}
               partnerRole={partnerRole}
+              session={session}
               className="border-none w-full h-full"
             />
           </SheetContent>
@@ -212,6 +223,7 @@ export function ConversationScreen({
           language={hintLanguage}
           myRole={myRole}
           partnerRole={partnerRole}
+          session={session}
           className="hidden lg:flex flex-2"
         />
       </div>
