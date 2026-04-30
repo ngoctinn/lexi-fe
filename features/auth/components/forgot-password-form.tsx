@@ -36,11 +36,12 @@ export function ForgotPasswordForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ForgotPasswordSchema>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -51,6 +52,7 @@ export function ForgotPasswordForm({
   });
 
   const onSubmit = async (data: ForgotPasswordSchema) => {
+    setIsSubmitting(true);
     try {
       const output = await resetPassword({ username: data.email });
       const { nextStep } = output;
@@ -61,6 +63,8 @@ export function ForgotPasswordForm({
       }
     } catch (error) {
       toast.error(translateCognitoError(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -42,6 +42,8 @@ export function VerifyForm({
   ...props
 }: VerifyFormProps) {
   const router = useRouter();
+  const [resendCountdown, setResendCountdown] = React.useState(0);
+  const [isResending, setIsResending] = React.useState(false);
 
   const {
     handleSubmit,
@@ -57,6 +59,17 @@ export function VerifyForm({
     reValidateMode: "onChange",
   });
   const otp = useWatch({ control, name: "otp" });
+
+  // Countdown timer for resend button
+  React.useEffect(() => {
+    if (resendCountdown <= 0) return;
+
+    const timer = setTimeout(() => {
+      setResendCountdown(resendCountdown - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [resendCountdown]);
 
   const onVerify = async (data: VerifySchema) => {
     try {
@@ -75,11 +88,21 @@ export function VerifyForm({
   };
 
   const handleResendCode = async () => {
+    // Rate limiting: 60 seconds between resend attempts
+    if (resendCountdown > 0) {
+      toast.error(`Vui lòng chờ ${resendCountdown} giây trước khi gửi lại.`);
+      return;
+    }
+
+    setIsResending(true);
     try {
       await resendSignUpCode({ username: email });
       toast.success("Đã gửi lại mã xác nhận mới vào email của bạn.");
-    } catch {
+      setResendCountdown(60); // 60 second cooldown
+    } catch (error) {
       toast.error("Không thể gửi lại mã. Vui lòng thử lại sau.");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -143,8 +166,11 @@ export function VerifyForm({
                     type="button"
                     variant="link"
                     onClick={handleResendCode}
+                    disabled={resendCountdown > 0 || isResending}
                   >
-                    Gửi lại ngay
+                    {resendCountdown > 0
+                      ? `Gửi lại trong ${resendCountdown}s`
+                      : "Gửi lại ngay"}
                   </Button>
                 </div>
               </div>
